@@ -26155,6 +26155,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          'L998 (B3139q-r154): a mid-turn compaction went unchecked for 7 h 42 min'),
         ("A COMMAND THE HARNESS MOVED TO THE BACKGROUND HAS NOT FINISHED",
          'L999 (B3139q-r154): a backgrounded command spun a core for 69.5 min unseen'),
+        # B3139q-r166: L1005's working-directory row, same call.
+        ("DON'T AT TOP LEVEL: use an absolute path",
+         'L1005 (B3139q-r164): one cd locked every shell call for 26 minutes'),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26416,7 +26419,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 369 -> 371 at B3139q-r146 (S6-B3355's and S6-B3356's clauses; same call).
     # 371 -> 372 at B3139q-r147 (S6-B3337's runbook clause; same call).
     # 372 -> 374 at B3139q-r154 (L998's close-only clause and L999's row; same call).
-    assert len(gutted) == 374, gutted
+    # 374 -> 375 at B3139q-r166 (L1005's working-directory row; same call).
+    assert len(gutted) == 375, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -70332,3 +70336,131 @@ def test_b3390_workflow_state_copy_moves_only_with_the_state(tmp_path, monkeypat
         st4 = bws.build()
         assert _j.loads(out.read_text(encoding="utf-8"))["generated_utc"] == \
             st4["generated_utc"], junk
+
+
+def test_b3344_every_unenforced_census_row_is_sorted_exactly_once():
+    """S6-B3344 (B3139q-r166), census step 3: the runbook-enforcement census's
+    UNENFORCED rows are sorted - E enforced since, M mechanize, J judgment, D
+    reword or delete (the owner's), N not a control, O an open owner decision -
+    in output_audit/b3344_unenforced_sort.json. Pinned, so the sort cannot
+    drift from the census it sorts or name a ticket the ledger lacks:
+    (1) the sort holds every census UNENFORCED row exactly once, matched on
+        (line, rule), and nothing else;
+    (2) every class is in the vocabulary, an M row names a known cluster and
+        every other row names none, and the recorded class and cluster counts
+        equal the rows;
+    (3) every cluster ticket and the D decision ticket exist in the ledger;
+    (4) L1007: the queue rows built from the sort cite each rule by its runbook
+        line as 'runbook line N', never in the lesson form L<n> (L595), and no
+        reason in the sort writes a census line in that form."""
+    import json as _j
+    from collections import Counter
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    census = _j.loads((root / "output_audit" / "b3139q_r137_runbook_enforcement_census.json")
+                      .read_text(encoding="utf-8"))
+    sort = _j.loads((root / "output_audit" / "b3344_unenforced_sort.json").read_text(encoding="utf-8"))
+    want = Counter((int(r["line"]), r["rule"]) for r in census["rows"] if r["class"] == "UNENFORCED")
+    have = Counter((int(r["census_line"]), r["rule"]) for r in sort["rows"])
+    assert sum(want.values()) == sort["population"] == len(sort["rows"]), (
+        sum(want.values()), sort["population"], len(sort["rows"]))
+    assert have == want, ("missing", sorted(want - have)[:3], "extra", sorted(have - want)[:3])
+    vocab = {"E", "M", "J", "D", "N", "O"}
+    clusters = sort["clusters"]
+    for r in sort["rows"]:
+        assert r["class"] in vocab, r
+        if r["class"] == "M":
+            assert r["cluster"] in clusters, r
+        else:
+            assert r["cluster"] is None, r
+        assert r["reason"].strip(), r
+    assert sort["classes"] == dict(Counter(r["class"] for r in sort["rows"])), sort["classes"]
+    got = Counter(r["cluster"] for r in sort["rows"] if r["cluster"])
+    assert {k: v["rows"] for k, v in clusters.items()} == {k: got.get(k, 0) for k in clusters}, got
+    import sys as _s
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import queue_state as _qs
+    states = _qs.tickets()
+    named = {v["ticket"] for v in clusters.values()} | {sort["d_decision_ticket"]}
+    assert named and not (named - set(states)), sorted(named - set(states))
+    q = (root / "EXECUTION_QUEUE.md").read_text(encoding="utf-8")
+    built = [ln for ln in q.splitlines() if "S6-B3344's sort" in ln
+             or "S6-B3344's SORT ROUTES" in ln]
+    assert len(built) >= 15, len(built)
+    blob = chr(10).join(built)
+    for r in sort["rows"]:
+        if r["cluster"] or r["class"] == "D":
+            n = r["census_line"]
+            head = r["rule"].replace("|", "/").replace(chr(0xA7), "section ")[:15]
+            assert f"runbook line {n} ({head}" in blob, (n, head)
+            assert f"L{n} ({head}" not in blob, (n, head)
+    census = {r["census_line"] for r in sort["rows"]}
+    for r in sort["rows"]:
+        toks = r["reason"]
+        for ch in "():,;":
+            toks = toks.replace(ch, " ")
+        bad = [t for t in toks.split() if t[:1] == "L" and t[1:].isdigit()
+               and int(t[1:]) in census]
+        assert not bad, ("a reason writes a census line in the lesson form",
+                         r["census_line"], bad)
+
+
+def test_b3388_every_hook_finds_its_script_from_any_directory(tmp_path):
+    """S6-B3388 (B3139q-r166, L1005, #330): a hook that depends on the
+    session's working directory breaks when that directory moves. MEASURED
+    2026-10-31: one `cd scripts && python -c ...` (08:49:10Z) moved it; every
+    hook in .claude/settings.json ran `python scripts/<hook>.py` relative to
+    it, python exits 2 on a script it cannot open, and 2 BLOCKS - every Bash
+    and PowerShell call was refused until 09:15:01Z, and the prompt hook's
+    same failure dropped nine notifications before they reached the turn.
+    The class fix removes the dependency: every hook command is anchored on
+    the project root, `python "${CLAUDE_PROJECT_DIR:-.}/scripts/<hook>.py"`
+    (the hooks docs: a handler runs in the current directory; the variable
+    is the project root where the session started, exported to every hook
+    process; the shell form runs under Git Bash on Windows). Pinned:
+    (1) every command hook in settings.json names its script under the
+        anchored root, and the guard stays wired to Bash and PowerShell;
+    (2) run under bash from a directory OUTSIDE the repository with the
+        variable set, the guard's command reaches the guard (exit 0 on a
+        benign payload, exit 2 with its refusal on a refused one);
+    (3) the control: today's relative form, run the same way, cannot open
+        its script and exits 2 - the lockout's own mechanism."""
+    import json as _j
+    import os as _os
+    import shutil as _sh
+    import subprocess as _sp
+    from pathlib import Path as _P
+    import pytest as _pt
+    root = _P(__file__).resolve().parents[2]
+    s = _j.loads((root / ".claude" / "settings.json").read_text(encoding="utf-8"))
+    hooks = [(ev, e.get("matcher"), h["command"]) for ev, entries in s["hooks"].items()
+             for e in entries for h in e.get("hooks", []) if h.get("type") == "command"]
+    assert len(hooks) >= 4, hooks
+    for ev, matcher, cmd in hooks:
+        assert cmd.startswith('python "${CLAUDE_PROJECT_DIR:-.}/scripts/') and cmd.endswith('.py"'), (ev, cmd)
+        assert (root / "scripts" / cmd.rsplit("/", 1)[1].rstrip('"')).exists(), (ev, cmd)
+    guard = {m for ev, m, c in hooks if ev == "PreToolUse" and "pretooluse_heredoc_guard.py" in c}
+    assert {"Bash", "PowerShell"} <= guard, guard
+    bash = _sh.which("bash")
+    if not bash or "system32" in bash.lower():      # WSL's bash, not the hooks' Git Bash
+        _pt.skip("no Git Bash on PATH - the structural half above still ran")
+    guard_cmd = next(c for ev, m, c in hooks if m == "Bash")
+    env = dict(_os.environ, CLAUDE_PROJECT_DIR=str(root))
+    away = tmp_path / "elsewhere"
+    away.mkdir()
+
+    def run(cmd, payload):
+        return _sp.run([bash, "-c", cmd], cwd=str(away), env=env, input=_j.dumps(payload),
+                       capture_output=True, text=True, encoding="utf-8", timeout=120)
+    ok = run(guard_cmd, {"tool_name": "Bash", "tool_input": {"command": "git status"}})
+    assert ok.returncode == 0, (ok.returncode, ok.stderr[:300])
+    q = chr(39)
+    refused = run(guard_cmd, {"tool_name": "Bash", "tool_input": {
+        "command": "python - <<" + q + "EOF" + q + "\nprint(" + q + "a" + chr(92) + "nb" + q + ")\nEOF"}})
+    assert refused.returncode == 2 and "REFUSED BEFORE RUNNING" in refused.stderr, (
+        refused.returncode, refused.stderr[:300])
+    bad = run("python scripts/pretooluse_heredoc_guard.py",
+              {"tool_name": "Bash", "tool_input": {"command": "git status"}})
+    assert bad.returncode == 2 and "pretooluse_heredoc_guard.py" in bad.stderr, (
+        bad.returncode, bad.stderr[:300])

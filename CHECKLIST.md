@@ -2784,6 +2784,8 @@ State compliance visibly: "Checklist: ✅ [each item]"
 
 **INSTANCE (B3139q-r153 / L997) - A TAG CARRIED FROM THE TEMPLATE ROW.** The S6-B3373 opening row, written from williams_r_oversold's, said 'EXPLORATORY-tagged as every campaign subject'; the set holds williams and not avwap_252_breakout. Read before the commit and corrected. Re-derive every carried attribute for the new subject.
 
+**INSTANCE (B3139q-r164 / L1004) - A SIBLING ROW'S APPROVAL CARRIED INTO THIS ONE.** S6-B3304's r161 row called camarilla's holdout read approved, carried over from the sibling squeeze row whose read the owner had approved; the owner had been asked (the r150 row) and had not ruled. Retracted in the r164 row; the read's door refuses without the recorded word (S6-B3338).
+
 **#167 (B1446, owner-surfaced) - REJECTION ON DIRECTION MUST REDIRECT, NEVER DROP.** When a router rejects a candidate because it is the WRONG KIND of change (tighten proposed on a starved strategy, loosen on a high-fire one), the item must be re-routed to the opposite queue, not `continue`d out of the pipeline. **Lineage:** `build_r6_change_list.py:89-92` dropped 10 strategies into no queue at all; owner: "if it's not tightening it's loosening, why skip?" (S6-B1445a). **Retroactive (#136):** same family as the B1410 prose-only routing (#164) and the B984/B975 disable-instead-of-investigate pattern.
 
 **#168 (B1464, from L292) - A BYPASS SHIPS WITH THE CAPABILITY IT EXISTS TO ENABLE.** When a flag DISABLES a safeguard so that something else can be measured or collected, the batch that ships the bypass must ALSO ship that something else, or an EXECUTION_QUEUE ticket for it linked from the bypass's own comment. A bypass whose counterpart never lands silently converts a designed measurement into lost data, and it does so invisibly because the bypass keeps working exactly as written. **Enforcement:** any diff adding a `no_*` / `skip_*` / `bypass_*` / `disable_*` flag must, in the same commit, either implement the enabled capability or cite the ticket ID in the flag's docstring. **Lineage:** `backtest/engine/backtest.py:129` bypassed `STRATEGY_REGIME_AFFINITY` at Batch 384 with the rationale "cube measures per-regime cell verdicts empirically" -- the per-regime verdict is canonical criterion #11, which B1456 found was never implemented anywhere (L289). For ~1,000 batches the cube deliberately traded every strategy in every regime, including regimes each disclaims, and the grading pipeline pooled it all into one Sharpe -- averaging away precisely the signal the bypass was collecting. **Retroactive (#136):** would have caught the B901 `EMIT_RAW_SIGNAL_FIRES` flag (shipped before its consumer), the B1035 `SMC_PHASE` silent-kill, and this.
@@ -3125,6 +3127,8 @@ end-anchored coverage change altering which tickers any prior run would have ser
 
 **INSTANCE (B3139q-r150 / L996) - THE COMMIT MESSAGE WAS DRAFTED BEFORE THE PRE-GATE.** r149's pre-gate refused a seam registration and the registration was withdrawn; the commit message, written before, still said 'seam registered' and was committed unread. After any pre-gate fix, re-read every text drafted before it.
 
+**INSTANCE (B3139q-r157 / L1001) - A SUBJECT'S PIN NOT GREPPED BEFORE ITS ARTIFACT CHANGED.** r157's bands changed avwap's Table A while test_b3373 pinned its opening rows; the test tree was not grepped for the subject first - the pre-gate caught it, and r158's extra grid field met test_b3101 the same way.
+
 ### #197 — A RULE RECORDED ONLY IN LEARNINGS IS A STORY, NOT A GATE (B1596 / L464)
 
 **MEASURED this session: 24 L-entries state a generalised rule; 18 are referenced in
@@ -3303,6 +3307,8 @@ rate-for-total substitutions above.
 **INSTANCE (B3139q-r146 / L993) - TWO MORE DELIVERY TIMES GIVEN AS THE OWNER'S.** The new --owner-messages listing showed approvals cited as 2026-10-28T16:50:12Z and 00:39:13Z were sent 16:47:50Z and 00:35:55Z, across 15 tickets' rows; scan_owner_time_is_delivery_time (S6-B3355) now refuses such a time in a row or lesson added that turn.
 
 **INSTANCE (B3139q-r143 / L990) - A RULED DECISION REPEATED AS OWED.** A docstring and a ticket row kept the pyramid gate's demotion as a decision still to come while the ticket they named was EXECUTED (the owner ruled it 2026-09-30, S6-B3139k); the later sentences copied the docstring without reading the ledger. scripts/stale_pending_claims.py joins such a sentence to the ledger, and test_b3346 holds the live surfaces at zero.
+
+**INSTANCE (B3139q-r166 / L1007) - A RUNBOOK LINE WRITTEN IN THE LESSON FORM.** S6-B3344's queue rows cited the census's runbook lines as L<n>; test_b1945 refused ten that name no lesson before the commit, and 54 more named real lessons on other subjects; ten cross-references in the sort's reasons used the same form. Rows and reasons now read 'runbook line N', pinned by test_b3344 (4).
 
 ### #202 — READ THE SPEC BEFORE REPORTING THE RESULT (B1608 / L471)
 
@@ -3540,6 +3546,8 @@ module-level singleton changed on exit. If a test needs a different global, it o
 (`test_b1255_turn_gate_verifier` became sensitive to LIVE repo state and failed whenever an
 unanchored L-entry was in flight); L449 (the miss gate scanned the whole transcript and fired on
 compliant turns) - all three are a check coupled to state it does not own.
+
+**INSTANCE (B3139q-r162b / L1002) - INSTANCE 3 - A RELOAD IN AN IN-PROCESS CHECKER.** r162's spot check reloaded backtest.config to apply an arm's knobs and test_b3248f called it in process; test_bug_30 and test_bug_232 failed the full gate (2 of 1938) and passed alone - the L330 and L484 victims again. The item now has its detector: conftest.py's setup and teardown wrappers fail the polluter by name and put the objects back (S6-B3386, test_b3386_detector_names_the_polluter_and_puts_objects_back); a script that needs a knob set uses scripts/config_knobs.applied.
 
 ### #210 - REPLACE THE WHOLE FUNCTION; DO NOT PATCH BY OFFSET (B1626 / L484)
 
@@ -4048,6 +4056,8 @@ post-config gate built and left uninvoked.
 
 **INSTANCE (B3139q-r143 / L991) - A MUTANT KILLED BESIDE NO BASELINE.** The S6-B3346 mutation probes first ran without the unmutated pins, so each KILLED could have meant a pin already failing; the script now asserts every baseline passes before any mutant, and on its next run that assertion caught a test case that split its own phrase.
 
+**INSTANCE (B3139q-r166 / L1008) - TWO PROBES OF MY OWN COMPLIANCE MATCHED THEIR OWN TRACES.** A refusal counter keyed on the 'PreToolUse:' prefix counted a grep's output as a refusal, and a timestamp grep matched its own command line in the transcript; both caught before the commit by reading the raw entries. The counter now requires the harness's error flag.
+
 ### #227 - COMPARING TWO RANKINGS MEANS COMPUTING THE RANK CORRELATION (B1716 / L502)
 
 I compared in-sample and holdout rankings with a **top-10 overlap count**, got **0 of 10**, and
@@ -4326,6 +4336,10 @@ B1971 (the sweep that found this item undefined); L603/L605.
 
 
 **INSTANCE (B3139q-r68m / L911), compliance failure against this item:** S6-B3006 fixed the 0xC000013A console-kill class on ONE scheduled task by hand while scripts/launch_detached.py, the generator of such tasks, kept registering a visible cmd.exe console - 2 of 2 later chains carried it and b3146 died of it. The fix now lives in the launcher, pinned by test_b3153_detached_tasks_run_hidden.
+
+**INSTANCE (B3139q-r157 / L1000) - A BASIS RULE FIXED ON THE TWO INSTRUMENTS IN VIEW.** S6-B3139ag and S6-B3314 made the breadth grid and the depth sweep state their P&L basis and a row called the class done - 2 of the 3 runbook 3.6 instruments; the companion screen scored gross by omission (one +74,900 print set its long-leg effects). Fixed S6-B3382; the class held by test_b3382b's runbook census. And S6-B3130a redirected the suite's writes of workflow_state.json and left the message hook's, so owner messages voided a gate (S6-B3384, test_b3384).
+
+**INSTANCE (B3139q-r166 / L1006) - S6-B3384 FIXED THE INSTANCE IN VIEW.** S6-B3384 excluded the hook's file where no recorded read names it - owner messages, the read sets of B3139q-r157; a later directory-wide reader (S6-B3206's depth-null index) and the hook's other triggers (every system notification) reopened the class. S6-B3390 fixes the writer, which no reader can undo.
 
 ### #238 - THE COMPLIANCE STATEMENT MUST CITE ITEMS, NOT EXIST (B1758 / L514)
 
@@ -5300,6 +5314,8 @@ was reported as though it had.**
 
 **INSTANCE (B3139q-r112 / L961) - TWO CALENDARS UNDER ONE WORD.** The blend's in-sample '778 days' was read against SPY's '751 days' as a lower-end overflow; the blend counts Monday-to-Friday business days (782 in that window) and SPY exchange trading days. The fix puts each blend and per-line window's own business-day count beside its day count (window_bdays, S6-B3298, test_b3298).
 
+**INSTANCE (B3139q-r157 / L1001) - A PIN RE-IMPLEMENTED THE TRANSFORM IT CHECKS.** test_b3382 re-implemented the net transform for an expected value; test_b3139ai refused it before the commit.
+
 ### #272 - A CLASSIFIER OVER A POPULATION HAS NO DEFAULT BRANCH (B1795 / L546)
 
 **JUDGMENT-ONLY: no mechanism.** Detecting a semantically-wrong `else` requires knowing which
@@ -5967,6 +5983,8 @@ detection of a stale verdict is JUDGMENT-ONLY.
 
 **INSTANCE (B3139q-r107 / L959) - AN OFFLINE SWEEP IS A MEASUREMENT OF ONE TREE TOO.** The batch-C T4 driver and the r107 mutation probes were issued in one response; the probes rewrote three of the driver's own scripts on disk between 14:03:24Z and 14:04:49Z. Zero effect, measured from process creation times, the driver's step stamps and the backups' mtimes (the sweep imports once, no multiprocessing; the next launch came six minutes after the last restore). Rule: read the live process list for a consumer of a file before a probe rewrites it; a measurement and a probe that rewrites its code never share a response. Mechanised B3139q-r110: scripts/mutation_probe.py refuses on a live reader (S6-B3296, test_b3296).
 
+**INSTANCE (B3139q-r166 / L1006) - MY OWN NOTIFICATIONS MOVED A GATE INPUT.** r164's gate went SUSPECT, exit 6, because output_audit/workflow_state.json - a test input through the depth-null index's directory scan - was rewritten twice during it, each by the prompt hook running on a notification of my own: an agent's hand-back in the main pass, then a Monitor's expiry notice inside the read-set re-run (times from the transcript's hook records; a third run, on the gate's own completion notice, came after the verdict). The writer now leaves the copy alone unless the state moved (S6-B3390, test_b3390); the gate re-ran as b3139q_r164b.
+
 ### #293 - A PATCHER WRITES BYTES; A GATE THAT READS A DIFF IS ENDING-BLIND (B2581 / L756)
 
 **Never `Path.write_text` a file you did not create.** On Windows it rewrites every line ending in the
@@ -6041,6 +6059,8 @@ feedback_strategy_scope_no_zoom_out.
 **INSTANCE (B3139q-r72j / L934):** a register rule added to runbook section 0.7 named its open instance by family word; test_b3096 refused it at gate r72j (1 failed of 1,787) before the commit, and the sentence now points to the queue ticket instead.
 
 **INSTANCE (B3139q-r123 / L964, L965) - ANOTHER STRATEGY'S RUN AS THIS ONE'S PRICE.** A Step-2 price for pivot_r1_breakout was quoted from bollinger_lower's run ('about a day') and approved on; the subject's own projection by make_spec.step2_sizing is 39.8 to 107.9 h, and the launch was held for a re-rule. Same batch, L965: a runbook bullet named a strategy and test_b3096 refused it before the commit.
+
+**INSTANCE (B3139q-r155 / L1001) - A FAMILY NAMED IN THE CLASS-LEVEL RUNBOOK.** r155's runbook paragraph named a family; test_b3096 refused it before the commit.
 
 ### #296 - PRICE AN OPTION FROM THE PLAN ROW THAT DEFINES IT (B2612 / L767)
 
@@ -6464,6 +6484,8 @@ Two additions, both from L852. (a) **ORDER.** A targeted test step runs AFTER ev
 
 **INSTANCE 7 (B3139q-r139 / L984) - THE SELECTOR EXISTED AND DID NOT RUN.** Before the r139 gate I ran a hand-picked -k set and preflight C16's queue-reading tests, not scripts/pregate_select.py, which instance 6 and the skill's #315 row both say to run before the gate; the gate went RED on 3 of 1,905 (test_b2082, test_b3120a, test_b3171b), and on that gate's own 16 changed paths the selector's R2 rule alone selects 2 of the 3. Mechanism: pregate_select --run stamps the tree it ran on and scripts/pyramid_gate.py discloses pregate= before pytest starts and in its footer (S6-B3360, pinned by test_b3360); whether the gate should refuse, or fail fast, without a passing stamp is the owner's ruling (S6-B3361).
 
+**INSTANCE (B3139q-r163b / L1003) - A CENSUS BY NAME PATTERN THE SELECTOR COULD NOT SEE.** r163 added a sixth free-level grader; the census freezing their count at 5 reads them through glob('grade_free_levels_*.py'), the pre-gate's R3 matched only literal '*.py' globs, and the full gate went RED on 1 of 1945. R3 now matches any .py name-pattern glob (S6-B3387, test_b3387).
+
 ### #316 - EVERY ARM OF ONE BOOLEAN COMPARES THE SAME WAY (L853, S6-B3036, 2026-09-23)
 
 When a single acceptance or rejection expression ORs several arms together, every arm normalises its input identically - same case folding, same whitespace, same stripping - or each divergence is justified IN THE CODE beside the arm. A mixed boolean fails as a FALSE NEGATIVE on the compliant author who writes naturally, which is the direction nobody reports: the arm that rejects wrongly is the one whose victim assumes they got the wording wrong. MEASURED: `#300`'s pin ORed three case-sensitive arms with one `.lower()` arm, so a durability clause opening a sentence with a capital D was invisible, and both #315 sections failed (written WITHOUT the header marker on purpose: the #300 pin splits sections on that token, so quoting it here would split THIS item in two and hide its JUDGMENT-ONLY from its own durability clause - the defect was live in the first draft of this line) while carrying the exact clause the rule demands. THE FIX IS NOT UNIFORM NORMALISATION: where an arm is an ESCAPE, it takes the stricter matcher (L528) - `"Mechanism"` stays capitalised because it marks L548's structured form and lowercasing it would match the prose "no mechanism is possible", the bare label the rule refuses. WHICH CANDIDATE WAS COMPARED (L720): L771 covers a PROBE diverging from the ASSERTION it validates - two expressions drifting apart over time - and does not reach one expression whose own arms disagree at authoring time; #226 proves a pin CAN fail and is silent about which compliant inputs it wrongly rejects. Mechanism: the arm's verdict is now pinned in BOTH directions by the five-case table inside `test_b2705_judgment_only_declarations_carry_their_search` - two must-refuse (bare label, "no mechanism is possible") and three must-accept (capitalised, lowercase, L548 form).
@@ -6705,6 +6727,8 @@ decision (a refusal is a behaviour change).
 
 **INSTANCE (B3139q-r140 / L987) - THE THIRD REFUSAL ON ONE SCRIPT.** A --help probe of scripts/queue_state.py was refused by the guard before it ran, as at L963 and L967. The read-only counter now parses its arguments (S6-B3364, test_b3364), so where the probe keeps happening it prints usage.
 
+**INSTANCE (B3139q-r157 / L1001) - A SCRIPT RUN BEFORE ITS SOURCE WAS READ.** queue_state.py was run twice before its source was read - with --help, and with a guessed --open whose refusal 2>/dev/null hid; it parses its arguments, so nothing ran.
+
 ### #328 - A CLOSED TICKET'S REMAINDER RIDES A NEW TICKET OPENED IN THE SAME APPEND (B3139q-r90 / L949, citing L704 and L640, self-caught 2026-10-21)
 
 Work deferred inside a row marked EXECUTED or DROPPED - it 'rides the next batch',
@@ -6742,3 +6766,32 @@ neither ending unless the final response names it, pinned by test_b3378. It
 fires at the close, not before - at any close between 14:45:06Z and 15:52:53Z
 it would have named bsxn9wc3u; inside a long turn the post-compaction listing
 of running shells is the earlier point (L998).
+
+**INSTANCE (B3139q-r166) - RECORD-OF-FACT - A STRAY STDIN READER.** a status probe carried a stray `cat > /dev/null` with no input; the call waited on stdin, the harness moved it to the background at its 120 s timeout (b8pnblwov, 2026-10-31T09:34:50Z), and TaskStop ended it 7 s later - nothing ran or was written. The second stdin reader to hang this way after L999's `python -` on an empty heredoc; S6-B3379 gains it as evidence.
+
+### #330 - A SHELL CALL NEVER MOVES THE SESSION'S WORKING DIRECTORY (B3139q-r166 / L1005, self-caught 2026-10-31)
+
+The working directory persists between tool calls, and every hook in
+.claude/settings.json runs `python scripts/<hook>.py` FROM it. MEASURED
+(L1005): one `cd scripts && python -c ...` at 08:49:10Z moved it; the
+PreToolUse guard's relative path then named a file that does not exist,
+python exits 2 when it cannot open a script, and 2 BLOCKS - every Bash and
+PowerShell call was refused until 09:15:01Z, a `cd` back included. The
+prompt hook is relative too and its failure also blocks: nine notifications
+from three Monitors were dropped before they reached the turn (09:09:23Z to
+09:14:16Z), and an owner message in that window would have been dropped the
+same way. The Stop hook is relative too. Change directory only inside a
+subshell `( cd <dir> && ... )`, or use absolute paths or `git -C <dir>`; a
+cd to the repository root is the one top-level cd allowed.
+
+MECHANISM: every hook command in .claude/settings.json is anchored on the
+project root - python "${CLAUDE_PROJECT_DIR:-.}/scripts/<hook>.py" - so a
+directory move from any cause cannot make a hook unfindable (S6-B3388),
+pinned by test_b3388_every_hook_finds_its_script_from_any_directory.
+Refusing the move itself, and wiring the guard to the Monitor tool, are new
+refusals and the owner's word (S6-B3391); until then the rule's habit half
+is JUDGMENT-ONLY at the keyboard. RECOVERY if a hook breaks anyway: the
+script must exist where the hook looks - a shim at the moved directory's
+scripts/ that runs the real guard lets one cd to the root pass; scripts/ is
+inside the pyramid gate's fingerprint, so write and delete the shim in one
+call, never across a gate's start or end.

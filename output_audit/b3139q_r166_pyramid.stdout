@@ -1,0 +1,61 @@
+........................................................................ [  3%]
+........................................................................ [  7%]
+........................................................................ [ 11%]
+........................................................................ [ 14%]
+........................................................................ [ 18%]
+........................................................................ [ 22%]
+........................................................................ [ 25%]
+........................................................................ [ 29%]
+..............................................s......................... [ 33%]
+....................s.................................................s. [ 36%]
+........................................................................ [ 40%]
+........................................................................ [ 44%]
+........................................................................ [ 47%]
+........................................................................ [ 51%]
+........................................................................ [ 55%]
+........................................................................ [ 59%]
+........................................................................ [ 62%]
+........................................................................ [ 66%]
+........................................................................ [ 70%]
+........................................................................ [ 73%]
+........................................................................ [ 77%]
+........................................................................ [ 81%]
+........................................................................ [ 84%]
+........................................................................ [ 88%]
+........................................................................ [ 92%]
+........................................................................ [ 95%]
+........................................................................ [ 99%]
+........                                                                 [100%]
+============================== warnings summary ===============================
+backtest/tests/test_unit.py::test_b3383_return_correlation_states_its_basis
+backtest/tests/test_unit.py::test_b3383_return_correlation_states_its_basis
+  C:\Users\jeetm\Github\stock-picks-app\scripts\build_strategy_return_correlation.py:116: RuntimeWarning: invalid value encountered in sqrt
+    return s_bar * np.sqrt(n / (1 + (n - 1) * rho))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1949 passed, 3 skipped, 2 warnings in 3066.07s (0:51:06)
+
+pytest_exit=0
+tree=SAME
+exit=0
+elapsed_s=3106
+chain_inflight=b3248sq_p2_2p0
+chain_inflight_start=b3248sq_p2_2p0
+chain_inflight_end=b3248sq_p2_2p0
+power_start=ac
+power_end=ac
+engine_inflight=launch_sweep:output_b3248sq_p2_2p0_p2_2p0,run_phase1a:output_b3248sq_p2_2p0_p2_2p0,run_serial_chain,run_wave:b3248sq_p2_2p0_spec.json
+engine_inflight_start=launch_sweep:output_b3248sq_p2_2p0_p2_2p0,run_phase1a:output_b3248sq_p2_2p0_p2_2p0,run_serial_chain,run_wave:b3248sq_p2_2p0_spec.json
+engine_inflight_end=launch_sweep:output_b3248sq_p2_2p0_p2_2p0,run_phase1a:output_b3248sq_p2_2p0_p2_2p0,run_serial_chain,run_wave:b3248sq_p2_2p0_spec.json
+engine_dead_within_window=none
+beside_wave_override=r166 stages no leg-closure path (86 checked) and no engine path; the b3248sq chain runs 29 h or more, too long to hold this batch; commit free 8.38 GB at start
+output_audit_created=none
+output_audit_modified_tracked=none
+output_audit_modified_untracked=output_audit/b3248sq_chain_detached.log
+readset=CLEAN
+readset_rerun=none
+readset_suite_writes=2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
+moved_line_citations=none
+pregate=PASSED on this tree (313 tests, 2026-10-31T13:38:35Z)
+runbook_drift=tickets 18, not named in the runbook 17 (S6-B3392, S6-B3393, S6-B3394, S6-B3395, S6-B3396, S6-B3397, S6-B3398, S6-B3399, S6-B3400, S6-B3401, S6-B3402, S6-B3403, S6-B3404, S6-B3340, S6-B3391, S6-B3344, S6-B3388); lessons 9, not cited 9 (L1000, L1001, L1002, L1003, L1004, L1005, L1006, L1007, L1008)
+stamp_binding=kept-green

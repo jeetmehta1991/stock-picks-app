@@ -1,0 +1,3028 @@
+{
+ "ticket": "S6-B3344",
+ "generator": "scratchpad b3344/build_sort.py over b3344/dispositions.py",
+ "census": "output_audit/b3139q_r137_runbook_enforcement_census.json",
+ "census_head": "5be43a655",
+ "population": 293,
+ "classes": {
+  "D": 18,
+  "E": 42,
+  "J": 99,
+  "M": 130,
+  "N": 2,
+  "O": 2
+ },
+ "class_meaning": {
+  "E": "enforced since the census - mechanism named and grepped at HEAD",
+  "M": "mechanize - joins a cluster ticket",
+  "J": "judgment - disclosed, no runbook edit",
+  "D": "delete or reword - one owner decision (a rule removed changes what governs a verdict)",
+  "N": "not a control",
+  "O": "an open owner decision already ticketed"
+ },
+ "clusters": {
+  "M-REG": {
+   "meaning": "registry, config and universe pins (tests only, outside the leg closure)",
+   "rows": 9,
+   "ticket": "S6-B3392"
+  },
+  "M-SPEC": {
+   "meaning": "validate_spec and offline-instrument checks (producer_variant_table / step1_gates - leg closure: after the chain)",
+   "rows": 12,
+   "ticket": "S6-B3393"
+  },
+  "M-BRD": {
+   "meaning": "breadth instruments (companions_consistent, breadth_step1_grid)",
+   "rows": 5,
+   "ticket": "S6-B3394"
+  },
+  "M-HOLD": {
+   "meaning": "holdout-read discipline (offline_holdout_read, a project-wide read ledger)",
+   "rows": 6,
+   "ticket": "S6-B3395"
+  },
+  "M-REND": {
+   "meaning": "renderers and artifact fields (Table C / Table D, offline_level_sweep, preflight C18)",
+   "rows": 15,
+   "ticket": "S6-B3396"
+  },
+  "M-BATT": {
+   "meaning": "battery lenses (run_postconfig - leg closure: after the chain)",
+   "rows": 14,
+   "ticket": "S6-B3397"
+  },
+  "M-LAUNCH": {
+   "meaning": "launch path (make_spec, launch_detached, run_wave, launch_refusals, prelaunch_gate)",
+   "rows": 22,
+   "ticket": "S6-B3398"
+  },
+  "M-TURN": {
+   "meaning": "turn gates (verify_turn_compliance scans)",
+   "rows": 13,
+   "ticket": "S6-B3399"
+  },
+  "M-ROSTER": {
+   "meaning": "Phase 1B roster builder",
+   "rows": 6,
+   "ticket": "S6-B3400"
+  },
+  "M-TRIG": {
+   "meaning": "registered deferral triggers (deferral_trigger_audit)",
+   "rows": 2,
+   "ticket": "S6-B3401"
+  },
+  "M-OPEN": {
+   "meaning": "campaign-open checks",
+   "rows": 3,
+   "ticket": "S6-B3402"
+  },
+  "M-APPROVAL": {
+   "meaning": "approval-gated code edits - a NEW refusal, so the owner's word first (L857 (c))",
+   "rows": 4,
+   "ticket": "S6-B3403"
+  },
+  "S6-B3389": {
+   "meaning": "the rider path (existing ticket)",
+   "rows": 5,
+   "ticket": "S6-B3389"
+  },
+  "S6-B3340": {
+   "meaning": "slate, waterfall and pre-triage tool (existing ticket)",
+   "rows": 14,
+   "ticket": "S6-B3340"
+  }
+ },
+ "d_decision_ticket": "S6-B3404",
+ "rows": [
+  {
+   "census_line": 11,
+   "section": "0",
+   "part": "A",
+   "rule": "The runbook names no family, config or campaign; an open family instance is a queue ticket, never named here (restated line 267).",
+   "census_mechanism": "partial: test_b3096 family denylist, test_unit.py:44950-44954",
+   "class": "M",
+   "cluster": "M-REG",
+   "reason": "derive test_b3096's denylist from ALL_STRATEGIES names and SPECS keys instead of 21 fixed tokens"
+  },
+  {
+   "census_line": 24,
+   "section": "0",
+   "part": "A",
+   "rule": "Every heading carries its pre-restructure anchor as '(formerly \u00a7x)' so old citations resolve by search.",
+   "census_mechanism": "partial: test_b3096, test_unit.py:45040-45043",
+   "class": "D",
+   "cluster": null,
+   "reason": "the restructure happened once (B3096); headings added since have no former anchor - reword to 'every pre-B3096 heading'"
+  },
+  {
+   "census_line": 28,
+   "section": "0",
+   "part": "A",
+   "rule": "Measured instances, dated slates and a family's knob values go in STRATEGY_CAMPAIGN_LOG.md; this runbook states only the class rule.",
+   "census_mechanism": "partial: test_b3096 named(), test_unit.py:44961-44972",
+   "class": "J",
+   "cluster": null,
+   "reason": "telling a measured instance from a class rule is a reading; test_b3096 named() holds the name half"
+  },
+  {
+   "census_line": 60,
+   "section": "0.1",
+   "part": "A",
+   "rule": "Sub-steps are numbered inside their step; workflow ids are lettered (T, L, F, R, D) and battery checks are 'battery step N'.",
+   "census_mechanism": "none",
+   "class": "N",
+   "cluster": null,
+   "reason": "a numbering style, not a control"
+  },
+  {
+   "census_line": 61,
+   "section": "0.1",
+   "part": "A",
+   "rule": "'\u00a7' always marks a section of this document, never a step.",
+   "census_mechanism": "partial: test_b3096 refs(), test_unit.py:45014-45023",
+   "class": "J",
+   "cluster": null,
+   "reason": "refs() fails an unresolvable reference; a step/section confusion is a reading"
+  },
+  {
+   "census_line": 67,
+   "section": "0.1",
+   "part": "A",
+   "rule": "The two pre-B3096 step numberings are retired and must not be used.",
+   "census_mechanism": "partial: test_b3096 numbering(), test_unit.py:45003-45004",
+   "class": "J",
+   "cluster": null,
+   "reason": "headings are refused; a retired number in prose is a reading"
+  },
+  {
+   "census_line": 75,
+   "section": "0.1",
+   "part": "A",
+   "rule": "Write every new step reference as number AND name ('Step 4 ADMIT'), never a bare number.",
+   "census_mechanism": "none",
+   "class": "N",
+   "cluster": null,
+   "reason": "a citation style, not a control"
+  },
+  {
+   "census_line": 108,
+   "section": "0.2",
+   "part": "A",
+   "rule": "Lane follows STREAM: TIGHTEN to W-T, LOOSEN to W-L, BOTH W-T first then W-L only if T4 ranked nothing, NONE to breadth.",
+   "census_mechanism": "none (STREAM itself computed by build_strategy_status.classify_stream :640-648)",
+   "class": "M",
+   "cluster": "M-LAUNCH",
+   "reason": "launch_refusals (or the campaign-open record) reads the status view's stream for the subject and refuses a lane that does not follow it"
+  },
+  {
+   "census_line": 128,
+   "section": "0.3",
+   "part": "A",
+   "rule": "Axes an offline venue cannot reach are resim-SCHEDULED or owner-WAIVED in words at band review.",
+   "census_mechanism": "none",
+   "class": "E",
+   "cluster": null,
+   "reason": "S6-B3339: band_coverage_gate.table_a_section counts every pending producer level untested unless run or waived in output_audit/producer_level_waivers.json by a recorded owner word"
+  },
+  {
+   "census_line": 130,
+   "section": "0.3",
+   "part": "A",
+   "rule": "For a TIGHTEN-lane strategy the producer-band resim legs are in-mandate and run in that lane after its offline legs.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "an ordering of work inside a lane is a plan; the coverage gate (S6-B3339) holds the outcome"
+  },
+  {
+   "census_line": 132,
+   "section": "0.3",
+   "part": "A",
+   "rule": "No campaign closes while a mandatory leg is unrun.",
+   "census_mechanism": "none at closure; opt-in CLI band_coverage_gate --declare-step2-failure :423-441",
+   "class": "E",
+   "cluster": null,
+   "reason": "S6-B3353 step2_legs: the readers refuse an unproven leg and a closure in owner_campaign_closures.json names both legs; S6-B3336 scan_step2_verdict_without_legs"
+  },
+  {
+   "census_line": 133,
+   "section": "0.3",
+   "part": "A",
+   "rule": "Every disposition names the legs run and not run (CHECKLIST #299 / L785).",
+   "census_mechanism": "none for ledger or campaign-log dispositions",
+   "class": "E",
+   "cluster": null,
+   "reason": "S6-B3336 scan_step2_verdict_without_legs (pinned test_b3336) with S6-B3353's legs on every reader and closure"
+  },
+  {
+   "census_line": 139,
+   "section": "0.3",
+   "part": "A",
+   "rule": "A campaign spec queued before a template change is re-checked against the template at execution.",
+   "census_mechanism": "none for the runbook template",
+   "class": "D",
+   "cluster": null,
+   "reason": "specs are generated by make_spec (S6-B3120a), so no queued spec is typed from a template that can drift - reword or delete"
+  },
+  {
+   "census_line": 140,
+   "section": "0.3",
+   "part": "A",
+   "rule": "One owner-worded Step-2 holdout read per campaign; a re-read must be declared.",
+   "census_mechanism": "partial: offline_holdout_read.py:282-288; wave_identity.step2_rerun_refusal :202-220",
+   "class": "M",
+   "cluster": "M-HOLD",
+   "reason": "S6-B3338 put the owner's word on the read (--ruling); a re-read under a new --out still runs unlabelled - a project-wide holdout-read ledger closes it"
+  },
+  {
+   "census_line": 178,
+   "section": "0.5",
+   "part": "A",
+   "rule": "Take the owner's direction for the session; absent one, the default queue is W-T entry order.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a working default, not a check"
+  },
+  {
+   "census_line": 181,
+   "section": "0.5",
+   "part": "A",
+   "rule": "Run the workflow step by step; every owner stop is a WAIT, not a skip.",
+   "census_mechanism": "none (nearest: scan_owner_decision_taken, verify_turn_compliance.py:1495-1604)",
+   "class": "J",
+   "cluster": null,
+   "reason": "sequencing and waits are judgment; scan_owner_decision_taken holds the ticket half"
+  },
+  {
+   "census_line": 182,
+   "section": "0.5",
+   "part": "A",
+   "rule": "Every workflow step leaves its named artifact.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "which artifact a step owes is a reading of the step"
+  },
+  {
+   "census_line": 183,
+   "section": "0.5",
+   "part": "A",
+   "rule": "An ambiguity that changes the work is put to the owner as a question.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "an unasked fork is invisible to a scan"
+  },
+  {
+   "census_line": 184,
+   "section": "0.5",
+   "part": "A",
+   "rule": "An assumption that survives is stated in the campaign row.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "an assumption is prose"
+  },
+  {
+   "census_line": 186,
+   "section": "0.5",
+   "part": "A",
+   "rule": "After a mid-turn compaction, re-read the operative sections, the stamped view and every file about to be edited before the next substantive action.",
+   "census_mechanism": "partial: scan_discipline_not_loaded :2581-2646 and scan_ticket_history_unread :6465, verify_turn_compliance.py",
+   "class": "E",
+   "cluster": null,
+   "reason": "scan_discipline_not_loaded and scan_ticket_history_unread hold the skill and ticket halves; re-reading runbook sections stays judgment"
+  },
+  {
+   "census_line": 202,
+   "section": "0.6",
+   "part": "A",
+   "rule": "Wiring a NEW-GATE into strategies or engine knobs needs per-strategy owner approval.",
+   "census_mechanism": "none (label only: build_table_a.py:831-833)",
+   "class": "M",
+   "cluster": "M-APPROVAL",
+   "reason": "a preflight refusal of a staged screener.py gate edit without a cited ruling - a new refusal, so the owner's word first"
+  },
+  {
+   "census_line": 203,
+   "section": "0.6",
+   "part": "A",
+   "rule": "Never launch the engine without the owner's launch word (standing).",
+   "census_mechanism": "none",
+   "class": "E",
+   "cluster": null,
+   "reason": "S6-B3338 / S6-B3358: owner_word at make_spec, run_wave, prelaunch_gate and the engine's own entry (run_phase1a, BacktestEngine.run)"
+  },
+  {
+   "census_line": 246,
+   "section": "0.7",
+   "part": "A",
+   "rule": "Reopening (re-testing) a terminal strategy is the owner's word.",
+   "census_mechanism": "partial: _admitted_retest_refusals and offline_retest_refusal, producer_variant_table.py:6109-6175",
+   "class": "E",
+   "cluster": null,
+   "reason": "S6-B3338 door 4: launch_refusals._terminal_status_refusals refuses every TERMINAL status, not only roster members, without owner_override_reopen"
+  },
+  {
+   "census_line": 259,
+   "section": "0.7",
+   "part": "A",
+   "rule": "An owner-opened campaign is recorded in owner_campaign_opens.json the turn the owner opens it, then the view is rebuilt.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-TURN",
+   "reason": "a turn scan pairing a campaign-opening queue row with an output_audit/owner_campaign_opens.json change in the same turn"
+  },
+  {
+   "census_line": 292,
+   "section": "1.1",
+   "part": "B",
+   "rule": "Under the engine waterfall, Step-2 configs are read in turn and stop at the first qualifier.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "S6-B3340",
+   "reason": "the waterfall tool and its launch refusal"
+  },
+  {
+   "census_line": 299,
+   "section": "1.1",
+   "part": "B",
+   "rule": "The search space (signals, thresholds, objective) is written to EXECUTION_QUEUE.md and committed before any score is computed.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "pre-registration discipline; its gateable halves are the band ruling (step1_gates) and the owner's word (S6-B3338)"
+  },
+  {
+   "census_line": 300,
+   "section": "1.1",
+   "part": "B",
+   "rule": "The Step-2 cell is committed before any holdout code path runs.",
+   "census_mechanism": "none (cell derived by construction: offline_holdout_read.py:85, make_spec.py:590)",
+   "class": "M",
+   "cluster": "M-HOLD",
+   "reason": "offline_holdout_read refuses a Step-1 artifact that is untracked or modified (git status)"
+  },
+  {
+   "census_line": 310,
+   "section": "1.1",
+   "part": "B",
+   "rule": "Never claim a mechanism that does not exist; an acknowledged gap is preferred.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "the truth standard; the scans hold slices (scan_unverified_structure)"
+  },
+  {
+   "census_line": 313,
+   "section": "1.1",
+   "part": "B",
+   "rule": "Every reported number ships with its diagnostics: sensitivity curve, leave-one-out contribution, churn (in/out) and effective breadth.",
+   "census_mechanism": "none",
+   "class": "D",
+   "cluster": null,
+   "reason": "no tool produces a sensitivity curve, leave-one-out or churn per number - reword to what the instruments emit"
+  },
+  {
+   "census_line": 315,
+   "section": "1.1",
+   "part": "B",
+   "rule": "There is no usable prior: earlier results are motivation, never a numerical expectation of a strategy's outcome.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "an expectation is prose"
+  },
+  {
+   "census_line": 323,
+   "section": "1.1",
+   "part": "B",
+   "rule": "Count holdout reads project-wide (the L351 discipline).",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-HOLD",
+   "reason": "a holdout-read ledger the readers append to and consult"
+  },
+  {
+   "census_line": 338,
+   "section": "1.2",
+   "part": "B",
+   "rule": "Step 2 validates the top 3 configs.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "S6-B3340",
+   "reason": "the slate builder"
+  },
+  {
+   "census_line": 340,
+   "section": "1.2",
+   "part": "B",
+   "rule": "Step 4 ADMIT takes the best 1 as the Phase 1B decision.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "admissions are owner rulings"
+  },
+  {
+   "census_line": 399,
+   "section": "1.2",
+   "part": "B",
+   "rule": "A threshold and the window it is measured over are one object; change them together.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "pairing a bar with its window is a reading of the design"
+  },
+  {
+   "census_line": 406,
+   "section": "1.3",
+   "part": "B",
+   "rule": "Owner approval precedes any rule/threshold/parameter change; the runbook measures a strategy and never changes one.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-APPROVAL",
+   "reason": "the approval-gated edit refusal (a new refusal - the owner's word first)"
+  },
+  {
+   "census_line": 409,
+   "section": "1.3",
+   "part": "B",
+   "rule": "Compute budget is $100 total across all strategies; every quote, wave plan and Step-2 projection counts against one envelope.",
+   "census_mechanism": "none",
+   "class": "O",
+   "cluster": null,
+   "reason": "S6-B3340's open decision: (a) a programme spend ledger, (b) LOCAL runs spend nothing"
+  },
+  {
+   "census_line": 410,
+   "section": "1.3",
+   "part": "B",
+   "rule": "Hetzner venue only after a local end-to-end strategy and codified automation; the venue ruling precedes any non-local launch.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-LAUNCH",
+   "reason": "prelaunch_gate's non-LOCAL path requires a recorded venue ruling"
+  },
+  {
+   "census_line": 412,
+   "section": "1.3",
+   "part": "B",
+   "rule": "Running fewer configs to save time is out of the question; cost is met by speed or machine.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a cost-versus-coverage judgment"
+  },
+  {
+   "census_line": 413,
+   "section": "1.3",
+   "part": "B",
+   "rule": "Threshold-only versus a new gate is asked every time, with no default; a NEW-GATE is stop-and-ask.",
+   "census_mechanism": "partial: step1_gates.require_band_ruling step1_gates.py:29-57 (offline only)",
+   "class": "E",
+   "cluster": null,
+   "reason": "S6-B3338 holds the band word at the engine door and step1_gates the offline band ruling; whether the question was asked stays judgment"
+  },
+  {
+   "census_line": 416,
+   "section": "1.3",
+   "part": "B",
+   "rule": "next_pivot_target is barred as a selected exit.",
+   "census_mechanism": "partial: BARRED_EXIT breadth_step1_grid.py:45,376, breadth_step2_read.py:235; roster_core.npt_spanning_exclusion :458-471",
+   "class": "E",
+   "cluster": null,
+   "reason": "S6-B3341 (r147): offline_level_sweep bars it on every cell, beside breadth BARRED_EXIT and roster_core"
+  },
+  {
+   "census_line": 437,
+   "section": "1.4",
+   "part": "B",
+   "rule": "For a grid with no multiplicity block (pre-B3101), record trials_searched beside any ranked list.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "reporting an older grid is a reading"
+  },
+  {
+   "census_line": 461,
+   "section": "1.4",
+   "part": "B",
+   "rule": "Record trials_searched (cells x exits) with every ranked list.",
+   "census_mechanism": "partial: offline_level_sweep.py:415,424,609",
+   "class": "M",
+   "cluster": "M-REND",
+   "reason": "engine graders write trials_searched (configs x exits) beside their multiplicity block"
+  },
+  {
+   "census_line": 474,
+   "section": "1.4",
+   "part": "B",
+   "rule": "Partition axes before reading a grid; only unpredicted axes spend multiplicity budget.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "which axes carry a prediction is the analyst's statement"
+  },
+  {
+   "census_line": 505,
+   "section": "1.5",
+   "part": "B",
+   "rule": "Classify every parameter against signals_at_entry (persistence) before any launch, carried as free_band / resim_band.",
+   "census_mechanism": "partial: validate_spec producer_variant_table.py:5357-5368",
+   "class": "E",
+   "cluster": null,
+   "reason": "validate_spec holds the free/resim partition; testing persistence stays judgment at registration"
+  },
+  {
+   "census_line": 519,
+   "section": "1.5",
+   "part": "B",
+   "rule": "Offline trade counts are lower bounds (occupancy) and offline verdicts are candidates.",
+   "census_mechanism": "partial: occupancy_disclosure.py:48-53 in grade_free_levels_*",
+   "class": "E",
+   "cluster": null,
+   "reason": "S6-B3342 rewrote the line to the code's rule - an offline trade count is not a bound in either direction (occupancy_disclosure.py, S6-B3139r)"
+  },
+  {
+   "census_line": 527,
+   "section": "1.5",
+   "part": "B",
+   "rule": "Site the baseline at the loosest admissible level of every persisted gate.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "where a baseline sits is a design choice"
+  },
+  {
+   "census_line": 535,
+   "section": "1.6",
+   "part": "B",
+   "rule": "Run the family pre-gate (overlap, band clustering, median-exit holdout beside the best) before any campaign target is picked.",
+   "census_mechanism": "none (scripts/family_pregate.py is hand-run)",
+   "class": "M",
+   "cluster": "M-OPEN",
+   "reason": "the campaign-open record requires a committed family_pregate artifact for the subject's family"
+  },
+  {
+   "census_line": 538,
+   "section": "1.6",
+   "part": "B",
+   "rule": "A family is confirmed or split only by measured overlap, never by a name prefix.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a membership decision"
+  },
+  {
+   "census_line": 539,
+   "section": "1.6",
+   "part": "B",
+   "rule": "Pick one representative per cluster, with the selection criterion stated (#165).",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "the #165 criterion is prose; preflight C11 holds code idioms"
+  },
+  {
+   "census_line": 540,
+   "section": "1.6",
+   "part": "B",
+   "rule": "Close siblings by a pre-registered containment pass committed before grading, recording each sibling's overlap.",
+   "census_mechanism": "partial: grade_family_siblings.py (institutional family only)",
+   "class": "J",
+   "cluster": null,
+   "reason": "one family's tool; a generic pass is a design, not a check"
+  },
+  {
+   "census_line": 542,
+   "section": "1.6",
+   "part": "B",
+   "rule": "A contained sibling that grades better than its representative gets its own pre-registered Step 2, not a dismissal.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a disposition judgment"
+  },
+  {
+   "census_line": 544,
+   "section": "1.6",
+   "part": "B",
+   "rule": "A sibling cell found on a read holdout is forward pre-registered and gets one six-gate read on the first cube with >= 12 forward months; no re-pick.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-TRIG",
+   "reason": "register each forward pre-registration's 12-forward-month trigger in deferral_trigger_audit"
+  },
+  {
+   "census_line": 550,
+   "section": "1.6",
+   "part": "B",
+   "rule": "No engine campaigns on collinear siblings (compute economy).",
+   "census_mechanism": "none",
+   "class": "E",
+   "cluster": null,
+   "reason": "S6-B3338 door 4 refuses a CONTAINED (terminal) strategy at launch without the reopen word"
+  },
+  {
+   "census_line": 561,
+   "section": "1.6",
+   "part": "B",
+   "rule": "An engine run carries the family - every open consumer of the knob it varies - in its strategy subset.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "S6-B3389",
+   "reason": "the rider path"
+  },
+  {
+   "census_line": 572,
+   "section": "1.6",
+   "part": "B",
+   "rule": "In an optimisation run every knob consumer in the subset is graded as a variant.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "S6-B3389",
+   "reason": "the rider path"
+  },
+  {
+   "census_line": 585,
+   "section": "1.7",
+   "part": "B",
+   "rule": "Negative control: a deliberately absurd threshold must produce zero trades.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-BATT",
+   "reason": "a battery lens grading an absurd level offline that must return zero trades"
+  },
+  {
+   "census_line": 587,
+   "section": "1.7",
+   "part": "B",
+   "rule": "Re-derive every published count from the artifact, never from a running tally.",
+   "census_mechanism": "partial: scan_unverified_count verify_turn_compliance.py:3010",
+   "class": "E",
+   "cluster": null,
+   "reason": "scan_unverified_count holds ledger counts; other counts stay judgment"
+  },
+  {
+   "census_line": 588,
+   "section": "1.7",
+   "part": "B",
+   "rule": "Run audit_registration_redundancy.py after any loosening and after a tightening campaign.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-BATT",
+   "reason": "a battery lens running it on the landed cube"
+  },
+  {
+   "census_line": 589,
+   "section": "1.7",
+   "part": "B",
+   "rule": "Report churn (in/out), never only the net.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-ROSTER",
+   "reason": "build_phase_1b_roster prints in/out against the committed roster"
+  },
+  {
+   "census_line": 591,
+   "section": "1.7",
+   "part": "B",
+   "rule": "Every number in a report carries its funnel stage.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a report-reading rule"
+  },
+  {
+   "census_line": 592,
+   "section": "1.7",
+   "part": "B",
+   "rule": "Publish a sensitivity curve for any threshold that ends up chosen.",
+   "census_mechanism": "none",
+   "class": "D",
+   "cluster": null,
+   "reason": "Table D's per-level rows are the curve for a chosen threshold - reword to that"
+  },
+  {
+   "census_line": 599,
+   "section": "1.7",
+   "part": "B",
+   "rule": "A tightened config differing from the shipped gates is a strategy change and needs owner approval before it is written to screener.py.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-APPROVAL",
+   "reason": "the approval-gated edit refusal"
+  },
+  {
+   "census_line": 614,
+   "section": "1.8",
+   "part": "B",
+   "rule": "The programme kills itself if the roster's N_eff stays below ~3, regardless of cell count.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a programme judgment"
+  },
+  {
+   "census_line": 616,
+   "section": "1.8",
+   "part": "B",
+   "rule": "An engine campaign closes NEGATIVE when its Step-2 waterfall fails 3 of 3 configs.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "S6-B3340",
+   "reason": "the waterfall tool's closure"
+  },
+  {
+   "census_line": 618,
+   "section": "1.8",
+   "part": "B",
+   "rule": "No strategy closes NEGATIVE while a mandatory leg is unrun.",
+   "census_mechanism": "partial: offline_holdout_read.py:112-146; breadth_step2_read.py:271-280",
+   "class": "E",
+   "cluster": null,
+   "reason": "S6-B3353: closures name both legs and the readers refuse an unproven leg"
+  },
+  {
+   "census_line": 634,
+   "section": "2.1",
+   "part": "C",
+   "rule": "Run every R1-R9 probe before a strategy's first spec; each must print its expected line, and a missing item is a STOP.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-SPEC",
+   "reason": "one onramp probe printing R1-R9 whose pass record make_spec reads"
+  },
+  {
+   "census_line": 638,
+   "section": "2.1",
+   "part": "C",
+   "rule": "R1 binds every campaign, offline Step 1 included: the SPECS/SPECS_PHASE0 entry must be validate_spec-clean before work starts.",
+   "census_mechanism": "step1_gates.require_band_ruling step1_gates.py:51-56 (membership only)",
+   "class": "M",
+   "cluster": "M-SPEC",
+   "reason": "step1_gates calls validate_spec beside the membership check"
+  },
+  {
+   "census_line": 658,
+   "section": "2.1/2.2",
+   "part": "C",
+   "rule": "Each banded level that is not scheduled carries a reason; an unscheduled looser level is STRUCK with a NOT-MEASURED-BY-DESIGN disposition, asserted per parameter before Step 1.",
+   "census_mechanism": "none",
+   "class": "E",
+   "cluster": null,
+   "reason": "S6-B3339: a level struck from the pre-registration reads untested unless run or waived by a recorded owner word"
+  },
+  {
+   "census_line": 658,
+   "section": "2.1",
+   "part": "C",
+   "rule": "The documented R1 probe must exit non-zero when validate_spec returns errors, never print SPEC OK unconditionally.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-SPEC",
+   "reason": "the runbook probe exits non-zero on errors, pinned"
+  },
+  {
+   "census_line": 659,
+   "section": "2.1",
+   "part": "C",
+   "rule": "R2: the strategy's Table D axis family (D_AXIS_FAMILIES, with detect key) exists; R1 and R2 bind every campaign.",
+   "census_mechanism": "test_b2941_every_battery_family_has_a_table_d_axis_entry test_unit.py:42318-42352 (battery families only)",
+   "class": "E",
+   "cluster": null,
+   "reason": "test_b2941 holds every battery family; an offline-only campaign's axis family stays a reading"
+  },
+  {
+   "census_line": 661,
+   "section": "2.1",
+   "part": "C",
+   "rule": "R4: the family Step-1 grader emits the B2505 grid contract (config, strategy, grader, rows, is_rows, holdout_rows, results[]).",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-BATT",
+   "reason": "a contract pin over each battery grader's output on a synthetic run"
+  },
+  {
+   "census_line": 663,
+   "section": "2.1",
+   "part": "C",
+   "rule": "R6: the spot check samples n=50 with seed 42.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-BATT",
+   "reason": "the battery passes --n 50 --seed 42"
+  },
+  {
+   "census_line": 664,
+   "section": "2.1",
+   "part": "C",
+   "rule": "R7: battery step 7 proves, by engine-anchor tokens, that each swept parameter reaches the engine path.",
+   "census_mechanism": "run_postconfig.run_family step 7 run_postconfig.py:767-786 (partial)",
+   "class": "E",
+   "cluster": null,
+   "reason": "run_postconfig step 7 (knob_is_read and consumer drift) holds every env knob; token anchors remain per family"
+  },
+  {
+   "census_line": 692,
+   "section": "2.2/2.4",
+   "part": "C",
+   "rule": "Step 0.3 / item 2: prove each parameter reaches the engine at the producer call site; a parameter the caller never passes is not tunable.",
+   "census_mechanism": "none",
+   "class": "E",
+   "cluster": null,
+   "reason": "knob_is_read and the engine anchors hold it per family; a generic call-site proof stays per family"
+  },
+  {
+   "census_line": 696,
+   "section": "2.2/2.3",
+   "part": "C",
+   "rule": "Plumb an unpassed parameter through a config.py env var whose defaults reproduce production exactly, proved bar-for-bar (the ACTUATED state's defaults-identity pin).",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-REG",
+   "reason": "one pin: every env knob's config default equals its registry production value"
+  },
+  {
+   "census_line": 704,
+   "section": "2.2/2.4",
+   "part": "C",
+   "rule": "Step 0.5 / item 7: derive each band from measured distributions, never round numbers or percentile-by-reflex.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a band-design judgment"
+  },
+  {
+   "census_line": 705,
+   "section": "2.2/2.4",
+   "part": "C",
+   "rule": "Step 0.5 / item 6: instrument the qualifying event (age, distance, rank) before tuning.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "an analysis step"
+  },
+  {
+   "census_line": 705,
+   "section": "2.2",
+   "part": "C",
+   "rule": "The 0.5 smoke counts the strategy's fires on 6 megacaps at production params through its producer or precompute.",
+   "census_mechanism": "none",
+   "class": "D",
+   "cluster": null,
+   "reason": "fires_at_production (the status view) and scripts/project_knob_fires.py replaced the megacap smoke - reword"
+  },
+  {
+   "census_line": 711,
+   "section": "2.2",
+   "part": "C",
+   "rule": "Step 0.6: the SPECS entry carries formula plus params, every row citing evidence as file:line.",
+   "census_mechanism": "none",
+   "class": "D",
+   "cluster": null,
+   "reason": "the house rule now cites symbols, never lines (L943) - reword"
+  },
+  {
+   "census_line": 717,
+   "section": "2.2",
+   "part": "C",
+   "rule": "Step 0 must leave the SPECS entry and printed formula plus factorial, with R1-R9 all green, before Step 1.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a completion reading; its R1 half is M-SPEC"
+  },
+  {
+   "census_line": 757,
+   "section": "2.3",
+   "part": "C",
+   "rule": "A band stuck at state 1 or 2 is a STOP: file a producer-work ticket and state the shrunk Step-1 scope on the disposition, never silently.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a STOP and its ticket are judgment"
+  },
+  {
+   "census_line": 770,
+   "section": "2.3",
+   "part": "C",
+   "rule": "The SPECS entry is built FROM the Table A file's bands.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-SPEC",
+   "reason": "a Table A file versus registry band comparison"
+  },
+  {
+   "census_line": 772,
+   "section": "2.3/3.2",
+   "part": "C",
+   "rule": "A Table A file whose build stamp is stale against HEAD is regenerated before any campaign reads it.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-SPEC",
+   "reason": "step1_gates checks the Table A file's stamp beside the status view's"
+  },
+  {
+   "census_line": 777,
+   "section": "2.4",
+   "part": "C",
+   "rule": "Every strategy runs the 23-item checklist in order.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a procedure, not a check"
+  },
+  {
+   "census_line": 786,
+   "section": "2.4",
+   "part": "C",
+   "rule": "Item 3: check whether a variant is already emitted before editing a producer to emit it.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a reading of the producer"
+  },
+  {
+   "census_line": 787,
+   "section": "2.4/3.2",
+   "part": "C",
+   "rule": "Item 4 / T2: label every knob EXISTING-THRESHOLD or NEW-GATE; any NEW-GATE is stop-and-ask the owner, never built silently.",
+   "census_mechanism": "none",
+   "class": "E",
+   "cluster": null,
+   "reason": "build_table_a writes the labels and S6-B3338 holds the band word at the engine door; asking stays judgment"
+  },
+  {
+   "census_line": 795,
+   "section": "2.4",
+   "part": "C",
+   "rule": "Item 7: anchor band level 1 at the production value.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-SPEC",
+   "reason": "validate_spec requires production in band"
+  },
+  {
+   "census_line": 795,
+   "section": "2.4",
+   "part": "C",
+   "rule": "Item 7: verify the band against its derivation text before running, and run verify_grid_bands.py on the grid after.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-BATT",
+   "reason": "verify_grid_bands as a battery lens"
+  },
+  {
+   "census_line": 796,
+   "section": "2.4",
+   "part": "C",
+   "rule": "Item 8: state the economic event the signal captures, then check the threshold direction serves it.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a thesis statement"
+  },
+  {
+   "census_line": 797,
+   "section": "2.4",
+   "part": "C",
+   "rule": "Item 9: terminate each band where the holdout or full-period trade floor would bind.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a band-design judgment"
+  },
+  {
+   "census_line": 803,
+   "section": "2.4",
+   "part": "C",
+   "rule": "Item 10: the wall-clock projection is derived from a timed smoke.",
+   "census_mechanism": "none",
+   "class": "D",
+   "cluster": null,
+   "reason": "run_wave projects from the canonical rate and re-projects per leg from the run's own rate (project_from_leg) - reword to that"
+  },
+  {
+   "census_line": 803,
+   "section": "2.4",
+   "part": "C",
+   "rule": "Item 10: enumerate obsolescence risks, each paired with a mechanical gate.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "naming a risk's gate is a reading; prelaunch_gate refuses an empty list"
+  },
+  {
+   "census_line": 805,
+   "section": "2.4",
+   "part": "C",
+   "rule": "Item 12: measure the retention ratio before restricting the universe; halt below the gates' n-floor.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a measurement decision"
+  },
+  {
+   "census_line": 807,
+   "section": "2.4",
+   "part": "C",
+   "rule": "Item 14: classify each sentinel trip ERROR (invalidates, re-run) or FINDING (result valid, halt for a decision).",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a classification judgment"
+  },
+  {
+   "census_line": 808,
+   "section": "2.4",
+   "part": "C",
+   "rule": "Item 15: never extrapolate cost from one point; two measured points minimum.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "scan_unmeasured_quantity holds the uncomputed-cost half"
+  },
+  {
+   "census_line": 814,
+   "section": "2.4",
+   "part": "C",
+   "rule": "Item 16: report through the locked artifact, Formula plus Tables A-D, generated and never hand-edited.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-REND",
+   "reason": "Tables B and C have no retyping detector"
+  },
+  {
+   "census_line": 815,
+   "section": "2.4",
+   "part": "C",
+   "rule": "Item 17: report all metrics the evaluator emits, not the headline.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a report-completeness reading"
+  },
+  {
+   "census_line": 817,
+   "section": "2.4",
+   "part": "C",
+   "rule": "Item 19: a small-universe PASS is an artifact until entries per ticker converges to the baseline rate.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-BATT",
+   "reason": "entries per ticker against the baseline rate as a battery lens"
+  },
+  {
+   "census_line": 818,
+   "section": "2.4",
+   "part": "C",
+   "rule": "Item 20: a pin test is behavioural (set the non-default, run the engine, assert the fire set changes), never textual.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "behavioural versus textual is a reading of the test"
+  },
+  {
+   "census_line": 820,
+   "section": "2.4",
+   "part": "C",
+   "rule": "Item 22: when a targeted test comes back vacuous, check whether the same artifact answers at a coarser grain before re-running.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "an analysis habit"
+  },
+  {
+   "census_line": 821,
+   "section": "2.4",
+   "part": "C",
+   "rule": "Item 23: the factorial is never shown without the boolean producer formula.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a response-format reading"
+  },
+  {
+   "census_line": 823,
+   "section": "2.4",
+   "part": "C",
+   "rule": "No silent misses: every scope item ends with a terminal disposition.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "the scope ledger is judgment; scans hold slices"
+  },
+  {
+   "census_line": 824,
+   "section": "2.4",
+   "part": "C",
+   "rule": "Owner approval for every threshold, gate or production-path change; approval for one strategy is not approval for the next.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-APPROVAL",
+   "reason": "the approval-gated edit refusal"
+  },
+  {
+   "census_line": 826,
+   "section": "2.4",
+   "part": "C",
+   "rule": "Doc sweep in the same turn as the work.",
+   "census_mechanism": "none",
+   "class": "E",
+   "cluster": null,
+   "reason": "Gate B (uncommitted tracked files), preflight C8 and the doc-count sync hold the gateable half; a stale untouched doc stays judgment"
+  },
+  {
+   "census_line": 826,
+   "section": "2.4",
+   "part": "C",
+   "rule": "Harvest every strategy a cube carries; reading one wastes the rest.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "S6-B3389",
+   "reason": "the rider path"
+  },
+  {
+   "census_line": 841,
+   "section": "2.5",
+   "part": "C",
+   "rule": "Before reading any R5 figure, re-evaluate the current condition on persisted signals and state the survival rate in the spec note and queue row.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-LAUNCH",
+   "reason": "make_spec writes survives_pct into the spec note"
+  },
+  {
+   "census_line": 844,
+   "section": "2.5",
+   "part": "C",
+   "rule": "A low survival rate is not a verdict: a changed strategy is neither disqualified nor trusted on its R5 numbers.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a wording rule"
+  },
+  {
+   "census_line": 869,
+   "section": "2.6",
+   "part": "C",
+   "rule": "Record the offline-or-engine decision per parameter in the spec note and the queue row.",
+   "census_mechanism": "none",
+   "class": "E",
+   "cluster": null,
+   "reason": "the registry's free_band / resim_band records it per level, validate_spec checks the partition"
+  },
+  {
+   "census_line": 880,
+   "section": "2.7",
+   "part": "C",
+   "rule": "Step 2 refuses an unreconciled Step 1 multiplicity block.",
+   "census_mechanism": "breadth_step2_read.require_multiplicity breadth_step2_read.py:60-79 (breadth only)",
+   "class": "M",
+   "cluster": "M-HOLD",
+   "reason": "offline_holdout_read calls require_multiplicity as breadth_step2_read does"
+  },
+  {
+   "census_line": 891,
+   "section": "3.1",
+   "part": "C",
+   "rule": "Pick W-T entrants from the stamped status view, never memory: status NOT-STARTED or STALLED-CAMPAIGN and stream TIGHTEN or BOTH; IN-CAMPAIGN rows belong to their ticket.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-OPEN",
+   "reason": "the campaign-open record checks status and stream against the view"
+  },
+  {
+   "census_line": 894,
+   "section": "3.1",
+   "part": "C",
+   "rule": "Pick order is projected_current_gate descending.",
+   "census_mechanism": "none",
+   "class": "D",
+   "cluster": null,
+   "reason": "the shortlist builder orders by lane cost, in-sample gates, then in-sample Sharpe - the rule or the builder changes"
+  },
+  {
+   "census_line": 897,
+   "section": "3.1",
+   "part": "C",
+   "rule": "Division of labour: wave 1 TIGHTEN lane tables and execution by Fable, offline legs then resim legs; wave 2 BOTH lane tables by Fable, execution by Opus.",
+   "census_mechanism": "none",
+   "class": "D",
+   "cluster": null,
+   "reason": "model-specific - delete or reword"
+  },
+  {
+   "census_line": 900,
+   "section": "3.1",
+   "part": "C",
+   "rule": "Every step names its mechanism, artifact and gate; a step missing its expected output is a STOP.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a write-up rule"
+  },
+  {
+   "census_line": 907,
+   "section": "3.2",
+   "part": "C",
+   "rule": "T0: read the strategy block and producers, build the R1 entry if absent, consult the status row (and a stalled row's concluded tickets) and quote it in the campaign ticket.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a reading step"
+  },
+  {
+   "census_line": 908,
+   "section": "3.2",
+   "part": "C",
+   "rule": "T1 gate: at least 10 surviving fires (rc min_n), otherwise the strategy re-lanes to LOOSEN mechanically.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-SPEC",
+   "reason": "offline_level_sweep refuses under 10 survivors (it refuses only zero today)"
+  },
+  {
+   "census_line": 909,
+   "section": "3.2",
+   "part": "C",
+   "rule": "T2 consumes the pre-built Table A file and never re-derives the bands by hand.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-SPEC",
+   "reason": "the Table A file versus registry comparison"
+  },
+  {
+   "census_line": 911,
+   "section": "3.2",
+   "part": "C",
+   "rule": "T4: the Step-1 artifact is stamped with its generator and cube (#309).",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-REND",
+   "reason": "offline_level_sweep writes generator and cube (#309)"
+  },
+  {
+   "census_line": 913,
+   "section": "3.2",
+   "part": "C",
+   "rule": "Run the control-family comparison on any all-six Step-2 qualifier.",
+   "census_mechanism": "breadth_step2_read.main breadth_step2_read.py:240-266 (breadth only)",
+   "class": "M",
+   "cluster": "M-HOLD",
+   "reason": "offline_holdout_read runs the control comparison breadth_step2_read runs"
+  },
+  {
+   "census_line": 914,
+   "section": "3.2/3.6",
+   "part": "C",
+   "rule": "Provenance labels ride every admission (the B2660 doctrine).",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-ROSTER",
+   "reason": "build_phase_1b_roster requires a labels field on each admission"
+  },
+  {
+   "census_line": 915,
+   "section": "3.2/3.6",
+   "part": "C",
+   "rule": "At close, run the pre-registered sibling containment pass when the family has open siblings.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a family-close step"
+  },
+  {
+   "census_line": 915,
+   "section": "3.2",
+   "part": "C",
+   "rule": "At close, mark the queue row EXECUTED and run the doc sweep.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a close step"
+  },
+  {
+   "census_line": 915,
+   "section": "3.2",
+   "part": "C",
+   "rule": "Every family member ends TERMINAL, IN-CAMPAIGN, STALLED-CAMPAIGN or explicitly deferred.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a family-close reading"
+  },
+  {
+   "census_line": 934,
+   "section": "3.4",
+   "part": "C",
+   "rule": "F2: mark each parameter LIVE or SIBLING by reading this strategy's gate expression.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a reading of the gate expression"
+  },
+  {
+   "census_line": 937,
+   "section": "3.4",
+   "part": "C",
+   "rule": "A campaign reaches F5 only once its sweeps grade every approved Table A band level.",
+   "census_mechanism": "offline_holdout_read coverage refusal offline_holdout_read.py:112-146 (registered levels only)",
+   "class": "E",
+   "cluster": null,
+   "reason": "S6-B3339: approved Table A levels outside the registry now count (table_a_section)"
+  },
+  {
+   "census_line": 939,
+   "section": "3.4",
+   "part": "C",
+   "rule": "Every approved Table A band level is tested, discarded, resim-run or production before a strategy is declared a Step-2 failure.",
+   "census_mechanism": "band_coverage_gate.declare_step2_failure band_coverage_gate.py:423-441 (opt-in CLI)",
+   "class": "E",
+   "cluster": null,
+   "reason": "S6-B3339 and S6-B3353: the readers refuse an unproven leg"
+  },
+  {
+   "census_line": 951,
+   "section": "3.4",
+   "part": "C",
+   "rule": "The Step-2 Table D shows every (cell, exit) line with its six-gate result, the admission line marked and every other labelled peeked.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-REND",
+   "reason": "offline_holdout_read renders every line"
+  },
+  {
+   "census_line": 956,
+   "section": "3.4",
+   "part": "C",
+   "rule": "A late-landing axis re-renders the one table; separate addendum tables are barred.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-REND",
+   "reason": "offline_level_sweep stops writing a per-sweep Table D addendum"
+  },
+  {
+   "census_line": 969,
+   "section": "3.4",
+   "part": "C",
+   "rule": "Offline, ticket the battery adapter; do not build it to satisfy a gate that cannot run.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a sequencing judgment"
+  },
+  {
+   "census_line": 984,
+   "section": "3.5",
+   "part": "C",
+   "rule": "Control-shared lift is general structure: relocate it to its own strategy or overlay, never double-count it into many strategies.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a structural reading"
+  },
+  {
+   "census_line": 993,
+   "section": "3.6",
+   "part": "C",
+   "rule": "Each chosen breadth axis becomes a SPECS B-row naming its producer, with screen effect sizes as evidence, a quantile band and subset_safe True.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-SPEC",
+   "reason": "validate_spec checks B-row content"
+  },
+  {
+   "census_line": 994,
+   "section": "3.6",
+   "part": "C",
+   "rule": "Every Step-0 entry carries the two-layer formula, plus a BREADTH LAYER listing the B-axes.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-SPEC",
+   "reason": "offline instruments call validate_spec"
+  },
+  {
+   "census_line": 998,
+   "section": "3.6",
+   "part": "C",
+   "rule": "Run the screen at two exits, time_stop_10d and breakeven_plus_trail, and keep sign-consistent survivors.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-BRD",
+   "reason": "companions_consistent requires the two runbook exits"
+  },
+  {
+   "census_line": 1001,
+   "section": "3.6",
+   "part": "C",
+   "rule": "Per strategy, select the screen by exact name with --strategy.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-BRD",
+   "reason": "companions_consistent refuses a non-exact selection"
+  },
+  {
+   "census_line": 1003,
+   "section": "3.6",
+   "part": "C",
+   "rule": "Keys the producer index cannot place go to an 'unindexed' bucket that is never a cluster.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-BRD",
+   "reason": "cluster() never makes 'unindexed' a cluster"
+  },
+  {
+   "census_line": 1010,
+   "section": "3.6",
+   "part": "C",
+   "rule": "Flag collinearity with an existing depth axis on the row.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "the screen flags a key; collinearity is a reading"
+  },
+  {
+   "census_line": 1017,
+   "section": "3.6",
+   "part": "C",
+   "rule": "A dual strategy's B-row carries a legs field, and a key chosen on both legs is one row (one key, one column).",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-SPEC",
+   "reason": "validate_spec requires legs on a dual strategy's B-rows"
+  },
+  {
+   "census_line": 1020,
+   "section": "3.6",
+   "part": "C",
+   "rule": "band_coverage_gate counts a legs-declaring row per leg (a pooled grid counts for both); per-leg depth params carry the same field.",
+   "census_mechanism": "none",
+   "class": "E",
+   "cluster": null,
+   "reason": "S6-B3339: the numeric branch now grades a legs-declaring level on each of its legs"
+  },
+  {
+   "census_line": 1026,
+   "section": "3.6",
+   "part": "C",
+   "rule": "The breadth grid fail-closes unless the base cell reproduces the admitted or production base.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-BRD",
+   "reason": "breadth_step1_grid requires the reproduction artifact"
+  },
+  {
+   "census_line": 1028,
+   "section": "3.6",
+   "part": "C",
+   "rule": "Grade dual strategies per leg.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-BRD",
+   "reason": "breadth_step1_grid refuses a pooled grid on a dual strategy"
+  },
+  {
+   "census_line": 1031,
+   "section": "3.6",
+   "part": "C",
+   "rule": "Widen coverage only on the owner's word for that axis.",
+   "census_mechanism": "none",
+   "class": "E",
+   "cluster": null,
+   "reason": "S6-B3338 door 3: --widen-ruling / --widen-ruling-ticket checked against the ledger"
+  },
+  {
+   "census_line": 1062,
+   "section": "4.1",
+   "part": "D",
+   "rule": "Enter W-L only when status is NOT-STARTED or STALLED-CAMPAIGN and stream is LOOSEN, or BOTH whose T4 graded nothing rankable.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-OPEN",
+   "reason": "the campaign-open record checks status and stream"
+  },
+  {
+   "census_line": 1066,
+   "section": "4.1",
+   "part": "D",
+   "rule": "Pick order: shared-producer cluster first, then the largest fire gap to the >75 full-period floor.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a pick order"
+  },
+  {
+   "census_line": 1074,
+   "section": "4.2",
+   "part": "D",
+   "rule": "L0: measure binding-leg attribution (bars where all other legs pass and this leg fails) and name the binding leg with its count.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "an analysis step"
+  },
+  {
+   "census_line": 1075,
+   "section": "4.2",
+   "part": "D",
+   "rule": "L1: classify the binding knob PRODUCER-INTERNAL or SCREENER-THRESHOLD and record it, env knob named, in Table A.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a classification by reading"
+  },
+  {
+   "census_line": 1078,
+   "section": "4.2",
+   "part": "D",
+   "rule": "L4: loosen-side levels are the resim_band levels LOOSER than production.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "direction is the band designer's statement; validate_spec holds the partition"
+  },
+  {
+   "census_line": 1078,
+   "section": "4.2",
+   "part": "D",
+   "rule": "L4: publish leverage() with basis, engine-hour estimate and per-consumer division before any owner word is asked.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-LAUNCH",
+   "reason": "make_spec writes leverage, the engine-hour estimate and the per-consumer division into the spec note"
+  },
+  {
+   "census_line": 1079,
+   "section": "4.2",
+   "part": "D",
+   "rule": "L5: obtain the owner's words on band, venue and launch before the resim launches.",
+   "census_mechanism": "none",
+   "class": "E",
+   "cluster": null,
+   "reason": "S6-B3338 holds the launch and band words; the venue half is M-LAUNCH (runbook line 410)"
+  },
+  {
+   "census_line": 1079,
+   "section": "4.2",
+   "part": "D",
+   "rule": "L5: total compute spend stays within the $100 budget across all strategies.",
+   "census_mechanism": "none",
+   "class": "O",
+   "cluster": null,
+   "reason": "S6-B3340's open decision"
+  },
+  {
+   "census_line": 1079,
+   "section": "4.2",
+   "part": "D",
+   "rule": "L5: the venue ruling precedes any non-local run.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-LAUNCH",
+   "reason": "the non-LOCAL venue-ruling refusal (with runbook line 410)"
+  },
+  {
+   "census_line": 1079,
+   "section": "4.2",
+   "part": "D",
+   "rule": "L5/4.3: each landed variant cube is registered as resim evidence the band-coverage gate accepts.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-BATT",
+   "reason": "r165 made the knob grader write resim_configs; the other engine graders still do not"
+  },
+  {
+   "census_line": 1080,
+   "section": "4.2",
+   "part": "D",
+   "rule": "L6: grade every open consumer offline from the same cube; each graded or its absence explained.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "S6-B3389",
+   "reason": "the rider path"
+  },
+  {
+   "census_line": 1081,
+   "section": "4.2",
+   "part": "D",
+   "rule": "L7: every Step-2 holdout read needs the owner's word.",
+   "census_mechanism": "none",
+   "class": "E",
+   "cluster": null,
+   "reason": "S6-B3338: --ruling on offline_holdout_read and breadth_step2_read, the launch word on a Step-2 spec"
+  },
+  {
+   "census_line": 1082,
+   "section": "4.2",
+   "part": "D",
+   "rule": "L8: the variant cube stays in the registry for every future campaign's L2 lookup.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "retention of cubes on disk is housekeeping; the L2 lookup reads run_manifest.json files by hand"
+  },
+  {
+   "census_line": 1097,
+   "section": "4.3",
+   "part": "D",
+   "rule": "Commit a measured producer-reach map output_audit/<batch>_<family>_producer_map.json; a family without one builds it at L0.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "S6-B3389",
+   "reason": "the rider path's consumer-set input"
+  },
+  {
+   "census_line": 1101,
+   "section": "4.3",
+   "part": "D",
+   "rule": "Measure a knob's reach; strategies whose keys come from parameter-independent sources get their own axis (B2735).",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a reading of the producer graph"
+  },
+  {
+   "census_line": 1105,
+   "section": "4.3",
+   "part": "D",
+   "rule": "The resim subset excludes every B2825 terminal status.",
+   "census_mechanism": "none",
+   "class": "E",
+   "cluster": null,
+   "reason": "S6-B3338 door 4"
+  },
+  {
+   "census_line": 1109,
+   "section": "4.3",
+   "part": "D",
+   "rule": "The leverage line divides engine hours by the open-consumer count.",
+   "census_mechanism": "none",
+   "class": "E",
+   "cluster": null,
+   "reason": "S6-B3342 rewrote the line to the code: leverage() divides by no consumer count"
+  },
+  {
+   "census_line": 1119,
+   "section": "4.3",
+   "part": "D",
+   "rule": "Reopening a terminal strategy is the owner's word on a reopen_candidate flag, never a workflow step.",
+   "census_mechanism": "none",
+   "class": "E",
+   "cluster": null,
+   "reason": "S6-B3338 door 4 (owner_override_reopen)"
+  },
+  {
+   "census_line": 1126,
+   "section": "4.4",
+   "part": "D",
+   "rule": "Before any launch, classify every parameter against signals_at_entry: persisted = FREE, producer-internal = ENGINE (free_band/resim_band).",
+   "census_mechanism": "validate_spec partial, scripts/producer_variant_table.py:5357-5368",
+   "class": "E",
+   "cluster": null,
+   "reason": "validate_spec holds the partition; persistence stays judgment at registration"
+  },
+  {
+   "census_line": 1129,
+   "section": "4.4",
+   "part": "D",
+   "rule": "Put the leverage figure and its basis in the spec note and the launch turn before any launch.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-LAUNCH",
+   "reason": "make_spec writes the leverage line into the spec note"
+  },
+  {
+   "census_line": 1136,
+   "section": "4.4",
+   "part": "D",
+   "rule": "Site the baseline at the loosest admissible level of every persisted gate.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a design choice"
+  },
+  {
+   "census_line": 1138,
+   "section": "4.4",
+   "part": "D",
+   "rule": "Depth by coordinate descent as the default; a full factorial needs a stated reason.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-LAUNCH",
+   "reason": "make_spec --with requires a stated factorial reason"
+  },
+  {
+   "census_line": 1146,
+   "section": "4.4",
+   "part": "D",
+   "rule": "Breadth runs free on the winning line only.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "where breadth runs is a plan"
+  },
+  {
+   "census_line": 1146,
+   "section": "4.4",
+   "part": "D",
+   "rule": "One Step-2 read, then the campaign closes.",
+   "census_mechanism": "wave_identity.step2_rerun_refusal partial, scripts/wave_identity.py:202-220",
+   "class": "M",
+   "cluster": "M-HOLD",
+   "reason": "the holdout-read ledger (a renamed wave re-reads unrefused today)"
+  },
+  {
+   "census_line": 1183,
+   "section": "4.5",
+   "part": "D",
+   "rule": "Confirm the sweep knobs differ across concurrent launches.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-LAUNCH",
+   "reason": "launch_detached refuses two specs with identical arm env"
+  },
+  {
+   "census_line": 1197,
+   "section": "4.5",
+   "part": "D",
+   "rule": "Rebuild _sweep_200 only if the 544 universe changes.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-REG",
+   "reason": "a content-hash pin on output_audit/_sweep_200.txt"
+  },
+  {
+   "census_line": 1223,
+   "section": "4.5",
+   "part": "D",
+   "rule": "Write one spec per fire-adding config.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-LAUNCH",
+   "reason": "launch_refusals refuses a spec with more than one arm"
+  },
+  {
+   "census_line": 1224,
+   "section": "4.5",
+   "part": "D",
+   "rule": "Copy this family's own latest Step-1 spec, never another family's, changing only knob values and names.",
+   "census_mechanism": "none",
+   "class": "D",
+   "cluster": null,
+   "reason": "specs are generated by make_spec - reword"
+  },
+  {
+   "census_line": 1226,
+   "section": "4.5",
+   "part": "D",
+   "rule": "Declare step 1 and leave step1_cube at its default TRUE.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-LAUNCH",
+   "reason": "launch_refusals: step 1 implies step1_cube true"
+  },
+  {
+   "census_line": 1226,
+   "section": "4.5",
+   "part": "D",
+   "rule": "Diff the spec against its template in the turn (the must-leave artifact).",
+   "census_mechanism": "none",
+   "class": "D",
+   "cluster": null,
+   "reason": "a generated spec has no template - reword to diffing the generated specs against the production centre"
+  },
+  {
+   "census_line": 1227,
+   "section": "4.5",
+   "part": "D",
+   "rule": "Launch the chain detached via launch_detached.py --chain, the only sanctioned chain path.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-LAUNCH",
+   "reason": "run_wave records and checks its launcher identity"
+  },
+  {
+   "census_line": 1242,
+   "section": "4.5",
+   "part": "D",
+   "rule": "One independent detached invocation per arm, never a shared shell-function wrapper.",
+   "census_mechanism": "none",
+   "class": "D",
+   "cluster": null,
+   "reason": "superseded by launch_detached's chain design - reword or delete"
+  },
+  {
+   "census_line": 1270,
+   "section": "4.5",
+   "part": "D",
+   "rule": "Never set STRATEGY_SUBSET_FILE for Phase 1B or full-roster runs.",
+   "census_mechanism": "B1432 mode assert, backtest/run_phase1a.py:663-679 (partial)",
+   "class": "M",
+   "cluster": "M-LAUNCH",
+   "reason": "run_phase1a refuses a subset file on a Phase-1B or full-roster run"
+  },
+  {
+   "census_line": 1273,
+   "section": "4.5",
+   "part": "D",
+   "rule": "Set DEMAND_PRUNING=0 only after a SkippedSignalError, raising DEMAND_PRUNING_WARMUP first.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "an incident response"
+  },
+  {
+   "census_line": 1275,
+   "section": "4.5",
+   "part": "D",
+   "rule": "Total workers never exceed the box's physical cores.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-LAUNCH",
+   "reason": "prelaunch_gate checks pool_workers times concurrent arms against physical cores"
+  },
+  {
+   "census_line": 1279,
+   "section": "4.5",
+   "part": "D",
+   "rule": "Run configs as separate processes rather than widening the pool.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a capacity design choice"
+  },
+  {
+   "census_line": 1293,
+   "section": "4.5",
+   "part": "D",
+   "rule": "On completion check entries per ticker against the baseline rate.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-BATT",
+   "reason": "the entries-per-ticker battery lens (with runbook line 817)"
+  },
+  {
+   "census_line": 1298,
+   "section": "4.5",
+   "part": "D",
+   "rule": "A battery FAIL becomes a B-batch, not a footnote.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a disposition judgment"
+  },
+  {
+   "census_line": 1300,
+   "section": "4.5",
+   "part": "D",
+   "rule": "On a chain HALT read serial_chain.log, run classify_run_log.py, read engine_state.json, then propose RESUME or RE-RUN.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-TURN",
+   "reason": "scan_chain_halt requires a classify_run_log reading in the turn"
+  },
+  {
+   "census_line": 1303,
+   "section": "4.5",
+   "part": "D",
+   "rule": "Relaunching a halted spec waits for the owner's word (CHECKLIST #120).",
+   "census_mechanism": "wave_identity.decide partial, scripts/wave_identity.py:196-199",
+   "class": "M",
+   "cluster": "M-LAUNCH",
+   "reason": "a relaunch carries a NEW owner word, not the original launch word"
+  },
+  {
+   "census_line": 1305,
+   "section": "4.5",
+   "part": "D",
+   "rule": "A HALT leaves a queue row naming the halted spec, the cause class and the relaunch command.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a row-content reading"
+  },
+  {
+   "census_line": 1314,
+   "section": "4.5",
+   "part": "D",
+   "rule": "A Step-2 re-run re-reads the holdout and needs the owner's word first.",
+   "census_mechanism": "none",
+   "class": "E",
+   "cluster": null,
+   "reason": "supersedes_summary plus S6-B3338's launch word on the spec; a renamed wave is the M-HOLD ledger's case"
+  },
+  {
+   "census_line": 1326,
+   "section": "4.6",
+   "part": "D",
+   "rule": "A hand re-grade is the exception and uses the family's same grader.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a procedure"
+  },
+  {
+   "census_line": 1345,
+   "section": "4.6",
+   "part": "D",
+   "rule": "Render the locked PRODUCER_VARIANT_TABLE_<STRATEGY>.md artifact.",
+   "census_mechanism": "none",
+   "class": "D",
+   "cluster": null,
+   "reason": "landings render Tables C/D into POSTCONFIG_REPORT.md by design (postconfig_doc) - reword"
+  },
+  {
+   "census_line": 1352,
+   "section": "4.6",
+   "part": "D",
+   "rule": "Never copy one family's keys onto another.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-REND",
+   "reason": "producer_variant_table checks passed --keys against the family"
+  },
+  {
+   "census_line": 1358,
+   "section": "4.7",
+   "part": "D",
+   "rule": "Run the selection only when every Step-1 spec of the campaign is COMPLETE.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "S6-B3340",
+   "reason": "the slate builder"
+  },
+  {
+   "census_line": 1359,
+   "section": "4.7",
+   "part": "D",
+   "rule": "Record the top-3 list, each with its is_ci_lo, in the queue row.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "S6-B3340",
+   "reason": "the slate builder"
+  },
+  {
+   "census_line": 1365,
+   "section": "4.7",
+   "part": "D",
+   "rule": "Skip a config whose best row duplicates a higher-ranked config's (is_ci_lo, is_sharpe, fires, exit) signature.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "S6-B3340",
+   "reason": "the slate builder"
+  },
+  {
+   "census_line": 1367,
+   "section": "4.7",
+   "part": "D",
+   "rule": "Resolve ordering ties by a tie-break the campaign records before ranking, never by sort order.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "S6-B3340",
+   "reason": "the slate builder"
+  },
+  {
+   "census_line": 1381,
+   "section": "4.7",
+   "part": "D",
+   "rule": "Project each config's Step-2 cost from its own Step-1 duration x 10.88, never from the median.",
+   "census_mechanism": "make_spec.step2_sizing partial, scripts/make_spec.py:374-422",
+   "class": "D",
+   "cluster": null,
+   "reason": "make_spec.step2_sizing uses the config's own Step-1 hours x the family's largest measured ratio - reword the constant away"
+  },
+  {
+   "census_line": 1387,
+   "section": "4.7",
+   "part": "D",
+   "rule": "Label the cost an estimate until the first cube lands.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "S6-B3340",
+   "reason": "the slate builder's cost table"
+  },
+  {
+   "census_line": 1388,
+   "section": "4.7",
+   "part": "D",
+   "rule": "Record each campaign's slate and cost table in STRATEGY_CAMPAIGN_LOG.md.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "S6-B3340",
+   "reason": "the slate builder writes the entry"
+  },
+  {
+   "census_line": 1405,
+   "section": "4.8",
+   "part": "D",
+   "rule": "Never launch the slate in parallel or as one batch; a top-3 request launches config 1 and reports its verdict.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "S6-B3340",
+   "reason": "the waterfall launch refusal"
+  },
+  {
+   "census_line": 1438,
+   "section": "4.8",
+   "part": "D",
+   "rule": "D3: when several cells qualify, the highest holdout pooled Sharpe advances.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "S6-B3340",
+   "reason": "the slate selector"
+  },
+  {
+   "census_line": 1446,
+   "section": "4.8",
+   "part": "D",
+   "rule": "Step-2 pre-triage is mandatory before any Step-2 cube, per campaign.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "S6-B3340",
+   "reason": "make_spec --step 2 requires a triage record"
+  },
+  {
+   "census_line": 1454,
+   "section": "4.8",
+   "part": "D",
+   "rule": "Record each slate member's worst per-cell projection, and the pre-triage result, in STRATEGY_CAMPAIGN_LOG.md.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "S6-B3340",
+   "reason": "the triage record"
+  },
+  {
+   "census_line": 1464,
+   "section": "4.8",
+   "part": "D",
+   "rule": "No separate baseline run.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "production is one of the configs; a separate 4-year baseline is a plan choice (read at r165: the rule is the Step-2 slate's)"
+  },
+  {
+   "census_line": 1489,
+   "section": "4.9 Step 2.1",
+   "part": "E",
+   "rule": "Run all seven pre-launch gates in the launch turn; no duration exemption - probes, smokes and waves alike.",
+   "census_mechanism": "none (partial: check_monitor_armed covers every launch shape)",
+   "class": "E",
+   "cluster": null,
+   "reason": "check_monitor_armed and the launch-path gates hold most; the rest is M-LAUNCH / M-TURN rows"
+  },
+  {
+   "census_line": 1492,
+   "section": "4.9 Step 2.1",
+   "part": "E",
+   "rule": "The Step-2 pre-triage (Step-1 full_period_n projected past the trade floors) must be done and recorded before any Step-2 cube, per campaign.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "S6-B3340",
+   "reason": "the triage record"
+  },
+  {
+   "census_line": 1494,
+   "section": "4.9 Step 2.1",
+   "part": "E",
+   "rule": "Characterise the tickers file with verify_universe_artifact.py --compare-cube in the launch turn; never infer scope from a filename.",
+   "census_mechanism": "scan_unverified_universe scripts/verify_turn_compliance.py:1038-1114 (direct run_phase1a launches only)",
+   "class": "M",
+   "cluster": "M-TURN",
+   "reason": "scan_unverified_universe treats run_wave and launch_detached launches as launches"
+  },
+  {
+   "census_line": 1499,
+   "section": "4.9 Step 2.1",
+   "part": "E",
+   "rule": "A deliberate universe scope must be stated in the doc that consumes the tickers file.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a doc-reading rule"
+  },
+  {
+   "census_line": 1503,
+   "section": "4.9 Step 2.1",
+   "part": "E",
+   "rule": "Every commit that needs a pyramid is pushed before the launch.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-LAUNCH",
+   "reason": "launch_detached refuses when HEAD is ahead of origin"
+  },
+  {
+   "census_line": 1511,
+   "section": "4.9 Step 2.1",
+   "part": "E",
+   "rule": "Hand-run prelaunch_gate.py in the launch turn and paste its exit code as evidence.",
+   "census_mechanism": "none",
+   "class": "D",
+   "cluster": null,
+   "reason": "the gate runs on every leg through launch_sweep (S6-B3342) - delete the hand-run step"
+  },
+  {
+   "census_line": 1516,
+   "section": "4.9 Step 2.1",
+   "part": "E",
+   "rule": "The monitor must be armed BEFORE the launch.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-TURN",
+   "reason": "scan_unmonitored_launch compares the arm's position with the launch's"
+  },
+  {
+   "census_line": 1517,
+   "section": "4.9 Step 2.1",
+   "part": "E",
+   "rule": "Confirm zero pre-existing engine processes before launch, so two runs never share an output path.",
+   "census_mechanism": "none (launch_detached same-batch task refusal only)",
+   "class": "M",
+   "cluster": "M-LAUNCH",
+   "reason": "launch_detached and run_wave refuse while an engine runner is live (pyramid_gate._engine_inflight)"
+  },
+  {
+   "census_line": 1523,
+   "section": "4.9 Step 2.2",
+   "part": "E",
+   "rule": "Each launched instance is recorded in the campaign log (STRATEGY_CAMPAIGN_LOG.md).",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a log entry is prose"
+  },
+  {
+   "census_line": 1540,
+   "section": "4.9 Step 2.2",
+   "part": "E",
+   "rule": "Generate the Step-2 spec with make_spec.py --step 2; never type it by hand (S6-B3154a).",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-LAUNCH",
+   "reason": "run_wave refuses a spec without _generated_by"
+  },
+  {
+   "census_line": 1585,
+   "section": "4.9 Step 2.2",
+   "part": "E",
+   "rule": "Size pool_workers on the Step 1.0 (b) commit reading, since commit is the binding quantity.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a sizing judgment"
+  },
+  {
+   "census_line": 1605,
+   "section": "4.9 Step 2.3",
+   "part": "E",
+   "rule": "Measure runtime per campaign and pool size from the run's own [B2127 rate] line; never carry another family's rate; earlier estimates are labelled.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a provenance reading"
+  },
+  {
+   "census_line": 1613,
+   "section": "4.9 Step 2.3",
+   "part": "E",
+   "rule": "For a leg that printed [B3099 WARN], compute its rate as leg seconds / sim-days it advanced.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a hand calculation"
+  },
+  {
+   "census_line": 1614,
+   "section": "4.9 Step 2.3",
+   "part": "E",
+   "rule": "Record each campaign's measured rate and memory readings in STRATEGY_CAMPAIGN_LOG.md.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a log entry"
+  },
+  {
+   "census_line": 1637,
+   "section": "4.9 Step 2.4",
+   "part": "E",
+   "rule": "Kill the run_wave root and its descendants, parent-first - killing only the engine lets the leg loop respawn it.",
+   "census_mechanism": "none (tool: scripts/kill_wave_tree.py)",
+   "class": "M",
+   "cluster": "M-LAUNCH",
+   "reason": "kill_wave_tree kills parent-first"
+  },
+  {
+   "census_line": 1649,
+   "section": "4.9 Step 2.5",
+   "part": "E",
+   "rule": "Decide alive-or-dead by the sim_day_index diff between firings, never by heartbeat age.",
+   "census_mechanism": "none (tool: scripts/watch_run_progress.py)",
+   "class": "E",
+   "cluster": null,
+   "reason": "scan_monitor_without_stall_check requires a stall clause; which reading a firing uses stays judgment"
+  },
+  {
+   "census_line": 1654,
+   "section": "4.9 Step 2.5",
+   "part": "E",
+   "rule": "The diff interval must exceed the expected per-day time at the campaign's measured rate.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a schedule judgment"
+  },
+  {
+   "census_line": 1656,
+   "section": "4.9 Step 2.5",
+   "part": "E",
+   "rule": "Read commit via GlobalMemoryStatusEx, not PowerShell counters; report free commit, never physical RAM.",
+   "census_mechanism": "none (tools: scripts/commit_free.py, commit_watchdog.py)",
+   "class": "J",
+   "cluster": null,
+   "reason": "what a monitor prompt reads is judgment; commit_free.py is the tool"
+  },
+  {
+   "census_line": 1659,
+   "section": "4.9 Step 2.5",
+   "part": "E",
+   "rule": "Read the wave's summary log each firing to catch a silent crash-and-resume.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a monitor-prompt reading"
+  },
+  {
+   "census_line": 1722,
+   "section": "5.1",
+   "part": "E",
+   "rule": "M8 trigger: the first wave containing a SHORT strategy raises the borrow-rate row to P1.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-TRIG",
+   "reason": "register the short-wave borrow-rate trigger in deferral_trigger_audit"
+  },
+  {
+   "census_line": 1740,
+   "section": "5.2",
+   "part": "E",
+   "rule": "Step 7: every swept parameter reaches the engine as an actuated knob, proven by the family's engine_anchors (5.3 lines 1942-1947).",
+   "census_mechanism": "run_postconfig.run_family step 7 scripts/run_postconfig.py:767-786 (env knobs only)",
+   "class": "E",
+   "cluster": null,
+   "reason": "run_postconfig step 7 holds every env knob; an env-less swept parameter is an offline axis by design"
+  },
+  {
+   "census_line": 1747,
+   "section": "5.2",
+   "part": "E",
+   "rule": "A new family's registration is incomplete without its free-levels grader (#290; also line 1829).",
+   "census_mechanism": "none",
+   "class": "E",
+   "cluster": null,
+   "reason": "S6-B3385 (r164): validate_spec refuses a battery adapter with free levels and no free_levels script"
+  },
+  {
+   "census_line": 1775,
+   "section": "5.2",
+   "part": "E",
+   "rule": "Step 2 may not launch while any Step-1 config in its lineage carries an outstanding judgment step.",
+   "census_mechanism": "none (indirect: check_postconfig_complete blocks turn closes)",
+   "class": "M",
+   "cluster": "M-LAUNCH",
+   "reason": "make_spec --step 2 checks the lineage's ledger closure"
+  },
+  {
+   "census_line": 1778,
+   "section": "5.2",
+   "part": "E",
+   "rule": "A roster admission may not be taken from a config whose judgment steps are outstanding.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-ROSTER",
+   "reason": "build_phase_1b_roster checks the config's ledger closure"
+  },
+  {
+   "census_line": 1782,
+   "section": "5.2",
+   "part": "E",
+   "rule": "Any deferral must name an executable target (an existing script path) plus an owner and a trigger; free text is a DROP.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-TURN",
+   "reason": "scan_queue_vocabulary requires a DEFERRED row to name a script path, an owner and a trigger"
+  },
+  {
+   "census_line": 1784,
+   "section": "5.2",
+   "part": "E",
+   "rule": "Automation is no substitute for reading the findings; the LANDING REPORT block is where they are read.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-TURN",
+   "reason": "scan_undelivered_landing requires the steps and findings in the block"
+  },
+  {
+   "census_line": 1803,
+   "section": "5.3",
+   "part": "E",
+   "rule": "Cube sanity PASS requires the graded strategy to be present in the cube.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-BATT",
+   "reason": "run_postconfig compares the cube's strategies with the manifest subset"
+  },
+  {
+   "census_line": 1838,
+   "section": "5.3",
+   "part": "E",
+   "rule": "Step 3: cube entries must equal grid max fires, catching silent diagnosis loss.",
+   "census_mechanism": "none at battery level (tighten_breaker_block union diagnosis-loss gate only)",
+   "class": "M",
+   "cluster": "M-BATT",
+   "reason": "a battery lens comparing cube entries with grid fires"
+  },
+  {
+   "census_line": 1842,
+   "section": "5.3",
+   "part": "E",
+   "rule": "Treat PASS rows with a marginal ci_lo as weak positives, not results.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a reading of a result"
+  },
+  {
+   "census_line": 1844,
+   "section": "5.3",
+   "part": "E",
+   "rule": "Every swept level must change the outcome; run verify_grid_bands.py --anchor (line 1850).",
+   "census_mechanism": "none (tool: scripts/verify_grid_bands.py)",
+   "class": "M",
+   "cluster": "M-BATT",
+   "reason": "verify_grid_bands as a battery lens (with runbook line 795)"
+  },
+  {
+   "census_line": 1847,
+   "section": "5.3",
+   "part": "E",
+   "rule": "Equivalence-class members must keep the same fires.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a one-time check"
+  },
+  {
+   "census_line": 1874,
+   "section": "5.3",
+   "part": "E",
+   "rule": "Before the spot check certifies a strategy, verify_spotcheck_coverage.py must exit 0 for it.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-BATT",
+   "reason": "the battery runs it before step 4"
+  },
+  {
+   "census_line": 1886,
+   "section": "5.3",
+   "part": "E",
+   "rule": "At Phase 1B, OHLCV-only spot-check coverage is insufficient; the smart-money leg must be checked too.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a Phase 1B scope rule"
+  },
+  {
+   "census_line": 1910,
+   "section": "5.3",
+   "part": "E",
+   "rule": "Lens 12 (effective parameter): run each accepted flag at two values on an input where they must differ - enforced by verify_flag_binds.py.",
+   "census_mechanism": "none (tool: scripts/verify_flag_binds.py)",
+   "class": "M",
+   "cluster": "M-BATT",
+   "reason": "verify_flag_binds as a battery lens"
+  },
+  {
+   "census_line": 1927,
+   "section": "5.3",
+   "part": "E",
+   "rule": "After any fix: grep shipped conclusions, measure the overlap, and ticket each affected conclusion or state why it survives.",
+   "census_mechanism": "check_postfix_recheck scripts/verify_turn_compliance.py:1011-1032 (vacuous)",
+   "class": "M",
+   "cluster": "M-TURN",
+   "reason": "check_postfix_recheck is vacuous - every commit stages the queue; key it on a conclusion search"
+  },
+  {
+   "census_line": 1948,
+   "section": "5.3",
+   "part": "E",
+   "rule": "Admission needs a reproduction check: re-run the config with the candidate's env knobs and confirm the cube reproduces the graded fire set exactly.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "an engine re-run per admission is the owner's cost call"
+  },
+  {
+   "census_line": 1956,
+   "section": "5.3",
+   "part": "E",
+   "rule": "The verdict also states X of Y producers varied, exits_effective at the cube's SHA, and the ci_lo of every PASS (margin of error).",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-BATT",
+   "reason": "verdict_from_grid adds producers varied, exits_effective and every PASS ci_lo"
+  },
+  {
+   "census_line": 2008,
+   "section": "6.2",
+   "part": "F",
+   "rule": "The admission doctrine sets the criterion only; it does not waive the per-step owner approvals of section 0.6.",
+   "census_mechanism": "partial: breadth_step2_read.py:120, 147-148; build_phase_1b_roster.py:633 (ruling_verbatim key)",
+   "class": "E",
+   "cluster": null,
+   "reason": "S6-B3338's doors hold the launch, band, read and reopen words"
+  },
+  {
+   "census_line": 2013,
+   "section": "6.3",
+   "part": "F",
+   "rule": "Where several combinations qualify, advance the one with the highest HOLDOUT pooled Sharpe, not the in-sample Sharpe.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-ROSTER",
+   "reason": "the roster builder orders qualifiers by holdout pooled Sharpe"
+  },
+  {
+   "census_line": 2015,
+   "section": "6.3",
+   "part": "F",
+   "rule": "next_pivot_target is barred as the admitted exit; use the best non-npt line that clears all six gates.",
+   "census_mechanism": "partial: breadth_step2_read.py:235; roster_core.select_exit :495-499 (boundary-spanning cells only)",
+   "class": "M",
+   "cluster": "M-ROSTER",
+   "reason": "_admission_row_ok refuses next_pivot_target"
+  },
+  {
+   "census_line": 2017,
+   "section": "6.3",
+   "part": "F",
+   "rule": "Every owner-ruled admission set passes the Jaccard-0.70 de-dup before the deployable count; canonical = highest holdout Sharpe; pruned rows keep an audit trail.",
+   "census_mechanism": "none for admissions (funnel only: build_phase_1b_roster.py:782-794)",
+   "class": "M",
+   "cluster": "M-ROSTER",
+   "reason": "the roster builder de-dups owner-ruled admission sets with an audit trail"
+  },
+  {
+   "census_line": 2036,
+   "section": "6.3",
+   "part": "F",
+   "rule": "Where admitted parameters are engine knobs, admission requires a reproduction check: re-run the config with the candidate's knobs and confirm it reproduces.",
+   "census_mechanism": "none (battery step 7 is static: run_postconfig.py:767-786)",
+   "class": "J",
+   "cluster": null,
+   "reason": "an engine re-run per admission is the owner's cost call"
+  },
+  {
+   "census_line": 2038,
+   "section": "6.3",
+   "part": "F",
+   "rule": "Engine wiring of an admitted line's added gates is NEW-GATE work needing its own owner approval, never auto-executed.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "NEW-GATE work is owner-ruled; M-APPROVAL holds the screener half"
+  },
+  {
+   "census_line": 2042,
+   "section": "6.3",
+   "part": "F",
+   "rule": "Report the verdict with its denominator ('N of M combinations passed, across X of Y producers'), computed by the table generator, never hand-counted.",
+   "census_mechanism": "partial: producer_variant_table.py:7964-7966; run_postconfig step 8; verify_turn_compliance.check_verdict_denominator :391-400",
+   "class": "E",
+   "cluster": null,
+   "reason": "the generator and the battery print it; check_verdict_denominator holds negative verdicts"
+  },
+  {
+   "census_line": 2048,
+   "section": "6.3",
+   "part": "F",
+   "rule": "Read the previous admission's ripple commits as the ripple list.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a reading of history"
+  },
+  {
+   "census_line": 2051,
+   "section": "6.3",
+   "part": "F",
+   "rule": "Any live SPECS evidence citation follows the moved Table A charter.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-REG",
+   "reason": "a pin resolving SPECS evidence paths"
+  },
+  {
+   "census_line": 2054,
+   "section": "6.3",
+   "part": "F",
+   "rule": "Every regime-affinity entry is kept until its strategy's admission ruling.",
+   "census_mechanism": "partial: test_b1248_shorts_carry_no_regime_policy (test_unit.py:59908)",
+   "class": "M",
+   "cluster": "M-REG",
+   "reason": "freeze the live STRATEGY_REGIME_AFFINITY keys, shrink-only with reasons"
+  },
+  {
+   "census_line": 2067,
+   "section": "7",
+   "part": "F",
+   "rule": "Each strategy's optimisation is reported through scripts/producer_variant_table.py as ONE artifact.",
+   "census_mechanism": "none",
+   "class": "D",
+   "cluster": null,
+   "reason": "Table A, offline Table D and landing Tables C/D have separate renderers by design - reword"
+  },
+  {
+   "census_line": 2069,
+   "section": "7",
+   "part": "F",
+   "rule": "Regenerate locked artifacts; never hand-edit them.",
+   "census_mechanism": "partial: preflight.check_generated_artifact_matches_generator (C18) :1041-1081; test_b2852",
+   "class": "M",
+   "cluster": "M-REND",
+   "reason": "preflight C18's path filter takes PHASE_1B_ROSTER.md, POSTCONFIG_REPORT.md and PRODUCER_VARIANT_TABLE_*.md"
+  },
+  {
+   "census_line": 2069,
+   "section": "7",
+   "part": "F",
+   "rule": "Print a locked table from its renderer; never retype it.",
+   "census_mechanism": "partial: verify_turn_compliance.scan_retyped_locked_table :4563-4636 (Table D only)",
+   "class": "M",
+   "cluster": "M-TURN",
+   "reason": "scan_retyped_locked_table detects Tables A, B and C headers too"
+  },
+  {
+   "census_line": 2075,
+   "section": "7.1",
+   "part": "F",
+   "rule": "The formula itself is read from the producer source, never recalled.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a reading step"
+  },
+  {
+   "census_line": 2100,
+   "section": "7.1",
+   "part": "F",
+   "rule": "Each producer line gives its call with the LIVE production value inline, a plain-language note, and an explicit PARAMETER: line or 'no parameter'.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a formula-prose format"
+  },
+  {
+   "census_line": 2102,
+   "section": "7.1",
+   "part": "F",
+   "rule": "The STRATEGY LAYER spells out AT LEAST ONE ... ALL OF and tags every clause with its source Pn.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a formula-prose format"
+  },
+  {
+   "census_line": 2104,
+   "section": "7.1",
+   "part": "F",
+   "rule": "A breadth campaign adds a BREADTH LAYER listing its B-axes.",
+   "census_mechanism": "partial: validate_spec :5321-5329",
+   "class": "E",
+   "cluster": null,
+   "reason": "validate_spec holds it for SPECS entries; the offline half is runbook line 638 (M-SPEC)"
+  },
+  {
+   "census_line": 2119,
+   "section": "7.2",
+   "part": "F",
+   "rule": "Table A's production value is the LIVE value today.",
+   "census_mechanism": "partial: test_b1519 (test_unit.py:13838); verify_describing_artifacts REGISTRY :172-183",
+   "class": "M",
+   "cluster": "M-REG",
+   "reason": "the defaults-equal-production pin (with runbook line 696)"
+  },
+  {
+   "census_line": 2122,
+   "section": "7.2",
+   "part": "F",
+   "rule": "Table A status is one of TESTED, UNTESTED, PENDING or N/A.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-SPEC",
+   "reason": "validate_spec checks the status vocabulary"
+  },
+  {
+   "census_line": 2123,
+   "section": "7.2",
+   "part": "F",
+   "rule": "derivation must cite a measurement or a stated rule for the band.",
+   "census_mechanism": "none (presence only)",
+   "class": "J",
+   "cluster": null,
+   "reason": "what counts as a measurement is a reading"
+  },
+  {
+   "census_line": 2124,
+   "section": "7.2",
+   "part": "F",
+   "rule": "evidence is a source file:line, never inference.",
+   "census_mechanism": "partial: test_b1510 non-empty assert (test_unit.py:13763)",
+   "class": "D",
+   "cluster": null,
+   "reason": "symbols, not lines (L943) - reword"
+  },
+  {
+   "census_line": 2153,
+   "section": "7.3",
+   "part": "F",
+   "rule": "Report the interval and diagnostics alongside Sharpe, never Sharpe alone.",
+   "census_mechanism": "none (renderer side: table_b)",
+   "class": "J",
+   "cluster": null,
+   "reason": "a response-reading rule"
+  },
+  {
+   "census_line": 2219,
+   "section": "7.4",
+   "part": "F",
+   "rule": "The renderer asserts graded + starved-IS + no-Sharpe + zero-fires == combos.",
+   "census_mechanism": "none (the claimed assert does not exist)",
+   "class": "M",
+   "cluster": "M-REND",
+   "reason": "the claimed assert does not exist - add it"
+  },
+  {
+   "census_line": 2222,
+   "section": "7.4",
+   "part": "F",
+   "rule": "The Parameters-tested block has one column per family parameter, with the funnel cell's derivation and markers.",
+   "census_mechanism": "partial: producer_bands for non-smc families :7609-7623",
+   "class": "M",
+   "cluster": "M-REND",
+   "reason": "the hardcoded smc branch reads the family's own SPECS parameters"
+  },
+  {
+   "census_line": 2240,
+   "section": "7.5",
+   "part": "F",
+   "rule": "Table D lists one row per (config x exit) outcome, top 25 by default.",
+   "census_mechanism": "partial: table_d default top=25 and landing call; test_b2725 (test_unit.py:37325-37376)",
+   "class": "M",
+   "cluster": "M-REND",
+   "reason": "show_table_d --top defaults to 25 and table_d_render to 25"
+  },
+  {
+   "census_line": 2250,
+   "section": "7.5",
+   "part": "F",
+   "rule": "Table D is ONE unified table: a column per Table A band plus the fixed columns; addendum tables and TABLE D-2 are barred.",
+   "census_mechanism": "partial: test_b2725 (grid/landing); test_b2699 (offline inventory columns)",
+   "class": "M",
+   "cluster": "M-REND",
+   "reason": "table_d_render's fixed columns and show_table_d's retired TABLE D-2"
+  },
+  {
+   "census_line": 2265,
+   "section": "7.5",
+   "part": "F",
+   "rule": "dup reads 'k of m': duplicates are labelled, never dropped; cls is the equivalence-class size.",
+   "census_mechanism": "partial: table_d :7062-7064; test_b2330 (test_unit.py:28969-28975)",
+   "class": "M",
+   "cluster": "M-REND",
+   "reason": "table_d_render adds dup and cls"
+  },
+  {
+   "census_line": 2273,
+   "section": "7.5",
+   "part": "F",
+   "rule": "Derive the effective exits-per-cell count live, never from a written figure.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-REND",
+   "reason": "the landing renderer reads exits_effective instead of typing 24 / 22"
+  },
+  {
+   "census_line": 2274,
+   "section": "7.5",
+   "part": "F",
+   "rule": "A per-tier best summary is appended to Table D.",
+   "census_mechanism": "partial: table_d :7078-7086; test_b2330 (test_unit.py:28966)",
+   "class": "M",
+   "cluster": "M-REND",
+   "reason": "table_d_render appends it"
+  },
+  {
+   "census_line": 2279,
+   "section": "7.5",
+   "part": "F",
+   "rule": "Population claims are taken over the results field, never over Table D's step1_ranking slice.",
+   "census_mechanism": "none (test_b2342 pins data shape only)",
+   "class": "J",
+   "cluster": null,
+   "reason": "a reading rule"
+  },
+  {
+   "census_line": 2288,
+   "section": "7.6",
+   "part": "F",
+   "rule": "Quote len(EXIT_STRATEGIES) derived by running the code, never recalled.",
+   "census_mechanism": "partial: registry count pin test_unit.py:10697",
+   "class": "M",
+   "cluster": "M-REND",
+   "reason": "the renderer derives it (with runbook line 2273)"
+  },
+  {
+   "census_line": 2294,
+   "section": "7.6",
+   "part": "F",
+   "rule": "Quote an exit count with its era.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a quoting rule"
+  },
+  {
+   "census_line": 2340,
+   "section": "8.1",
+   "part": "F",
+   "rule": "Set STAGE2_NO_LIVE_FETCH=0 only for prefetch/setup, never a backtest.",
+   "census_mechanism": "none (default pinned True)",
+   "class": "M",
+   "cluster": "M-REG",
+   "reason": "the engine refuses an explicit 0 on a backtest run"
+  },
+  {
+   "census_line": 2343,
+   "section": "8.1",
+   "part": "F",
+   "rule": "Re-enabling USE_PRECOMPUTED_SIGNALS requires a PIT audit first.",
+   "census_mechanism": "partial: test_b1563_precomputed_signals_flag_matches_cache_reality (test_unit.py:14190)",
+   "class": "E",
+   "cluster": null,
+   "reason": "test_b1563 ties the flag to the cache; whether an audit ran stays judgment"
+  },
+  {
+   "census_line": 2344,
+   "section": "8.1",
+   "part": "F",
+   "rule": "Keep USE_SMC_PANEL_CACHE False (measured unsafe).",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-REG",
+   "reason": "a value pin"
+  },
+  {
+   "census_line": 2345,
+   "section": "8.1",
+   "part": "F",
+   "rule": "SMC_PHASE must stay 'PRODUCTION' or SMC strategies silently die.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-REG",
+   "reason": "a value pin"
+  },
+  {
+   "census_line": 2375,
+   "section": "8.2",
+   "part": "F",
+   "rule": "Never set the subset file for a Phase 1B or full-roster cube run.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-LAUNCH",
+   "reason": "run_phase1a refuses it (with runbook line 1270)"
+  },
+  {
+   "census_line": 2400,
+   "section": "8.3",
+   "part": "F",
+   "rule": "A campaign's own measured rate supersedes the canonical 0.2613 s/ticker-day for projections.",
+   "census_mechanism": "partial: run_wave.project_from_leg :67-101",
+   "class": "E",
+   "cluster": null,
+   "reason": "run_wave.project_from_leg re-projects each leg from its own rate; the manifest's first projection is the canonical rate by design"
+  },
+  {
+   "census_line": 2408,
+   "section": "8.3",
+   "part": "F",
+   "rule": "Never compare elapsed times across sessions; run A/B arms back-to-back in one session.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "an A/B design rule"
+  },
+  {
+   "census_line": 2409,
+   "section": "8.3",
+   "part": "F",
+   "rule": "Quote a saving with its baseline's cache condition, never alone.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a quoting rule"
+  },
+  {
+   "census_line": 2414,
+   "section": "8.3",
+   "part": "F",
+   "rule": "An optimisation claim requires a bit-identical cube, not merely the same row count.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "an optimisation-claim standard"
+  },
+  {
+   "census_line": 2416,
+   "section": "8.3",
+   "part": "F",
+   "rule": "Never extrapolate from one point: two concordant measurements minimum before any projection.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "an estimation rule"
+  },
+  {
+   "census_line": 2430,
+   "section": "8.4",
+   "part": "F",
+   "rule": "The pool dividend and the N-way concurrency dividend must never be multiplied.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "an arithmetic rule"
+  },
+  {
+   "census_line": 2438,
+   "section": "8.4",
+   "part": "F",
+   "rule": "Run configs concurrently rather than widening the in-run pool.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a capacity choice"
+  },
+  {
+   "census_line": 2440,
+   "section": "8.4",
+   "part": "F",
+   "rule": "Never let total workers exceed physical cores.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-LAUNCH",
+   "reason": "the workers-versus-cores check (with runbook line 1275)"
+  },
+  {
+   "census_line": 2443,
+   "section": "8.4",
+   "part": "F",
+   "rule": "Do not run a pyramid or any other CPU work during a timing A/B.",
+   "census_mechanism": "partial: pyramid_gate.refusal_beside_wave :129-144",
+   "class": "E",
+   "cluster": null,
+   "reason": "pyramid_gate refuses beside a live engine (refusal_beside_wave); other CPU work stays judgment"
+  },
+  {
+   "census_line": 2455,
+   "section": "8.5",
+   "part": "F",
+   "rule": "Set OPTIMIZATION_MODE=1 for optimisation runs.",
+   "census_mechanism": "none",
+   "class": "D",
+   "cluster": null,
+   "reason": "a no-op under --cube-isolation (L419) and never set by run_wave - delete"
+  },
+  {
+   "census_line": 2482,
+   "section": "8.6",
+   "part": "F",
+   "rule": "Classify run state with scripts/classify_run_log.py, not from the launcher log's shape.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-TURN",
+   "reason": "with runbook line 1300: scan_chain_halt requires the classifier's reading"
+  },
+  {
+   "census_line": 2551,
+   "section": "8.7",
+   "part": "F",
+   "rule": "HALT when a config's elapsed time deviates more than 2x from the first wave's measured figure.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-LAUNCH",
+   "reason": "run_serial_chain halts a config past 2x its manifest projection"
+  },
+  {
+   "census_line": 2555,
+   "section": "8.7",
+   "part": "F",
+   "rule": "Never start waves to keep the machine busy; an unexplained result stops the sequence.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a judgment"
+  },
+  {
+   "census_line": 2558,
+   "section": "8.8",
+   "part": "F",
+   "rule": "Check the listed failure modes before believing a result.",
+   "census_mechanism": "partial: postconfig_landing.py:304-318 (regime_map_coverage finding); NO_EXIT_SELECTABLE verdicts",
+   "class": "J",
+   "cluster": null,
+   "reason": "a reading checklist"
+  },
+  {
+   "census_line": 2564,
+   "section": "8.8",
+   "part": "F",
+   "rule": "A baseline with ci_lo < 0 is a stop sign: no tightening campaign can fix it.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a campaign judgment"
+  },
+  {
+   "census_line": 2582,
+   "section": "8.9",
+   "part": "F",
+   "rule": "The monitor carries trip conditions for non-zero exit, death-without-artifact and overrun past 2x the projection.",
+   "census_mechanism": "partial: scan_monitor_without_stall_check :4985-5063",
+   "class": "M",
+   "cluster": "M-TURN",
+   "reason": "a scan requiring exit, death and overrun clauses in a chain monitor's prompt"
+  },
+  {
+   "census_line": 2583,
+   "section": "8.9",
+   "part": "F",
+   "rule": "Exactly one hourly cron per chain; delete any existing one for the same chain first.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-TURN",
+   "reason": "the cron lifecycle reducer counts arms per chain"
+  },
+  {
+   "census_line": 2584,
+   "section": "8.9",
+   "part": "F",
+   "rule": "Monitor prompts type no comparison value; every value is derived from an artifact at firing time.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "a prompt-writing rule"
+  },
+  {
+   "census_line": 2588,
+   "section": "8.9",
+   "part": "F",
+   "rule": "Anything missed across a session restart is re-delivered on reconnect.",
+   "census_mechanism": "partial: inject_tier3_discipline banners :114-180; scan_undelivered_landing; scan_chain_halt",
+   "class": "E",
+   "cluster": null,
+   "reason": "landings and chain halts are re-printed and gated; missed hourly reports stay best-effort"
+  },
+  {
+   "census_line": 2605,
+   "section": "8.10",
+   "part": "F",
+   "rule": "Retrofitting existing producers to parameter-free forms is per-strategy owner-approval work.",
+   "census_mechanism": "none",
+   "class": "J",
+   "cluster": null,
+   "reason": "owner-approval work by definition"
+  },
+  {
+   "census_line": 2629,
+   "section": "8.12",
+   "part": "F",
+   "rule": "The turn-close carries the CHECKLIST compliance statement.",
+   "census_mechanism": "partial: check_compliance_marker :5531-5544; scan_compliance_is_content :4711-4748",
+   "class": "M",
+   "cluster": "M-TURN",
+   "reason": "the compliance gate covers non-commit turns too"
+  },
+  {
+   "census_line": 2629,
+   "section": "8.12",
+   "part": "F",
+   "rule": "While a chain runs, the turn-close carries the hourly report.",
+   "census_mechanism": "none",
+   "class": "M",
+   "cluster": "M-TURN",
+   "reason": "a close while a chain task is Running carries a chain-status line"
+  }
+ ]
+}

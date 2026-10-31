@@ -1130,14 +1130,14 @@ generalised to every family):
 2. **OPEN consumers only:** the subset excludes ADMITTED strategies (the launch gate refuses them -
    B2731, banked lines are closed; §1.3) and every B2825 terminal status (§0.7), refused at launch since S6-B3338 absent the owner's reopen word (§0.6).
 3. **ONE run, N gradings:** the spec's `strategy_subset` file lists the full open consumer set
-   (riders per B2710 where cube-only members apply), carries the variant identity in the cube dir name
+   (riders per B2710 where cube-only members apply - make_spec writes no riders yet and the bare-key readers miss a per-leg grid, so a shared-producer run carries its subject alone until S6-B3389 lands), carries the variant identity in the cube dir name
    and the manifest, and persists `signals_at_entry` as standard; every consumer's Step-1 grading then
    reads the SAME landed cube offline (L6). The leverage line (`producer_variant_table.leverage()`) reports
    engine runs, free combinations, their ratio, the basis and the unreachable axes; it divides by NO consumer count, so a member's share of a shared run's hours is worked by hand (S6-B3342).
 4. **The registry closes the loop:** every landed variant cube's manifest carries the knob identity;
    L2's lookup scans manifests BEFORE proposing hours, so a level another family already paid for is
    never bought twice. The band-coverage gate accepts these cubes as resim evidence via
-   `resim_configs` / `--resim-evidence`.
+   `resim_configs` (written by the knob grader scripts/grade_knob_config.py since S6-B3248) / `--resim-evidence`.
 
 **STATED ASSUMPTIONS (none silent - each traceable to a ruling):** windows are the ruled shapes (Step 1
 200 tickers x 1 year; Steps 2-3 4 years x 544; §1.2); IN-CAMPAIGN rows belong to their tickets;

@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python scripts/pretooluse_heredoc_guard.py"
+            "command": "python \"${CLAUDE_PROJECT_DIR:-.}/scripts/pretooluse_heredoc_guard.py\""
           }
         ]
       },
@@ -15,7 +15,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python scripts/pretooluse_heredoc_guard.py"
+            "command": "python \"${CLAUDE_PROJECT_DIR:-.}/scripts/pretooluse_heredoc_guard.py\""
           }
         ]
       }
@@ -25,7 +25,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python scripts/inject_tier3_discipline.py"
+            "command": "python \"${CLAUDE_PROJECT_DIR:-.}/scripts/inject_tier3_discipline.py\""
           }
         ]
       }
@@ -35,7 +35,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python scripts/verify_turn_compliance.py"
+            "command": "python \"${CLAUDE_PROJECT_DIR:-.}/scripts/verify_turn_compliance.py\""
           }
         ]
       }

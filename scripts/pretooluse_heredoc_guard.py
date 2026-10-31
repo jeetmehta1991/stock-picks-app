@@ -42,7 +42,13 @@ their own messages. Bash only: the PowerShell tool's transport is unmeasured.
 Failure mode: an internal error exits 1, which Claude Code treats as a
 NON-blocking hook error, so a broken guard lets commands through (fail-open)
 rather than refusing every Bash call. The pin runs this file as a subprocess
-on its must-fire and must-quiet corpus so a break shows in the pyramid.
+on its must-fire and must-quiet corpus so a break shows in the pyramid. A
+MISSING guard is the opposite case: python exits 2 when it cannot open the
+script, and 2 BLOCKS - MEASURED 2026-10-31 (L1005): one `cd scripts &&`
+moved the session's working directory, this hook's then-relative path no
+longer resolved, and every Bash and PowerShell call was refused for 26
+minutes. Every hook command in .claude/settings.json is therefore anchored
+on the project root (S6-B3388).
 
 Protocol (Claude Code PreToolUse): the payload arrives as JSON on stdin with
 tool_name and tool_input; exit 2 blocks the call and returns stderr to the
