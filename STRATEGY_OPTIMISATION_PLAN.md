@@ -1324,7 +1324,7 @@ carries `LANDING REPORT: <cube>` (the Stop hook blocks otherwise). Every battery
 N/A ON EVIDENCE; a FAIL is a B-batch, not a footnote.
 
 **Step 1.7 - Chain HALT (any non-COMPLETE outcome):** read `serial_chain.log`, run
-`scripts/classify_run_log.py <log>` (DEAD vs live), read the out-dir's `engine_state.json`; decide
+`scripts/classify_run_log.py <log>` (DEAD vs live - `scan_chain_halt` refuses a halt report from a turn that never ran it, test_b2577; S6-B3399), read the out-dir's `engine_state.json`; decide
 RESUME (`resume: true` + `--resume-from-checkpoint` - open the spec and verify it points at the
 checkpoint dir FIRST, L646) or RE-RUN, and PROPOSE it; the relaunch from the halted spec (with
 `--wait-for` if another run is live) waits for the owner's word - CHECKLIST #120 ("Ask before
@@ -1546,7 +1546,7 @@ wave, all of them apply.
    runs it on every launch and refuses on non-zero (`launch_sweep.gate_passes`; wired at B2082, ending the
    B1704 hand-run-only era - the pre-B3096 text still said "HAND-RUN - nothing calls it
    automatically"), so the hand run is the in-turn EVIDENCE the gate passes, not the only gate.
-6. **Arm the cadence monitor BEFORE the launch, in the same turn** (#185; §8.9).
+6. **Arm the cadence monitor BEFORE the launch, in the same turn - `scan_unmonitored_launch` now reads the arm's POSITION, so an arm after the launch does not cover it (test_b3399a; S6-B3399)** (#185; §8.9).
 7. **Confirm zero pre-existing engine processes**, or two runs share an output path and corrupt both.
 
 #### Step 2.2 - THE SPEC, and the one field that is easy to get wrong
@@ -1827,7 +1827,8 @@ longer be written at all.
    word, since an admitted line is closed to re-testing (§1.3, owner 2026-09-12; the pre-B3096 rule,
    which predates that ruling, said only "re-examined").
 4. **Any deferral must name an EXECUTABLE target** - a script path that exists and can be run - plus an
-   owner and a trigger. Free text describing a future process is a DROP, not a deferral.
+   owner and a trigger. Free text describing a future process is a DROP, not a deferral. ENFORCED on
+   every DEFERRED row added in a turn by `scan_queue_vocabulary` (test_b3399a; S6-B3399).
 5. **Automation is not a substitute for READING the findings.** Battery steps 5-8 run unattended, but
    their output is a list of findings addressed to a human: every judgment-step DONE in the ledger before
    B2520 carried a real finding (a band-level defect, the equivalence-class defect, a grader-loader crash

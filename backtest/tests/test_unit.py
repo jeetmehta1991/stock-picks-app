@@ -33459,6 +33459,19 @@ def test_b2577_chain_halts_are_reported_cleanup_is_self_and_kill_finds_the_root(
     # the in-memory seam reports but does not write back
     mem = rsc.read_halts(halts)
     assert vtc.scan_chain_halt([], text="CHAIN HALT REPORT: icg_w1", halts=mem) == []
+    # S6-B3399 (B3139q-r173, runbook 1300/2482): on a turn WITH executed text,
+    # a delivered halt report still needs the run state read with
+    # scripts/classify_run_log.py - the classifier, never the log's shape.
+    def _turn(cmd):
+        return [{"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Bash", "input": {"command": cmd}}]}}]
+    out = vtc.scan_chain_halt(_turn("tail -5 serial_chain.log"),
+                              text="CHAIN HALT REPORT: icg_w1", halts=mem)
+    assert out and "classify_run_log" in out[0], (
+        "a halt turn without the classifier must fire the member", out)
+    assert vtc.scan_chain_halt(
+        _turn("python scripts/classify_run_log.py --log serial_chain.log"),
+        text="CHAIN HALT REPORT: icg_w1", halts=mem) == []
     assert vtc.scan_chain_halt([], text="nothing", halts=mem), "in-memory seam must not mutate"
     # the file seam flips the record; a second turn is quiet
     assert vtc.scan_chain_halt([], text="CHAIN HALT REPORT: icg_w1 - reason ...", halts=halts) == []
@@ -70989,6 +71002,62 @@ def test_b3407_a_free_level_leg_grades_the_landed_fires():
           ("d", {"reproduction": {"covered_fires": 10, "fires_total": 100},
                  "grader": "scripts/legacy_grader.py"})]
     assert _b3407_low_coverage(ok, SYN_KNOWN, FLOOR) == []
+
+
+def test_b3399a_arm_position_and_deferred_row_contract():
+    """S6-B3399 (B3139q-r173), two of the runbook's M-TURN rules mechanized.
+
+    (1) Runbook line 1516: THE MONITOR IS ARMED BEFORE THE LAUNCH.
+    scan_unmonitored_launch used to read the FINAL armed flag, so an arm
+    issued AFTER the launch retro-covered it; position now travels with each
+    launch. Must-fire: launch then arm; must-quiet: arm then launch.
+
+    (2) Runbook line 1782: A DEFERRED ROW NAMES AN EXISTING SCRIPT PATH, AN
+    OWNER AND A TRIGGER - judged on rows ADDED in the turn only, never the
+    backlog (L721). Must-fire: a DEFERRED row with a trigger but no script
+    path; must-quiet: one naming all three, and an EXECUTED row unaffected."""
+    import importlib.util as _ilu
+    from pathlib import Path as _P
+    _spec = _ilu.spec_from_file_location(
+        "_vtc3", _P(__file__).resolve().parents[2] / "scripts" / "verify_turn_compliance.py")
+    _m = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(_m)
+
+    launch = {"type": "tool_use", "name": "Bash",
+              "input": {"command": "nohup bash -c 'python backtest/run_phase1a.py --tickers AAPL' &",
+                        "run_in_background": True}}
+    good_arm = {"type": "tool_use", "name": "CronCreate",
+                "input": {"cron": "11 * * * *",
+                          "prompt": "HOURLY REPORT: send a PushNotification EVERY "
+                                    "hour while any run is active. Do not withhold "
+                                    "because nothing changed."}}
+
+    def _entries(*tool_uses):
+        return [{"type": "user", "message": {"content": "go"}},
+                {"type": "assistant", "message": {"content": list(tool_uses)}}]
+
+    # (1) must-quiet: armed BEFORE the launch
+    assert _m.scan_unmonitored_launch(_entries(good_arm, launch)) == [], (
+        "an arm before the launch satisfies runbook line 1516")
+    # must-fire: the SAME arm AFTER the launch no longer retro-covers it
+    assert _m.scan_unmonitored_launch(_entries(launch, good_arm)), (
+        "an arm issued after the launch must not cover it (S6-B3399)")
+
+    # (2) DEFERRED row contract, on rows passed through the seam
+    bad_row = ("| **S6-TESTONLY** | **DEFERRED** | P3 | **Deferred work.** | "
+               "_reason:_ DEFERRED - trigger: the next full-universe cube lands |")
+    out = _m.scan_queue_vocabulary([], rows=[bad_row])
+    assert out and "1782" in out[0], (
+        "a DEFERRED row with no existing script path must fire", out)
+    good_row = ("| **S6-TESTONLY** | **DEFERRED** | P3 | **Deferred work on "
+                "scripts/queue_state.py.** | _reason:_ DEFERRED - trigger: the "
+                "next full-universe cube lands; the owner's word un-defers it |")
+    assert _m.scan_queue_vocabulary([], rows=[good_row]) == [], (
+        "a DEFERRED row naming script + trigger + owner passes")
+    exec_row = ("| **S6-TESTONLY** | **EXECUTED** | P3 | **Done.** | "
+                "_reason:_ EXECUTED - landed and verified against code |")
+    assert _m.scan_queue_vocabulary([], rows=[exec_row]) == [], (
+        "the DEFERRED contract reaches no other class")
 
 
 def test_b3411_history_read_is_judged_at_segment_grain():

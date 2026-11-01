@@ -791,8 +791,13 @@ def scan_unmonitored_launch(entries: list[dict]) -> list[str]:
             # needs it).
             _launching = _segment_is_launch(_cmd) if _cmd else False
             if _launching:
-                launches.append(_cmd[:140])
-    return [] if (armed or not launches) else launches
+                # S6-B3399 (B3139q-r173, runbook line 1516): the monitor is
+                # armed BEFORE the launch. The old verdict read the FINAL
+                # armed flag, so an arm issued after the launch retro-covered
+                # it - position now travels with each launch.
+                launches.append((_cmd[:140], armed))
+    unmonitored = [cmd for cmd, was_armed in launches if not was_armed]
+    return unmonitored
 
 
 # B1587 / CHECKLIST #195 -- an untested causal claim must not ship as a finding.
@@ -3777,6 +3782,26 @@ def scan_queue_vocabulary(entries, *, rows=None, diff_text=None) -> list[str]:
                       for ph in QUEUE_PLACEHOLDERS)
                   or len(reason.strip()) < 12):
                 bad.append(f"{tid}: {cls} reason is a placeholder ({reason[:32]!r})")
+            # S6-B3399 (B3139q-r173, runbook line 1782): a DEFERRAL names an
+            # executable target (an EXISTING script path), an owner and a
+            # trigger - judged on rows ADDED this turn only, never the
+            # backlog (L721: a stricter gate re-judging history blocks every
+            # turn until the backlog clears).
+            elif cls == "DEFERRED":
+                low = r.lower()
+                sp = _re.search(r"(?:scripts|backtest)/[\w./-]+\.py", r)
+                target_ok = bool(sp) and (REPO_ROOT / sp.group(0)).is_file()
+                missing = []
+                if not target_ok:
+                    missing.append("an EXISTING script path (scripts/ or "
+                                   "backtest/ .py on disk)")
+                if "trigger" not in low:
+                    missing.append("a trigger")
+                if "owner" not in low:
+                    missing.append("an owner")
+                if missing:
+                    bad.append(f"{tid}: DEFERRED without " + " + ".join(missing)
+                               + " (runbook line 1782, S6-B3399)")
     # B1769b: route through require_each - #244 caught this gate hand-rolling
     # the shape one batch after that rule was written. Each ROW is a member.
     ok = {b.split(":")[0]: False for b in bad}
@@ -5779,15 +5804,27 @@ def scan_chain_halt(entries, *, text=None, halts=None) -> list[str]:
         except Exception as _exc:
             return [f"CHAIN-HALT GATE could not mark {delivered} reported "
                     f"({_exc!r}) - fail CLOSED"]
+    # S6-B3399 (B3139q-r173, runbook lines 1300 + 2482): a HALT is read with
+    # the CLASSIFIER, never from the launcher log's shape - the turn that
+    # delivers a halt report must have RUN scripts/classify_run_log.py (its
+    # name in an executed command this turn). One member for the whole turn:
+    # the classifier reads the run state every report relies on.
+    # An empty entries list is the in-memory SEAM (a gate test with no turn
+    # to read); the live Stop-hook path always carries the turn's entries.
+    classified = (not entries
+                  or "classify_run_log" in _executed_tool_text(entries))
     required = {
         (f"{ev['wave']} ({ev.get('reason')}; {len(ev.get('remaining') or [])} "
          f"spec(s) not launched)"): ev["wave"] in delivered
         for ev in pending}
+    required["run state read with scripts/classify_run_log.py this turn "
+             "(runbook 1300/2482, S6-B3399)"] = classified
     return require_each(
         "SERIAL CHAIN HALTED AND NOT REPORTED TO THE OWNER (B2577)", required,
         why=("A detached chain stopped and the owner has not seen why. Put a "
              "`CHAIN HALT REPORT: <wave>` block in the final response for EACH "
-             "(reason, specs not launched, what a human decides next)."))
+             "(reason, specs not launched, what a human decides next), and read "
+             "the run state with scripts/classify_run_log.py first."))
 
 
 def scan_bulk_process_kill(entries, *, cmds=None) -> list[str]:
