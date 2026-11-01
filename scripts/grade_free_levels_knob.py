@@ -56,6 +56,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
+import free_level_window as flw  # noqa: E402  (S6-B3406: the ONE window block)
 import roster_core as rc  # noqa: E402
 from episode_disclosure import month_concentration  # noqa: E402  (S6-B3318)
 from occupancy_disclosure import occupancy_disclosure  # noqa: E402
@@ -129,6 +130,10 @@ def main(argv=None) -> int:
     ap.add_argument("--out", required=True)
     ap.add_argument("--min-n", type=int, default=10)
     ap.add_argument("--repro-min", type=float, default=0.999)
+    ap.add_argument("--coverage-min", type=float, default=0.9,
+                    help="S6-B3407 (c): minimum covered_fires / fires_total - "
+                         "the landed fires are the denominator, not the "
+                         "derivable subset (test_b3407's floor)")
     ap.add_argument("--family-grid", default=None,
                     help="the landed family grid to reproduce (default: --out "
                          "with _free_levels.json read as _grid_auto.json)")
@@ -178,15 +183,27 @@ def main(argv=None) -> int:
     from smc_lsr_step1 import build
     m = build(cube_dir, strat=strat, keys=[])
     m["pnl_pct"] = rc.net_pnl(m["pnl_pct"].astype(float))
+    m_all = m                      # pre-window frame for the shared block (S6-B3406)
     m = rc.in_sample(m)
     tl = pd.read_csv(cube_dir / "trade_log.csv", low_memory=False,
                      usecols=["strategy", "ticker", "entry_date", "direction",
                               "signals_at_entry"])
     tl = tl[tl["strategy"].astype(str) == strat].drop_duplicates(["ticker", "entry_date"])
     vals = {ax["pid"]: [] for ax in axes}
-    for raw in tl["signals_at_entry"]:
+    # S6-B3407 (a): a derive module may expose derive_row(sig, ticker,
+    # entry_date, knobs) - the persisted keys when present, else the bars on
+    # the PIT slice - so demand pruning's dropped keys no longer shrink the
+    # graded set to the warmup's fires (L1010).
+    derive_row_fn = (derive_fn.__globals__.get("derive_row")
+                     if derive_fn is not None else None)
+    rooms_src = {"persisted": 0, "bars": 0, "none": 0}
+    for tk, ed, raw in zip(tl["ticker"], tl["entry_date"], tl["signals_at_entry"]):
         d = _parse(raw)
-        if d is not None and derive_fn is not None:
+        if callable(derive_row_fn):
+            d = derive_row_fn(d or {}, str(tk), ed, env)
+            rooms_src[d.get("rooms_source", "none")] = (
+                rooms_src.get(d.get("rooms_source", "none"), 0) + 1)
+        elif d is not None and derive_fn is not None:
             d = derive_fn(d, env) if two else derive_fn(d)
         for ax in axes:
             v = None if d is None else d.get(ax["key"])
@@ -221,8 +238,20 @@ def main(argv=None) -> int:
              "uncovered_fires": int(len(fires) - len(cov)),
              "pass_at_landed": int(len(passed)),
              "rate": round(len(passed) / max(len(cov), 1), 6),
+             "coverage": round(len(cov) / max(len(fires), 1), 6),
+             "coverage_min": a.coverage_min,
+             "rooms_source": rooms_src if callable(derive_row_fn) else None,
              "landed": {ax["pid"]: ax["landed"] for ax in axes},
              "repro_min": a.repro_min}
+    # S6-B3407 (c): the reproduction gate's denominator is the DERIVABLE set,
+    # so a coverage gap passed silently at rate 1.0 over 83 of 580 fires
+    # (L1010). The LANDED fires are the population; a leg covering fewer than
+    # --coverage-min of them fails loudly instead of grading a subset.
+    if live and repro["coverage"] < a.coverage_min:
+        print(f"[FAIL] coverage (S6-B3407 (c)): {len(cov)} of {len(fires)} landed "
+              f"fires carry every axis value ({repro['coverage']}) < {a.coverage_min} "
+              "- the leg would grade a subset of the landed fires; grading nothing")
+        return 2
     if live and repro["rate"] < a.repro_min:
         print(f"[FAIL] reproduction: {len(passed)} of {len(cov)} covered fires pass "
               f"every axis at its landed level ({repro['rate']}) < {a.repro_min} - the "
@@ -304,7 +333,11 @@ def main(argv=None) -> int:
            "cube": str(cube_dir).replace("\\", "/"),
            "basis": ("net: pnl_pct clipped to +/-WINSORIZE then minus "
                      "COST_BPS/100 - roster_core.net_pnl"),
-           "window": f"in-sample entries only [{rc.IS_START}, {rc.IS_END})",
+           # S6-B3406: the SHARED window block, as the sibling graders write
+           # it - postconfig_doc._straddle_txt reads window.trade_log as a
+           # dict, and the string this line used to carry crashed the report
+           # at every knob-family landing (L1009).
+           "window": {"trade_log": flw.window_disclosure(m_all, m, "trade_log")},
            "axes": [{k: ax[k] for k in ("pid", "key", "op", "landed", "levels", "legs")}
                     for ax in axes],
            "not_evaluable": [{"axis": pid, "reason": r} for pid, r in sorted(not_eval.items())],

@@ -6,15 +6,17 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## How much confidence these checks earn
 
-**Across the entire ledger (182 entries), 2119 named checks have run and 23 have ever returned non-PASS.**
+**Across the entire ledger (184 entries), 2159 named checks have run and 23 have ever returned non-PASS.**
 
 ## Landings - what the supervisor recorded (B2520)
 
-77 cube(s) landed through the supervisor; **1 not yet reported to the owner** (output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45).
+79 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
-| output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45 | 2026-10-28T20:51:15 | engine-hook | 2 | 2_grade_with_config_params | 0 | 097abc572 | True | **NO** |
+| output_b3248sq_p2_1p5_p2_1p5 | 2026-10-31T15:32:53 | engine-hook | 0 | none | 0 | d1b3f8e3f | True | yes 2026-10-31T17:18:02 |
+| output_b3248sq_p2_2p0_p2_2p0 | 2026-10-31T12:08:19 | engine-hook | 0 | none | 0 | 4831646fa | True | yes 2026-10-31T14:45:29 |
+| output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45 | 2026-10-28T21:44:47 | manual | 0 | none | 0 | False | False | yes 2026-10-28T23:05:44 |
 | output_b3139q_lv4_orb_stocks_in_play_long_p1_j0924495a_p1_j0924495a | 2026-10-23T08:09:35 | engine-hook | 0 | none | 0 | 901e1f1e2 | True | yes 2026-10-23T12:11:26 |
 | output_b3139q_lv4_smc_bos_continuation_p1_j213420ef_p1_j213420ef | 2026-10-23T04:52:21 | engine-hook | 0 | none | 0 | e6192b875 | True | yes 2026-10-23T05:00:53 |
 | output_b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe | 2026-10-23T01:12:01 | engine-hook | 0 | none | 0 | 0dff9743b | True | yes 2026-10-23T01:27:57 |
@@ -101,10 +103,12 @@ _TABLE C unavailable: KeyError: 'admit'_
 
 _TABLE D unavailable: KeyError: 'admit'_
 
-## Index - 108 graded config(s), newest first
+## Index - 110 graded config(s), newest first
 
 | config | best is_ci_lo | count | starved | steps closed (DONE+N/A of 9; the gate's own is_closed) |
 |---|---|---|---|---|
+| output_b3248sq_p2_1p5_p2_1p5 | 0.279 | full_n 726 | 0/0 combinations | 9/9 |
+| output_b3248sq_p2_2p0_p2_2p0 | 0.297 | full_n 580 | 0/0 combinations | 9/9 |
 | output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45 | 0.538 | full_n 5361 | 0/0 combinations | 9/9 |
 | output_b3139q_lv4_orb_stocks_in_play_long_p1_j0924495a_p1_j0924495a | -0.075 | full_n 348 | 0/0 combinations | 9/9 |
 | output_b3139q_lv4_smc_bos_continuation_p1_j213420ef_p1_j213420ef | 0.082 | full_n 228 | 0/0 combinations | 9/9 |
@@ -216,6 +220,205 @@ _TABLE D unavailable: KeyError: 'admit'_
 
 ## Per-config findings
 
+### output_b3248sq_p2_1p5_p2_1p5
+
+**Configuration:** P2_kc_mult=1.5, P3_bb_std=2.0, P4_mom_window=20, P5_kc_period=20, P6_prior_n=0
+
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.279** (is_sharpe 0.522, full_n 726, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+
+**FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage 1.0); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_knob.py).
+
+| level | knobs | IS fires | top exit (ranked by ci_lo) | is_sharpe | is_ci_lo |
+|---|---|---|---|---|---|
+| P2:2.0:long | axis=P2 leg=long level=2.0 | 519 | breakeven_plus_trail | None | None |
+| P2:2.5:long | axis=P2 leg=long level=2.5 | 304 | breakeven_plus_trail | None | None |
+| P3:1.5:long | axis=P3 leg=long level=1.5 | 565 | breakeven_plus_trail | None | None |
+
+**Completeness: 9 of 9 steps closed** (6 DONE with evidence, 3 N/A with a reason: 6_post_fix_recheck, 6b_equivalence_class_check, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
+
+| step | status | evidence / reason (never truncated) |
+|---|---|---|
+| 1_cube_sanity | DONE | the named checks are tabulated below by risk question |
+| 2_grade_with_config_params | DONE | AUTO (S6-B3248, B3139q-r162); the registry-driven knob grader - NET, legs x exits, the knobs verified against the landed arm: grade_knob_config at manifest kc_mult=1.5 bb_std=2.0 mom_window=20 kc_period=20 prior_n=0 -> output_b3248sq_p2_1p5_p2_1p5_grid_auto.json; free levels reproduction-gated -> output_b3248sq_p2_1p5_p2_1p5_free_levels.json |
+| 3_outlier_discrepancy_sweep | DONE | AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS |
+| 4_three_leg_spot_check | DONE | AUTO (S6-B3248, B3139q-r162); three legs - producer_legs_a raw arithmetic, compute_squeeze on the PIT slice under the arm's knobs, the record: spot_check_producer at manifest kc_mult=1.5 bb_std=2.0 mom_window=20 kc_period=20 prior_n=0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 skipped; execution failures 0; artifact output_b3248sq_p2_1p5_p2_1p5_spot_check.json |
+| 5_adversarial_lens_review | DONE | AUTO (B2520): lenses 11 run: 0 WARN / 0 FAIL / 11 INFO -> output_b3248sq_p2_1p5_p2_1p5_lenses.json |
+| 6_post_fix_recheck | N/A | no lens finding (11 lenses, 0 WARN / 0 FAIL) -> nothing to recheck; N/A on evidence |
+| 6b_equivalence_class_check | N/A | 1 combination per cube (the swept parameters live in the precompute the engine consumed); equivalence collapse requires >= 2 combinations - N/A on evidence |
+| 7_implement_in_engine | N/A | Step-1 ranking cube; admission happens at Step 2; nothing to implement. Engine check PASS: 5 of 5 declared knobs read from the environment + consumer lists match the tree |
+| 8_verdict_with_denominators | DONE | AUTO (B2520) VERDICT (denominators from output_b3248sq_p2_1p5_p2_1p5_grid_auto.json): 0 combinations enumerated: ; rank-1 [breakeven_plus_trail] is_ci_lo 0.279 is_sharpe 0.522 full_n 726 - Step-1: ranking only, no admission (B1608) |
+
+**Is this the right data?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| cube produced rows | 17424 rows | PASS | zero rows = the config ran and emitted nothing |
+| exactly one strategy in the cube | 1 strategies | PASS | more than 1 = the strategy-subset filter leaked |
+| mega-caps present in the universe | NVDA, MSFT, GOOGL, TSLA, AAPL | PASS | absent = the abandoned A-C chunk universe (L445) |
+| universe artifact verified | exit 0 on output_audit/_sweep_200.txt (verifier is ... | PASS | FAIL = the ticker list is not what was intended |
+| cube content hash | e09b8cccf0845135 | PASS | a repeat across configs = two configs produced identical cubes, so one knob did nothing |
+| entry-date span actually simulated | entries 2024-05-06 .. 2025-05-02 | PASS | a short span = the run did not cover its window |
+| every entry carries one row per registered exit | cube [24] vs registry-now 24 (a differing single value = an ... | PASS | a shortfall = exits silently dropped from the cube |
+| closed trade-log fires that have an exit-cube row | 726 of 726 closed trade-log fires have exit-cube rows; 0 ... | PASS | any missing = an entry the cube lost, which M2 cannot see (S6-B3267) |
+
+**Did anything leak from the future?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| entries at or after the LOCKED holdout start | 0 entries at/after HO_START 2025-05-05 in a STEP-1 cube | PASS | any non-zero = the holdout was contaminated and the run is void |
+| fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
+| pre-launch receipt matches the run manifest | receipt matches manifest sha e03bd9e69ce9 | PASS | mismatch = this run is not the run that was gated |
+
+**Does the arithmetic reproduce?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is ... | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': ... | PASS | each mapping = an exit you paid to test and did not actually test |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; kc_mult=1.5 bb_std=2.0 mom_window=20 kc_period=20 ... | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 ... | PASS | non-zero = no re-derivation happened |
+| engine-side implementation check exit code | 5 of 5 declared knobs read from the environment + consumer ... | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 17424 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
+
+**Independent re-derivation of sampled trades (step 4)**
+
+- 50 of 50 sampled trades re-derived to the SAME fire/no-fire decision as the engine; 0 disagreed; 0 execution failures.
+- Sampled with seed 42 at this config's own parameters (parameters not recorded in the artifact).
+- CAVEAT worth stating: the re-derivation uses the SAME parameter set as the engine, so it catches wiring and data faults, NOT a wrong parameter choice. Full per-trade rows: output_audit/output_b3248sq_p2_1p5_p2_1p5_spot_check.json.
+
+**Adversarial lenses (step 5) - 11 lenses, 0 WARN/FAIL** (step basis: manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube; family squeeze_breakout)
+
+| lens | level | evidence |
+|---|---|---|
+| holdout_untouched | INFO | 0 of 726 entries at/after HO_START 2025-05-05 (Step-1 cube: any touch is a leak, B1718 class) |
+| period_concentration | INFO | max quarter share 0.30 (2025Q2) over 5 quarters of 726 entries; WARN > 0.5 |
+| ticker_concentration | INFO | top-5 tickers carry 0.06 of 726 entries across 187 tickers; WARN > 0.30 |
+| eligibility_leak | INFO | 0 of 726 entries not screenable under daily_subtract_v1 (carry 0 / daily 0); 0 unclassifiable; cube built under daily_subtract_v1 (stamped) |
+| selection_margin | INFO | rank-1 [breakeven_plus_trail] is_ci_lo 0.279 vs rank-2 [hybrid_50pct_target] 0.089: margin 0.190 between outcome classes; WARN < 0.05 (selection at noise level); INFO not WARN - Step-1 admission ranks CONFIGS (exit ties never move a config score); this lens informs only a pre-registered exit choice (S6-B2611a) |
+| empty_signals_share | INFO | 0 of 726 trade_log rows carry an empty signals_at_entry (S6-B2512 class) |
+| replay_atr_proxy | INFO | ATR proxy on 0.0% of replayed trades (<= 5%; MEASURED 0/726 (0.0%) from replay_atr_fallback.json) |
+| grading_provenance | INFO | grading surface UNCHANGED since freeze (32 files, digest 448f041d7e90) |
+| direction_consistency | INFO | directions ['long'] (single direction) |
+| spot_check_disagreements | INFO | 50 agree / 0 DISAGREE / 0 skipped in output_b3248sq_p2_1p5_p2_1p5_spot_check.json |
+| min_trades_floor | INFO | 726 distinct entries; the live gates need holdout >= 15 and full-period >= 75 (applied by the grader, not here) |
+
+**Is the sample large enough to mean anything? (step 2 funnel)**
+
+- 0 combinations enumerated (population field `results`).
+- **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
+- 0 graded and ranked, collapsing to None distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 23 classes carry None combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
+
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
+|---|---|---|---|---|---|---|
+| None | 0.279 | 0.522 | full_n 726 | breakeven_plus_trail | None | (no knobs recorded) |
+| None | 0.089 | 0.277 | full_n 726 | hybrid_50pct_target | None | (no knobs recorded) |
+| None | 0.089 | 0.383 | full_n 726 | regime_flip | None | (no knobs recorded) |
+| None | 0.032 | 0.207 | full_n 726 | earnings_blackout | None | (no knobs recorded) |
+| None | 0.029 | 0.276 | full_n 726 | class_time_stop | None | (no knobs recorded) |
+
+_Top 5 of the ranking; the full list is in output_audit/output_b3248sq_p2_1p5_p2_1p5_grid_auto.json._
+
+### output_b3248sq_p2_2p0_p2_2p0
+
+**Configuration:** P2_kc_mult=2.0, P3_bb_std=2.0, P4_mom_window=20, P5_kc_period=20, P6_prior_n=0
+
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.297** (is_sharpe 0.561, full_n 580, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+
+**FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage 1.0); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_knob.py).
+
+| level | knobs | IS fires | top exit (ranked by ci_lo) | is_sharpe | is_ci_lo |
+|---|---|---|---|---|---|
+| P2:2.5:long | axis=P2 leg=long level=2.5 | 329 | breakeven_plus_trail | None | None |
+| P3:1.5:long | axis=P3 leg=long level=1.5 | 299 | breakeven_plus_trail | None | None |
+
+**Completeness: 9 of 9 steps closed** (6 DONE with evidence, 3 N/A with a reason: 6_post_fix_recheck, 6b_equivalence_class_check, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
+
+| step | status | evidence / reason (never truncated) |
+|---|---|---|
+| 1_cube_sanity | DONE | the named checks are tabulated below by risk question |
+| 2_grade_with_config_params | DONE | AUTO (S6-B3248, B3139q-r162); the registry-driven knob grader - NET, legs x exits, the knobs verified against the landed arm: grade_knob_config at manifest kc_mult=2.0 bb_std=2.0 mom_window=20 kc_period=20 prior_n=0 -> output_b3248sq_p2_2p0_p2_2p0_grid_auto.json; free levels reproduction-gated -> output_b3248sq_p2_2p0_p2_2p0_free_levels.json |
+| 3_outlier_discrepancy_sweep | DONE | AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS |
+| 4_three_leg_spot_check | DONE | AUTO (S6-B3248, B3139q-r162); three legs - producer_legs_a raw arithmetic, compute_squeeze on the PIT slice under the arm's knobs, the record: spot_check_producer at manifest kc_mult=2.0 bb_std=2.0 mom_window=20 kc_period=20 prior_n=0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 skipped; execution failures 0; artifact output_b3248sq_p2_2p0_p2_2p0_spot_check.json |
+| 5_adversarial_lens_review | DONE | AUTO (B2520): lenses 11 run: 0 WARN / 0 FAIL / 11 INFO -> output_b3248sq_p2_2p0_p2_2p0_lenses.json |
+| 6_post_fix_recheck | N/A | no lens finding (11 lenses, 0 WARN / 0 FAIL) -> nothing to recheck; N/A on evidence |
+| 6b_equivalence_class_check | N/A | 1 combination per cube (the swept parameters live in the precompute the engine consumed); equivalence collapse requires >= 2 combinations - N/A on evidence |
+| 7_implement_in_engine | N/A | Step-1 ranking cube; admission happens at Step 2; nothing to implement. Engine check PASS: 5 of 5 declared knobs read from the environment + consumer lists match the tree |
+| 8_verdict_with_denominators | DONE | AUTO (B2520) VERDICT (denominators from output_b3248sq_p2_2p0_p2_2p0_grid_auto.json): 0 combinations enumerated: ; rank-1 [breakeven_plus_trail] is_ci_lo 0.297 is_sharpe 0.561 full_n 580 - Step-1: ranking only, no admission (B1608) |
+
+**Is this the right data?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| cube produced rows | 13920 rows | PASS | zero rows = the config ran and emitted nothing |
+| exactly one strategy in the cube | 1 strategies | PASS | more than 1 = the strategy-subset filter leaked |
+| mega-caps present in the universe | NVDA, MSFT, GOOGL, TSLA, AAPL | PASS | absent = the abandoned A-C chunk universe (L445) |
+| universe artifact verified | exit 0 on output_audit/_sweep_200.txt (verifier is ... | PASS | FAIL = the ticker list is not what was intended |
+| cube content hash | 8cb3348c0a82cbc8 | PASS | a repeat across configs = two configs produced identical cubes, so one knob did nothing |
+| entry-date span actually simulated | entries 2024-05-06 .. 2025-05-02 | PASS | a short span = the run did not cover its window |
+| every entry carries one row per registered exit | cube [24] vs registry-now 24 (a differing single value = an ... | PASS | a shortfall = exits silently dropped from the cube |
+| closed trade-log fires that have an exit-cube row | 580 of 580 closed trade-log fires have exit-cube rows; 0 ... | PASS | any missing = an entry the cube lost, which M2 cannot see (S6-B3267) |
+
+**Did anything leak from the future?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| entries at or after the LOCKED holdout start | 0 entries at/after HO_START 2025-05-05 in a STEP-1 cube | PASS | any non-zero = the holdout was contaminated and the run is void |
+| fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
+| pre-launch receipt matches the run manifest | receipt matches manifest sha 91ad1beb74ed | PASS | mismatch = this run is not the run that was gated |
+
+**Does the arithmetic reproduce?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is ... | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': ... | PASS | each mapping = an exit you paid to test and did not actually test |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; kc_mult=2.0 bb_std=2.0 mom_window=20 kc_period=20 ... | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 ... | PASS | non-zero = no re-derivation happened |
+| engine-side implementation check exit code | 5 of 5 declared knobs read from the environment + consumer ... | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 13920 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
+
+**Independent re-derivation of sampled trades (step 4)**
+
+- 50 of 50 sampled trades re-derived to the SAME fire/no-fire decision as the engine; 0 disagreed; 0 execution failures.
+- Sampled with seed 42 at this config's own parameters (parameters not recorded in the artifact).
+- CAVEAT worth stating: the re-derivation uses the SAME parameter set as the engine, so it catches wiring and data faults, NOT a wrong parameter choice. Full per-trade rows: output_audit/output_b3248sq_p2_2p0_p2_2p0_spot_check.json.
+
+**Adversarial lenses (step 5) - 11 lenses, 0 WARN/FAIL** (step basis: manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube; family squeeze_breakout)
+
+| lens | level | evidence |
+|---|---|---|
+| holdout_untouched | INFO | 0 of 580 entries at/after HO_START 2025-05-05 (Step-1 cube: any touch is a leak, B1718 class) |
+| period_concentration | INFO | max quarter share 0.28 (2025Q2) over 5 quarters of 580 entries; WARN > 0.5 |
+| ticker_concentration | INFO | top-5 tickers carry 0.06 of 580 entries across 186 tickers; WARN > 0.30 |
+| eligibility_leak | INFO | 0 of 580 entries not screenable under daily_subtract_v1 (carry 0 / daily 0); 0 unclassifiable; cube built under daily_subtract_v1 (stamped) |
+| selection_margin | INFO | rank-1 [breakeven_plus_trail] is_ci_lo 0.297 vs rank-2 [hybrid_50pct_target] 0.122: margin 0.175 between outcome classes; WARN < 0.05 (selection at noise level); INFO not WARN - Step-1 admission ranks CONFIGS (exit ties never move a config score); this lens informs only a pre-registered exit choice (S6-B2611a) |
+| empty_signals_share | INFO | 0 of 580 trade_log rows carry an empty signals_at_entry (S6-B2512 class) |
+| replay_atr_proxy | INFO | ATR proxy on 0.0% of replayed trades (<= 5%; MEASURED 0/580 (0.0%) from replay_atr_fallback.json) |
+| grading_provenance | INFO | grading surface UNCHANGED since freeze (32 files, digest 448f041d7e90) |
+| direction_consistency | INFO | directions ['long'] (single direction) |
+| spot_check_disagreements | INFO | 50 agree / 0 DISAGREE / 0 skipped in output_b3248sq_p2_2p0_p2_2p0_spot_check.json |
+| min_trades_floor | INFO | 580 distinct entries; the live gates need holdout >= 15 and full-period >= 75 (applied by the grader, not here) |
+
+**Is the sample large enough to mean anything? (step 2 funnel)**
+
+- 0 combinations enumerated (population field `results`).
+- **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
+- 0 graded and ranked, collapsing to None distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 23 classes carry None combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
+
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
+|---|---|---|---|---|---|---|
+| None | 0.297 | 0.561 | full_n 580 | breakeven_plus_trail | None | (no knobs recorded) |
+| None | 0.122 | 0.328 | full_n 580 | hybrid_50pct_target | None | (no knobs recorded) |
+| None | 0.075 | 0.404 | full_n 580 | regime_flip | None | (no knobs recorded) |
+| None | 0.07 | 0.263 | full_n 580 | earnings_blackout | None | (no knobs recorded) |
+| None | 0.023 | 0.298 | full_n 580 | class_time_stop | None | (no knobs recorded) |
+
+_Top 5 of the ranking; the full list is in output_audit/output_b3248sq_p2_2p0_p2_2p0_grid_auto.json._
+
 ### output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45
 
 **Configuration:** P1_gate_budget={"k": 3, "mandatory": ["above_r1"]}
@@ -296,7 +499,7 @@ _TABLE D unavailable: KeyError: 'admit'_
 
 - 0 combinations enumerated (population field `results`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 0 graded and ranked, collapsing to None distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 69 classes carry None combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 0 graded and ranked, collapsing to None distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 69 classes carry None combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -388,7 +591,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b3139q_lv4s2_pivo
 
 - 0 combinations enumerated (population field `results`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 0 graded and ranked, collapsing to None distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 23 classes carry None combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 0 graded and ranked, collapsing to None distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 23 classes carry None combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -480,7 +683,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b3139q_lv4_orb_st
 
 - 0 combinations enumerated (population field `results`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 0 graded and ranked, collapsing to None distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 69 classes carry None combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 0 graded and ranked, collapsing to None distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 69 classes carry None combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -572,7 +775,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b3139q_lv4_smc_bo
 
 - 0 combinations enumerated (population field `results`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 0 graded and ranked, collapsing to None distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 23 classes carry None combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 0 graded and ranked, collapsing to None distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 23 classes carry None combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -664,7 +867,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b3139q_lv4_news_m
 
 - 0 combinations enumerated (population field `results`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 0 graded and ranked, collapsing to None distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 69 classes carry None combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 0 graded and ranked, collapsing to None distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 69 classes carry None combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -767,7 +970,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b3139q_lv4_pivot_
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -870,7 +1073,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_150_p2
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -973,7 +1176,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_100_p2
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -1076,7 +1279,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_50_p2_
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -1179,7 +1382,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_20_p2_
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -1282,7 +1485,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_9_p2_2
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -1385,7 +1588,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p4_30_p2_
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -1488,7 +1691,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p4_20_p2_
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -1591,7 +1794,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p3_50_p2_
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -1694,7 +1897,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p3_12_p2_
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -1794,7 +1997,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p3_8_p2_2
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -1894,7 +2097,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p3_4_p3_4
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -1987,7 +2190,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p2_126_p2
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -2078,7 +2281,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_step2_p
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -2169,7 +2372,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p6_9
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -2260,7 +2463,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p6_4
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -2351,7 +2554,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p5_0
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -2442,7 +2645,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p5_0
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -2533,7 +2736,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p5_0
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -2624,7 +2827,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_step2_p
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -2725,7 +2928,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_step1_p
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -2825,7 +3028,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_step2_p4_250_p
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -2924,7 +3127,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_step2_p4_9_p4_
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -3023,7 +3226,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span250_span25
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -3122,7 +3325,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span150_span15
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -3221,7 +3424,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span100_span10
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -3320,7 +3523,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span050_span05
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -3419,7 +3622,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span021_span02
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -3518,7 +3721,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span020_span02
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -3617,7 +3820,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span009_span00
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -3716,7 +3919,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c14_st
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -3815,7 +4018,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c14_b0
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -3914,7 +4117,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tbc_c02_b0
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -4013,7 +4216,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c18_b0
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -4112,7 +4315,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c17_b0
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -4211,7 +4414,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c16_b0
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -4310,7 +4513,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c15_b0
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -4409,7 +4612,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c13_b0
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -4508,7 +4711,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c12_b0
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -4607,7 +4810,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c11_b0
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -4706,7 +4909,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c10_b0
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -4805,7 +5008,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c09_b0
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -4904,7 +5107,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c08_b0
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -5003,7 +5206,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c07_b0
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -5102,7 +5305,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c06_b0
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -5201,7 +5404,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c05_b0
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -5300,7 +5503,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c04_b0
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -5399,7 +5602,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c03_b0
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -5498,7 +5701,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c02_b0
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -5597,7 +5800,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tbc_c01_b0
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -5686,7 +5889,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c01_b0
 
 - 300 combinations enumerated (population field `results`).
 - **44 (15%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 256 graded and ranked, collapsing to 113 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 22 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 256 graded and ranked, collapsing to 113 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 22 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -5785,7 +5988,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2712_smc_sw10_sw
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -5884,7 +6087,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_step2_span9_s
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -5983,7 +6186,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_cfg1_rerun_cf
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -6082,7 +6285,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_span100_rerun
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -6181,7 +6384,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_minq2_minq2_g
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -6280,7 +6483,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_minq3_minq3_g
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -6379,7 +6582,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_minq6_minq6_g
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -6478,7 +6681,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_lookback8_loo
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -6577,7 +6780,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_lookback6_loo
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -6676,7 +6879,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_lookback3_loo
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -6775,7 +6978,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_mult1.25_mult
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -6866,7 +7069,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_mult1.0_mult1
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -6964,7 +7167,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_span100_span1
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -7062,7 +7265,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_minq8_minq8_g
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -7160,7 +7363,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_lookback2_loo
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -7258,7 +7461,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_mult1.5_mult1
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -7356,7 +7559,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_span150_span1
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -7430,7 +7633,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_span50_span50
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -7504,7 +7707,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_span20_span20
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -7602,7 +7805,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_span9_span9_g
 
 - 24 exits enumerated (population field `per_exit`).
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -7688,7 +7891,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_cfg1_grid_aut
 
 - 300 combinations enumerated (population field `results`).
 - **82 (27%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 218 graded and ranked, collapsing to 89 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 22 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 218 graded and ranked, collapsing to 89 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 22 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -7761,7 +7964,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2174_sw20_sw20_g
 
 - 300 combinations enumerated (population field `results`).
 - **29 (10%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 271 graded and ranked, collapsing to 104 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 21 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 271 graded and ranked, collapsing to 104 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 21 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -7834,7 +8037,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2399_step2_sw50s
 
 - 300 combinations enumerated (population field `results`).
 - **190 (63%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 110 graded and ranked, collapsing to 44 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 14 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 110 graded and ranked, collapsing to 44 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 14 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -7907,7 +8110,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp150_s
 
 - 300 combinations enumerated (population field `results`).
 - **200 (67%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 100 graded and ranked, collapsing to 42 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 14 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 100 graded and ranked, collapsing to 42 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 14 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -7980,7 +8183,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp100_s
 
 - 300 combinations enumerated (population field `results`).
 - **200 (67%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 100 graded and ranked, collapsing to 42 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 14 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 100 graded and ranked, collapsing to 42 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 14 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -8053,7 +8256,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp50_sw
 
 - 300 combinations enumerated (population field `results`).
 - **200 (67%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 100 graded and ranked, collapsing to 41 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 21 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 100 graded and ranked, collapsing to 41 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 21 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -8126,7 +8329,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp20_sw
 
 - 300 combinations enumerated (population field `results`).
 - **200 (67%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 100 graded and ranked, collapsing to 42 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 20 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 100 graded and ranked, collapsing to 42 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 20 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -8199,7 +8402,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp9_sw5
 
 - 300 combinations enumerated (population field `results`).
 - **40 (13%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 260 graded and ranked, collapsing to 132 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 18 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 260 graded and ranked, collapsing to 132 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 18 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -8272,7 +8475,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp150_sw
 
 - 300 combinations enumerated (population field `results`).
 - **40 (13%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 260 graded and ranked, collapsing to 132 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 24 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 260 graded and ranked, collapsing to 132 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 24 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -8345,7 +8548,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp100_sw
 
 - 300 combinations enumerated (population field `results`).
 - **45 (15%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 255 graded and ranked, collapsing to 124 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 20 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 255 graded and ranked, collapsing to 124 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 20 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -8418,7 +8621,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp50_sw5
 
 - 300 combinations enumerated (population field `results`).
 - **45 (15%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 255 graded and ranked, collapsing to 125 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 27 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 255 graded and ranked, collapsing to 125 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 27 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -8491,7 +8694,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp20_sw5
 
 - 300 combinations enumerated (population field `results`).
 - **45 (15%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 255 graded and ranked, collapsing to 126 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 20 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 255 graded and ranked, collapsing to 126 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 20 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -8564,7 +8767,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp9_sw5s
 
 - 300 combinations enumerated (population field `results`).
 - **40 (13%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 260 graded and ranked, collapsing to 131 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 20 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 260 graded and ranked, collapsing to 131 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 20 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -8637,7 +8840,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp150_s
 
 - 300 combinations enumerated (population field `results`).
 - **40 (13%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 260 graded and ranked, collapsing to 127 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 19 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 260 graded and ranked, collapsing to 127 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 19 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -8710,7 +8913,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp100_s
 
 - 300 combinations enumerated (population field `results`).
 - **45 (15%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 255 graded and ranked, collapsing to 128 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 16 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 255 graded and ranked, collapsing to 128 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 16 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -8783,7 +8986,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp50_sw
 
 - 300 combinations enumerated (population field `results`).
 - **41 (14%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 259 graded and ranked, collapsing to 129 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 18 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 259 graded and ranked, collapsing to 129 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 18 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -8856,7 +9059,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp20_sw
 
 - 300 combinations enumerated (population field `results`).
 - **42 (14%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 258 graded and ranked, collapsing to 138 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 16 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 258 graded and ranked, collapsing to 138 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 16 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -8929,7 +9132,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp9_sw1
 
 - 300 combinations enumerated (population field `results`).
 - **106 (35%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 194 graded and ranked, collapsing to 65 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 35 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 194 graded and ranked, collapsing to 65 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 35 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -9002,7 +9205,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp150_s
 
 - 300 combinations enumerated (population field `results`).
 - **100 (33%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 200 graded and ranked, collapsing to 67 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 43 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 200 graded and ranked, collapsing to 67 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 43 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -9075,7 +9278,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp100_s
 
 - 300 combinations enumerated (population field `results`).
 - **100 (33%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 200 graded and ranked, collapsing to 68 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 43 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 200 graded and ranked, collapsing to 68 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 43 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -9148,7 +9351,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp50_sw
 
 - 300 combinations enumerated (population field `results`).
 - **100 (33%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 200 graded and ranked, collapsing to 74 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 43 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 200 graded and ranked, collapsing to 74 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 43 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -9221,7 +9424,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp20_sw
 
 - 300 combinations enumerated (population field `results`).
 - **95 (32%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 205 graded and ranked, collapsing to 75 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 37 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 205 graded and ranked, collapsing to 75 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 37 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -9294,7 +9497,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp9_sw3
 
 - 300 combinations enumerated (population field `results`).
 - **77 (26%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 223 graded and ranked, collapsing to 92 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 18 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 223 graded and ranked, collapsing to 92 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 18 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -9367,7 +9570,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp150_s
 
 - 300 combinations enumerated (population field `results`).
 - **77 (26%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 223 graded and ranked, collapsing to 91 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 21 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 223 graded and ranked, collapsing to 91 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 21 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -9440,7 +9643,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp100_s
 
 - 300 combinations enumerated (population field `results`).
 - **77 (26%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 223 graded and ranked, collapsing to 92 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 19 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 223 graded and ranked, collapsing to 92 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 19 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -9513,7 +9716,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp50_sw
 
 - 300 combinations enumerated (population field `results`).
 - **77 (26%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 223 graded and ranked, collapsing to 97 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 17 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 223 graded and ranked, collapsing to 97 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 17 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -9586,7 +9789,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp21_sw
 
 - 300 combinations enumerated (population field `results`).
 - **77 (26%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 223 graded and ranked, collapsing to 97 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 17 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 223 graded and ranked, collapsing to 97 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 17 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -9659,7 +9862,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp20_sw
 
 - 300 combinations enumerated (population field `results`).
 - **77 (26%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 223 graded and ranked, collapsing to 100 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 18 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 223 graded and ranked, collapsing to 100 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 18 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -9732,7 +9935,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp9_sw2
 
 - 300 combinations enumerated (population field `results`).
 - **40 (13%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 260 graded and ranked, collapsing to 132 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 20 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 260 graded and ranked, collapsing to 132 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 20 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -9805,7 +10008,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2190_sw5_sw5_gri
 
 - 300 combinations enumerated (population field `results`).
 - **45 (15%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 255 graded and ranked, collapsing to 133 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 16 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 255 graded and ranked, collapsing to 133 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 16 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -9878,7 +10081,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2190_sw10_sw10_g
 
 - 300 combinations enumerated (population field `results`).
 - **225 (75%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 75 graded and ranked, collapsing to 29 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 19 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 75 graded and ranked, collapsing to 29 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 19 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
@@ -9951,7 +10154,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2177_sw50_sw50_g
 
 - 300 combinations enumerated (population field `results`).
 - **106 (35%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 194 graded and ranked, collapsing to 61 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 46 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+- 194 graded and ranked, collapsing to 61 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 46 combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
 
 | rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|

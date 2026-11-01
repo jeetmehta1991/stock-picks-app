@@ -89,3 +89,69 @@ def derive(sig: dict, knobs=None) -> dict:
     out["kc_room"] = (max(bmid + k0 * sd - km, km - bmid + k0 * sd) / atr) if atr > 0 else None
     out["bb_room"] = (min(km + m0 * atr - bmid, bmid - km + m0 * atr) / sd) if sd > 0 else None
     return out
+
+
+# S6-B3407 (a) - owner Lane-1 approval 2026-11-01: the engine's demand pruning
+# persists only the keys the strategy READS once its 25-day warmup ends, so
+# post-warmup fires lack the five KEYS and the leg graded two months of a
+# twelve-month window (L1010; squeeze config 1: 83 of 580 fires). The rooms
+# therefore also derive from the BARS - compute_bollinger / compute_keltner,
+# the engine's own producers at production geometry, on the PIT slice ending
+# AT the entry bar (the spot-check convention, B2865: 1350 of 1350) - which no
+# pruning can reach. The persisted keys stay the first source: where present
+# they were written by these same producers at engine time, so the two paths
+# agree exactly (proven on config 2's 114 covered fires before this shipped).
+_BARS: dict = {}
+
+
+def keys_from_bars(ticker: str, entry_date) -> dict | None:
+    """The five production-geometry keys recomputed from the cached bars on
+    the PIT slice ending AT the entry bar; None when the bars or the entry
+    bar are not cached, or the slice is too short for the producers."""
+    import sys
+    from pathlib import Path
+    sp = str(Path(__file__).resolve().parent)
+    if sp not in sys.path:
+        sys.path.insert(0, sp)
+    root = str(Path(__file__).resolve().parent.parent)
+    if root not in sys.path:
+        sys.path.insert(0, root)
+    import pandas as pd
+    from spot_check_trades import load_ohlcv
+    from backtest.signals.technical import compute_bollinger, compute_keltner
+    if ticker not in _BARS:
+        _BARS[ticker] = load_ohlcv(ticker)
+    ohlc = _BARS[ticker]
+    if ohlc is None:
+        return None
+    try:
+        loc = ohlc.index.get_loc(pd.Timestamp(str(entry_date)[:10]))
+    except KeyError:
+        return None
+    if not hasattr(loc, "__index__"):
+        return None          # a duplicated date resolves to a slice - no bar
+    s = ohlc.iloc[:int(loc) + 1]
+    b, k = compute_bollinger(s), compute_keltner(s)
+    out = {"bb_20_20_lower": b.get("bb_20_20_lower"),
+           "bb_20_20_upper": b.get("bb_20_20_upper"),
+           "kc_lower": k.get("kc_lower"), "kc_upper": k.get("kc_upper"),
+           "kc_mid": k.get("kc_mid")}
+    return out if all(out[kk] is not None for kk in KEYS) else None
+
+
+def derive_row(sig: dict, ticker: str, entry_date, knobs=None) -> dict:
+    """derive() from the persisted keys when all five are present, else from
+    the bars. The returned dict always carries rooms_source so the artifact
+    can say which path graded each fire ('persisted', 'bars', or 'none')."""
+    s = dict(sig or {})
+    src = "persisted"
+    if not all(s.get(k) is not None for k in KEYS):
+        bars = keys_from_bars(ticker, entry_date)
+        if bars:
+            s.update(bars)
+            src = "bars"
+        else:
+            src = "none"
+    out = derive(s, knobs)
+    out["rooms_source"] = src if out.get("kc_room") is not None else "none"
+    return out

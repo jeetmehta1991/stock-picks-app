@@ -265,7 +265,14 @@ def _straddle_txt(free: dict) -> str:
     an in-sample entry that exits inside the holdout IS scored. Name how
     many, from the artifact's own window block; an artifact written before
     the count existed says nothing rather than implying zero (L580)."""
-    w = ((free.get("window") or {}).get("trade_log") or {})
+    w0 = free.get("window")
+    # S6-B3406: a grader once wrote `window` as a STRING and this reader
+    # crashed every config's section ("'str' object has no attribute 'get'",
+    # L1009). A shape this reader cannot take renders as no straddle line -
+    # the per-config guard in build() names an unreadable artifact visibly.
+    w = (w0.get("trade_log") or {}) if isinstance(w0, dict) else {}
+    if not isinstance(w, dict):
+        w = {}
     s = w.get("straddle_rows")
     n = s.get("rows") if isinstance(s, dict) else None
     if n is None:
@@ -590,7 +597,17 @@ def build(cubes: list[str] | None = None) -> str:
                    + " |")
     out += ["", "## Per-config findings", ""]
     for c in graded:
-        out += config_section(c, ledger.get(c, {}), load_artifacts(c))
+        # S6-B3406 (2): one config's unreadable artifact must not cost every
+        # config's section - the first knob-family landing did exactly that
+        # (L1009). The note is VISIBLE in the report (never a silent skip,
+        # #122/#232), and the landing event still records report_note.
+        try:
+            out += config_section(c, ledger.get(c, {}), load_artifacts(c))
+        except Exception as e:                           # noqa: BLE001
+            out += [f"### {c}", "",
+                    f"**ARTIFACT UNREADABLE (S6-B3406): {type(e).__name__}: {e} "
+                    "- this config's section could not be rendered; its grader's "
+                    "artifact needs the shared shapes (free_level_window).**", ""]
     return "\n".join(out) + "\n"
 
 

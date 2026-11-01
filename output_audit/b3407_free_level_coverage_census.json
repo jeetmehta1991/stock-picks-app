@@ -1,0 +1,439 @@
+{
+ "batch": "B3139q-r171",
+ "ticket": "S6-B3407",
+ "method": "per artifact on a demand-pruned cube: fraction of the strategy's deduplicated landed fires whose signals_at_entry carries every SPECS tools.free_levels.ops key",
+ "artifacts_measured": 32,
+ "per_family": {
+  "knob": 2,
+  "bollinger": 9,
+  "candle": 1,
+  "npoc": 12,
+  "pairs": 8
+ },
+ "below_0_9": [
+  "output_b3248sq_p2_1p5_p2_1p5_free_levels.json",
+  "output_b3248sq_p2_2p0_p2_2p0_free_levels.json"
+ ],
+ "rows": [
+  {
+   "artifact": "output_b3248sq_p2_1p5_p2_1p5_free_levels.json",
+   "strategy": "squeeze_breakout",
+   "grader": "scripts/grade_free_levels_knob.py",
+   "cube": "output_b3248sq_p2_1p5_p2_1p5",
+   "keys": [
+    "bb_20_20_lower",
+    "bb_20_20_upper",
+    "kc_lower",
+    "kc_upper",
+    "kc_mid"
+   ],
+   "fires_total": 726,
+   "fires_with_all_keys": 114,
+   "coverage": 0.157025
+  },
+  {
+   "artifact": "output_b3248sq_p2_2p0_p2_2p0_free_levels.json",
+   "strategy": "squeeze_breakout",
+   "grader": "scripts/grade_free_levels_knob.py",
+   "cube": "output_b3248sq_p2_2p0_p2_2p0",
+   "keys": [
+    "bb_20_20_lower",
+    "bb_20_20_upper",
+    "kc_lower",
+    "kc_upper",
+    "kc_mid"
+   ],
+   "fires_total": 580,
+   "fires_with_all_keys": 83,
+   "coverage": 0.143103
+  },
+  {
+   "artifact": "output_bl_span009_span009_free_levels.json",
+   "strategy": "bollinger_lower",
+   "grader": "scripts/grade_free_levels_bollinger.py",
+   "cube": "output_bl_span009_span009",
+   "keys": [
+    "adx"
+   ],
+   "fires_total": 308,
+   "fires_with_all_keys": 308,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_bl_span020_span020_free_levels.json",
+   "strategy": "bollinger_lower",
+   "grader": "scripts/grade_free_levels_bollinger.py",
+   "cube": "output_bl_span020_span020",
+   "keys": [
+    "adx"
+   ],
+   "fires_total": 37,
+   "fires_with_all_keys": 37,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_bl_span021_span021_free_levels.json",
+   "strategy": "bollinger_lower",
+   "grader": "scripts/grade_free_levels_bollinger.py",
+   "cube": "output_bl_span021_span021",
+   "keys": [
+    "adx"
+   ],
+   "fires_total": 29,
+   "fires_with_all_keys": 29,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_bl_span050_span050_free_levels.json",
+   "strategy": "bollinger_lower",
+   "grader": "scripts/grade_free_levels_bollinger.py",
+   "cube": "output_bl_span050_span050",
+   "keys": [
+    "adx"
+   ],
+   "fires_total": 162,
+   "fires_with_all_keys": 162,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_bl_span100_span100_free_levels.json",
+   "strategy": "bollinger_lower",
+   "grader": "scripts/grade_free_levels_bollinger.py",
+   "cube": "output_bl_span100_span100",
+   "keys": [
+    "adx"
+   ],
+   "fires_total": 414,
+   "fires_with_all_keys": 414,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_bl_span150_span150_free_levels.json",
+   "strategy": "bollinger_lower",
+   "grader": "scripts/grade_free_levels_bollinger.py",
+   "cube": "output_bl_span150_span150",
+   "keys": [
+    "adx"
+   ],
+   "fires_total": 539,
+   "fires_with_all_keys": 539,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_bl_span250_span250_free_levels.json",
+   "strategy": "bollinger_lower",
+   "grader": "scripts/grade_free_levels_bollinger.py",
+   "cube": "output_bl_span250_span250",
+   "keys": [
+    "adx"
+   ],
+   "fires_total": 698,
+   "fires_with_all_keys": 698,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_bl_step2_p4_250_p4_250_free_levels.json",
+   "strategy": "bollinger_lower",
+   "grader": "scripts/grade_free_levels_bollinger.py",
+   "cube": "C:/Users/jeetm/Github/stock-picks-app/output_bl_step2_p4_250_p4_250",
+   "keys": [
+    "adx"
+   ],
+   "fires_total": 5572,
+   "fires_with_all_keys": 5572,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_bl_step2_p4_9_p4_9_free_levels.json",
+   "strategy": "bollinger_lower",
+   "grader": "scripts/grade_free_levels_bollinger.py",
+   "cube": "C:/Users/jeetm/Github/stock-picks-app/output_bl_step2_p4_9_p4_9",
+   "keys": [
+    "adx"
+   ],
+   "fires_total": 1737,
+   "fires_with_all_keys": 1737,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_candle_tws_c14_step2_step2_b0.5_s0.0_w0.3_free_levels.json",
+   "strategy": "three_white_soldiers",
+   "grader": "scripts/grade_free_levels_candle.py",
+   "cube": "C:/Users/jeetm/Github/stock-picks-app/output_candle_tws_c14_step2_step2_b0.5_s0.0_w0.3",
+   "keys": [
+    "rsi_14"
+   ],
+   "fires_total": 955,
+   "fires_with_all_keys": 955,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_npoc_s1_p1_100_p2_252_p3_6_p4_40_p6_0p02_p1_100_p2_252_p3_6_p4_40_p6_0p02_free_levels.json",
+   "strategy": "naked_poc_retest_long",
+   "grader": "scripts/grade_free_levels_npoc.py",
+   "cube": "C:/Users/jeetm/Github/stock-picks-app/output_npoc_s1_p1_100_p2_252_p3_6_p4_40_p6_0p02_p1_100_p2_252_p3_6_p4_40_p6_0p02",
+   "keys": [
+    "naked_poc_count",
+    "naked_poc_nearest_distance_pct"
+   ],
+   "fires_total": 523,
+   "fires_with_all_keys": 523,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02_free_levels.json",
+   "strategy": "naked_poc_retest_long",
+   "grader": "scripts/grade_free_levels_npoc.py",
+   "cube": "C:/Users/jeetm/Github/stock-picks-app/output_npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02",
+   "keys": [
+    "naked_poc_count",
+    "naked_poc_nearest_distance_pct"
+   ],
+   "fires_total": 510,
+   "fires_with_all_keys": 510,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_npoc_s1_p1_20_p2_252_p3_6_p4_40_p6_0p02_p1_20_p2_252_p3_6_p4_40_p6_0p02_free_levels.json",
+   "strategy": "naked_poc_retest_long",
+   "grader": "scripts/grade_free_levels_npoc.py",
+   "cube": "C:/Users/jeetm/Github/stock-picks-app/output_npoc_s1_p1_20_p2_252_p3_6_p4_40_p6_0p02_p1_20_p2_252_p3_6_p4_40_p6_0p02",
+   "keys": [
+    "naked_poc_count",
+    "naked_poc_nearest_distance_pct"
+   ],
+   "fires_total": 659,
+   "fires_with_all_keys": 659,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_npoc_s1_p1_50_p2_252_p3_6_p4_40_p6_0p02_p1_50_p2_252_p3_6_p4_40_p6_0p02_free_levels.json",
+   "strategy": "naked_poc_retest_long",
+   "grader": "scripts/grade_free_levels_npoc.py",
+   "cube": "C:/Users/jeetm/Github/stock-picks-app/output_npoc_s1_p1_50_p2_252_p3_6_p4_40_p6_0p02_p1_50_p2_252_p3_6_p4_40_p6_0p02",
+   "keys": [
+    "naked_poc_count",
+    "naked_poc_nearest_distance_pct"
+   ],
+   "fires_total": 543,
+   "fires_with_all_keys": 543,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_npoc_s1_p1_9_p2_252_p3_6_p4_40_p6_0p02_p1_9_p2_252_p3_6_p4_40_p6_0p02_free_levels.json",
+   "strategy": "naked_poc_retest_long",
+   "grader": "scripts/grade_free_levels_npoc.py",
+   "cube": "C:/Users/jeetm/Github/stock-picks-app/output_npoc_s1_p1_9_p2_252_p3_6_p4_40_p6_0p02_p1_9_p2_252_p3_6_p4_40_p6_0p02",
+   "keys": [
+    "naked_poc_count",
+    "naked_poc_nearest_distance_pct"
+   ],
+   "fires_total": 765,
+   "fires_with_all_keys": 765,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_npoc_s1_p2_126_p2_126_free_levels.json",
+   "strategy": "naked_poc_retest_long",
+   "grader": "scripts/grade_free_levels_npoc.py",
+   "cube": "output_npoc_s1_p2_126_p2_126",
+   "keys": [
+    "naked_poc_count",
+    "naked_poc_nearest_distance_pct"
+   ],
+   "fires_total": 559,
+   "fires_with_all_keys": 559,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_npoc_s1_p3_12_p2_252_p4_40_p6_0p02_p3_12_p2_252_p4_40_p6_0p02_free_levels.json",
+   "strategy": "naked_poc_retest_long",
+   "grader": "scripts/grade_free_levels_npoc.py",
+   "cube": "C:/Users/jeetm/Github/stock-picks-app/output_npoc_s1_p3_12_p2_252_p4_40_p6_0p02_p3_12_p2_252_p4_40_p6_0p02",
+   "keys": [
+    "naked_poc_count",
+    "naked_poc_nearest_distance_pct"
+   ],
+   "fires_total": 576,
+   "fires_with_all_keys": 576,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_npoc_s1_p3_4_p3_4_free_levels.json",
+   "strategy": "naked_poc_retest_long",
+   "grader": "scripts/grade_free_levels_npoc.py",
+   "cube": "output_npoc_s1_p3_4_p3_4",
+   "keys": [
+    "naked_poc_count",
+    "naked_poc_nearest_distance_pct"
+   ],
+   "fires_total": 492,
+   "fires_with_all_keys": 492,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_npoc_s1_p3_50_p2_252_p4_40_p6_0p02_p3_50_p2_252_p4_40_p6_0p02_free_levels.json",
+   "strategy": "naked_poc_retest_long",
+   "grader": "scripts/grade_free_levels_npoc.py",
+   "cube": "C:/Users/jeetm/Github/stock-picks-app/output_npoc_s1_p3_50_p2_252_p4_40_p6_0p02_p3_50_p2_252_p4_40_p6_0p02",
+   "keys": [
+    "naked_poc_count",
+    "naked_poc_nearest_distance_pct"
+   ],
+   "fires_total": 600,
+   "fires_with_all_keys": 600,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_npoc_s1_p3_8_p2_252_p4_40_p6_0p02_p3_8_p2_252_p4_40_p6_0p02_free_levels.json",
+   "strategy": "naked_poc_retest_long",
+   "grader": "scripts/grade_free_levels_npoc.py",
+   "cube": "C:/Users/jeetm/Github/stock-picks-app/output_npoc_s1_p3_8_p2_252_p4_40_p6_0p02_p3_8_p2_252_p4_40_p6_0p02",
+   "keys": [
+    "naked_poc_count",
+    "naked_poc_nearest_distance_pct"
+   ],
+   "fires_total": 537,
+   "fires_with_all_keys": 537,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_npoc_s1_p4_20_p2_252_p3_6_p6_0p02_p4_20_p2_252_p3_6_p6_0p02_free_levels.json",
+   "strategy": "naked_poc_retest_long",
+   "grader": "scripts/grade_free_levels_npoc.py",
+   "cube": "C:/Users/jeetm/Github/stock-picks-app/output_npoc_s1_p4_20_p2_252_p3_6_p6_0p02_p4_20_p2_252_p3_6_p6_0p02",
+   "keys": [
+    "naked_poc_count",
+    "naked_poc_nearest_distance_pct"
+   ],
+   "fires_total": 527,
+   "fires_with_all_keys": 527,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_npoc_s1_p4_30_p2_252_p3_6_p6_0p02_p4_30_p2_252_p3_6_p6_0p02_free_levels.json",
+   "strategy": "naked_poc_retest_long",
+   "grader": "scripts/grade_free_levels_npoc.py",
+   "cube": "C:/Users/jeetm/Github/stock-picks-app/output_npoc_s1_p4_30_p2_252_p3_6_p6_0p02_p4_30_p2_252_p3_6_p6_0p02",
+   "keys": [
+    "naked_poc_count",
+    "naked_poc_nearest_distance_pct"
+   ],
+   "fires_total": 516,
+   "fires_with_all_keys": 516,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_pairs_mrl_s1_p5_0p01_p6_40_p5_0p01_p6_40_free_levels.json",
+   "strategy": "pairs_mean_reversion_long",
+   "grader": "scripts/grade_free_levels_pairs.py",
+   "cube": "C:/Users/jeetm/Github/stock-picks-app/output_pairs_mrl_s1_p5_0p01_p6_40_p5_0p01_p6_40",
+   "keys": [
+    "pair_count_active",
+    "pair_half_life",
+    "pair_zscore_signed"
+   ],
+   "fires_total": 517,
+   "fires_with_all_keys": 517,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_pairs_mrl_s1_p5_0p01_p6_60_p5_0p01_p6_60_free_levels.json",
+   "strategy": "pairs_mean_reversion_long",
+   "grader": "scripts/grade_free_levels_pairs.py",
+   "cube": "C:/Users/jeetm/Github/stock-picks-app/output_pairs_mrl_s1_p5_0p01_p6_60_p5_0p01_p6_60",
+   "keys": [
+    "pair_count_active",
+    "pair_half_life",
+    "pair_zscore_signed"
+   ],
+   "fires_total": 497,
+   "fires_with_all_keys": 497,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_pairs_mrl_s1_p5_0p01_p6_90_p5_0p01_p6_90_free_levels.json",
+   "strategy": "pairs_mean_reversion_long",
+   "grader": "scripts/grade_free_levels_pairs.py",
+   "cube": "C:/Users/jeetm/Github/stock-picks-app/output_pairs_mrl_s1_p5_0p01_p6_90_p5_0p01_p6_90",
+   "keys": [
+    "pair_count_active",
+    "pair_half_life",
+    "pair_zscore_signed"
+   ],
+   "fires_total": 476,
+   "fires_with_all_keys": 476,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_pairs_mrl_s1_p6_40_p5_0p05_p6_40_p5_0p05_free_levels.json",
+   "strategy": "pairs_mean_reversion_long",
+   "grader": "scripts/grade_free_levels_pairs.py",
+   "cube": "C:/Users/jeetm/Github/stock-picks-app/output_pairs_mrl_s1_p6_40_p5_0p05_p6_40_p5_0p05",
+   "keys": [
+    "pair_count_active",
+    "pair_half_life",
+    "pair_zscore_signed"
+   ],
+   "fires_total": 819,
+   "fires_with_all_keys": 819,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_pairs_mrl_s1_p6_90_p5_0p05_p6_90_p5_0p05_free_levels.json",
+   "strategy": "pairs_mean_reversion_long",
+   "grader": "scripts/grade_free_levels_pairs.py",
+   "cube": "C:/Users/jeetm/Github/stock-picks-app/output_pairs_mrl_s1_p6_90_p5_0p05_p6_90_p5_0p05",
+   "keys": [
+    "pair_count_active",
+    "pair_half_life",
+    "pair_zscore_signed"
+   ],
+   "fires_total": 762,
+   "fires_with_all_keys": 762,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_pairs_mrl_step1_production_free_levels.json",
+   "strategy": "pairs_mean_reversion_long",
+   "grader": "scripts/grade_free_levels_pairs.py",
+   "cube": "C:/Users/jeetm/Github/stock-picks-app/output_pairs_mrl_step1_production",
+   "keys": [
+    "pair_count_active",
+    "pair_half_life",
+    "pair_zscore_signed"
+   ],
+   "fires_total": 797,
+   "fires_with_all_keys": 797,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60_free_levels.json",
+   "strategy": "pairs_mean_reversion_long",
+   "grader": "scripts/grade_free_levels_pairs.py",
+   "cube": "C:/Users/jeetm/Github/stock-picks-app/output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60",
+   "keys": [
+    "pair_count_active",
+    "pair_half_life",
+    "pair_zscore_signed"
+   ],
+   "fires_total": 3512,
+   "fires_with_all_keys": 3512,
+   "coverage": 1.0
+  },
+  {
+   "artifact": "output_pairs_mrl_step2_production_free_levels.json",
+   "strategy": "pairs_mean_reversion_long",
+   "grader": "scripts/grade_free_levels_pairs.py",
+   "cube": "C:/Users/jeetm/Github/stock-picks-app/output_pairs_mrl_step2_production",
+   "keys": [
+    "pair_count_active",
+    "pair_half_life",
+    "pair_zscore_signed"
+   ],
+   "fires_total": 5622,
+   "fires_with_all_keys": 5622,
+   "coverage": 1.0
+  }
+ ]
+}

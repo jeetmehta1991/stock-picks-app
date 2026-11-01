@@ -4512,7 +4512,9 @@ def scan_miss_capture_complete(entries, *, text=None, observed=None,
                 # S6-B3410 (b) - owner ruling 2026-10-31, "B approved": a
                 # miss's L-entry, CHECKLIST citation, queue row and instance
                 # fix still land same-turn, but the NEW scan/pin/mechanism may
-                # batch into one enforcement batch per day UNLESS the miss is
+                # batch into one enforcement batch per full-pyramid cycle (one
+                # per 3 turns, the (a) cadence; owner correction 2026-11-01 -
+                # not per day) UNLESS the miss is
                 # owner-visible. The accepted form names the deferral AND its
                 # ticket in one clause - "Mechanism: BATCHED (S6-xxxx)." - so
                 # the escape is strict (L596: the escape gets the stricter

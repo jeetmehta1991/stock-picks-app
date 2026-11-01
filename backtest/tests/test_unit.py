@@ -9749,11 +9749,13 @@ def test_batch203_regime_selector_enforces_affinity():
     assert should_strategy_fire_in_regime("cmf_flip", "neutral") is True
     assert should_strategy_fire_in_regime("cmf_flip", "bull") is False
     assert should_strategy_fire_in_regime("cmf_flip", "crisis") is False
-    # Short-side (post-Batch-271): allow bear + crisis + neutral, block bull only
+    # Short-side: hull_rsi_short's entry was an ORPHAN (its strategy deleted
+    # B722) and was REMOVED at B3139q-r171 (S6-B3405, owner Lane-1 approval
+    # 2026-11-01) - an unmapped name falls to the default allow-all
     assert should_strategy_fire_in_regime("hull_rsi_short", "bear") is True
     assert should_strategy_fire_in_regime("hull_rsi_short", "crisis") is True
     assert should_strategy_fire_in_regime("hull_rsi_short", "neutral") is True
-    assert should_strategy_fire_in_regime("hull_rsi_short", "bull") is False
+    assert should_strategy_fire_in_regime("hull_rsi_short", "bull") is True
 
 
 def test_batch273_smc_most_recent_event_within():
@@ -11439,9 +11441,11 @@ def test_batch271_short_regime_affinity_expanded_to_neutral():
     (T1a forensic: neutral was ~70% of the 4y window). S6-B1248-SHORT-REGIME-
     AFFINITY (owner ruled 2026-10-20, recommendation (a)) then withdrew the
     policy itself: the registered shorts that carried it now fire in every
-    regime, direction passed or not. Names that no longer register keep their
-    inert entries; the cross-asset risk_off_bond_equity_short keeps its own
-    regime-defined set (its signal IS a risk-off regime)."""
+    regime, direction passed or not. The orphan entries of names that no
+    longer register were REMOVED at B3139q-r171 (S6-B3405, owner Lane-1
+    approval 2026-11-01), so those names fall to the default allow-all; the
+    cross-asset risk_off_bond_equity_short keeps its own regime-defined set
+    (its signal IS a risk-off regime)."""
     from backtest.engine.regime_selector import should_strategy_fire_in_regime
     registered_copies = [
         "rsi_overbought_short", "bollinger_upper_short",
@@ -11458,10 +11462,11 @@ def test_batch271_short_regime_affinity_expanded_to_neutral():
             assert should_strategy_fire_in_regime(strat, r) is True, (strat, r)
             assert should_strategy_fire_in_regime(
                 strat, r, direction="short") is True, (strat, r)
-    # names that no longer register keep their (inert) Batch 271 entries
+    # names that no longer register had their orphan entries REMOVED
+    # (S6-B3405) - unmapped, they read as the default allow-all
     for strat in ("hull_rsi_short", "camarilla_rsi_obv_short", "po3_htf_aligned_short"):
         assert should_strategy_fire_in_regime(strat, "neutral") is True
-        assert should_strategy_fire_in_regime(strat, "bull") is False
+        assert should_strategy_fire_in_regime(strat, "bull") is True
     # Cross-asset shorts NOT expanded (signals are regime-defined)
     assert should_strategy_fire_in_regime("risk_off_bond_equity_short", "neutral") is False
     assert should_strategy_fire_in_regime("risk_off_bond_equity_short", "bear") is True
@@ -70743,11 +70748,11 @@ def test_b3392c_every_regime_affinity_entry_is_named_until_its_ruling():
     cannot say WHICH entry left - one removed and another added both pass it
     (L747, #280). Pinned: the key set of STRATEGY_REGIME_AFFINITY is frozen
     BY NAME; a key leaves only by moving into REMOVED with its reason, and
-    joins only by being named here. Six keys name no registered strategy -
-    their strategies were deleted - and are named in ORPHANS with the batch
-    that deleted each; removing them edits backtest/engine/regime_selector.py,
-    which the running chain's engine hash covers, so it waits for the chain
-    (S6-B3405). Must-fire: a dropped key, an added key, a re-registered
+    joins only by being named here. Six keys named no registered strategy -
+    their strategies were deleted - and were REMOVED at B3139q-r171 on the
+    owner's Lane-1 approval (S6-B3405, 2026-11-01); each sits in REMOVED
+    with that ruling, and ORPHANS keeps the record of which batch deleted
+    each strategy. Must-fire: a dropped key, an added key, a re-registered
     orphan and an unnamed unregistered key are each reported; must-quiet:
     the live registry."""
     import sys as _s
@@ -70783,7 +70788,11 @@ def test_b3392c_every_regime_affinity_entry_is_named_until_its_ruling():
         'weekly_bias_pullback_long', 'williams_stoch_dual', 'xs_combined_momentum_low_ivol',
         'xs_low_beta_long', 'xs_momentum_bottom_decile_short', 'xs_momentum_quality_combined',
         'xs_momentum_top_decile', 'xs_quality_top_quintile_long'}
-    REMOVED = {}            # key -> the ruling or batch that removed it
+    REMOVED = {             # key -> the ruling or batch that removed it
+        k: "S6-B3405 (owner Lane-1 approval 2026-11-01, B3139q-r171)"
+        for k in ("buyback_8k_recent_long", "camarilla_rsi_obv_short",
+                  "dxy_headwind_multinational_short", "hull_rsi_short",
+                  "po3_htf_aligned_long", "po3_htf_aligned_short")}
     ORPHANS = {             # key -> the batch that deleted its strategy (CLAUDE.md banner)
         "buyback_8k_recent_long": "B682 (EV-7)",
         "camarilla_rsi_obv_short": "B874",
@@ -70805,7 +70814,8 @@ def test_b3392c_every_regime_affinity_entry_is_named_until_its_ruling():
     assert kinds == ["joined unnamed", "left without a reason", "orphan is registered",
                      "unregistered and not a named orphan"], got
     # must-quiet: a key moved into REMOVED with its reason is a recorded departure
-    assert _b3392c_affinity_drift(live - {"tema_dema"}, FROZEN, {"tema_dema": "ruling X"},
+    assert _b3392c_affinity_drift(live - {"tema_dema"}, FROZEN,
+                                  dict(REMOVED, tema_dema="ruling X"),
                                   ORPHANS, registered) == []
 
 
@@ -70854,7 +70864,11 @@ def test_b3406_every_free_levels_window_has_the_shared_shape():
         _s.path.insert(0, str(root / "scripts"))
     import postconfig_doc as _pcd
     import queue_state as _qs
-    KNOWN = {"scripts/grade_free_levels_knob.py": "S6-B3406"}
+    # B3139q-r171 (owner Lane-1 approval 2026-11-01): the knob grader now
+    # writes the shared block and both squeeze artifacts were regenerated,
+    # so the register EMPTIED (L587) - KNOWN stays as the mechanism for the
+    # next violating grader; the fixture arms exercise it synthetically.
+    KNOWN: dict = {}
     arts = [(p.name, _j.loads(p.read_text(encoding="utf-8")))
             for p in sorted((root / "output_audit").glob("*_free_levels.json"))]
     assert len(arts) >= 20, len(arts)                    # never vacuously empty (#226)
@@ -70874,14 +70888,22 @@ def test_b3406_every_free_levels_window_has_the_shared_shape():
             continue
         assert isinstance(_pcd._straddle_txt(d), str), name
     # must-fire: a string window and a dict without trade_log, unregistered graders
+    SYN_KNOWN = {"scripts/legacy_grader.py": "S6-SYN"}   # fixture-only register
     bad = [("a", {"window": "in-sample", "grader": "scripts/new_grader.py"}),
            ("b", {"window": {"is": ["2022-05-05", "2025-05-05"]}, "grader": "scripts/x.py (S6-X)"})]
-    assert [v[0] for v in _b3406_window_shape_violations(bad, KNOWN)] == ["a", "b"]
+    assert [v[0] for v in _b3406_window_shape_violations(bad, SYN_KNOWN)] == ["a", "b"]
     # must-quiet: absent, the shared block, and a registered grader's string
     ok = [("c", {"grader": "scripts/y.py"}),
           ("d", {"window": {"trade_log": {"rows_before_window": 1}}, "grader": "scripts/y.py"}),
-          ("e", {"window": "in-sample", "grader": "scripts/grade_free_levels_knob.py"})]
-    assert _b3406_window_shape_violations(ok, KNOWN) == []
+          ("e", {"window": "in-sample", "grader": "scripts/legacy_grader.py"})]
+    assert _b3406_window_shape_violations(ok, SYN_KNOWN) == []
+    # the regenerated knob artifacts carry the shared block (the L587 exit proof)
+    knob = [d for _n, d in arts if isinstance(d, dict)
+            and str(d.get("grader") or "").split(" ")[0]
+            == "scripts/grade_free_levels_knob.py"]
+    assert knob and all(isinstance(d.get("window"), dict)
+                        and isinstance(d["window"].get("trade_log"), dict)
+                        for d in knob), "the fixed knob grader writes the shared block"
 
 
 def _b3407_low_coverage(artifacts, known, floor):
@@ -70929,7 +70951,12 @@ def test_b3407_a_free_level_leg_grades_the_landed_fires():
         _s.path.insert(0, str(root / "scripts"))
     import queue_state as _qs
     FLOOR = 0.9
-    KNOWN = {"scripts/grade_free_levels_knob.py": "S6-B3407"}
+    # B3139q-r171 (owner Lane-1 approval 2026-11-01): the derivation now
+    # falls back to the BARS (squeeze_derived_landed.derive_row), the grader
+    # fails closed under --coverage-min, and both squeeze artifacts were
+    # regenerated at coverage 1.0 (580/580, 726/726) - the register EMPTIED
+    # (L587); the fixture arms exercise it synthetically.
+    KNOWN: dict = {}
     arts = [(p.name, _j.loads(p.read_text(encoding="utf-8")))
             for p in sorted((root / "output_audit").glob("*_free_levels.json"))]
     recorded = [n for n, d in arts if isinstance(d, dict)
@@ -70942,16 +70969,26 @@ def test_b3407_a_free_level_leg_grades_the_landed_fires():
             "a KNOWN entry names an open ticket", grader, ticket, states.get(ticket))
         assert any(g == grader for _, g, _, _ in _b3407_low_coverage(arts, {}, FLOOR)), (
             "a fixed grader leaves KNOWN (L587)", grader)
+    # the regenerated knob artifacts cover every landed fire, floor recorded
+    knob = [d for _n, d in arts if isinstance(d, dict)
+            and str(d.get("grader") or "").split(" ")[0]
+            == "scripts/grade_free_levels_knob.py"]
+    assert knob, "the knob artifacts exist (#226)"
+    for d in knob:
+        rep = d["reproduction"]
+        assert rep["covered_fires"] == rep["fires_total"] > 0, rep
+        assert rep.get("coverage_min") == FLOOR, rep.get("coverage_min")
     # must-fire: low coverage from a grader not registered
+    SYN_KNOWN = {"scripts/legacy_grader.py": "S6-SYN"}   # fixture-only register
     bad = [("a", {"reproduction": {"covered_fires": 10, "fires_total": 100},
                   "grader": "scripts/new_grader.py"})]
-    assert [v[0] for v in _b3407_low_coverage(bad, KNOWN, FLOOR)] == ["a"]
+    assert [v[0] for v in _b3407_low_coverage(bad, SYN_KNOWN, FLOOR)] == ["a"]
     # must-quiet: high coverage, no coverage fields, a registered grader's low coverage
     ok = [("b", {"reproduction": {"covered_fires": 95, "fires_total": 100}, "grader": "scripts/y.py"}),
           ("c", {"reproduction": {"rate": 1.0}, "grader": "scripts/y.py"}),
           ("d", {"reproduction": {"covered_fires": 10, "fires_total": 100},
-                 "grader": "scripts/grade_free_levels_knob.py"})]
-    assert _b3407_low_coverage(ok, KNOWN, FLOOR) == []
+                 "grader": "scripts/legacy_grader.py"})]
+    assert _b3407_low_coverage(ok, SYN_KNOWN, FLOOR) == []
 
 
 _RUNBOOK_ENGINE_ALLOW = ("USE_SMC_PANEL_CACHE", "SMC_PHASE", "smc_skip_primitives",

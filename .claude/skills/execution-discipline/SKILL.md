@@ -985,7 +985,9 @@ it checks that CODE MOVED, not that THIS class is now enforced, and B1702 moved 
    `JUDGMENT-ONLY: <why no mechanism is possible>`, or - S6-B3410 (b),
    owner 2026-10-31 'B approved' - `Mechanism: BATCHED (S6-xxxx).`:
    the new scan/pin/mechanism batches into ONE enforcement batch per
-   day under that NAMED ticket, UNLESS the miss is owner-visible,
+   full-pyramid cycle - one per 3 turns, the (a) cadence (owner
+   correction sent 2026-11-01, superseding the 'per day' this first
+   said) - under that NAMED ticket, UNLESS the miss is owner-visible,
    which lands same-turn. Members 1-4 always land same-turn. The
    batched form is read by scan_miss_capture_complete; an unnamed
    BATCHED does not satisfy it (L596: the escape gets the stricter

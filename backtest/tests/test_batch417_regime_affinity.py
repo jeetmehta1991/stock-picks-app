@@ -111,10 +111,17 @@ def test_batch417_strategy_regime_affinity_count_floor():
     # the 23 explicit pure-short entries that copied the blanket short
     # policy (Batch 203 / Batch 271); test_b1248_shorts_carry_no_regime_policy
     # names them. Floor = the new count, no margin.
-    assert len(STRATEGY_REGIME_AFFINITY) >= 78, (
+    # 78 -> 72 (B3139q-r171): S6-B3405 (owner Lane-1 approval 2026-11-01)
+    # removed the 6 ORPHAN keys whose strategies were deleted
+    # (buyback_8k_recent_long B682, camarilla_rsi_obv_short B874,
+    # dxy_headwind_multinational_short B1189, hull_rsi_short +
+    # po3_htf_aligned_long + po3_htf_aligned_short B722) - no registered
+    # strategy could look them up; test_b3392c names each in REMOVED.
+    assert len(STRATEGY_REGIME_AFFINITY) >= 72, (
         f"STRATEGY_REGIME_AFFINITY has {len(STRATEGY_REGIME_AFFINITY)} "
-        f"entries, expected >= 78 (post-B617 -19 -> 105; post-B639 + "
-        f"family audits -> 101; B3139q-r79 -23 policy copies -> 78)")
+        f"entries, expected >= 72 (post-B617 -19 -> 105; post-B639 + "
+        f"family audits -> 101; B3139q-r79 -23 policy copies -> 78; "
+        f"B3139q-r171 -6 orphans -> 72)")
 
 
 # Batch 418 (2026-05-28 owner-approved "proceed"): 15 OVERRIDES of existing
@@ -129,7 +136,6 @@ BATCH_418_OVERRIDES = {
     "pairs_mean_reversion_long":    {"bear"},
     "pead_long":                    {"bear", "bull"},
     "po3_bullish":                  {"bull"},
-    "po3_htf_aligned_long":         {"bull"},
     "pre_fomc_long_sleeve":         {"bear", "neutral"},
     "prev_day_high_break":          {"bear"},
     "supertrend_macd":              {"bull"},
@@ -137,6 +143,15 @@ BATCH_418_OVERRIDES = {
     "xs_low_beta_long":             {"bear", "bull"},
     "xs_momentum_top_decile":       {"bull"},
     "xs_quality_top_quintile_long": {"bear"},
+}
+
+# B3139q-r171 (S6-B3405, owner Lane-1 approval 2026-11-01): po3_htf_aligned_long
+# was a Batch-418 override whose STRATEGY was deleted at B722 - the entry was an
+# orphan no registered strategy could look up, removed with the other five
+# (test_b3392c names each in REMOVED). Kept here so the 29-entry cube-derivation
+# arithmetic stays whole.
+BATCH_418_REMOVED_ORPHANS = {
+    "po3_htf_aligned_long": "S6-B3405 (strategy deleted B722)",
 }
 
 
@@ -164,14 +179,18 @@ def test_batch418_total_cube_derived_entries():
     cube-derived entries."""
     cube_derived_count = (len(BATCH_417_NEW_ENTRIES_ACTIVE)
                           + len(BATCH_417_REMOVED_BY_FAMILY_AUDIT)
-                          + len(BATCH_418_OVERRIDES))
+                          + len(BATCH_418_OVERRIDES)
+                          + len(BATCH_418_REMOVED_ORPHANS))
     assert cube_derived_count == 29, (
-        f"Expected 14 + 15 = 29 cube-derived entries (incl B617-removed); got "
-        f"{cube_derived_count}")
+        f"Expected 14 + 15 = 29 cube-derived entries (incl B617-removed and "
+        f"the B3139q-r171 orphan); got {cube_derived_count}")
     # No collision between the two sets (Batch 417 NEW were not-prior-entries;
     # Batch 418 OVERRIDES were prior-entries being changed):
     all_417 = set(BATCH_417_NEW_ENTRIES_ACTIVE) | BATCH_417_REMOVED_BY_FAMILY_AUDIT
-    overlap = all_417 & set(BATCH_418_OVERRIDES)
+    all_418 = set(BATCH_418_OVERRIDES) | set(BATCH_418_REMOVED_ORPHANS)
+    overlap = all_417 & all_418
     assert not overlap, (
         f"Batch 417 NEW and Batch 418 OVERRIDE sets must be disjoint; "
         f"overlap = {overlap}")
+    # the removed orphan stays removed
+    assert all(k not in STRATEGY_REGIME_AFFINITY for k in BATCH_418_REMOVED_ORPHANS)

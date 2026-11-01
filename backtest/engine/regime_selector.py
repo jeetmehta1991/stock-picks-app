@@ -160,7 +160,12 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     "vix_backwardation_long":           {"bear", "crisis"},
     "sector_rotation_defensive_long":   {"bear", "crisis"},
     "gold_silver_risk_off_long":        {"bear", "crisis"},
-    "dxy_headwind_multinational_short": {"bull", "neutral", "bear", "crisis"},
+    # S6-B3405 (owner Lane-1 approval 2026-11-01): six entries whose
+    # strategies were deleted (buyback_8k_recent_long B682,
+    # camarilla_rsi_obv_short B874, dxy_headwind_multinational_short
+    # B1189, hull_rsi_short + po3_htf_aligned_long + po3_htf_aligned_short
+    # B722) REMOVED - no registered strategy could look them up
+    # (test_b3392c names each in REMOVED).
     # Volume profile (Batch 255 / Batch 233 module): POC magnetism + Value
     # Area work in trending + range markets; break down in crisis (panic
     # selling overrides structure).
@@ -274,7 +279,6 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     # on bullish backdrop per Cieslak-Pang 2024.
     "pre_fomc_long_sleeve":                {"bear", "neutral"},  # Batch 418 cube override (was {bull, neutral}; bull Sharpe negative)
     "pre_fomc_quality_momentum_long":      {"bull", "neutral"},
-    "buyback_8k_recent_long":              {"bull", "neutral"},
     # PO3 + multi-TF (Batch 217): self-gate via 200-EMA + weekly/monthly
     # biases; symmetric pairs get explicit regime restrictions.
     "po3_bullish":                  {"bull"},  # Batch 418 cube override (was {bull, neutral}; neutral Sharpe negative)
@@ -282,8 +286,6 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     # recs fable mode be extremely thorough', recommendation (a)): this
     # block's explicit-short entries - copies of the blanket short policy -
     # were removed; an unmapped short now fires in every regime.
-    "po3_htf_aligned_long":         {"bull"},  # Batch 418 cube override (was {bull, neutral}; neutral Sharpe negative)
-    "po3_htf_aligned_short":        {"bear", "crisis", "neutral"},  # Batch 271 expand
     "htf_aligned_breakout_long":    {"bull", "neutral"},
     "weekly_bias_pullback_long":    {"bull", "neutral"},
     "monthly_bias_momentum_long":   {"bull", "neutral"},
@@ -329,12 +331,10 @@ STRATEGY_REGIME_AFFINITY: dict[str, set[str]] = {
     # recs fable mode be extremely thorough', recommendation (a)): this
     # block's explicit-short entries - copies of the blanket short policy -
     # were removed; an unmapped short now fires in every regime.
-    "hull_rsi_short":           {"bear", "crisis", "neutral"},
     # evening_star_short entry DELETED Batch 639 (2026-06-09) - strategy
     # deleted from screener.py same batch as redundant with
     # strat_morning_star SHORT post option-2 reconciliation. Entry would
     # become dangling.
-    "camarilla_rsi_obv_short":  {"bear", "crisis", "neutral"},
 
     # ----- Batch 417 (2026-05-28 owner-approved) -----
     # Cube-derived per-regime affinity for 14 strategies that had NO prior
