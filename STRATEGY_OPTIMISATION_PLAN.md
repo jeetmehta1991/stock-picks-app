@@ -1524,7 +1524,7 @@ wave, all of them apply.
 
 1. **The Step-2 pre-triage is done and recorded** (§4.8 - MANDATORY before any Step-2 cube, per
    campaign).
-2. **Characterise the tickers file** (#187 / L445 - never infer scope from a filename):
+2. **Characterise the tickers file** (#187 / L445 - never infer scope from a filename; `scan_unverified_universe` now counts run_wave and launch_detached launches as launches, test_b3399b; S6-B3399):
    `python scripts/verify_universe_artifact.py output_audit/r5_universe_544.txt --compare-cube
    <a Step-1 cube's trade_exit_detail.csv>`. **Expect a PROVENANCE MISMATCH finding, and expect it to be
    correct**: Step 1 ran 200 tickers and Step 2 runs 544, so ~500 names are in the file and not in the
@@ -1829,7 +1829,7 @@ longer be written at all.
 4. **Any deferral must name an EXECUTABLE target** - a script path that exists and can be run - plus an
    owner and a trigger. Free text describing a future process is a DROP, not a deferral. ENFORCED on
    every DEFERRED row added in a turn by `scan_queue_vocabulary` (test_b3399a; S6-B3399).
-5. **Automation is not a substitute for READING the findings.** Battery steps 5-8 run unattended, but
+5. **Automation is not a substitute for READING the findings** - the LANDING REPORT block carries the steps and the findings, never only its header (`scan_undelivered_landing`, test_b2520; S6-B3399). Battery steps 5-8 run unattended, but
    their output is a list of findings addressed to a human: every judgment-step DONE in the ledger before
    B2520 carried a real finding (a band-level defect, the equivalence-class defect, a grader-loader crash
    found and pinned), and the lens battery's WARN / FAIL rows are the same material, delivered instead
@@ -2115,7 +2115,7 @@ sets the CRITERION - it does not waive the per-step approvals (§0.6).
 Every strategy's optimisation is reported through `scripts/producer_variant_table.py` as ONE artifact.
 Adding a strategy = adding a `SPECS` entry (formula + params); the renderer is strategy-agnostic.
 **Regenerate, never hand-edit** - a hand-edited copy is reverted by the next generation (L286). **Print a
-locked table from its renderer, never retype it** (L652 / #285): hand-retyping dropped columns three
+locked table from its renderer, never retype it** (L652 / #285; `scan_retyped_locked_table` keys on the Table A, C and D header signatures, test_b3399b; S6-B3399): hand-retyping dropped columns three
 times.
 
 ### 7.1 Section 1 - the BOOLEAN FORMULA (REQUIRED; a SPEC without it is rejected)

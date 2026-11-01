@@ -31760,9 +31760,19 @@ def test_b2520_stop_hook_blocks_until_a_landing_is_reported(tmp_path):
     out = vtc.scan_undelivered_landing([], text="LANDING REPORT: output_y", landings=p)
     assert len(out) == 1 and "output_x" in out[0]
     assert pl.last_landing("output_x", p)["reported_to_owner"] is False
-    # the report, inside a fence, clears it and flips the record (append-only)
+    # S6-B3399 (B3139q-r174, runbook line 1784): a BARE HEADER is not a
+    # delivery - the block carries the steps and the findings. The old
+    # fixture here was exactly that bare header; it now stays pending.
     out = vtc.scan_undelivered_landing(
         [], text="```\n=== LANDING REPORT: output_x ===\nbattery exit 0\n```",
+        landings=p)
+    assert len(out) == 1 and "output_x" in out[0], (
+        "a header with no steps or findings must stay pending (S6-B3399)", out)
+    assert pl.last_landing("output_x", p)["reported_to_owner"] is False
+    # the report WITH its steps and findings clears it and flips the record
+    out = vtc.scan_undelivered_landing(
+        [], text="```\n=== LANDING REPORT: output_x ===\nbattery exit 0 | "
+                 "9/9 steps RUN | findings 1\n  empty_signals_share WARN\n```",
         landings=p)
     assert out == [], out
     last = pl.last_landing("output_x", p)
@@ -55073,7 +55083,10 @@ def test_b3148_a_draft_probe_never_writes_the_production_ledger(tmp_path, monkey
     monkeypatch.setattr(pl, "LANDINGS", land)
     monkeypatch.setattr(rsc, "HALTS", halts)
     # the probe: injected text, default ledger -> verdict clears, nothing written
-    assert vtc.scan_undelivered_landing([], text="LANDING REPORT: output_x") == []
+    # (the text carries steps + findings - a bare header is no longer a
+    # delivery, runbook line 1784 / S6-B3399)
+    assert vtc.scan_undelivered_landing(
+        [], text="LANDING REPORT: output_x - 9/9 steps RUN, findings 0") == []
     assert [e["cube"] for e in pl.undelivered(land)] == ["output_x"]
     assert len(pl.read_landings(land)) == 1
     assert vtc.scan_chain_halt([], text="CHAIN HALT REPORT: w1") == []
@@ -55083,7 +55096,8 @@ def test_b3148_a_draft_probe_never_writes_the_production_ledger(tmp_path, monkey
     assert vtc.scan_chain_halt([], text="other work")
     # a caller-supplied path is an explicit request and still writes
     assert vtc.scan_undelivered_landing(
-        [], text="LANDING REPORT: output_x", landings=land) == []
+        [], text="LANDING REPORT: output_x - 9/9 steps RUN, findings 0",
+        landings=land) == []
     assert pl.undelivered(land) == []
     assert vtc.scan_chain_halt([], text="CHAIN HALT REPORT: w1", halts=halts) == []
     assert rsc.undelivered_halts(halts) == []
@@ -71058,6 +71072,67 @@ def test_b3399a_arm_position_and_deferred_row_contract():
                 "_reason:_ EXECUTED - landed and verified against code |")
     assert _m.scan_queue_vocabulary([], rows=[exec_row]) == [], (
         "the DEFERRED contract reaches no other class")
+
+
+def test_b3399b_launch_routes_and_locked_headers():
+    """S6-B3399 (B3139q-r174), two more M-TURN rules' arms.
+
+    (1) Runbook line 1494: run_wave.py --spec and launch_detached.py
+    --spec/--chain ARE launches for the universe check - a spec-driven launch
+    never names run_phase1a.py on its command line. Must-fire: a run_wave
+    launch with no verify_universe_artifact run; must-quiet: the same launch
+    with the verifier run in the turn, and a mere mention in a Write payload.
+
+    (2) Runbook line 2069: Tables A and C are LOCKED formats - a header
+    shaped like one but missing locked columns fires scan_retyped_locked_
+    table; the renderers' verbatim headers are quiet (one definition each:
+    producer_variant_table._TABLE_C_HEADER, build_table_a.TABLE_A_HEADER)."""
+    import importlib.util as _ilu
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    _spec = _ilu.spec_from_file_location(
+        "_vtc4", root / "scripts" / "verify_turn_compliance.py")
+    _m = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(_m)
+
+    def _turn(*calls):
+        return [{"type": "user", "message": {"content": "go"}},
+                {"type": "assistant", "message": {"content": [
+                    {"type": "tool_use", "name": n, "input": i}
+                    for n, i in calls]}}]
+
+    rw = ("Bash", {"command": "python scripts/run_wave.py --spec output_audit/x_spec.json"})
+    ld = ("Bash", {"command": "python scripts/launch_detached.py --chain --batch b1 "
+                              "--specs a_spec.json b_spec.json"})
+    ver = ("Bash", {"command": "python scripts/verify_universe_artifact.py "
+                               "output_audit/t.txt --compare-cube base.csv"})
+    mention = ("Write", {"file_path": "x.md",
+                         "content": "python scripts/run_wave.py --spec y.json"})
+    assert _m.scan_unverified_universe(_turn(rw)), (
+        "a run_wave --spec launch without the verifier must fire (S6-B3399)")
+    assert _m.scan_unverified_universe(_turn(ld)), (
+        "a launch_detached --chain launch without the verifier must fire")
+    assert _m.scan_unverified_universe(_turn(ver, rw)) == [], (
+        "the same launch with the verifier run is quiet")
+    assert _m.scan_unverified_universe(_turn(mention)) == [], (
+        "a Write payload naming the runner is a mention, not a launch (B1603)")
+
+    from build_table_a import TABLE_A_HEADER
+    from producer_variant_table import _TABLE_C_HEADER
+    bad_c = "| config | combos | graded | best combination |"
+    out = _m.scan_retyped_locked_table([], text=bad_c)
+    assert out and "Table C" in out[0], out
+    assert _m.scan_retyped_locked_table([], text=_TABLE_C_HEADER) == []
+    bad_a = "| id | layer | producer / parameter | production | status |"
+    out = _m.scan_retyped_locked_table([], text=bad_a)
+    assert out and "Table A" in out[0], out
+    assert _m.scan_retyped_locked_table([], text=TABLE_A_HEADER) == []
+    # the renderer and the gate share one definition per table (L593)
+    assert "TABLE_A_HEADER" in (root / "scripts" / "build_table_a.py").read_text(
+        encoding="utf-8")
 
 
 def test_b3411_history_read_is_judged_at_segment_grain():

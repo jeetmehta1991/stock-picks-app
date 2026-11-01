@@ -40,6 +40,13 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
+
+# S6-B3399 (B3139q-r174, runbook line 2069): the LOCKED Table A header, one
+# definition - the renderer emits it and scan_retyped_locked_table imports it,
+# so a column change arms the retyping gate in the same commit (L593).
+TABLE_A_HEADER = ("| id | layer | producer / parameter | what it does | "
+                  "production | band VALUES | free_band (OFFLINE) | "
+                  "resim_band (RESIM) | status |")
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import build_strategy_status as bss                      # noqa: E402
@@ -710,7 +717,7 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
          "it (B2845, owner-corrected: a ready and FINAL Table A per strategy);",
          "the engine-spec (SPECS) entry is built from these before any engine",
          "leg runs.", "",
-         "| id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |",
+         TABLE_A_HEADER,
          "|---|---|---|---|---|---|---|---|---|"]
     axes = []   # (id, param, n_levels, subset_safe, actuated) - footer
     pid = 0

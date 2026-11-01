@@ -1085,8 +1085,15 @@ def scan_unverified_universe(entries):
     # not read as a launch.
     _cmds = [_re3.sub(r'"[^"\n]*"|\'[^\'\n]*\'', " ", c) for c in _cmds]
     low = " ".join(_cmds).lower()
-    launched = ("run_phase1a.py" in low and
-                ("nohup" in low or "--output-dir" in low))
+    # S6-B3399 (B3139q-r174, runbook line 1494): run_wave.py and
+    # launch_detached.py ARE launches - a spec-driven launch never names
+    # run_phase1a.py on its command line, so the old predicate was blind to
+    # the two routes every real launch now takes.
+    launched = (("run_phase1a.py" in low and
+                 ("nohup" in low or "--output-dir" in low))
+                or ("run_wave.py" in low and "--spec" in low)
+                or ("launch_detached.py" in low
+                    and ("--spec" in low or "--chain" in low)))
     if not launched:
         return []
     blob = " ".join(allblob).lower()
@@ -4703,10 +4710,35 @@ def scan_retyped_locked_table(entries, *, text=None) -> list[str]:
             _sys.path.insert(0, _sp)
         from producer_variant_table import TABLE_D_FIXED_COLUMNS as _FIXED
         from producer_variant_table import TABLE_D2_TITLE as _D2
+        from producer_variant_table import _TABLE_C_HEADER
+        from build_table_a import TABLE_A_HEADER
     except Exception:
         return []
     out = []
     lines = t.splitlines()
+    # S6-B3399 (B3139q-r174, runbook line 2069): Tables A and C are locked
+    # formats too, and both were the retyping incidents the rule records
+    # (three owner catches on Table C, L652). Same signature logic as D: a
+    # line that LOOKS like the locked header fires unless it carries every
+    # locked column; a verbatim paste of the renderer's header is quiet.
+    def _cols(header: str) -> list[str]:
+        return [c.strip().lower() for c in header.strip().strip("|").split("|")]
+
+    for sig, header, label in (
+            (r"\s*\|\s*config\s*\|\s*combos\s*\|", _TABLE_C_HEADER, "Table C"),
+            (r"\s*\|\s*id\s*\|\s*layer\s*\|", TABLE_A_HEADER, "Table A")):
+        want = _cols(header)
+        for line in lines:
+            if not _re.match(sig, line):
+                continue
+            have = _cols(line)
+            missing = [c for c in want if c not in have]
+            if missing:
+                out.append(
+                    f"RETYPED LOCKED TABLE (#285/L652, S6-B3399): a {label}-"
+                    f"shaped header is missing locked column(s) "
+                    f"{missing[:4]} - print it from its renderer "
+                    f"(show_table_c.py / build_table_a.py), never retype it")
     for i, line in enumerate(lines):
         if not _re.match(r"\s*\|\s*#\s*\|\s*config\s*\|", line):
             continue
@@ -5732,8 +5764,21 @@ def scan_undelivered_landing(entries, *, text=None, landings=None) -> list[str]:
     if not pending:
         return []
     body = _response_text(entries, text, keep_code=True)
-    delivered = [ev["cube"] for ev in pending
-                 if f"landing report: {ev['cube'].lower()}" in body]
+
+    def _carries_findings(cube: str) -> bool:
+        # S6-B3399 (B3139q-r174, runbook line 1784): automation is no
+        # substitute for READING the findings - the LANDING REPORT block
+        # carries the STEPS and the FINDINGS, never only its header. A bare
+        # header satisfied the old match. The block's content follows its
+        # header; the window is generous because real reports are long.
+        i = body.find(f"landing report: {cube.lower()}")
+        if i < 0:
+            return False
+        seg = body[i:i + 1500]
+        return "finding" in seg and ("step" in seg or "9/9" in seg
+                                     or "of 9" in seg)
+
+    delivered = [ev["cube"] for ev in pending if _carries_findings(ev["cube"])]
     # B2520: the in-memory seam does NOT write back. It used to flip
     # reported_to_owner on the caller's own dicts, which made a corpus case
     # STATEFUL - the must-QUIET arm passed, and re-running it with the report
