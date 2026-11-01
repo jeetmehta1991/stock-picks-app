@@ -4508,7 +4508,17 @@ def scan_miss_capture_complete(entries, *, text=None, observed=None,
                 or bool(re.search(
                     r"(?<![a-z0-9_])(?:scan_[a-z0-9_]+|test_b\d[a-z0-9_]*)"
                     r"[^.;\n]{0,160}?(?:mechanis|enforc|is the gate|"
-                    r"already carr)", t)),
+                    r"already carr)", t))
+                # S6-B3410 (b) - owner ruling 2026-10-31, "B approved": a
+                # miss's L-entry, CHECKLIST citation, queue row and instance
+                # fix still land same-turn, but the NEW scan/pin/mechanism may
+                # batch into one enforcement batch per day UNLESS the miss is
+                # owner-visible. The accepted form names the deferral AND its
+                # ticket in one clause - "Mechanism: BATCHED (S6-xxxx)." - so
+                # the escape is strict (L596: the escape gets the stricter
+                # matcher) and the deferred work is greppable in the queue.
+                or bool(re.search(
+                    r"mechanism:\s*batched[^.;\n]{0,80}?s6-b\d+", t)),
         }
     return require_each(
         "PHASE-5 MISS-CAPTURE INCOMPLETE (B1751 / #234)", observed,

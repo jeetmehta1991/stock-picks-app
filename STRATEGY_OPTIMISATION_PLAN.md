@@ -1664,6 +1664,7 @@ record prints `[B3099 WARN]`; for that leg, compute the rate as leg seconds / si
   which a direct run_wave launch never writes (L865). A fresh heartbeat whose pid is gone is recorded
   separately as `engine_dead_within_window` - the B3091 heartbeat-age reading named a dead wave as
   in flight for an hour.
+- **Full-gate cadence (S6-B3410 (a), owner 2026-10-31, verbatim 'A but one full pyramid per 3 turns'):** one FULL pyramid per 3 turns; the turns between commit on a green stamp ridden by a PASSING targeted pre-gate on the exact tree (`scripts/pregate_select.py --run`; preflight C6 `_pregate_ride`, ledger `.pyramid_rides`, pinned by `test_b3410`). And (b): a miss's new enforcement mechanism may batch to one enforcement batch per day under a named ticket (`Mechanism: BATCHED (S6-xxxx)`, read by `scan_miss_capture_complete`), owner-visible misses excepted.
 - **Editing the spec does NOT affect a running wave.** `run_wave.py` reads the spec ONCE at startup
   (`run_wave.main`) and the leg loop reads `max_legs` from that in-memory dict (`run_arm`'s
   `while legs < int(spec.get("max_legs", 4))`);

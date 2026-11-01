@@ -139,3 +139,4 @@ output_audit/_*
 # were ignored. Same rule-right-filenames-wrong shape as B2529.
 !output_audit/_subset_one.txt
 !output_audit/_subset_bollinger_lower.txt
+.pyramid_rides

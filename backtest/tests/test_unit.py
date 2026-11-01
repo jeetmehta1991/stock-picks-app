@@ -25228,6 +25228,13 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # reference names no function. Pins the operative clause (L548).
         ("BEFORE MOVING IT, GREP THE FUNCTION'S NAME AND THE FILE'S LINE CITATIONS",
          "B3139q-r24/L901: a citation finds code by POSITION, which a function-name grep cannot reach"),
+        # B3139q-r170 / S6-B3410: the owner's 2026-10-31 cadence ruling. Pins
+        # the operative clauses (L548) - the ride's two preconditions and the
+        # BATCHED form's named-ticket requirement - not the headings.
+        ("the turns between COMMIT ON A RIDE - the green stamp plus a",
+         "S6-B3410 (a): one full pyramid per 3 turns; pre-gate rides between"),
+        ("the new scan/pin/mechanism batches into ONE enforcement batch per",
+         "S6-B3410 (b): BATCHED mechanism under a NAMED ticket; members 1-4 same-turn"),
         ("READ THE VERIFIER'S UNMAPPED OR FAILED BAND AS CAREFULLY AS ITS MATCHED ONE",
          "B3139q-r42/L902: a verdict carried past its mapped rows - the 13F Date column's second meaning sat in ay's UNMAPPED band"),
         # B2851: the L805 tripwire row - an owner catch on a locked
@@ -26420,7 +26427,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 371 -> 372 at B3139q-r147 (S6-B3337's runbook clause; same call).
     # 372 -> 374 at B3139q-r154 (L998's close-only clause and L999's row; same call).
     # 374 -> 375 at B3139q-r166 (L1005's working-directory row; same call).
-    assert len(gutted) == 375, gutted
+    # 375 -> 377 at B3139q-r170 (the two S6-B3410 cadence fragments).
+    assert len(gutted) == 377, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -28566,6 +28574,21 @@ def test_b2276_phase5_mechanism_member_accepts_a_named_enforcer():
     assert member_missing(out), (
         "a gate name in an unrelated clause is a mention, not a cited "
         "enforcer (B1738)")
+
+    # (d) S6-B3410 (b), owner 2026-10-31 "B approved": a mechanism deferred to
+    # the daily enforcement batch under a NAMED ticket satisfies the member
+    batched = base + "mechanism: batched (s6-b3412) into the enforcement batch."
+    out = m.scan_miss_capture_complete([], text=batched, touched=False)
+    assert not member_missing(out), (
+        "S6-B3410 (b): 'Mechanism: BATCHED (S6-xxxx)' is an accepted "
+        "disposition: " + repr(out))
+
+    # (e) the escape is strict (L596): BATCHED with no ticket id does NOT
+    # satisfy - an unnamed deferral is invisible to every queue reader
+    unnamed = base + "mechanism: batched into tomorrow's enforcement batch."
+    out = m.scan_miss_capture_complete([], text=unnamed, touched=False)
+    assert member_missing(out), (
+        "BATCHED without a ticket must still fail the member")
 
 def test_b2280_git_pathspec_is_not_a_launch():
     """B2280: a runner filename in a git PATHSPEC is data, not an invocation.
@@ -35122,6 +35145,72 @@ def test_b2613_c6_freshness_covers_every_file_a_pin_reads(tmp_path, monkeypatch)
     from pathlib import Path as _P
     src = _P(pf.__file__).read_text(encoding="utf-8")
     assert "py_staged + doc_staged" in src
+
+
+def test_b3410_c6_stale_stamp_rides_a_passing_pregate_three_turns(tmp_path, monkeypatch):
+    """S6-B3410 (a) - owner ruling 2026-10-31, verbatim 'A but one full
+    pyramid per 3 turns': a commit whose staged files are newer than the
+    green full stamp may RIDE it when the targeted pre-gate PASSED on this
+    exact tree - for at most MAX_STAMP_RIDES (2) distinct pre-gate runs per
+    full stamp, so the full pyramid still runs once per 3 turns. Both
+    directions proven: the ride passes, the exhausted budget and the absent
+    or failing pre-gate refuse. The seam is _pregate_verdict (the external
+    reader); the ride-ledger arithmetic runs live through check_pyramid_stamp."""
+    import json
+    import time
+    pf = _load_preflight_module()
+    monkeypatch.setattr(pf, "REPO_ROOT", tmp_path)
+    py = tmp_path / "backtest" / "mod.py"
+    py.parent.mkdir(parents=True)
+    py.write_text("x = 1\n", encoding="utf-8")
+    (tmp_path / ".pyramid_stamp").write_text(
+        json.dumps({"green": True, "timestamp": time.time() - 9999}),
+        encoding="utf-8")
+
+    # (a) stale + NO pre-gate run -> refused (the live _pregate_verdict runs
+    # against a non-git tmp tree and cannot say PASSED)
+    v = pf.check_pyramid_stamp([py])
+    assert v and "AFTER" in v[0] and "S6-B3410" in v[0], v
+
+    def _ride(utc):
+        monkeypatch.setattr(pf, "_pregate_verdict",
+                            lambda: "PASSED on this tree (5 tests, %s)" % utc)
+        (tmp_path / ".pregate_stamp").write_text(
+            json.dumps({"utc": utc, "selected": 5, "pytest_exit": 0}),
+            encoding="utf-8")
+        return pf.check_pyramid_stamp([py])
+
+    # (b) ride 1 and ride 2 pass; the same utc re-ridden burns nothing
+    assert _ride("2026-11-01T00:01:00Z") == []
+    assert _ride("2026-11-01T00:01:00Z") == []
+    assert _ride("2026-11-01T01:01:00Z") == []
+    led = json.loads((tmp_path / ".pyramid_rides").read_text(encoding="utf-8"))
+    assert len(led["rides"]) == 2 == pf.MAX_STAMP_RIDES
+
+    # (c) a third distinct pre-gate run -> full pyramid OWED
+    v = _ride("2026-11-01T02:01:00Z")
+    assert v and "OWED" in v[0] and "S6-B3410" in v[0], v
+
+    # (d) a FAILED pre-gate verdict cannot ride, whatever the budget
+    monkeypatch.setattr(pf, "_pregate_verdict",
+                        lambda: "FAILED on this tree (pytest exit 1, 5 tests)")
+    v = pf.check_pyramid_stamp([py])
+    assert v and "AFTER" in v[0], v
+
+    # (e) a NEW full stamp resets the ledger
+    (tmp_path / ".pyramid_stamp").write_text(
+        json.dumps({"green": True, "timestamp": time.time() - 5000}),
+        encoding="utf-8")
+    assert _ride("2026-11-01T03:01:00Z") == []
+    led = json.loads((tmp_path / ".pyramid_rides").read_text(encoding="utf-8"))
+    assert led["rides"] == ["2026-11-01T03:01:00Z"]
+
+    # (f) a fresh green stamp needs no ride at all (the pre-(a) behaviour)
+    (tmp_path / ".pyramid_stamp").write_text(
+        json.dumps({"green": True, "timestamp": time.time() + 60}),
+        encoding="utf-8")
+    monkeypatch.setattr(pf, "_pregate_verdict", lambda: "NONE")
+    assert pf.check_pyramid_stamp([py]) == []
 
 
 def _b2615_synthetic_ohlcv(n_bars: int, start="2024-01-02"):

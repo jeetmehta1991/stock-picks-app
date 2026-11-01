@@ -327,10 +327,76 @@ def check_pyramid_stamp(paths: Iterable[Path]) -> list[str]:
     stale = [str(p.relative_to(REPO_ROOT)) for p in py_staged + doc_staged
              if p.stat().st_mtime > stamp_ts]
     if stale:
+        ok, note = _pregate_ride(stamp_ts)
+        if ok:
+            return []
         return [f"C6 PYRAMID-STAMP | staged file(s) a pin reads modified AFTER "
-                f"last green pyramid: {stale[:5]}; re-run the full pyramid "
+                f"last green pyramid: {stale[:5]}; {note} "
                 f"(L768: the pyramid vouches for the tree it measured)"]
     return []
+
+
+# S6-B3410 (a) - owner ruling 2026-10-31, verbatim "A but one full pyramid per
+# 3 turns": the FULL pyramid runs once per 3 turns; the turns between ride a
+# green stamp on a PASSING targeted pre-gate (scripts/pregate_select.py --run,
+# which binds its verdict to the exact bytes of every changed path). A ride is
+# a distinct pre-gate run (its stamp's utc); re-running the pre-gate in the
+# same turn burns budget early - conservative by design. The ledger
+# .pyramid_rides (gitignored) resets when a new full stamp lands.
+MAX_STAMP_RIDES = 2  # the full-gate turn + 2 riding turns = 3 turns
+
+
+def _pregate_verdict() -> str:
+    """What the newest pre-gate run says about the CURRENT tree (the seam a
+    pin replaces is this function; the ride/ledger logic below stays live)."""
+    import sys
+    try:
+        sp = str(Path(__file__).resolve().parent)
+        if sp not in sys.path:
+            sys.path.insert(0, sp)
+        import pregate_select as _ps
+        return _ps.current_verdict(root=REPO_ROOT)
+    except Exception as e:  # not a git tree / module unreadable -> no ride
+        return f"UNREADABLE ({e.__class__.__name__})"
+
+
+def _pregate_ride(stamp_ts: float) -> tuple[bool, str]:
+    """S6-B3410 (a): may this commit ride the stale-but-green full stamp?"""
+    import json
+    verdict = _pregate_verdict()
+    if not verdict.startswith("PASSED"):
+        return False, (f"re-run the full pyramid, or ride it with a passing "
+                       f"scripts/pregate_select.py --run on this exact tree "
+                       f"(pre-gate verdict: {verdict}; S6-B3410 (a))")
+    try:
+        utc = json.loads((REPO_ROOT / ".pregate_stamp")
+                         .read_text(encoding="utf-8")).get("utc")
+        assert utc
+    except Exception:
+        return False, ("re-run scripts/pregate_select.py --run "
+                       "(.pregate_stamp unreadable; S6-B3410 (a))")
+    ledger_p = REPO_ROOT / ".pyramid_rides"
+    try:
+        led = json.loads(ledger_p.read_text(encoding="utf-8"))
+    except Exception:
+        # no ledger yet, or unreadable: the first ride after a new full stamp
+        # starts an empty ledger BY DESIGN (a missing FEATURE skips, L643) -
+        # the budget below still binds, so this fails toward MORE full gates
+        led = {}
+    rides: list = []
+    if led.get("full_stamp_ts") == stamp_ts:
+        seen = led.get("rides", [])
+        rides = [r for i, r in enumerate(seen) if r not in seen[:i]]
+    if utc not in rides:
+        rides.append(utc)
+    if len(rides) > MAX_STAMP_RIDES:
+        return False, (f"full pyramid OWED - S6-B3410 (a), owner 2026-10-31: "
+                       f"one full pyramid per 3 turns, and {MAX_STAMP_RIDES} "
+                       f"turns (pre-gate runs {rides[:MAX_STAMP_RIDES]}) have "
+                       f"already ridden this stamp")
+    ledger_p.write_text(json.dumps({"full_stamp_ts": stamp_ts, "rides": rides}),
+                        encoding="utf-8")
+    return True, ""
 
 
 # B2613 (L768): the files whose content a pyramid pin reads, beyond .py.

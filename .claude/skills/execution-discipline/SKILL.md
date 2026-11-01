@@ -517,6 +517,16 @@ Applies to EVERY code change (feature / fix / refactor / schema / data-source
 migration) and EVERY commit — **no doc/data carve-outs**
 (`feedback_pyramid_no_exceptions`; CHECKLIST #69 / DEC-503):
 
+**CADENCE RE-RULED (S6-B3410 (a), owner 2026-10-31, verbatim 'A but one full pyramid per 3 turns'):** the FULL pyramid runs once per
+3 turns; the turns between COMMIT ON A RIDE - the green stamp plus a
+PASSING targeted pre-gate on the exact tree (`scripts/pregate_select.py
+--run`, byte-bound). Enforced by preflight C6's `_pregate_ride`
+(MAX_STAMP_RIDES = 2, ledger `.pyramid_rides`), pinned by test_b3410.
+Everything else in this phase stands: pin tests, the batch cap, the
+gate-record discipline, and the full gate still runs LAST on the tree
+it vouches for whenever it runs.
+
+
 1. Run the pyramid BEFORE commit:
    `python -m pytest backtest/tests/test_unit.py backtest/tests/test_integration.py -q`
    Current baseline: 861 passed + 2 skipped (grows over time — any decrease
@@ -971,8 +981,15 @@ it checks that CODE MOVED, not that THIS class is now enforced, and B1702 moved 
 2. CHECKLIST item, or an explicit `compliance failure against item N`
 3. EXECUTION_QUEUE ticket
 4. Fix or ticket for the instance
-5. **A MECHANISM FOR THE CLASS - a `scan_`, a pin test, or an explicit
-   `JUDGMENT-ONLY: <why no mechanism is possible>`**
+5. **A MECHANISM FOR THE CLASS - a `scan_`, a pin test, an explicit
+   `JUDGMENT-ONLY: <why no mechanism is possible>`, or - S6-B3410 (b),
+   owner 2026-10-31 'B approved' - `Mechanism: BATCHED (S6-xxxx).`:
+   the new scan/pin/mechanism batches into ONE enforcement batch per
+   day under that NAMED ticket, UNLESS the miss is owner-visible,
+   which lands same-turn. Members 1-4 always land same-turn. The
+   batched form is read by scan_miss_capture_complete; an unnamed
+   BATCHED does not satisfy it (L596: the escape gets the stricter
+   matcher).**
 
 **EXTENSION (B1797 / L548) - `JUDGMENT-ONLY` IS TWO QUESTIONS, AND THE SECOND IS USUALLY YES:**
 

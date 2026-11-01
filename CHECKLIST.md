@@ -720,6 +720,7 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **Verification format in pre-flight:** state explicitly "Stage 1 smoke completed (X PASS); Stage 2 demo completed (Y PASS); proceeding to Stage 3 full scale at owner approval." If skipping any stage, surface why + get owner approval.
 
 69. **Comprehensive test pyramid before every code push (Pass 53 owner directive 2026-05-05; DEC-503 HARD RULE).**
+    **CADENCE RE-RULED (S6-B3410 (a), owner 2026-10-31, verbatim 'A but one full pyramid per 3 turns'):** the FULL pyramid runs once per 3 turns; the turns between commit on the green stamp plus a PASSING targeted pre-gate on the exact tree (preflight C6 `_pregate_ride`, ledger `.pyramid_rides`, pinned by test_b3410). Every other member of this item stands.
     Every code push (new feature / bug fix / refactor / schema change / data-source migration) must execute and pass ALL applicable test types:
 
     - **Unit** — individual function correctness with mocked dependencies
