@@ -70991,6 +70991,46 @@ def test_b3407_a_free_level_leg_grades_the_landed_fires():
     assert _b3407_low_coverage(ok, SYN_KNOWN, FLOOR) == []
 
 
+def test_b3411_history_read_is_judged_at_segment_grain():
+    """S6-B3411 (B3139q-r172, the owner's S6-B3410 (b) ruling): the ticket-
+    history gate reads truncation at SEGMENT grain, never CALL grain. L554:
+    truncation counts only where it is applied to the SOURCE. MEASURED at
+    r170 (L960's second addendum): a FULL unpiped ticket_history print shared
+    its Bash call with an unrelated `| head -8`, the whole call was discarded
+    as read history and the gate latched on a compliant close. Arms:
+    must-ACCEPT the r170 shape (clean print beside a piped sibling);
+    must-REFUSE the r169 shape (the print itself piped through cut) and a
+    queue read piped through head; a plain unpiped print stays accepted."""
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import verify_turn_compliance as vtc
+    row = ("| **S6-TESTONLY** | **OPEN** | P2 | **A fixture row long enough "
+           "for the fragment matcher to key on.** | _reason:_ OPEN - x |")
+    clean = "python scripts/ticket_history.py S6-TESTONLY"
+    sibling = (clean + "; echo ===; python scripts/transcript_timeline.py "
+               "--first-after 3 2>&1 | head -8")           # the r170 shape
+    cut_print = clean + " | cut -c1-200"                   # the r169 shape
+    queue_cat = "cat EXECUTION_QUEUE.md | head -50"
+    assert not vtc._history_print_truncated(clean)
+    assert not vtc._history_print_truncated(sibling), (
+        "S6-B3411: an unrelated piped sibling must not void a clean print")
+    assert vtc._history_print_truncated(cut_print), (
+        "the piped history print itself stays refused (S6-B3356)")
+    assert vtc._history_print_truncated(queue_cat), (
+        "a truncated read of the queue itself stays refused")
+    # end to end: with the r170 shape, the printed rows ARE read history
+    calls = [(sibling, row + " <- printed whole"),
+             ("Write rows.md: " + row, "WROTE")]
+    assert row in vtc.history_seen_before_write(row, calls), (
+        "the clean print's output counts as read history despite the sibling")
+    # and with the r169 shape they are not
+    calls2 = [(cut_print, row[:60]), ("Write rows.md: " + row, "WROTE")]
+    assert row not in vtc.history_seen_before_write(row, calls2)
+
+
 _RUNBOOK_ENGINE_ALLOW = ("USE_SMC_PANEL_CACHE", "SMC_PHASE", "smc_skip_primitives",
                          "institutional_companion_screen.py")
 

@@ -6860,19 +6860,43 @@ def _tool_calls_since_compaction(entries) -> list:
     return [tuple(x) for x in calls]
 
 
+def _history_print_truncated(inp: str) -> bool:
+    """S6-B3411 (B3139q-r172, per the owner's S6-B3410 (b) ruling): SEGMENT
+    grain, not CALL grain. A pipe through cut, head or tail disqualifies a
+    call's output as read history only when it truncates the SEGMENT that
+    prints the history - L554: truncation counts only where it is applied to
+    the SOURCE. MEASURED at r170: a FULL unpiped ticket_history print shared
+    its Bash call with an unrelated `| head -8` and the whole call was
+    discarded, latching the gate on a compliant close (L960's second
+    addendum). Segments split on ';', '&&', '||' and newlines; a truncated
+    segment counts only if it reads the history's sources (ticket_history or
+    the queue itself) - a pipe on an unrelated command leaves the clean
+    print's output as read history."""
+    import re
+    trunc = re.compile(_TRUNCATING_PIPE)
+    if not trunc.search(inp):
+        return False
+    for seg in re.split(r";|&&|\|\||\r?\n", inp):
+        if trunc.search(seg) and ("ticket_history" in seg
+                                  or "EXECUTION_QUEUE" in seg):
+            return True
+    return False
+
+
 def history_seen_before_write(row: str, calls) -> str:
     """S6-B3356: the tool output a row's author had read BEFORE writing it -
     every result of a call that precedes the first call whose input carries
     the row's opening (the Write, Edit or command that wrote it), leaving out
-    a call piped through cut, head or tail (a truncated print is not a read
-    history). When no call carries the row - a row written by a script whose
-    text was split across literals - every call counts: a LOWER BOUND."""
-    import re
+    a call whose HISTORY-PRINTING segment is piped through cut, head or tail
+    (a truncated print is not a read history; an unrelated piped sibling in
+    the same call is - S6-B3411, segment grain). When no call carries the
+    row - a row written by a script whose text was split across literals -
+    every call counts: a LOWER BOUND."""
     frag = _history_fragment(row)
     w = next((i for i, (inp, _o) in enumerate(calls)
               if frag and frag in _history_norm(inp)), len(calls))
-    trunc = re.compile(_TRUNCATING_PIPE)
-    return "\n".join(out for inp, out in calls[:w] if not trunc.search(inp))
+    return "\n".join(out for inp, out in calls[:w]
+                     if not _history_print_truncated(inp))
 
 
 def scan_ticket_history_unread(entries, *, rows=None, queue_text=None,

@@ -1785,6 +1785,15 @@ step FAILS closed. Free levels are part of every config's band (ruled design), s
 strategy level is the N1 class bug (the b2569 audit), not a substitute. A new family's registration is
 incomplete without its free-levels grader (#290).
 
+The free-level leg's DENOMINATOR is the LANDED fires, never the derivable subset: the leg fails
+closed when `covered_fires / fires_total` falls under `--coverage-min` (default 0.9,
+`grade_free_levels_knob.py`, pinned by test_b3407), and a derive module may recompute dropped keys
+from the BARS on the PIT slice ending AT the entry bar (`derive_row`; demand pruning persists only
+the keys a strategy reads post-warmup, S6-B3407). The consolidated report renders a config whose
+artifact it cannot read as a VISIBLE `ARTIFACT UNREADABLE` note instead of failing every section,
+and the artifact's `window` is the shared `free_level_window.window_disclosure` block
+(`postconfig_doc.py`, pinned by test_b3406; S6-B3406).
+
 Every step ends DONE-with-evidence, N/A-with-a-reason, FAIL or OPEN. **SKIPPED is not a disposition and
 is in no terminal set** (`verify_postconfig_complete.py::terminal_for` returns {DONE, N/A} for every
 step; `is_closed` also requires the evidence text). FAIL and OPEN block the completeness gate until a
