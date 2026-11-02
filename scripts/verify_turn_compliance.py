@@ -710,6 +710,7 @@ def scan_unmonitored_launch(entries: list[dict]) -> list[str]:
     # gate's own block message - see _is_gate_feedback for the measurement.
     last_user = _last_instruction_index(entries)
     launches, armed = [], False
+    chain_armed = False   # S6-B3399 (runbook line 2582): see the arm block
     for e in entries[last_user + 1:]:
         if e.get("type") != "assistant":
             continue
@@ -754,6 +755,14 @@ def scan_unmonitored_launch(entries: list[dict]) -> list[str]:
                                   or "silence is correct onlY".lower() in _low)
                 if "CronCreate" in name:
                     armed = _periodic and _unconditional
+                    # S6-B3399 (B3139q-r175, runbook line 2582): a CHAIN's
+                    # monitor also carries TRIP CONDITIONS - non-zero exit,
+                    # death-without-artifact, and overrun past the projection -
+                    # or the monitor reports an hourly all-clear over a chain
+                    # that died between reports (L656/L891's shape).
+                    chain_armed = (armed and "exit" in _low and "overrun" in _low
+                                   and ("death" in _low or "dead" in _low
+                                        or "died" in _low))
                 else:
                     armed = armed or False
             # a launch: long-running runner AND backgrounded.
@@ -794,8 +803,19 @@ def scan_unmonitored_launch(entries: list[dict]) -> list[str]:
                 # S6-B3399 (B3139q-r173, runbook line 1516): the monitor is
                 # armed BEFORE the launch. The old verdict read the FINAL
                 # armed flag, so an arm issued after the launch retro-covered
-                # it - position now travels with each launch.
-                launches.append((_cmd[:140], armed))
+                # it - position now travels with each launch. A CHAIN launch
+                # (runbook line 2582) additionally needs the trip-condition
+                # monitor armed at its position.
+                _low_cmd = _cmd.lower()
+                _is_chain = ("run_serial_chain.py" in _low_cmd
+                             or ("launch_detached.py" in _low_cmd
+                                 and "--chain" in _low_cmd))
+                ok = (armed and chain_armed) if _is_chain else armed
+                launches.append((_cmd[:140]
+                                 + ("" if ok or not _is_chain or not armed else
+                                    " [chain monitor lacks exit/death/overrun "
+                                    "trip clauses - runbook 2582, S6-B3399]"),
+                                 ok))
     unmonitored = [cmd for cmd, was_armed in launches if not was_armed]
     return unmonitored
 
@@ -5811,6 +5831,39 @@ def scan_undelivered_landing(entries, *, text=None, landings=None) -> list[str]:
              "--cube <dir> --if-not-landed --no-git --no-notify` reprints it)."))
 
 
+def scan_campaign_open_unrecorded(entries, *, rows=None, diff_text=None,
+                                  touched=None) -> list[str]:
+    """S6-B3399 (B3139q-r175), runbook line 259: an owner-opened campaign is
+    recorded in output_audit/owner_campaign_opens.json THE TURN it opens -
+    the status view reads campaign state from that record
+    (build_strategy_status.load_campaign_opens), so an open living only in a
+    queue row is invisible to every lane decision (the L804 class). Fires
+    when a row ADDED this turn declares a campaign OPENED and the opens
+    record was not touched in the same turn. The trigger reads the row's
+    HEAD (its opening words), never the reason cell, and needs both words -
+    'TWO OF NINE OPENED ... opened as S6-x when a slot freed' (a shortlist
+    row) carries no 'campaign' in its head and stays quiet (B1996: a
+    trigger must not match adjacent compliance language)."""
+    import re as _re
+    rows = _queue_rows_added(diff_text) if rows is None else list(rows)
+    opening = [r for r in rows
+               if _re.search(r"campaign[^.|]{0,40}?opened|opened[^.|]{0,40}?campaign",
+                             r[:160].lower())]
+    if not opening:
+        return []
+    ok = (_artifact_touched("output_audit/owner_campaign_opens.json")
+          if touched is None else bool(touched))
+    if ok:
+        return []
+    return [("CAMPAIGN OPENED WITHOUT ITS RECORD (runbook line 259, "
+             f"S6-B3399): {len(opening)} row(s) added this turn declare a "
+             "campaign opened and output_audit/owner_campaign_opens.json was "
+             "not touched this turn - the status view reads opens from that "
+             "record, never the queue. Record the open (strategy, ticket, the "
+             "owner's words, the date), then end the turn again. First row: "
+             + opening[0][:120])]
+
+
 def scan_chain_halt(entries, *, text=None, halts=None) -> list[str]:
     """B2577 (S6-B2573f.a): a serial chain that HALTED is REPORTED to the
     owner before a turn may end - the same contract B2520 gives a landed
@@ -7244,6 +7297,7 @@ def main(argv: list[str] | None = None) -> int:
                 scan_retroactive_sweep, scan_compliance_is_content,
                 scan_ungated_addition, scan_shell_substitution,
                 scan_queue_vocabulary, scan_queue_not_updated,
+                scan_campaign_open_unrecorded,
                 scan_unverified_count, scan_partial_distribution,
                 scan_partial_read, scan_row_vs_ticket,
                 scan_count_without_members,

@@ -48545,6 +48545,15 @@ _B3121_SEAMS_SOUND = {
     ("scan_owner_time_is_delivery_time", "rows"):
         "list seam (list[str] of queue rows) for the list _history_rows_this_turn returns; "
         "both feed owner_time_mismatches unchanged",
+    # B3139q-r175 (S6-B3399 rule 259): the campaign-open gate's two seams.
+    ("scan_campaign_open_unrecorded", "rows"):
+        "list seam (list[str] of queue rows) for the list _queue_rows_added(diff_text) "
+        "returns; both paths get the same row[:160].lower() head scan, and the live "
+        "collection is the same helper every rows-seamed gate above rides",
+    ("scan_campaign_open_unrecorded", "touched"):
+        "bool seam for _artifact_touched('output_audit/owner_campaign_opens.json') - the "
+        "injected value has the live helper's type (bool) and skips only the git-status "
+        "read, which test_b3412 drives through the rows seam with both bool values",
     ("scan_owner_time_is_delivery_time", "lessons"):
         "list seam (list[str] of LEARNINGS lines) for the list _lesson_lines_added returns - "
         "the added lines of the working-tree and last-commit diffs; both feed "
@@ -57895,8 +57904,12 @@ def test_b3178_a_mention_of_the_cron_tool_does_not_disarm():
     user = {"type": "user", "message": {"content": "go"}}
     launch = tu("Bash", {"command": "python scripts/launch_detached.py --chain --batch b --specs s.json"})
     mention = tu("Bash", {"command": f"grep -n {tool} scripts/transcript_timeline.py"})
+    # the prompt carries the rule-2582 trip clauses (S6-B3399, B3139q-r175)
+    # so this case keeps testing ONLY the mention, not the chain requirement
     hourly = tu(tool, {"cron": "23 * * * *",
-                       "prompt": "hourly report, unconditional - do not withhold"})
+                       "prompt": "hourly report, unconditional - do not withhold; "
+                                 "TRIP on non-zero exit, death without an "
+                                 "artifact, overrun past 2x"})
     exc_only = tu(tool, {"cron": "23 * * * *", "prompt": "report only if it breaks"})
     assert m.scan_unmonitored_launch([user, hourly, launch, mention]) == []
     assert m.scan_unmonitored_launch([user, launch])
@@ -71133,6 +71146,96 @@ def test_b3399b_launch_routes_and_locked_headers():
     # the renderer and the gate share one definition per table (L593)
     assert "TABLE_A_HEADER" in (root / "scripts" / "build_table_a.py").read_text(
         encoding="utf-8")
+
+
+def test_b3412_table_c_renders_a_knob_family_grid_and_batch5_rules():
+    """Lane 2 Batch 5 (B3139q-r175).
+
+    (1) S6-B3412: producer_variant_table.table_c read top['admit'] bare and
+    the knob-family grids' ranking rows carry no admit key, so the FIRST
+    squeeze landing's consolidated report lost the whole Table C render
+    (KeyError: 'admit') - the B2542 class crossing the next family boundary.
+    Incident-verbatim pin: Table C renders over the real landed squeeze grid
+    artifact and its row appears. Sweep recorded: one bare subscript on
+    ranking rows existed in table_c (the fixed one); the r[k] iteration at
+    the axes block reads keys of its own row.
+
+    (2) Runbook line 2582: a CHAIN launch needs its monitor's prompt to carry
+    the trip conditions - non-zero exit, death-without-artifact, overrun.
+    Must-fire: a chain launch armed by a plain hourly monitor; must-quiet:
+    the same launch with the clauses, and a NON-chain launch under the plain
+    monitor (unchanged behaviour).
+
+    (3) Runbook line 259: a queue row declaring a CAMPAIGN OPENED pairs with
+    an owner_campaign_opens.json touch in the same turn. Must-fire: the
+    opening row with touched=False; must-quiet: touched=True, and a
+    shortlist row ('TWO OF NINE OPENED ... opened as S6-x') whose head
+    carries no 'campaign'."""
+    import importlib.util as _ilu
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+
+    # (1) the incident input: the landed squeeze grid, rendered whole
+    import producer_variant_table as pvt
+    gname = "output_b3248sq_p2_2p0_p2_2p0"
+    grid = _j.loads((root / "output_audit" / (gname + "_grid_auto.json"))
+                    .read_text(encoding="utf-8"))
+    assert (grid.get("step1_ranking")
+            and all("admit" not in r for r in grid["step1_ranking"])), (
+        "the incident's precondition: knob ranking rows carry no admit key")
+    out = "\n".join(pvt.table_c({gname: grid}, root=root))
+    assert gname in out and pvt._TABLE_C_HEADER in out, (
+        "Table C renders the knob-family grid instead of crashing (S6-B3412)")
+
+    _spec = _ilu.spec_from_file_location(
+        "_vtc5", root / "scripts" / "verify_turn_compliance.py")
+    _m = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(_m)
+
+    # (2) chain launches need the trip-condition monitor
+    def _turn(*calls):
+        return [{"type": "user", "message": {"content": "go"}},
+                {"type": "assistant", "message": {"content": [
+                    {"type": "tool_use", "name": n, "input": i}
+                    for n, i in calls]}}]
+
+    chain = ("Bash", {"command": "python scripts/launch_detached.py --chain "
+                                 "--batch b1 --specs a_spec.json b_spec.json"})
+    plain = ("Bash", {"command": "nohup bash -c 'python backtest/run_phase1a.py "
+                                 "--tickers AAPL' &", "run_in_background": True})
+    arm_plain = ("CronCreate", {"cron": "11 * * * *",
+                                "prompt": "HOURLY REPORT every hour. Do not "
+                                          "withhold because nothing changed."})
+    arm_trip = ("CronCreate", {"cron": "11 * * * *",
+                               "prompt": "HOURLY REPORT every hour. Do not "
+                                         "withhold because nothing changed. "
+                                         "TRIP on non-zero exit, on death "
+                                         "without an artifact, on overrun "
+                                         "past 2x the projection."})
+    out = _m.scan_unmonitored_launch(_turn(arm_plain, chain))
+    assert out and "2582" in out[0], (
+        "a chain launch under a plain monitor must fire", out)
+    assert _m.scan_unmonitored_launch(_turn(arm_trip, chain)) == [], (
+        "the trip-condition monitor satisfies a chain launch")
+    assert _m.scan_unmonitored_launch(_turn(arm_plain, plain)) == [], (
+        "a non-chain launch keeps the plain-monitor behaviour")
+
+    # (3) a campaign open pairs with its record
+    opening = ("| **S6-TESTX** | **OPEN** | P1 | **CAMPAIGN OPENED (B3139q-rX): "
+               "the owner's word 'approved', bands to follow.** | _reason:_ "
+               "OPEN - campaign live |")
+    out = _m.scan_campaign_open_unrecorded([], rows=[opening], touched=False)
+    assert out and "259" in out[0], out
+    assert _m.scan_campaign_open_unrecorded([], rows=[opening], touched=True) == []
+    shortlist = ("| **S6-TESTY** | **OPEN** | P1 | **TWO OF NINE OPENED "
+                 "(B3139q-rX): x opened as S6-Z when a slot freed.** | "
+                 "_reason:_ OPEN - 7 of 9 wait |")
+    assert _m.scan_campaign_open_unrecorded([], rows=[shortlist], touched=False) == [], (
+        "a shortlist row with no 'campaign' in its head stays quiet")
 
 
 def test_b3411_history_read_is_judged_at_segment_grain():

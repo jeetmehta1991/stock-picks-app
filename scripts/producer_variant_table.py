@@ -7955,7 +7955,13 @@ def table_c(grids: dict[str, dict], root=None) -> list[str]:
         top = max(rank, key=lambda r: (r.get(_key) if r.get(_key) is not None
                                        else -9)) if rank else None
         if top:
-            a = top["admit"]
+            # S6-B3412 (B3139q-r175): the knob-family grids' ranking rows carry
+            # no `admit` key, and the bare subscript killed the WHOLE Table C
+            # render at the first squeeze landing's report - the B2542 class
+            # (four lines down) crossing the next family boundary. Every read
+            # of `a` below already falls back to top/config, so an absent
+            # admit renders the config-block branch instead of crashing.
+            a = top.get("admit") or {}
             # B2542: FAMILY-AWARE. This read the SMC family's four parameter
             # names directly and raised KeyError on every institutional grid,
             # so no config of that family had ever rendered - the same family

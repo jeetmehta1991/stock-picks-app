@@ -285,7 +285,9 @@ empty) - then rebuild the view. Which long candidate opens next is read from the
 STALLED-CAMPAIGN: its reader RAISES on an unreadable file, a file with no `opens` list, a record
 missing its `strategy`, its `opened` date, a non-empty `tickets` list or the owner's words
 (`ruling_verbatim`, or `ruling_in_substance` where the words were not verbatim), or a strategy
-listed twice, and test_b3194 pins that the lanes read nothing else. Which members a
+listed twice, and test_b3194 pins that the lanes read nothing else. **Mechanism (S6-B3399):**
+`scan_campaign_open_unrecorded` refuses a turn whose queue rows declare a campaign opened while
+`owner_campaign_opens.json` went untouched, pinned both directions by test_b3412. Which members a
 FAMILY campaign records is the owner's word, ruled per family; an open instance is a queue
 ticket, never named here. The closure register, `output_audit/owner_campaign_closures.json`, is its mirror
 and outranks it. A close the owner ruled with no holdout read is CLOSED-NO-READ, read from the campaign log's T6 NOT SPENT entries (`load_no_read_closures`, S6-B3303).
@@ -2631,7 +2633,8 @@ last one because it checked EXISTENCE, not CADENCE, which #186 closed). `scan_un
 `test_b1545_monitor_armed_gate`.
 
 Also required: **trip conditions** for non-zero exit, death-without-artifact, and overrun past 2x the
-projection; **exactly ONE hourly cron per chain** - delete any existing one for the same chain first
+projection (**mechanism, S6-B3399:** a CHAIN launch whose armed monitor's prompt carries none of these
+clauses is refused by `scan_unmonitored_launch`'s `chain_armed` check, pinned by test_b3412); **exactly ONE hourly cron per chain** - delete any existing one for the same chain first
 (two were once found armed, S6-B2573f); a prompt that types no comparison value and derives every one
 from an artifact at firing time (L839; the derive-never-type prompt of S6-B2972); and **CronDelete in the same turn the
 run lands or stops** (CHECKLIST #320), so stale monitors do not train everyone to ignore alerts. Crons are

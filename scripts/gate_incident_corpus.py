@@ -266,6 +266,19 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
         {"rows": ["| **S6-B1757c** | **ANSWERED** | - | a defect filed as an "
                   "answer, with no mechanism |"]},
     ),
+    # S6-B3399 (B3139q-r175), runbook line 259: the census found the rule
+    # unenforced - an owner-opened campaign recorded only in a queue row is
+    # invisible to the status view, which reads opens from
+    # output_audit/owner_campaign_opens.json (the L804 class). Constructed
+    # from the opening-row convention; touched=False is the incident state.
+    "scan_campaign_open_unrecorded": (
+        "",
+        True,
+        {"rows": ["| **S6-TESTX** | **OPEN** | P1 | **CAMPAIGN OPENED "
+                  "(B3139q-rX): the owner's word 'approved', bands to follow.**"
+                  " | _reason:_ OPEN - campaign live |"],
+         "touched": False},
+    ),
     "scan_queue_not_updated": (
         "an ordinary turn report that records no queue row and declares nothing",
         True,
@@ -687,12 +700,17 @@ PURE_INCIDENTS: dict[str, list[tuple[tuple, bool, str]]] = {
                            "output_audit/x_spec.json"}}]}}],), True,
          "S6-B3357 must-fire kept - a runner RUN behind a wrapper, no monitor"),
         # S6-B3178 arm side, verbatim shape (B3139q-r70w): a grep naming the
-        # cron tool AFTER the real hourly cron must not disarm it.
+        # cron tool AFTER the real hourly cron must not disarm it. The prompt
+        # gained the rule-2582 trip clauses at S6-B3399 (B3139q-r175) so this
+        # case keeps testing ONLY its own subject - the mention - and not the
+        # chain launch's newer trip-condition requirement.
         (([{"type": "assistant", "message": {"content": [
             {"type": "tool_use", "name": "CronCreate", "input": {
                 "cron": "23 * * * *",
                 "prompt": "HOURLY monitor; deliver a report every hour, "
-                          "unconditionally - do not withhold"}}]}},
+                          "unconditionally - do not withhold. TRIP on "
+                          "non-zero exit, on death without an artifact, "
+                          "on overrun past 2x the projection"}}]}},
            {"type": "assistant", "message": {"content": [
             {"type": "tool_use", "name": "Bash", "input": {
                 "command": "python scripts/launch_detached.py --chain "
@@ -766,6 +784,22 @@ PURE_INCIDENTS: dict[str, list[tuple[tuple, bool, str]]] = {
 
 
 EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
+    # S6-B3399 rule 259 (B3139q-r175): must-QUIET both ways - the same
+    # opening row WITH the register touched in the turn, and a shortlist
+    # row (the S6-B3249 shape) whose head says OPENED about members, not
+    # about a campaign.
+    "scan_campaign_open_unrecorded": [
+        ("", False,
+         {"rows": ["| **S6-TESTX** | **OPEN** | P1 | **CAMPAIGN OPENED "
+                   "(B3139q-rX): the owner's word 'approved', bands to "
+                   "follow.** | _reason:_ OPEN - campaign live |"],
+          "touched": True}),
+        ("", False,
+         {"rows": ["| **S6-TESTY** | **OPEN** | P1 | **TWO OF NINE OPENED "
+                   "(B3139q-rX): x opened as S6-Z when a slot freed.** | "
+                   "_reason:_ OPEN - 7 of 9 wait |"],
+          "touched": False}),
+    ],
     # S6-B3378 (B3139q-r154, L999): VERBATIM must-QUIET - the same launch
     # ended by the TaskStop that settled it (15:52:53Z, line 251860), and the
     # bx8eb855q launch (2026-10-24, line 199962) ended by its queue-operation
@@ -1572,6 +1606,7 @@ NEUTRAL: dict[str, dict] = {
     # gate doing its job and reports it as a false positive.
     "scan_queue_not_updated": {"rows": ["| **S6-X** | **DONE** | - | x |"]},
     "scan_queue_vocabulary": {"rows": []},
+    "scan_campaign_open_unrecorded": {"rows": [], "touched": False},
     # B1771: this gate reads LIVE git state (docs vs code touched). The
     # control asks "does ordinary prose trip it?", so the repo state must
     # be neutralised or the control measures the working tree instead of
