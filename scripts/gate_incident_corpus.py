@@ -799,6 +799,18 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
                    "(B3139q-rX): x opened as S6-Z when a slot freed.** | "
                    "_reason:_ OPEN - 7 of 9 wait |"],
           "touched": False}),
+        # VERBATIM (B3139q-r175, the gate's first live firing - on the
+        # progress row DOCUMENTING the rule; the L867 self-reference family):
+        # a row about rule 259 is a mention, never an opening.
+        ("", False,
+         {"rows": ["| **S6-B3399** | **OPEN** | P2 | **9 of 13 rules "
+                   "mechanized (B3139q-r175, Lane 2 Batch 5): rule 259 - a "
+                   "queue row declaring a CAMPAIGN OPENED pairs with an "
+                   "owner_campaign_opens.json touch, new gate "
+                   "scan_campaign_open_unrecorded wired into the roster with "
+                   "corpus entries; ...** | _reason:_ OPEN - 4 of 13 rules "
+                   "still unmechanized |"],
+          "touched": False}),
     ],
     # S6-B3378 (B3139q-r154, L999): VERBATIM must-QUIET - the same launch
     # ended by the TaskStop that settled it (15:52:53Z, line 251860), and the

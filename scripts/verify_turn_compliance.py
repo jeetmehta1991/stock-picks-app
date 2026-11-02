@@ -5843,12 +5843,23 @@ def scan_campaign_open_unrecorded(entries, *, rows=None, diff_text=None,
     HEAD (its opening words), never the reason cell, and needs both words -
     'TWO OF NINE OPENED ... opened as S6-x when a slot freed' (a shortlist
     row) carries no 'campaign' in its head and stays quiet (B1996: a
-    trigger must not match adjacent compliance language)."""
+    trigger must not match adjacent compliance language). A row ABOUT this
+    rule - one naming the gate, or the runbook rule it enforces - is a
+    MENTION, not an opening (the L867 self-reference family: the gate's
+    first live firing was on the B3139q-r175 progress row documenting it),
+    as is trigger text inside inline-code spans (B1738)."""
     import re as _re
     rows = _queue_rows_added(diff_text) if rows is None else list(rows)
+
+    def _mention(r: str) -> bool:
+        low = r.lower()
+        return ("scan_campaign_open_unrecorded" in low
+                or _re.search(r"(?:rule|line)\s*259\b", low) is not None)
+
     opening = [r for r in rows
-               if _re.search(r"campaign[^.|]{0,40}?opened|opened[^.|]{0,40}?campaign",
-                             r[:160].lower())]
+               if not _mention(r)
+               and _re.search(r"campaign[^.|]{0,40}?opened|opened[^.|]{0,40}?campaign",
+                              _re.sub(r"`[^`]*`", " ", r[:160]).lower())]
     if not opening:
         return []
     ok = (_artifact_touched("output_audit/owner_campaign_opens.json")

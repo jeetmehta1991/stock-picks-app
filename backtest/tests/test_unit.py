@@ -70576,9 +70576,17 @@ def test_b3388_every_hook_finds_its_script_from_any_directory(tmp_path):
         assert (root / "scripts" / cmd.rsplit("/", 1)[1].rstrip('"')).exists(), (ev, cmd)
     guard = {m for ev, m, c in hooks if ev == "PreToolUse" and "pretooluse_heredoc_guard.py" in c}
     assert {"Bash", "PowerShell"} <= guard, guard
+    # B3139q-r175b: the guard below first BLACKLISTED system32 (one WSL
+    # launcher) and the r175 gate failed when which() returned the OTHER
+    # WSL launcher, WindowsApps\bash.EXE, where `python` does not exist -
+    # the live half needs GIT BASH (what the hooks run under), so require
+    # it positively instead of enumerating WSL's spellings (L821).
     bash = _sh.which("bash")
-    if not bash or "system32" in bash.lower():      # WSL's bash, not the hooks' Git Bash
-        _pt.skip("no Git Bash on PATH - the structural half above still ran")
+    if not bash or "git" not in bash.lower():
+        gb = Path(r"C:\Program Files\Git\bin\bash.exe")
+        bash = str(gb) if gb.exists() else None
+    if not bash:
+        _pt.skip("no Git Bash found - the structural half above still ran")
     guard_cmd = next(c for ev, m, c in hooks if m == "Bash")
     env = dict(_os.environ, CLAUDE_PROJECT_DIR=str(root))
     away = tmp_path / "elsewhere"
@@ -71236,6 +71244,15 @@ def test_b3412_table_c_renders_a_knob_family_grid_and_batch5_rules():
                  "_reason:_ OPEN - 7 of 9 wait |")
     assert _m.scan_campaign_open_unrecorded([], rows=[shortlist], touched=False) == [], (
         "a shortlist row with no 'campaign' in its head stays quiet")
+    # the gate's first live firing (B3139q-r175) was on the progress row
+    # DOCUMENTING rule 259 - a mention, not an opening (L867 family)
+    doc_row = ("| **S6-B3399** | **OPEN** | P2 | **9 of 13 rules mechanized "
+               "(B3139q-r175): rule 259 - a queue row declaring a CAMPAIGN "
+               "OPENED pairs with an owner_campaign_opens.json touch, new "
+               "gate scan_campaign_open_unrecorded wired.** | _reason:_ "
+               "OPEN - 4 remain |")
+    assert _m.scan_campaign_open_unrecorded([], rows=[doc_row], touched=False) == [], (
+        "a row ABOUT rule 259 is a mention, never an opening (L867 family)")
 
 
 def test_b3411_history_read_is_judged_at_segment_grain():
