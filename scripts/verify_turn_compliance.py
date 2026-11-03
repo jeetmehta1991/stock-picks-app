@@ -5420,10 +5420,18 @@ def _cron_lifecycle_events(entries) -> tuple:
                 if not m:
                     continue                  # the create failed: nothing armed
                 x = _CRON_EXPIRY_RE.search(res)
+                # S6-B3399 rule 2583 (B3139q-r176b): the arm's own prompt
+                # names the chain it watches ('chain batch X; wave Y') - carry
+                # that key so a reducer can count live arms PER CHAIN.
+                _prompt = str((c.get("input") or {}).get("prompt", "")).lower()
+                _cm = re.search(r"chain batch\s+([\w.-]+)|wave\s+([\w.-]+)",
+                                _prompt)
                 events.append({"kind": "create", "job": m.group(1).lower(),
                                "ts": e.get("timestamp"),
                                "session_only": "session-only" in res.lower(),
-                               "expire_days": int(x.group(1)) if x else None})
+                               "expire_days": int(x.group(1)) if x else None,
+                               "chain": (_cm.group(1) or _cm.group(2))
+                                        if _cm else None})
             elif "crondelete" in nm:
                 job = str((c.get("input") or {}).get("id") or "").lower()
                 if job:
@@ -5508,6 +5516,39 @@ def scan_monitor_not_retired(entries, *, text=None, events=None, now=None) -> li
             "prompt frozen at the moment it was armed, and repetition on a "
             "timer reads as corroboration (L839). Delete it (CronDelete with "
             "that id), or say in the response why it must stay armed." % ids]
+
+
+def scan_duplicate_chain_monitor(entries, *, events=None, now=None) -> list[str]:
+    """S6-B3399 (B3139q-r176b), runbook: exactly ONE hourly cron per chain -
+    delete any existing one for the same chain first. Two were once found
+    armed for one chain (S6-B2573f), each firing its own hourly report with
+    its own frozen prompt. The census found the rule prose-only: the cron
+    LIFECYCLE was tracked by id (S6-B3157) and nothing counted live arms PER
+    CHAIN. Create events now carry the chain key parsed from the arm's own
+    prompt; this reduces them through _live_cron_jobs (id, session-only and
+    expiry semantics unchanged) and fires when any one chain holds two or
+    more live arms. Arms naming no chain are outside the rule and ignored.
+    `events` and `now` are the seams, the same reducer runs either way."""
+    if events is None:
+        events, latest = _cron_lifecycle_events(entries)
+        now = latest if now is None else now
+    live = _live_cron_jobs(events, now)
+    by_chain: dict[str, list] = {}
+    for arm in live:
+        key = arm.get("chain")
+        if key:
+            by_chain.setdefault(str(key).lower(), []).append(arm)
+    dups = {k: v for k, v in by_chain.items() if len(v) >= 2}
+    if not dups:
+        return []
+    detail = "; ".join(
+        f"chain {k}: {len(v)} live arms ({', '.join(a['job'] for a in v)})"
+        for k, v in sorted(dups.items()))
+    return [("TWO MONITORS ARMED FOR ONE CHAIN (runbook 2583, S6-B3399 / "
+             f"S6-B2573f): {detail}. Exactly ONE hourly cron per chain - "
+             "CronDelete the stale arm(s) by id before the turn ends; two "
+             "live arms fire two frozen prompts, and the older one keeps "
+             "re-asserting the state it was armed in (L862).")]
 
 
 def scan_monitor_pattern_unverified(entries, *, blobs=None) -> list[str]:
@@ -7401,6 +7442,8 @@ def main(argv: list[str] | None = None) -> int:
                 scan_bulk_process_kill,
                 scan_bare_python_launch,
                 scan_monitor_not_retired,
+                # S6-B3399 (runbook 2583): one hourly cron per chain.
+                scan_duplicate_chain_monitor,
                 scan_monitor_pattern_unverified,
                 # B2520: a landed cube must be REPORTED before the turn ends.
                 scan_undelivered_landing,

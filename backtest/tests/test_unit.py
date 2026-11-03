@@ -48667,6 +48667,14 @@ _B3121_SEAMS_SOUND = {
         "the same _live_cron_jobs reducer runs on the injected list and on the "
         "list _cron_lifecycle_events builds from the transcript, and an unknown "
         "event shape raises",
+    # B3139q-r176b (S6-B3399 rule 2583): the duplicate-arm gate's seam -
+    # same reducer, same event shape as its sibling above; the live chain-key
+    # parse from a real CronCreate entry is driven by test_b3399d.
+    ("scan_duplicate_chain_monitor", "events"):
+        "list seam of per-job lifecycle dicts (the S6-B3157 shape, plus the "
+        "chain key create events now carry); the same _live_cron_jobs reducer "
+        "runs on the injected list and on _cron_lifecycle_events' output, and "
+        "the live chain-key parse is driven by test_b3399d's transcript arm",
     ("scan_deferral_trigger_fired", "audit_doc"):
         "fired-list seam matching the built shape; in_memory disables the "
         "state write-back so corpus cases stay stateless",
@@ -55753,8 +55761,10 @@ def test_b3157_monitor_retirement_tracks_each_job_by_id():
                 {"cron": "7,22,37,52 * * * *", "prompt": "check", "recurring": True}),
            res(1, "2026-10-10T15:09:01Z", v1, made.format(job="6ecb0375"))]
     ev, latest = v._cron_lifecycle_events(arm)
+    # chain=None: the prompt 'check' names no chain (the rule-2583 key,
+    # S6-B3399 B3139q-r176b; test_b3399d drives the named-chain parse)
     assert ev == [{"kind": "create", "job": "6ecb0375", "ts": "2026-10-10T15:09:00Z",
-                   "session_only": True, "expire_days": 7}], ev
+                   "session_only": True, "expire_days": 7, "chain": None}], ev
     assert latest == "2026-10-10T15:09:01Z"
     # 1. a live arm, never deleted: FIRES and names the job
     out = v.scan_monitor_not_retired(arm, text=quiet)
@@ -71344,6 +71354,68 @@ def test_b3399c_compliance_every_close_and_chain_status_line():
     assert isinstance(live, str) and live
     if live in ("none", "unknown"):
         assert _m.scan_chain_running_close(bare) == []
+
+
+def test_b3399d_one_hourly_cron_per_chain():
+    """Lane 2 Batch 6b (B3139q-r176b), S6-B3399's last rule - runbook 2583:
+    exactly ONE hourly cron per chain (two were once found armed, S6-B2573f).
+    Create events carry the chain key parsed from the arm's own prompt;
+    scan_duplicate_chain_monitor reduces them through _live_cron_jobs and
+    fires when one chain holds two or more live arms. Seam arms mirror the
+    corpus; the live arm drives the chain-key PARSE through a real-shaped
+    CronCreate tool_use + tool_result pair (#276b)."""
+    import importlib.util as _ilu
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    _spec = _ilu.spec_from_file_location(
+        "_vtc8", root / "scripts" / "verify_turn_compliance.py")
+    _m = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(_m)
+
+    def ev(job, chain, ts="2026-11-03T01:00:00Z"):
+        return {"kind": "create", "job": job, "ts": ts,
+                "session_only": False, "expire_days": None, "chain": chain}
+
+    now = "2026-11-03T03:00:00Z"
+    out = _m.scan_duplicate_chain_monitor(
+        [], events=[ev("aaaa1111", "b3146"), ev("bbbb2222", "b3146")], now=now)
+    assert out and "b3146" in out[0] and "aaaa1111" in out[0], out
+    assert _m.scan_duplicate_chain_monitor(
+        [], events=[ev("aaaa1111", "b3146"), ev("cccc3333", "b3171")],
+        now=now) == [], "one arm per chain is the rule followed"
+    assert _m.scan_duplicate_chain_monitor(
+        [], events=[ev("aaaa1111", "b3146"), {"kind": "delete", "job": "aaaa1111"},
+                    ev("bbbb2222", "b3146")], now=now) == [], (
+        "delete-then-re-arm is exactly what rule 2583 prescribes")
+    assert _m.scan_duplicate_chain_monitor(
+        [], events=[ev("aaaa1111", None), ev("bbbb2222", None)], now=now) == [], (
+        "arms naming no chain sit outside the rule")
+
+    # live arm (#276b): the chain-key PARSE from a real-shaped transcript -
+    # two CronCreate calls whose prompts name the same chain batch, each
+    # paired with a result naming its job id, and the scan over the ENTRIES
+    # (no seam) fires on the parsed keys.
+    def arm(tuid, job, prompt):
+        return [
+            {"type": "assistant", "message": {"content": [
+                {"type": "tool_use", "name": "CronCreate", "id": tuid,
+                 "input": {"cron": "11 * * * *", "prompt": prompt}}]}},
+            {"type": "user", "message": {"content": [
+                {"type": "tool_result", "tool_use_id": tuid,
+                 "content": f"Created job {job} (recurring hourly)."}]}},
+        ]
+    p = ("HOURLY MONITOR - chain batch b3146; wave b3146_cfg1. Report every "
+         "hour; TRIP on non-zero exit, death without an artifact, overrun.")
+    entries = ([{"type": "user", "message": {"content": "go"}}]
+               + arm("t1", "deadbee1", p) + arm("t2", "deadbee2", p))
+    events, latest = _m._cron_lifecycle_events(entries)
+    assert [e.get("chain") for e in events] == ["b3146", "b3146"], events
+    out = _m.scan_duplicate_chain_monitor(entries)
+    assert out and "b3146" in out[0], (
+        "two live arms for one chain, parsed from the prompts, must fire", out)
 
 
 def test_b3411_history_read_is_judged_at_segment_grain():

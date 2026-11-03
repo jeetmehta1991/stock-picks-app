@@ -284,6 +284,19 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
         True,
         {"rows": []},
     ),
+    # S6-B3399 (B3139q-r176b), runbook 2583: the S6-B2573f shape - two hourly
+    # arms live for ONE chain, neither deleted. Constructed events in the
+    # reducer's own dict form.
+    "scan_duplicate_chain_monitor": (
+        "",
+        True,
+        {"events": [
+            {"kind": "create", "job": "aaaa1111", "ts": "2026-11-03T01:00:00Z",
+             "session_only": False, "expire_days": None, "chain": "b3146"},
+            {"kind": "create", "job": "bbbb2222", "ts": "2026-11-03T02:00:00Z",
+             "session_only": False, "expire_days": None, "chain": "b3146"},
+        ], "now": "2026-11-03T03:00:00Z"},
+    ),
     # S6-B3399 (B3139q-r176), runbook 2629 second half / 8.12: constructed -
     # a close posted while serial_chain.log shows a wave in flight, carrying
     # no chain-status line at all (the L743 dead-reporter shape).
@@ -800,6 +813,33 @@ PURE_INCIDENTS: dict[str, list[tuple[tuple, bool, str]]] = {
 
 
 EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
+    # S6-B3399 rule 2583 (B3139q-r176b): must-QUIET three ways - one arm per
+    # chain across two chains; a second arm whose predecessor was DELETED
+    # (the rule followed); and arms naming no chain, which sit outside it.
+    "scan_duplicate_chain_monitor": [
+        ("", False,
+         {"events": [
+             {"kind": "create", "job": "aaaa1111", "ts": "2026-11-03T01:00:00Z",
+              "session_only": False, "expire_days": None, "chain": "b3146"},
+             {"kind": "create", "job": "cccc3333", "ts": "2026-11-03T01:30:00Z",
+              "session_only": False, "expire_days": None, "chain": "b3171"},
+         ], "now": "2026-11-03T03:00:00Z"}),
+        ("", False,
+         {"events": [
+             {"kind": "create", "job": "aaaa1111", "ts": "2026-11-03T01:00:00Z",
+              "session_only": False, "expire_days": None, "chain": "b3146"},
+             {"kind": "delete", "job": "aaaa1111"},
+             {"kind": "create", "job": "bbbb2222", "ts": "2026-11-03T02:00:00Z",
+              "session_only": False, "expire_days": None, "chain": "b3146"},
+         ], "now": "2026-11-03T03:00:00Z"}),
+        ("", False,
+         {"events": [
+             {"kind": "create", "job": "aaaa1111", "ts": "2026-11-03T01:00:00Z",
+              "session_only": False, "expire_days": None, "chain": None},
+             {"kind": "create", "job": "bbbb2222", "ts": "2026-11-03T02:00:00Z",
+              "session_only": False, "expire_days": None, "chain": None},
+         ], "now": "2026-11-03T03:00:00Z"}),
+    ],
     # S6-B3399 rule 2629b (B3139q-r176): must-QUIET three ways - a close that
     # names the wave with a liveness reading; no chain in flight; and the
     # detector's own 'unknown', which must not block every close.

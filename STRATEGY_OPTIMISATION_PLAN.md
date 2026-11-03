@@ -2638,7 +2638,9 @@ last one because it checked EXISTENCE, not CADENCE, which #186 closed). `scan_un
 Also required: **trip conditions** for non-zero exit, death-without-artifact, and overrun past 2x the
 projection (**mechanism, S6-B3399:** a CHAIN launch whose armed monitor's prompt carries none of these
 clauses is refused by `scan_unmonitored_launch`'s `chain_armed` check, pinned by test_b3412); **exactly ONE hourly cron per chain** - delete any existing one for the same chain first
-(two were once found armed, S6-B2573f); a prompt that types no comparison value and derives every one
+(two were once found armed, S6-B2573f; **mechanism, S6-B3399:** create events carry the chain key
+from the arm's own prompt and `scan_duplicate_chain_monitor` fires on two or more live arms for one
+chain, pinned by test_b3399d); a prompt that types no comparison value and derives every one
 from an artifact at firing time (L839; the derive-never-type prompt of S6-B2972); and **CronDelete in the same turn the
 run lands or stops** (CHECKLIST #320), so stale monitors do not train everyone to ignore alerts. Crons are
 session-held (S6-B2548): the disk artifacts (`run_heartbeat.json`, wave summaries, `serial_chain.log`,
