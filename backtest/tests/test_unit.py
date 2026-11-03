@@ -47761,7 +47761,10 @@ def test_b3113a_step2_read_subject_cube_control_r5(tmp_path):
     r = subprocess.run(
         [sys.executable, str(root / "scripts" / "breadth_step2_read.py"),
          "--step1-artifact", str(tmp_path / "absent.json"),
-         "--ruling", "pin probe", "--breadth-disposition", "ran",
+         # S6-B3395: the word is checked against the real ledger in a
+         # subprocess - the recorded S6-B3337 word test_b2116 cites
+         "--ruling", "your rec approved", "--ruling-ticket", "S6-B3337",
+         "--breadth-disposition", "ran",
          "--depth-leg", "ran", "--depth-evidence", "pin fixture",  # S6-B3353
          "--prior-read", "none",               # S6-B3139ah: required
          "--out", str(tmp_path / "o.json"), "--cube-dir", str(missing)],
@@ -53249,9 +53252,16 @@ def test_b3139ah_reader_provenance_comes_from_the_caller(tmp_path, monkeypatch):
     # grid can never be committed (test_b3395a drives the check itself)
     import holdout_reads as _hr
     monkeypatch.setattr(_hr, "step1_uncommitted", lambda *a, **k: None)
+    # S6-B3395: the breadth read's word is checked against a ledger row
+    import owner_word as _ow
+    _q = tmp_path / "queue_b3395.md"
+    _q.write_text("| **S6-B9139** | **OPEN** | P1 | **RULED: 'pin probe' (fixture)** "
+                  "| _reason:_ OPEN - fixture |\n", encoding="utf-8")
+    monkeypatch.setattr(_ow, "QUEUE", _q)
 
     def _read(out, prior, disclosure):
         argv = ["r", "--step1-artifact", str(grid), "--ruling", "pin probe",
+                "--ruling-ticket", "S6-B9139",
                 "--breadth-disposition", "ran", "--out", str(out),
                 "--depth-leg", "ran", "--depth-evidence", "pin fixture",  # S6-B3353
                 "--cube-dir", str(run), "--prior-read", prior]
@@ -53261,15 +53271,22 @@ def test_b3139ah_reader_provenance_comes_from_the_caller(tmp_path, monkeypatch):
         b2.main()
         return _j.loads(out.read_text(encoding="utf-8"))
 
-    re_read = _read(tmp_path / "re.json", "Step-2 configs 1 and 2", "pin words")
-    pv = re_read["provenance"]
-    assert pv["subject_holdout_previously_read"] == "Step-2 configs 1 and 2"
-    assert pv["disclosure_accepted"] == "pin words"
-    assert pv["label"].startswith("DISCLOSED-RE-READ")
-    assert re_read["basis"] == "net"      # the grid's recorded basis, carried
     first = _read(tmp_path / "first.json", "none", None)
     assert first["provenance"]["label"].startswith("FIRST-READ")
     assert first["provenance"]["disclosure_accepted"] is None
+    # S6-B3395: a re-read names the ledger's recorded read it repeats
+    re_read = _read(tmp_path / "re.json", "first.json (Step-2 configs 1 and 2)",
+                    "pin words")
+    pv = re_read["provenance"]
+    assert pv["subject_holdout_previously_read"] == "first.json (Step-2 configs 1 and 2)"
+    assert pv["disclosure_accepted"] == "pin words"
+    assert pv["label"].startswith("DISCLOSED-RE-READ")
+    assert re_read["holdout_read_ledger"]["rereads"] == [
+        first["holdout_read_ledger"]["read_id"]]
+    assert re_read["basis"] == "net"      # the grid's recorded basis, carried
+    with pytest.raises(SystemExit) as e:
+        _read(tmp_path / "again.json", "none", None)
+    assert "S6-B3395" in str(e.value), "a first-read claim the ledger contradicts"
     with pytest.raises(SystemExit) as e:
         _read(tmp_path / "bad.json", "an earlier read", "")
     assert "disclosure" in str(e.value)
@@ -54691,9 +54708,16 @@ def test_b3139bx_every_holdout_read_carries_its_own_chance_price(tmp_path, monke
     # fixture can never be committed (test_b3395a drives the check itself)
     import holdout_reads as _hr
     monkeypatch.setattr(_hr, "step1_uncommitted", lambda *a, **k: None)
+    # S6-B3395: the breadth read's word is checked against a ledger row
+    import owner_word as _ow
+    _q = tmp_path / "queue_b3395.md"
+    _q.write_text("| **S6-B9140** | **OPEN** | P1 | **RULED: 'pin probe' (fixture)** "
+                  "| _reason:_ OPEN - fixture |\n", encoding="utf-8")
+    monkeypatch.setattr(_ow, "QUEUE", _q)
     out = tmp_path / "read.json"
     monkeypatch.setattr(sys, "argv", [
         "breadth_step2_read.py", "--step1-artifact", str(s1), "--ruling", "pin probe",
+        "--ruling-ticket", "S6-B9140",
         "--control", "fx", "--breadth-disposition", "ran", "--prior-read", "none",
         "--depth-leg", "ran", "--depth-evidence", "pin fixture",  # S6-B3353
         "--out", str(out)])
@@ -54709,6 +54733,9 @@ def test_b3139bx_every_holdout_read_carries_its_own_chance_price(tmp_path, monke
         raise SystemExit("REFUSED: reproduction failed - pin probe")
     monkeypatch.setattr(bhn, "run", _refuse)
     out.unlink()
+    # S6-B3395: the forced-refusal arm is a second scenario, on its own empty
+    # holdout-read ledger - on the first one it is a re-read (test_b3395b)
+    monkeypatch.setenv(_hr.ENV_KEY, str(tmp_path / "ledger_refusal_arm.jsonl"))
     assert b2.main() == 3
     rec2 = _j.loads(out.read_text(encoding="utf-8"))
     assert rec2["holdout_null"]["status"] == "REFUSED", rec2["holdout_null"]
@@ -67215,7 +67242,10 @@ def test_b3353_step2_readers_and_closures_name_both_legs(tmp_path, monkeypatch):
     # committed check is stubbed here (test_b3395a drives it on a real repo)
     import holdout_reads as _hr
     monkeypatch.setattr(_hr, "step1_uncommitted", lambda *a, **k: None)
-    (tmp_path / "s1.json").write_text(_j.dumps({"multiplicity": {"reconciles": True}}),
+    # S6-B3395 Batch 7b: the read is counted against its strategy, so the
+    # Step-1 fixture names one
+    (tmp_path / "s1.json").write_text(_j.dumps({"strategy": "fx",
+                                                "multiplicity": {"reconciles": True}}),
                                       encoding="utf-8")
     monkeypatch.setattr(_sys, "argv", base + ["--breadth-leg", "not_run",
                                                "--breadth-ticket", "S6-B9353"])
@@ -67228,7 +67258,11 @@ def test_b3353_step2_readers_and_closures_name_both_legs(tmp_path, monkeypatch):
     # (3) breadth_step2_read: the depth leg and the waiver's words, before the read
     import breadth_step2_read as b2
     s1 = tmp_path / "absent_step1.json"
+    # S6-B3395: the breadth read's word is checked against a ledger row too
+    q.write_text(q.read_text(encoding="utf-8") + "| **S6-B9355** | **OPEN** | P1 | **RULED: "
+                 "'pin probe' (fixture).** | _reason:_ OPEN |\n", encoding="utf-8")
     common = ["b2", "--step1-artifact", str(s1), "--ruling", "pin probe",
+              "--ruling-ticket", "S6-B9355",
               "--prior-read", "none", "--out", str(tmp_path / "b.json")]
     monkeypatch.setattr(_sys, "argv", common + ["--breadth-disposition", "ran"])
     with pytest.raises(SystemExit) as e:
@@ -71530,7 +71564,8 @@ def test_b3395a_committed_step1_multiplicity_and_control_on_the_depth_read(tmp_p
         with pytest.raises(SystemExit) as e:
             ohr.main()
         assert "multiplicity" in str(e.value), e.value
-    s1.write_text(_j.dumps({"multiplicity": {"reconciles": True}, "axes": []}), encoding="utf-8")
+    s1.write_text(_j.dumps({"strategy": "fx", "multiplicity": {"reconciles": True},
+                            "axes": []}), encoding="utf-8")   # 7b: a named subject
     adm = {"levels": [], "exit": "x", "holdout_sharpe": 0.4, "holdout_n": 20, "full_n": 80,
            "profit_factor": 1.1, "sortino": 0.5, "psr": 0.6, "n_gates": 3,
            "n_gates_evaluable": 6, "verdict": "FAIL"}
@@ -71605,6 +71640,276 @@ def test_b3395a_committed_step1_multiplicity_and_control_on_the_depth_read(tmp_p
     assert "CONTROL COMPARISON" not in ohr.render_table(dict(base_rec, control=blk))
     assert ohr.render_table(dict(base_rec, control={"strategy": "ctl", "rows": [r]})
                             ).startswith(plain)
+
+
+def test_b3395b_the_holdout_read_ledger(tmp_path, monkeypatch):
+    """S6-B3395 Batch 7b (B3139q-r178), owner ruling 2026-11-03 'A approved':
+    the holdout-read ledger at the two offline doors - runbook 0.3 (census
+    line 140, one owner-worded read, a re-read declared) and 1.1 item 6
+    (census line 323, holdout reads counted project-wide).
+
+    (1) The primitives on a temp ledger: a recorded read makes the next read
+    of the same subject an UNDECLARED re-read (refused); declaring it by its
+    read_id passes, a wrong id refuses, and so does a declaration with no
+    recorded read at all; legs overlap (both covers long; long and short are
+    separate subjects); the engine door keys on config, so the waterfall's
+    next config passes and the same config refuses; a read id is recorded
+    once; a missing strategy, a corrupt line and an unknown door refuse
+    (L580, L642); an append keeps the file's dominant line ending (L850).
+
+    (2) The redirect is honoured ONLY under pytest - without
+    PYTEST_CURRENT_TEST the production ledger is read whatever the variable
+    says (L596: the escape gets the stricter matcher).
+
+    (3) The depth reader, through main(): the first read is recorded; a second
+    read of the same Step-1 surface under a NEW --out - the b2646 shape -
+    refuses before the read is taken (the reader stub is not called); declared
+    with --rereads it passes and the artifact carries rerun_of_spent_holdout
+    and the ledger block; --force-rerun onto a recorded read's own artifact
+    refuses.
+
+    (4) The breadth reader: --ruling-ticket is required and the word is
+    checked (S6-B3338's door covered 1 of 2 readers); an existing --out
+    refuses; --prior-read 'none' refuses when the ledger records a read of
+    the subject, and so does a --prior-read naming none of the recorded
+    reads - both before the frame is built.
+
+    (5) The committed ledger holds every read the tracked artifacts of the
+    three recognised read shapes imply - such an artifact committed without
+    its ledger entry fails here; reads that leave other shapes (the
+    declared-row reader, the historical one-off readers) are Batch 7c's census. Its engine reads carry the
+    arm's env as their identity - the key a launch can compute, re-derived
+    here from the tracked spec arm of each - and the grader's own config
+    beside it (B3139q-r179: the grader's dict re-derives from a spec for 3 of
+    7 engine reads, the arm env for 7 of 7)."""
+    import importlib.util as _ilu
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import holdout_reads as hr
+    import os as _os
+    # (0) the conftest isolation is on: this test, and every test, starts on a
+    # temp ledger - never the production one a reader test would otherwise write
+    assert _os.environ.get(hr.ENV_KEY) and hr.ledger_path() != hr.LEDGER_PROD, (
+        "backtest/tests/conftest.py _holdout_reads_ledger_isolated is off")
+    assert not hr.ledger_path().exists(), "each test starts on an EMPTY ledger"
+
+    # (1) primitives
+    L = tmp_path / "ledger.jsonl"
+    common = dict(door="offline_holdout_read", artifact="a.json", source="s.json", path=L)
+    assert hr.reread_refusal("s1", "long", door="d", path=L) is None
+    assert "not a recorded read" in hr.reread_refusal("s1", "long", declared="r0",
+                                                      door="d", path=L), (
+        "a declaration with no recorded read refuses")
+    hr.record(read_id="r1", strategy="s1", leg="long", **common)
+    why = hr.reread_refusal("s1", "long", door="d", path=L)
+    assert why and "r1" in why and "DECLARED" in why, why
+    assert hr.reread_refusal("s1", "long", declared="r1", door="d", path=L) is None
+    assert "not a recorded read" in hr.reread_refusal("s1", "long", declared="zz",
+                                                      door="d", path=L)
+    assert hr.reread_refusal("s1", "both", door="d", path=L), "both overlaps long"
+    assert hr.reread_refusal("s1", None, door="d", path=L), "no leg overlaps long"
+    assert hr.reread_refusal("s1", "short", door="d", path=L) is None, "short is separate"
+    assert hr.reread_refusal("other", "long", door="d", path=L) is None
+    assert "names no strategy" in hr.reread_refusal(None, "long", door="d", path=L)
+    assert hr.read_id_refusal("r1", door="d", path=L), "a read id is recorded once"
+    assert hr.read_id_refusal("r2", door="d", path=L) is None
+    cfg9 = hr.engine_identity({"STRAT_EMA_SPAN": "9"})
+    cfg250 = hr.engine_identity({"STRAT_EMA_SPAN": "250"})
+    assert cfg9 == hr.engine_identity({"STRAT_EMA_SPAN": 9}), "values compare as text"
+    assert hr.engine_identity(None) == hr.engine_identity({}) == "{}", "production = no env"
+    with pytest.raises(SystemExit):
+        hr.record(read_id="e0", strategy="bl", leg=None, door="engine_step2",
+                  artifact="g0", source="c0", path=L)
+    hr.record(read_id="e9", strategy="bl", leg=None, door="engine_step2", artifact="g9",
+              source="c9", config=cfg9, grid_config={"P4_ema_span": 9}, path=L)
+    assert hr.reread_refusal("bl", None, config=cfg250, door="engine", path=L) is None, (
+        "the waterfall's next config is a new read (runbook 1.1 item 1)")
+    assert hr.reread_refusal("bl", None, config=cfg9, door="engine", path=L), (
+        "a renamed wave of the SAME config is a re-read")
+    with pytest.raises(SystemExit):
+        hr.record(read_id="x", strategy="s", leg=None, door="nope", artifact="a",
+                  source="s", path=L)
+    with pytest.raises(SystemExit):
+        hr.record(read_id="x", strategy="", leg=None, door="engine_step2", artifact="a",
+                  source="s", path=L)
+    assert [e["read_id"] for e in hr.entries(L)] == ["r1", "e9"], "refused records wrote nothing"
+    bad = tmp_path / "bad.jsonl"
+    bad.write_text("{not json" + chr(10), encoding="utf-8")
+    with pytest.raises(SystemExit) as e:
+        hr.entries(bad)
+    assert "not JSON" in str(e.value)
+    nameless = tmp_path / "nameless.jsonl"
+    nameless.write_text('{"read_id": "z"}' + chr(10), encoding="utf-8")
+    with pytest.raises(SystemExit):
+        hr.entries(nameless)
+    crlf = tmp_path / "crlf.jsonl"
+    crlf.write_bytes(b'{"read_id": "a", "strategy": "s"}' + bytes([13, 10]))
+    hr.record(read_id="b", strategy="s", leg=None, door="offline_holdout_read",
+              artifact="a", source="s", path=crlf)
+    raw = crlf.read_bytes()
+    assert raw.count(bytes([13, 10])) == 2 and raw.count(bytes([10])) == 2, raw
+
+    # (2) the redirect only under pytest
+    monkeypatch.setenv(hr.ENV_KEY, str(L))
+    assert hr.ledger_path() == L
+    monkeypatch.delenv("PYTEST_CURRENT_TEST", raising=False)
+    assert hr.ledger_path() == hr.LEDGER_PROD, "a production read cannot redirect"
+    monkeypatch.setenv("PYTEST_CURRENT_TEST", "pin")
+
+    # (3) the depth reader records, refuses the undeclared re-read, takes the declared one
+    led = tmp_path / "depth_ledger.jsonl"
+    monkeypatch.setenv(hr.ENV_KEY, str(led))
+    import owner_word as ow
+    q = tmp_path / "queue.md"
+    q.write_text("| **S6-B9396** | **OPEN** | P1 | **RULED: 'read the fixture holdout once' "
+                 "(fixture).** | _reason:_ OPEN |" + chr(10), encoding="utf-8")
+    monkeypatch.setattr(ow, "QUEUE", q)
+    spec = _ilu.spec_from_file_location("ohr_b3395b", root / "scripts" / "offline_holdout_read.py")
+    ohr = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(ohr)
+    monkeypatch.setattr(hr, "step1_uncommitted", lambda *a, **k: None)
+    s1 = tmp_path / "surface.json"
+    s1.write_text(_j.dumps({"strategy": "fx", "multiplicity": {"reconciles": True},
+                            "axes": []}), encoding="utf-8")
+    adm = {"levels": [], "exit": "x", "holdout_sharpe": 0.4, "holdout_n": 20, "full_n": 80,
+           "profit_factor": 1.1, "sortino": 0.5, "psr": 0.6, "n_gates": 3,
+           "n_gates_evaluable": 6, "verdict": "FAIL"}
+    reads = []
+
+    def _read(*a, **k):
+        reads.append(1)
+        return {"strategy": "fx", "verdict": "FAIL", "basis": "net", "basis_source": "fx",
+                "subject": {"direction": None}, "admission": adm, "trials": 1,
+                "peek_bound": {"cells_clearing_all_gates_besides_admission": 0}}
+    monkeypatch.setattr(ohr, "read_step2", _read)
+    monkeypatch.setattr(ohr, "render_table", lambda rec: "")
+
+    def run(out, extra=()):
+        monkeypatch.setattr(_s, "argv", ["ohr", "--sweep-artifact", str(s1), "--out", str(out),
+                                         "--ruling", "read the fixture holdout once",
+                                         "--ruling-ticket", "S6-B9396", "--breadth-leg",
+                                         "not_run", "--breadth-ticket", "S6-B9396"] + list(extra))
+        return ohr.main()
+    first = tmp_path / "first.json"
+    assert run(first) == 0 and len(reads) == 1
+    recs = hr.entries(led)
+    assert len(recs) == 1 and recs[0]["strategy"] == "fx", recs
+    assert recs[0]["door"] == "offline_holdout_read" and recs[0]["declared"] is None
+    assert recs[0]["owner_word"]["ticket"] == "S6-B9396"
+    first_id = recs[0]["read_id"]
+    assert first_id == hr.repo_rel(first)
+    assert _j.loads(first.read_text(encoding="utf-8"))["holdout_read_ledger"] == {
+        "read_id": first_id, "prior_reads": [], "rereads": []}
+    with pytest.raises(SystemExit) as e:
+        run(tmp_path / "second.json")
+    assert "S6-B3395" in str(e.value) and first_id in str(e.value), e.value
+    assert len(reads) == 1, "the undeclared re-read refused BEFORE the read was taken"
+    assert not (tmp_path / "second.json").exists() and len(hr.entries(led)) == 1
+    with pytest.raises(SystemExit) as e:
+        run(tmp_path / "second.json", ["--rereads", "not/a/read.json"])
+    assert "not a recorded read" in str(e.value)
+    assert run(tmp_path / "third.json", ["--rereads", first_id]) == 0
+    rec = _j.loads((tmp_path / "third.json").read_text(encoding="utf-8"))
+    assert rec["rerun_of_spent_holdout"] is True
+    assert rec["holdout_read_ledger"]["prior_reads"] == [first_id]
+    third = hr.entries(led)[1]
+    assert third["rereads"] == [first_id] and third["declared"] is True
+    with pytest.raises(SystemExit) as e:
+        run(first, ["--force-rerun", "--rereads", first_id])
+    assert "already the artifact of a recorded holdout read" in str(e.value), e.value
+    assert len(hr.entries(led)) == 2 and len(reads) == 2
+
+    # (4) the breadth reader: its word is checked, an existing --out refuses,
+    # and --prior-read is checked against the ledger before the frame is built
+    import breadth_step2_read as b2
+
+    def _no_frame(*a, **k):
+        raise AssertionError("build_frame reached - the ledger check must come first")
+    monkeypatch.setattr(b2, "build_frame", _no_frame)
+    spent = tmp_path / "spent_breadth.json"
+    spent.write_text("{}", encoding="utf-8")
+    s1b = tmp_path / "breadth_surface.json"
+    s1b.write_text(_j.dumps({"strategy": "fx", "leg": "long", "depth_base": None,
+                             "multiplicity": {"reconciles": True}, "rows": []}),
+                   encoding="utf-8")
+    base = ["b2", "--step1-artifact", str(s1b),
+            "--breadth-disposition", "ran", "--depth-leg", "ran", "--depth-evidence", "pin"]
+    word = ["--ruling", "read the fixture holdout once", "--ruling-ticket", "S6-B9396"]
+    monkeypatch.setattr(_s, "argv", base + ["--ruling", "read the fixture holdout once",
+                                            "--out", str(tmp_path / "o.json"),
+                                            "--prior-read", "none"])
+    with pytest.raises(SystemExit) as e:
+        b2.main()
+    assert e.value.code == 2, "argparse must require --ruling-ticket"
+    monkeypatch.setattr(_s, "argv", base + ["--ruling", "an unrecorded word here",
+                                            "--ruling-ticket", "S6-B9396",
+                                            "--out", str(tmp_path / "o.json"),
+                                            "--prior-read", "none"])
+    with pytest.raises(SystemExit) as e:
+        b2.main()
+    assert "S6-B3338" in str(e.value), e.value
+    monkeypatch.setattr(_s, "argv", base + word + ["--out", str(spent), "--prior-read", "none"])
+    with pytest.raises(SystemExit) as e:
+        b2.main()
+    assert "exists" in str(e.value) and "S6-B3395" in str(e.value), e.value
+    monkeypatch.setattr(_s, "argv", base + word + ["--out", str(tmp_path / "b1.json"),
+                                                   "--prior-read", "none"])
+    with pytest.raises(SystemExit) as e:
+        b2.main()
+    assert "S6-B3395" in str(e.value) and first_id in str(e.value), e.value
+    assert "one Step-2 read" in str(e.value), ("a first-read claim the ledger "
+                                               "contradicts gets the rule's refusal", e.value)
+    monkeypatch.setattr(_s, "argv", base + word + ["--out", str(tmp_path / "b1.json"),
+                                                   "--prior-read", "an earlier look",
+                                                   "--disclosure", "the owner's words"])
+    with pytest.raises(SystemExit) as e:
+        b2.main()
+    assert "names none of the ledger's recorded reads" in str(e.value), e.value
+    assert len(hr.entries(led)) == 2, "a refused breadth read recorded nothing"
+    monkeypatch.setattr(_s, "argv", base + word + ["--out", str(tmp_path / "b1.json"),
+                                                   "--prior-read", f"the depth read {first.name}",
+                                                   "--disclosure", "the owner's words"])
+    with pytest.raises(AssertionError, match="build_frame reached"):
+        b2.main()
+
+    # (5) the committed ledger holds every read the tracked artifacts imply
+    cands = {c["read_id"]: c for c in hr.backfill_candidates()}
+    recorded = {x["read_id"]: x for x in hr.entries(hr.LEDGER_PROD)}
+    assert len(cands) >= 23, len(cands)
+    assert set(cands) <= set(recorded), sorted(set(cands) - set(recorded))
+    for rid, x in recorded.items():
+        if not x.get("backfilled"):
+            continue
+        c = cands.get(rid)
+        assert c is not None, ("a backfilled read whose artifact is no longer tracked", rid)
+        for k in ("strategy", "door", "config", "grid_config", "rereads", "declared", "ts"):
+            assert x[k] == c[k], ("the ledger differs from what git derives", rid, k)
+        assert x["leg"] == (c["leg"] or "both"), rid
+    b2646 = next(x for x in hr.entries(hr.LEDGER_PROD)
+                 if x["read_id"].endswith("b2646_pead_step2_postfix.json"))
+    assert b2646["declared"] is False and any(r.endswith("b2644_pead_step2_holdout.json")
+                                              for r in b2646["rereads"]), b2646
+    # the engine reads carry the arm's env as their identity (the key a launch
+    # can compute) and the grader's own dict beside it, never matched on
+    eng = {x["read_id"]: x for x in hr.entries(hr.LEDGER_PROD) if x["door"] == "engine_step2"}
+    assert len(eng) >= 7 and all(x["config"] is not None for x in eng.values()), eng
+    p9 = eng["output_audit/output_bl_step2_p4_9_p4_9_grid_auto.json"]
+    assert p9["config"] == hr.engine_identity({"STRAT_EMA_SPAN": "9"}), p9
+    assert p9["grid_config"] == {"P4_ema_span": 9}, p9
+    prod = eng["output_audit/output_pairs_mrl_step2_production_grid_auto.json"]
+    assert prod["config"] == "{}" and prod["grid_config"] == {"P1_pairs_identity": "production"}
+    assert len({x["config"] for x in eng.values() if x["strategy"] == "bollinger_lower"}) == 2
+    envs = hr._tracked_spec_envs(hr.ROOT)
+    for rid, x in eng.items():
+        assert hr._engine_config(rid, x["source"], envs) == x["config"], (
+            "each engine identity re-derives from the tracked spec arm", rid)
+    with pytest.raises(SystemExit):
+        hr._engine_config("x.json", "output_no_such_wave_tag/trade_exit_detail.csv", envs)
 
 
 def test_b3411_history_read_is_judged_at_segment_grain():

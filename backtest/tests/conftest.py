@@ -168,6 +168,27 @@ def _engine_owner_word():
             os.environ.pop(key, None)
 
 
+@pytest.fixture(autouse=True)
+def _holdout_reads_ledger_isolated(tmp_path_factory, monkeypatch, request):
+    """S6-B3395 (B3139q-r178): no test reads or writes the production
+    holdout-read ledger (output_audit/holdout_reads.jsonl) through the
+    readers - each test gets its own empty ledger file through
+    HOLDOUT_READS_LEDGER, which scripts/holdout_reads.ledger_path honours only
+    while PYTEST_CURRENT_TEST is set; subprocesses a test starts inherit both.
+    Function-scoped, so one test's recorded read never becomes the next
+    test's prior read (L910: a check run in a test must not write the
+    production record). A pin that inspects the production ledger names
+    holdout_reads.LEDGER_PROD explicitly."""
+    import hashlib
+    d = tmp_path_factory.getbasetemp() / "holdout_reads"
+    d.mkdir(exist_ok=True)
+    p = d / (hashlib.sha1(request.node.nodeid.encode("utf-8")).hexdigest()[:16] + ".jsonl")
+    if p.exists():
+        p.unlink()
+    monkeypatch.setenv("HOLDOUT_READS_LEDGER", str(p))
+    yield p
+
+
 _CFG_SNAPSHOT = pytest.StashKey[dict]()
 
 

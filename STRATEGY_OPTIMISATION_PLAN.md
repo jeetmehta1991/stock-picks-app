@@ -138,7 +138,14 @@ band-coverage gate (§3.4); Step-1 discards count as testing, per the owner's wo
 depth-only because the rectification had been recorded family-locally (instances in the campaign
 log). A campaign spec queued BEFORE a template change is re-checked against the template AT
 EXECUTION. Both legs stay inside the approval flow (§0.6): bands reviewed before Step 1, one
-owner-worded Step-2 read, admissions ruled.
+owner-worded Step-2 read, admissions ruled. **The one read is counted (S6-B3395, B3139q-r179):** the
+two offline Step-2 readers - the depth and breadth reads - consult the holdout-read ledger (`scripts/holdout_reads.py`,
+`output_audit/holdout_reads.jsonl`) before the read and record the read when it is taken; a read of
+a subject the ledger already records - (strategy, leg), shared by the depth and breadth reads -
+refuses unless it is DECLARED (`offline_holdout_read.py --rereads <read_id>`; `breadth_step2_read.py
+--prior-read` naming the recorded read), pinned by test_b3395b. Not yet counted, S6-B3395 Batch 7c:
+the engine's Step-2 grade and `scripts/declared_row_holdout_read.py` (a pre-registered free-level
+row's read, S6-B3140c), the other two of the 4 live holdout-read doors.
 
 **Three more family-born rules promoted to the template (B2672, owner class-directive 2026-09-11:
 *"Class is to be rectified and not just the instance"*):**
@@ -207,7 +214,8 @@ owner's word against the ledger.** An engine launch: `scripts/make_spec.py --own
 --owner-word-ticket ...` writes the word into the spec (a `--dry` draft needs none), and
 `scripts/run_wave.py` refuses a spec without one before any arm runs. A depth candidate's Step-2
 holdout read: `scripts/offline_holdout_read.py --ruling ... --ruling-ticket ...` (the breadth read,
-`scripts/breadth_step2_read.py`, has required `--ruling` since B2678). Each door passes only when a
+`scripts/breadth_step2_read.py`, has required `--ruling` since B2678 and checks it against the cited
+ticket's row, `--ruling-ticket`, since S6-B3395). Each door passes only when a
 row of the cited ticket quotes the owner's words (`scripts/owner_word.py`), so a ruling is recorded
 on its ticket before the door opens. The word is checked, not its scope: which levels a band word
 covered is read by the person citing it. The engine door sits at the engine's own entry (S6-B3358,
@@ -347,7 +355,13 @@ intermediate optimisation happens in-sample. The governing constraints:
    GLOBAL gate parameters (~3-5 distinct gate configurations - Sharpe 0.5 -> 1.0, `min_trades`
    levels), not strategy-specific configs, and the Sharpe bar was chosen on principle from a
    sensitivity curve presented before the choice. L351 stands as a discipline (count holdout reads
-   project-wide) with its magnitude corrected.
+   project-wide) with its magnitude corrected. **Counted since S6-B3395 (B3139q-r179):**
+   `output_audit/holdout_reads.jsonl` records each depth and breadth read when it is taken, and holds
+   the 23 earlier reads backfilled from the tracked artifacts of the three read shapes it recognises,
+   each dated by its artifact's first commit (9 depth reads, 7 breadth reads, 7 engine Step-2
+   grades). That is a LOWER BOUND: a declared-row read (S6-B3140c) and the historical one-off readers
+   leave other shapes, which S6-B3395 Batch 7c classes. test_b3395b fails when a tracked artifact of
+   the three shapes has no entry; `python scripts/holdout_reads.py --list` prints the ledger.
 
 ### 1.2 THE STEP TABLE - windows, universes and trade floors (owner 2026-08-29; formerly §10.1, §0b, and the STEP 2 ENTRY floor/window paragraphs)
 
@@ -937,7 +951,7 @@ and its gate - a step missing its expected output is a STOP, not a judgment call
 | T3 | 0 | **OWNER BAND REVIEW - PER STRATEGY (ruled 2026-09-16: no standing convention).** Present Table A (depth free rows + any §3.6 breadth B-rows together); WAIT | the campaign ticket carries the table | the owner's band word quoted verbatim in the row | no grid runs before the word |
 | T4 | 1 | OFFLINE STEP-1 GRID on the surviving fires: every free level x every exit, IS-only, holdout untouched, `next_pivot_target` barred, multiplicity block MANDATORY (§1.4; permutation null where a numeric search exists). The generic instrument is `offline_level_sweep.py --axes ... --basis net` (the basis is required, S6-B3314); the family's own grader where one is registered. Its four refusals BIND: reproduction (against the SURVIVING subset, T1), coverage, join, truncation | the named grader | `output_audit/<batch>_<strategy>_step1.json` with generator + cube stamped (#309) and `multiplicity.reconciles == true`, plus Table D (offline form) beside it (`offline_level_sweep.main` writes the block through `roster_core.bh_fdr_report` on every sweep since S6-B3096f closed at B3101 - the B3096 text said it never called it; record `trials_searched`, §1.4) | reproduction 1.0 on the surviving subset, else REFUSED |
 | T5 | 3 | BREADTH LEG (Step 3, optional - it may run before T6 so its cells ride T6's read): run §3.6 steps 1-6 (companion screen at two exits, cluster -> representatives, B-rows, permutation price) or WAIVE with the reason in the row - never silently skipped (§0.3) | `scripts/institutional_companion_screen.py --family <prefix>` (named for its first family; generic by argument) + `breadth_step1_grid.py` | the consistent-intersect artifact + B-rows in Table A | ran-or-waived recorded |
-| T6 | 2 | STEP 2: ONE pre-registered holdout read, on the owner's EXPLICIT word - the one-way door (§0.6). Six LIVE_GATES; control-family comparison on any all-six qualifier (§3.6 step 8). **OFFLINE-ONLY STEP 2 (owner ruling 2026-09-16, B2836): for an offline-only campaign the read covers the FULL cube (544 tickers x the whole 4-year window) and the FULL combination population - NO pruning, since Step-1 pruning exists only to cap engine runtime in Step 2. The statistical price rides with the ruling: the multiplicity block prices the FULL number of combinations read (PSR is no substitute, B2376); admission candidates are stated BEFORE the read; it stays ONE read, after which the holdout is SPENT for these objects (B2136)** | `scripts/breadth_step2_read.py` (fail-closed `--ruling`; a re-read of a previously read subject is LABELLED DISCLOSED-RE-READ, never refused) or `scripts/offline_holdout_read.py` (fail-closed `--ruling` / `--ruling-ticket`, checked against the ledger since S6-B3338 - this cell said 'no `--ruling` argument' until S6-B3395; it refuses an existing `--out`, which `--force-rerun` overrides with a RERUN_OF_SPENT_HOLDOUT label) - so the one-way door is the owner's word and the pre-registration, not either script. **Control comparison, mechanism (S6-B3395):** both readers run it on every all-six qualifier - the depth read's `control_comparison` (`--control`, the breadth reader's default), recorded as a disclosure that changes no verdict, pinned by test_b3395a | the Step-2 unified artifact; controls recorded | the owner's Step-2 word, every time |
+| T6 | 2 | STEP 2: ONE pre-registered holdout read, on the owner's EXPLICIT word - the one-way door (§0.6). Six LIVE_GATES; control-family comparison on any all-six qualifier (§3.6 step 8). **OFFLINE-ONLY STEP 2 (owner ruling 2026-09-16, B2836): for an offline-only campaign the read covers the FULL cube (544 tickers x the whole 4-year window) and the FULL combination population - NO pruning, since Step-1 pruning exists only to cap engine runtime in Step 2. The statistical price rides with the ruling: the multiplicity block prices the FULL number of combinations read (PSR is no substitute, B2376); admission candidates are stated BEFORE the read; it stays ONE read, after which the holdout is SPENT for these objects (B2136)** | `scripts/breadth_step2_read.py` (fail-closed `--ruling` / `--ruling-ticket`; a re-read of a previously read subject is LABELLED DISCLOSED-RE-READ and names the holdout-read ledger's recorded read - a first-read claim the ledger contradicts refuses, S6-B3395) or `scripts/offline_holdout_read.py` (fail-closed `--ruling` / `--ruling-ticket`, checked against the ledger since S6-B3338 - this cell said 'no `--ruling` argument' until S6-B3395; it refuses an existing `--out`, which `--force-rerun` overrides with a RERUN_OF_SPENT_HOLDOUT label unless that `--out` is already a recorded read's artifact, and since S6-B3395 Batch 7b an undeclared re-read of the subject under any `--out` - `--rereads` declares one) - so the one-way door is the owner's word and the pre-registration, not either script. **Control comparison, mechanism (S6-B3395):** both readers run it on every all-six qualifier - the depth read's `control_comparison` (`--control`, the breadth reader's default), recorded as a disclosure that changes no verdict, pinned by test_b3395a | the Step-2 unified artifact; controls recorded | the owner's Step-2 word, every time |
 | T7 | 4 | ADMISSION PROPOSAL (it records Step 3 BREADTH as RAN or N/A with the reason) with provenance labels riding (the B2660 doctrine, §6.2); Jaccard-0.70 de-dup and mirror resolution at admission | `build_phase_1b_roster.py` funnel | roster diff | the owner's ruling per admission |
 | T8 | 4 | CLOSE: if the family has open siblings, the pre-registered sibling containment pass (§1.6; the B2628/B2647 pattern) so siblings ride the verdict instead of getting campaigns; queue row EXECUTED; doc sweep | the sibling-pass instrument | sibling grades artifact; the campaign row | family accounted - every member ends TERMINAL, IN-CAMPAIGN, STALLED-CAMPAIGN (campaign concluded mid-path, B2833 - the view names it), or explicitly deferred |
 
@@ -1067,8 +1081,9 @@ meaning.
    `episode` month concentration, which the null cannot see (S6-B3315).
 7. **THE HOLDOUT READ** - ONE holdout read of every registered cell, on the owner's explicit word
    (Step 3's own read, or the Step-2 read when the cells were registered before it)
-   (`scripts/breadth_step2_read.py`, fail-closed `--ruling`; a DISCLOSED-RE-READ label when the
-   subject's holdout was previously read). **The read's qualifiers need their own chance pricing
+   (`scripts/breadth_step2_read.py`, fail-closed `--ruling` checked against `--ruling-ticket`'s row;
+   a DISCLOSED-RE-READ label when the subject's holdout was previously read, naming the holdout-read
+   ledger's recorded read - S6-B3395). **The read's qualifiers need their own chance pricing
    (L904):** item 6's null prices the IN-SAMPLE search, so it says nothing about how many holdout
    qualifiers chance alone produces - a leg whose unfiltered holdout already runs well crosses the
    gates by sampling. `scripts/breadth_holdout_null.py` (fail-closed reproduction of the read's

@@ -23,7 +23,8 @@ straightened - so a launch or a read cites a ruling the ledger records, where
 the owner reads it. ONE definition (L593) for the doors that use it: the
 engine launch (run_wave.main, before any arm; make_spec.main, before a spec is
 written; prelaunch_gate.check, at every leg and on a hand-run launch_sweep),
-a depth candidate's Step-2 holdout read (offline_holdout_read.main), a widened
+a depth candidate's Step-2 holdout read (offline_holdout_read.main) and, since
+S6-B3395, the breadth read (breadth_step2_read.main, --ruling-ticket), a widened
 breadth axis (breadth_step1_grid.widen_word) and the reopening of a terminal
 strategy (producer_variant_table._terminal_status_refusals; make_spec
 --reopen-word / --reopen-word-ticket writes that word into a spec, and a --dry

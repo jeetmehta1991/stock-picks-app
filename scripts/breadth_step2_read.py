@@ -20,6 +20,16 @@ with any admission. This block was once a literal naming one campaign's
 prior read (B2668) and its disclosure quote, so every later read inherited
 another campaign's history (L868).
 
+THE LEDGER CHECKS THE CALLER (S6-B3395 Batch 7b, runbook 0.3 / 1.1 item 6):
+--prior-read 'none' REFUSES when the holdout-read ledger
+(scripts/holdout_reads.py) records a read of the subject - (strategy, leg),
+shared with the depth reader - and a named prior read must name one the
+ledger records (its read_id or file name); the read is counted in the ledger
+when its rows are computed. --ruling is checked against its ticket's ledger
+row (--ruling-ticket, scripts/owner_word.py - S6-B3338's door, which covered
+only the depth reader until S6-B3395), and an existing --out REFUSES: the
+artifact of a read is its record, so a re-read writes a new one.
+
 CONTROL COMPARISON: for each all-six non-npt qualifier, the same axis at the
 same level is applied to the CONTROL strategy's recorded fires (no depth
 base) and the control's holdout sharpe lift (filtered minus unfiltered, same
@@ -104,6 +114,9 @@ def main() -> int:
     ap.add_argument("--step1-artifact", required=True)
     ap.add_argument("--ruling", required=True,
                     help="the owner's Step-2 word, verbatim (runbook section 0.6, fail-closed)")
+    ap.add_argument("--ruling-ticket", required=True,
+                    help="the ticket whose row records --ruling (S6-B3395: the "
+                         "S6-B3338 door, on this reader too)")
     ap.add_argument("--control", default=holdout_reads.CONTROL_DEFAULT,
                     help="control strategy for the B2658 comparison")
     # B2849 (S6-B2848d, owner-approved): T5's ran-or-waived stops being
@@ -145,6 +158,13 @@ def main() -> int:
             "REFUSED: --breadth-disposition=waived with no --breadth-reason "
             "- a waiver without its reason is a silent skip (S6-B2848d)")
     import owner_word
+    # S6-B3395 (runbook 0.6): the read's word is checked against the ledger
+    # row that records it, as the depth read's has been since S6-B3338
+    word = {"ticket": a.ruling_ticket.strip(),
+            "verbatim": owner_word.normalise(a.ruling)}
+    werrs = owner_word.refusals(word, door="Step-2 holdout read (breadth)")
+    if werrs:
+        raise SystemExit(werrs[0])
     legs = {"depth": step2_legs.from_args(a, "depth"),
             "breadth": ({"state": "ran", "evidence": a.step1_artifact}
                         if a.breadth_disposition == "ran" else
@@ -164,6 +184,10 @@ def main() -> int:
             "REFUSED: --prior-read names an earlier holdout read but "
             "--disclosure is empty - a re-read needs the owner's words "
             "accepting the spent-holdout disclosure (S6-B3139ah)")
+    if Path(a.out).exists():
+        raise SystemExit(f"REFUSED (S6-B3395): {a.out} exists - the artifact of a "
+                         "holdout read is its record; a re-read writes a new --out "
+                         "and names the read it repeats in --prior-read")
     t0 = time.time()
 
     # S6-B3113a: the subject's fires live only in its own cube when the
@@ -193,6 +217,26 @@ def main() -> int:
     _closed = _pvt.offline_retest_refusal(strategy)
     if _closed:
         raise SystemExit("REFUSED (S6-B3139g): " + _closed)
+    # S6-B3395 Batch 7b (runbook 0.3 / 1.1 item 6): the caller's --prior-read
+    # against the holdout-read ledger - 'none' refuses when the ledger records
+    # a read of this subject, and a named prior read must be a recorded one
+    read_id = holdout_reads.repo_rel(a.out)
+    _why = holdout_reads.read_id_refusal(read_id, door="breadth_step2_read")
+    if _why:
+        raise SystemExit(_why)
+    if not strategy:
+        raise SystemExit(holdout_reads.reread_refusal(None, door="breadth_step2_read"))
+    _subject = (strategy, art.get("leg") or "both")
+    _prior = [e["read_id"] for e in holdout_reads.prior_reads(*_subject)]
+    _named = [i for i in _prior if i in prior or Path(i).name in prior]
+    if _prior and first_read:
+        raise SystemExit(holdout_reads.reread_refusal(*_subject,
+                                                      door="breadth_step2_read"))
+    if _prior and not _named:
+        raise SystemExit(
+            f"REFUSED (breadth_step2_read, S6-B3395): --prior-read {prior!r} names "
+            f"none of the ledger's recorded reads of {_subject[0]} ({_subject[1]}): "
+            f"{_prior[:4]} - a re-read names the read it repeats")
     depth = art["depth_base"]
     # S6-B3139ag: the read scores on the basis its Step-1 grid RECORDED -
     # never a second flag that could disagree with it. A grid built before
@@ -245,6 +289,14 @@ def main() -> int:
     quals.sort(key=lambda r: -r["holdout_sharpe"])
     print(f"{len(rows)} cells read | {len(quals)} all-six non-npt qualifiers "
           f"({time.time()-t0:.0f}s)")
+    # S6-B3395 Batch 7b: the read is TAKEN - counted before anything is written
+    holdout_reads.record(read_id=read_id, strategy=strategy, leg=leg,
+                         door="breadth_step2_read", artifact=read_id,
+                         source=holdout_reads.repo_rel(a.step1_artifact),
+                         owner_word=word, rereads=_named,
+                         declared=None if first_read else True)
+    print(f"holdout-read ledger: {read_id} recorded ({holdout_reads.ledger_path()}); "
+          f"prior reads of the subject: {_prior or 'none'}")
 
     # ---- control comparison on each qualifier (deduped axis/level/exit) -----
     controls = []
@@ -295,6 +347,9 @@ def main() -> int:
                     "b2673 cell (S6-B2671c) + B2658 control comparison; "
                     "DISCLOSED-RE-READ provenance travels with any admission"),
            "ruling_verbatim": a.ruling,
+           "owner_word": word,                                   # S6-B3395
+           "holdout_read_ledger": {"read_id": read_id, "prior_reads": _prior,
+                                   "rereads": _named},          # S6-B3395
            "breadth_leg": {"disposition": a.breadth_disposition,
                            "reason": a.breadth_reason.strip()},
            "strategy": strategy, "depth_base": depth, "leg": leg,

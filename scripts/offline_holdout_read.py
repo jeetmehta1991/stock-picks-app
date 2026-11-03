@@ -17,6 +17,14 @@ THIS SCRIPT SPENDS THE PRE-REGISTRATION. Running it a second time re-reads a
 holdout that is already spent; the artifact records the first run's identity so
 a re-run cannot masquerade as a fresh test (it REFUSES if the out file exists,
 unless --force-rerun, which labels the artifact RERUN_OF_SPENT_HOLDOUT).
+S6-B3395 Batch 7b: the read is COUNTED in the holdout-read ledger
+(scripts/holdout_reads.py, output_audit/holdout_reads.jsonl) when it is
+taken, and a read of a subject - (strategy, leg), shared with the breadth
+reader - that the ledger already records REFUSES unless --rereads names the
+recorded read it repeats; a declared re-read carries
+rerun_of_spent_holdout. A NEW --out no longer escapes the refusal (the
+b2646 shape), and an --out that is already a recorded read's artifact
+refuses even with --force-rerun - a read's artifact is its record.
 
 THE BASIS IS THE STEP-1 ARTIFACT'S (S6-B3314, owner ruling 2026-10-27, option
 (a)): the read scores on the P&L basis the sweep RECORDED - net through
@@ -403,6 +411,11 @@ def main() -> int:
     import holdout_reads
     ap.add_argument("--control", default=holdout_reads.CONTROL_DEFAULT,
                     help="control strategy for the control-family comparison")
+    # S6-B3395 Batch 7b (runbook 0.3): a re-read is DECLARED by naming the
+    # recorded read it repeats - its read_id, the artifact path the ledger holds
+    ap.add_argument("--rereads", default=None,
+                    help="the read_id of the recorded holdout read this one repeats "
+                         "(a declared re-read; see scripts/holdout_reads.py --list)")
     a = ap.parse_args()
 
     import owner_word
@@ -431,13 +444,31 @@ def main() -> int:
         raise SystemExit(_why)
     rec1 = json.loads(Path(a.sweep_artifact).read_text(encoding="utf-8"))
     holdout_reads.require_multiplicity(rec1, a.sweep_artifact)
+    # S6-B3395 Batch 7b (runbook 0.3 / 1.1 item 6): the holdout-read ledger -
+    # an undeclared re-read of this subject refuses, and so does an --out that
+    # is already a recorded read's artifact
+    read_id = holdout_reads.repo_rel(out)
+    subject = (rec1.get("strategy"), rec1.get("direction"))
+    _why = (holdout_reads.reread_refusal(*subject, declared=a.rereads,
+                                         door="offline_holdout_read")
+            or holdout_reads.read_id_refusal(read_id, door="offline_holdout_read"))
+    if _why:
+        raise SystemExit(_why)
+    prior = [e["read_id"] for e in holdout_reads.prior_reads(*subject)]
     rec = read_step2(Path(a.sweep_artifact), a.coverage_min, a.repro_min, a.min_n,
                      coverage_artifacts=[Path(c) for c in a.coverage_artifact])
+    holdout_reads.record(read_id=read_id, strategy=subject[0], leg=subject[1],
+                         door="offline_holdout_read", artifact=read_id,
+                         source=holdout_reads.repo_rel(a.sweep_artifact),
+                         owner_word=word, rereads=[a.rereads] if a.rereads else [],
+                         declared=True if a.rereads else None)
+    rec["holdout_read_ledger"] = {"read_id": read_id, "prior_reads": prior,
+                                  "rereads": [a.rereads] if a.rereads else []}
     rec["control"] = control_comparison(rec, rec1, a.control)   # S6-B3395, T6
     rec["owner_word"] = word
     rec["legs"] = legs                                        # S6-B3353
     rec["disposition"] = step2_legs.disposition(rec["verdict"] != "QUALIFIES", legs)
-    if a.force_rerun:
+    if a.force_rerun or a.rereads:
         rec["rerun_of_spent_holdout"] = True
     from roster_core import stamp_metric_code as _smc  # S6-B3139i
     _smc(rec)
@@ -458,6 +489,8 @@ def main() -> int:
           f"other lines of {rec['trials']} clear all gates")
     print(f"  control comparison ({rec['control']['strategy']}): "
           f"{rec['control']['status']}, {len(rec['control']['rows'])} line(s)")
+    print(f"  holdout-read ledger: {read_id} recorded "
+          f"({holdout_reads.ledger_path()}); prior reads of the subject: {prior or 'none'}")
     print(f"wrote {out} and {out.with_suffix('.md')}")
     return 0
 

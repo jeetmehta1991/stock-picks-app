@@ -14,6 +14,13 @@ RUNBOOK RULES THIS MODULE MECHANIZES (census S6-B3344, cluster M-HOLD):
     (S6-B2836a, B2839) so the depth read runs the check the breadth read
     has run since B2839. breadth_step2_read imports it back, so
     breadth_step2_read.require_multiplicity still resolves.
+  * section 0.3 (census line 140) and section 1.1 item 6 (census line 323),
+    Batch 7b: ONE owner-worded Step-2 read, a re-read DECLARED, and holdout
+    reads COUNTED project-wide - the ledger below (output_audit/
+    holdout_reads.jsonl), which both offline readers consult before the read
+    and append to when the read is taken. Section 4.4 item 6 (census line
+    1146) at the engine door, and the declared-row reader
+    (scripts/declared_row_holdout_read.py, S6-B3140c), are Batch 7c.
 
 MEASURED before the change (B3139q-r177, scratchpad r177 prereg_all.py):
 18 tracked artifacts carry a preregistration_candidate; 6 are unread and
@@ -23,11 +30,15 @@ multiplicity door changes the outcome of 0 of the 6 reads still possible.
 12 of 12 tracked *_step1_is_surface files were committed and clean.
 
 FAILS CLOSED (L642): git that cannot run, a path outside the repository, a
-missing artifact - each is a refusal, never a pass.
+missing artifact, a ledger line that does not parse - each is a refusal,
+never a pass.
 """
 from __future__ import annotations
 
+import json
+import os
 import subprocess
+from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -98,3 +109,371 @@ def step1_uncommitted(path, *, root=None) -> str | None:
                 f"changes ({status.stdout.strip()[:40]!r}) - the cell a read admits on "
                 "must be the committed one")
     return None
+
+
+# ---------------------------------------------------------------------------
+# THE HOLDOUT-READ LEDGER (S6-B3395 Batch 7b; runbook 0.3, 1.1 item 6, 4.4
+# item 6). Owner ruling 2026-11-03, verbatim 'A approved': option (a) - the
+# reads are counted at the Step-2 doors, the recorded reads are backfilled,
+# and a frozen list of every file that touches holdout performance makes a
+# new one fail until it is classed (the list is Batch 7c).
+#
+# WHY A LEDGER, MEASURED (B3139q-r177): the owner's word is not one-shot
+# (owner_word.refusals passes whenever a row quotes the words), the depth
+# read refused a re-read only at its own --out, and the breadth read
+# overwrote --out and took --prior-read on the caller's word - so
+# output_audit/b2646_pead_step2_postfix.json re-read the pead surface with no
+# machine-readable label (S6-B2644c's row records it in prose only).
+#
+# THE SUBJECT. Offline doors: one read per (strategy, leg) - a later read of
+# the same subject is a RE-READ, DECLARED by naming the read it repeats.
+# Both doors share the subject, because a breadth read after the depth
+# verdict is 'a read of their own, labelled DISCLOSED-RE-READ when the
+# subject's holdout was already read' (runbook 0.1, BREADTH IS STEP 3). The
+# engine door: one read per (strategy, leg, config) - the waterfall spends
+# one read per slate config BY RULING (runbook 1.1 item 1), so the next
+# config is a new read, counted not refused, while a renamed wave of the
+# SAME config is a re-read. A leg of None or 'both' overlaps every leg.
+#
+# THE ENGINE CONFIG IS THE ARM'S ENV (engine_identity) - what the engine ran
+# with, the same dict in the spec at launch and in the landed manifest at
+# grading: MEASURED equal on 7 of 7 recorded engine reads (B3139q-r179,
+# scratchpad r178/manifest_env_probe.py). The grader's own config dict rides
+# beside it as grid_config and is never matched on: the battery's generic
+# derivation reproduces it from a spec for 3 of the 7 (icg names P9_span,
+# pairs adds an identity label, LEVER4 nests the budget by strategy), so a
+# launch could not compute it. A support variable in the env (EMA_PAIRS)
+# is part of the identity - a re-read whose support env changed reads as a
+# new config, the one way this key can under-refuse.
+#
+# A READ IS RECORDED WHEN IT IS TAKEN - right after the holdout rows are
+# computed, before the artifact is written - so a crash between the two
+# over-counts, the conservative direction. The control comparison's look at
+# the CONTROL's holdout is not a read of the control's campaign (a baseline,
+# never a re-test - S6-B3139g); each read's artifact names its control and
+# that comparison's status, so those looks are counted from the artifacts.
+# ---------------------------------------------------------------------------
+LEDGER_PROD = ROOT / "output_audit" / "holdout_reads.jsonl"
+ENV_KEY = "HOLDOUT_READS_LEDGER"
+DOORS = ("offline_holdout_read", "breadth_step2_read", "engine_step2")
+
+
+def ledger_path() -> Path:
+    """The production ledger - except inside a pytest run, where the test
+    conftest points ENV_KEY at a per-test temp file. The override is honoured
+    ONLY while PYTEST_CURRENT_TEST is set, so a production read can never
+    point the evidence this gate reads at another file (L596: an escape gets
+    the stricter matcher); every subprocess a test starts inherits both."""
+    alt = os.environ.get(ENV_KEY)
+    if alt and os.environ.get("PYTEST_CURRENT_TEST"):
+        return Path(alt)
+    return LEDGER_PROD
+
+
+def entries(path=None) -> list:
+    """Every recorded read in file order. An absent ledger is empty; a line
+    that does not parse, or names no strategy or read_id, REFUSES - an
+    unreadable ledger is not an empty one (L580)."""
+    p = Path(path) if path else ledger_path()
+    if not p.exists():
+        return []
+    out = []
+    for n, line in enumerate(p.read_text(encoding="utf-8").splitlines(), 1):
+        if not line.strip():
+            continue
+        try:
+            e = json.loads(line)
+        except ValueError:
+            raise SystemExit(f"REFUSED (S6-B3395): {p} line {n} is not JSON - an "
+                             "unreadable read ledger is not an empty one (L580)") from None
+        if not isinstance(e, dict) or not e.get("strategy") or not e.get("read_id"):
+            raise SystemExit(f"REFUSED (S6-B3395): {p} line {n} names no strategy or "
+                             "read_id - fail closed (L642)")
+        out.append(e)
+    return out
+
+
+def _legs_overlap(a, b) -> bool:
+    a, b = str(a or "both").lower(), str(b or "both").lower()
+    return a == "both" or b == "both" or a == b
+
+
+def config_identity(config) -> str | None:
+    """A config dict as its key-sorted JSON - a wave's NAME is never part of
+    it, so a renamed wave of one config is one subject."""
+    if config is None:
+        return None
+    return json.dumps(config, sort_keys=True, separators=(",", ":"))
+
+
+def engine_identity(env) -> str:
+    """The engine door's config key: the arm's env (spec arms[N].env at launch,
+    the landed manifest's arms[0].env at grading), key-sorted. An arm with no
+    env - a production config - is the empty dict, itself an identity."""
+    return config_identity({str(k): str(v) for k, v in dict(env or {}).items()})
+
+
+def prior_reads(strategy, leg=None, *, config=None, path=None) -> list:
+    """The recorded reads of this subject. config=None (the offline doors) sees
+    every read of the strategy on an overlapping leg; a config identity (the
+    engine door) sees only that config's reads."""
+    found = []
+    for e in entries(path):
+        if e.get("strategy") != strategy or not _legs_overlap(e.get("leg"), leg):
+            continue
+        if config is not None and e.get("config") != config:
+            continue
+        found.append(e)
+    return found
+
+
+def reread_refusal(strategy, leg=None, *, declared=None, config=None, door,
+                   path=None) -> str | None:
+    """None when this read may proceed: no prior read of the subject and no
+    declaration, or a DECLARED re-read naming one of the recorded reads.
+    Otherwise the refusal. A read whose subject names no strategy refuses -
+    it could not be counted (L642)."""
+    if not strategy:
+        return (f"REFUSED ({door}, S6-B3395): the Step-1 artifact names no strategy, "
+                "so the read cannot be counted against the holdout-read ledger")
+    prior = prior_reads(strategy, leg, config=config, path=path)
+    ids = [e["read_id"] for e in prior]
+    subj = f"{strategy} ({leg or 'both legs'}" + (f", config {config}" if config else "") + ")"
+    if declared:
+        if declared in ids:
+            return None
+        return (f"REFUSED ({door}, S6-B3395): the declared re-read {declared!r} is not a "
+                f"recorded read of {subj}; the ledger records {ids}")
+    if not prior:
+        return None
+    return (f"REFUSED ({door}, S6-B3395, runbook 0.3 / 4.4 item 6): the ledger records "
+            f"{len(prior)} holdout read(s) of {subj}: {ids[:4]} - one Step-2 read, then "
+            "the campaign closes; a re-read is DECLARED, naming the read it repeats, on "
+            "the owner's word")
+
+
+def read_id_refusal(read_id, *, door, path=None) -> str | None:
+    """A read's id is its artifact's path, so it is recorded once: an --out
+    that already names a recorded read is that read's record, and a re-read
+    writes a NEW artifact (declaring the old one)."""
+    taken = [e for e in entries(path) if e.get("read_id") == str(read_id)]
+    if not taken:
+        return None
+    return (f"REFUSED ({door}, S6-B3395): {read_id} is already the artifact of a "
+            f"recorded holdout read ({taken[0].get('ts')}) - the artifact of a read is "
+            "its record; a re-read writes a new --out and declares the read it repeats")
+
+
+def _dominant_end(path: Path) -> str:
+    """The line ending the file already uses most (L850) - the rule of
+    postconfig_landing._row_end, which is bound to the queue path. chr() form
+    for the reason that helper records: escapes do not survive a heredoc."""
+    try:
+        raw = path.read_bytes()
+    except OSError:
+        return chr(10)
+    crlf = raw.count(bytes([13, 10]))
+    return chr(13) + chr(10) if crlf * 2 > raw.count(bytes([10])) else chr(10)
+
+
+def record(*, read_id, strategy, leg, door, artifact, source, owner_word=None,
+           rereads=(), config=None, ts=None, backfilled=False, declared=None,
+           grid_config=None, path=None) -> dict:
+    """Append one read to the ledger and return the entry. Refuses an unknown
+    door, a read with no strategy, and an engine read with no config identity
+    - the ledger never holds an entry its own reader would refuse or could not
+    match. `declared` says whether the read carried a re-read declaration:
+    True or False for a read with one or without one, None for a first read
+    with none. `grid_config` (engine reads) is the grader's own config dict,
+    recorded for the reader of the ledger and never matched on."""
+    if door not in DOORS:
+        raise SystemExit(f"REFUSED (S6-B3395): unknown door {door!r} - one of {DOORS}")
+    if not strategy or not read_id:
+        raise SystemExit("REFUSED (S6-B3395): a read names its strategy and read_id")
+    if door == "engine_step2" and config is None:
+        raise SystemExit("REFUSED (S6-B3395): an engine read names its config identity "
+                         "(engine_identity of the arm's env)")
+    entry = {"read_id": str(read_id), "strategy": strategy, "leg": leg or "both",
+             "door": door, "config": config, "grid_config": grid_config,
+             "artifact": str(artifact),
+             "source": None if source is None else str(source),
+             "owner_word": owner_word, "rereads": list(rereads),
+             "ts": ts or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+             "backfilled": bool(backfilled), "declared": declared}
+    p = Path(path) if path else ledger_path()
+    p.parent.mkdir(parents=True, exist_ok=True)
+    end = _dominant_end(p)
+    with open(p, "ab") as fh:
+        fh.write((json.dumps(entry, sort_keys=True) + end).encode("utf-8"))
+    return entry
+
+
+def repo_rel(path) -> str:
+    """A repository-relative, forward-slash form of a path - the read_id and
+    the backfill both use it, so one read carries one id. A path outside the
+    repository keeps its absolute form."""
+    p = Path(path)
+    if not p.is_absolute():
+        p = ROOT / p
+    try:
+        return p.resolve().relative_to(ROOT.resolve()).as_posix()
+    except ValueError:
+        return p.as_posix()
+
+
+# ---------------------------------------------------------------------------
+# BACKFILL - the reads taken before the ledger existed, read off the tracked
+# artifacts they left (B3139q-r177 measured 23: 9 depth, 7 breadth, 7 engine).
+# Three artifact shapes are recognised (below). A read by any other script -
+# the declared-row reader, the historical one-off readers - leaves a shape
+# this does not see, so the 23 are a LOWER BOUND until Batch 7c classes every
+# holdout-touching file (49 by the B3139q-r179 AST scan).
+# Each is dated by the commit that first added its artifact, so the order is
+# reproducible from git alone; a re-read is marked by whether its artifact
+# carried a re-read label (the depth read's rerun_of_spent_holdout, the
+# breadth read's DISCLOSED-RE-READ provenance), so b2646's unlabelled re-read
+# is recorded as the fact it is.
+# ---------------------------------------------------------------------------
+def _first_added(relpath: str, root: Path) -> str:
+    r = subprocess.run(["git", "-C", str(root), "log", "--diff-filter=A",
+                        "--format=%cI", "--", relpath],
+                       capture_output=True, text=True, timeout=60)
+    lines = [x for x in r.stdout.splitlines() if x.strip()]
+    if r.returncode != 0 or not lines:
+        raise SystemExit(f"REFUSED (S6-B3395): no first-add commit for {relpath} - "
+                         "a backfilled read is dated by git or not at all")
+    stamp = datetime.fromisoformat(lines[-1])
+    return stamp.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _tracked_spec_envs(rootp: Path) -> dict:
+    """{cube dir name: {engine_identity, ...}} over the tracked wave specs - a
+    wave's arm lands in output_<wave>_<tag>, so each landed cube names the
+    spec arm that launched it."""
+    ls = subprocess.run(["git", "-C", str(rootp), "ls-files", "output_audit/*_spec.json"],
+                        capture_output=True, text=True, timeout=60)
+    if ls.returncode != 0:
+        raise SystemExit("REFUSED (S6-B3395): git ls-files failed - fail closed")
+    out: dict = {}
+    for relpath in [x for x in ls.stdout.splitlines() if x.strip()]:
+        try:
+            s = json.loads((rootp / relpath).read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if not isinstance(s, dict) or "wave" not in s:
+            continue
+        for arm in s.get("arms") or []:
+            if isinstance(arm, dict):
+                out.setdefault(f"output_{s['wave']}_{arm.get('tag')}", set()).add(
+                    engine_identity(arm.get("env")))
+    return out
+
+
+def _engine_config(relpath: str, cube, spec_envs: dict) -> str:
+    """The engine read's identity from the tracked spec arm that produced its
+    cube; no spec, or specs disagreeing on the env, REFUSES (L642)."""
+    hit = next((p for p in Path(str(cube or "")).parts if p in spec_envs), None)
+    ids = spec_envs.get(hit) or set()
+    if len(ids) != 1:
+        raise SystemExit(f"REFUSED (S6-B3395): {relpath}'s cube {cube!r} maps to "
+                         f"{len(ids)} tracked spec env(s) - an engine read is "
+                         "identified by the arm that launched it, or not at all")
+    return next(iter(ids))
+
+
+def backfill_candidates(root=None) -> list:
+    """The ledger entries the tracked read artifacts imply, oldest first -
+    what test_b3395b compares the committed ledger's backfilled entries with."""
+    rootp = Path(root or ROOT)
+    ls = subprocess.run(["git", "-C", str(rootp), "ls-files", "output_audit/*.json"],
+                        capture_output=True, text=True, timeout=60)
+    if ls.returncode != 0:
+        raise SystemExit("REFUSED (S6-B3395): git ls-files failed - fail closed")
+    spec_envs = _tracked_spec_envs(rootp)
+    found = []
+    for relpath in [x for x in ls.stdout.splitlines() if x.strip()]:
+        try:
+            d = json.loads((rootp / relpath).read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if not isinstance(d, dict) or not d.get("strategy"):
+            continue
+        s2 = d.get("step2") if isinstance(d.get("step2"), dict) else {}
+        if d.get("step") == 2 and "sweep_artifact" in d:
+            door, leg = "offline_holdout_read", (d.get("subject") or {}).get("direction")
+            source, config = d["sweep_artifact"], None
+            declared = d.get("rerun_of_spent_holdout") is True
+        elif "ruling_verbatim" in d and "step1_artifact" in d:
+            door, leg = "breadth_step2_read", d.get("leg")
+            source, config = d["step1_artifact"], None
+            declared = str((d.get("provenance") or {}).get("label", "")).startswith(
+                "DISCLOSED-RE-READ")
+        elif s2.get("holdout_read") is True:
+            door, leg = "engine_step2", s2.get("leg")
+            source = d.get("cube")
+            config = _engine_config(relpath, source, spec_envs)
+            declared = None
+        else:
+            continue
+        found.append({"read_id": relpath, "strategy": d["strategy"], "leg": leg,
+                      "door": door, "config": config, "artifact": relpath,
+                      "grid_config": d.get("config") if door == "engine_step2" else None,
+                      "source": repo_rel(source) if source else None,
+                      "owner_word": d.get("owner_word"),
+                      "ts": _first_added(relpath, rootp),
+                      "declared": declared})
+    found.sort(key=lambda e: (e["ts"], e["read_id"]))
+    for i, e in enumerate(found):
+        e["rereads"] = [p["read_id"] for p in found[:i]
+                        if p["strategy"] == e["strategy"]
+                        and _legs_overlap(p["leg"], e["leg"])
+                        and (e["door"] != "engine_step2" or p.get("config") == e["config"])]
+        if not e["rereads"] and not e["declared"]:
+            e["declared"] = None
+    return found
+
+
+def main(argv=None) -> int:
+    import argparse
+    ap = argparse.ArgumentParser(description="S6-B3395: the holdout-read ledger")
+    ap.add_argument("--backfill", action="store_true",
+                    help="list the reads the tracked artifacts imply (dry unless --write)")
+    ap.add_argument("--write", action="store_true",
+                    help="with --backfill: append the entries not already recorded")
+    ap.add_argument("--list", action="store_true", help="print the recorded reads")
+    a = ap.parse_args(argv)
+    if a.list:
+        for e in entries():
+            print(f"{e['ts']}  {e['door']:<22} {e['strategy']} ({e.get('leg')}) "
+                  f"{e['read_id']}  rereads={e.get('rereads')}")
+        return 0
+    if not a.backfill:
+        ap.print_help()
+        return 2
+    cands = backfill_candidates()
+    have = {(e["read_id"], e["door"]) for e in entries()}
+    new = [c for c in cands if (c["read_id"], c["door"]) not in have]
+    by_door = {}
+    for c in cands:
+        by_door[c["door"]] = by_door.get(c["door"], 0) + 1
+    print(f"recorded reads the tracked artifacts imply: {len(cands)} {by_door}; "
+          f"already in the ledger: {len(cands) - len(new)}; to append: {len(new)}")
+    for c in cands:
+        mark = "re-read" if c["rereads"] else "first"
+        lab = "" if c["declared"] is None else (" DECLARED" if c["declared"] else
+                                                " UNDECLARED")
+        print(f"  {c['ts']}  {c['door']:<22} {c['strategy']} ({c['leg'] or 'both'})"
+              f"  {mark}{lab}  {c['read_id']}")
+    if a.write:
+        for c in new:
+            record(read_id=c["read_id"], strategy=c["strategy"], leg=c["leg"],
+                   door=c["door"], artifact=c["artifact"], source=c["source"],
+                   owner_word=c["owner_word"], rereads=c["rereads"],
+                   config=c["config"], ts=c["ts"], backfilled=True,
+                   declared=c["declared"], grid_config=c["grid_config"])
+        print(f"appended {len(new)} to {ledger_path()}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
