@@ -25,6 +25,10 @@ RUNBOOK RULES THIS MODULE MECHANIZES (census S6-B3344, cluster M-HOLD):
     the fourth door, scripts/declared_row_holdout_read.py (S6-B3140c), checks
     the owner's word and the ledger; and the frozen census of every
     holdout-touching file, by class (CENSUS_CSV, holdout_touching_files).
+  * Batch 7d (owner ruling 2026-11-03 'A approved'): the five campaign
+    readers that read holdouts before the ledger are doors too
+    (campaign_door, campaign_record) and their past reads are backfilled;
+    the R5-era programme scripts and the roster reports stay classed only.
 
 MEASURED before the change (B3139q-r177, scratchpad r177 prereg_all.py):
 18 tracked artifacts carry a preregistration_candidate; 6 are unread and
@@ -160,8 +164,13 @@ def step1_uncommitted(path, *, root=None) -> str | None:
 # ---------------------------------------------------------------------------
 LEDGER_PROD = ROOT / "output_audit" / "holdout_reads.jsonl"
 ENV_KEY = "HOLDOUT_READS_LEDGER"
+# Batch 7d (owner ruling 2026-11-03 'A approved'): the five campaign readers
+# that read holdouts before the ledger existed are doors now, each by name
+CAMPAIGN_DOORS = ("b2701_smc_lsr_step2", "composite_variant_test",
+                  "grade_family_siblings", "institutional_companion_grid",
+                  "family_pregate")
 DOORS = ("offline_holdout_read", "breadth_step2_read", "engine_step2",
-         "declared_row_holdout_read")
+         "declared_row_holdout_read") + CAMPAIGN_DOORS
 
 
 def ledger_path() -> Path:
@@ -420,13 +429,120 @@ def engine_grade(grid_path, grid, arm, *, strategy=None, owner_word=None,
 
 
 # ---------------------------------------------------------------------------
+# THE CAMPAIGN DOORS (S6-B3395 Batch 7d; owner ruling 2026-11-03, verbatim
+# 'A approved'). Five readers graded campaigns' holdouts before the ledger
+# existed - b2701_smc_lsr_step2, composite_variant_test, grade_family_siblings,
+# institutional_companion_grid, family_pregate - and a re-run of any of them is
+# a campaign re-read. Each now calls campaign_door before it touches a holdout
+# (the owner's word checked against its ledger row; --out new; every strategy
+# it will read either unread in the ledger or DECLARED re-read by --rereads)
+# and campaign_record once the read is taken. A multi-strategy read records
+# one entry per strategy, read_id '<artifact>#<strategy>'; a declaration naming
+# an artifact names every per-strategy read of it. The R5-era programme
+# scripts and the roster reports stay classed only (the same ruling).
+# ---------------------------------------------------------------------------
+def campaign_read_id(artifact, strategy) -> str:
+    return f"{repo_rel(artifact)}#{strategy}"
+
+
+def _names(declared, read_id) -> bool:
+    return read_id == declared or read_id.startswith(str(declared) + "#")
+
+
+def campaign_door(door, strategies, *, out, ruling, ruling_ticket, rereads=(),
+                  path=None) -> dict:
+    """The gate a campaign reader passes BEFORE its holdout read. Raises
+    SystemExit with the first refusal; returns {'word', 'prior'} - prior being
+    each strategy's recorded reads, the history its record carries."""
+    import owner_word
+    if door not in CAMPAIGN_DOORS:
+        raise SystemExit(f"REFUSED (S6-B3395): {door!r} is not a campaign door")
+    word = {"ticket": str(ruling_ticket or "").strip(),
+            "verbatim": owner_word.normalise(ruling)}
+    errs = owner_word.refusals(word, door=f"{door} holdout read")
+    if errs:
+        raise SystemExit(errs[0])
+    if not strategies:
+        raise SystemExit(f"REFUSED ({door}, S6-B3395): no strategy named, so the "
+                         "read cannot be counted")
+    if Path(out).exists():
+        raise SystemExit(f"REFUSED ({door}, S6-B3395): {out} exists - the artifact of "
+                         "a holdout read is its record; a re-read writes a new --out "
+                         "and declares the read it repeats with --rereads")
+    known = [e["read_id"] for e in entries(path)]
+    for d in rereads:
+        if not any(_names(d, r) for r in known):
+            raise SystemExit(f"REFUSED ({door}, S6-B3395): --rereads {d!r} names no "
+                             "recorded holdout read")
+    prior = {}
+    for s in strategies:
+        ids = [e["read_id"] for e in prior_reads(s, None, path=path)]
+        if ids and not any(_names(d, r) for d in rereads for r in ids):
+            raise SystemExit(reread_refusal(s, None, door=door, path=path)
+                             + " (declare it with --rereads)")
+        prior[s] = ids
+    return {"word": word, "prior": prior}
+
+
+def campaign_record(door, artifact_doc, *, out, word, prior, rereads=(),
+                    path=None) -> list:
+    """Record the read once it is TAKEN: one entry per strategy the artifact
+    about to be written actually read (_campaign_shape of that same dict, the
+    backfill's own definition, so live and backfilled entries agree). Returns
+    the read ids recorded."""
+    shape = _campaign_shape(artifact_doc)
+    if shape is None or shape[0] != door:
+        raise SystemExit(f"REFUSED ({door}, S6-B3395): the artifact is not this "
+                         "door's shape, so its read cannot be counted")
+    ids = []
+    for s in shape[1]:
+        named = [r for r in (prior or {}).get(s, [])
+                 if any(_names(d, r) for d in rereads)]
+        e = record(read_id=campaign_read_id(out, s), strategy=s, leg=None, door=door,
+                   artifact=repo_rel(out), source=None, owner_word=word,
+                   rereads=named, declared=True if named else None, path=path)
+        ids.append(e["read_id"])
+    return ids
+
+
+def _campaign_shape(d):
+    """(door, the strategies whose holdout it read) for an artifact one of the
+    five campaign readers wrote, else None - each recognised by its own
+    top-level keys. Measured B3139q-r181: 7 tracked artifacts, 75 strategy
+    reads, none matching two shapes."""
+    if not isinstance(d, dict):
+        return None
+    if "admission_bearing" in d and "peeked_lines" in d and d.get("strategy"):
+        return "b2701_smc_lsr_step2", [d["strategy"]]
+    if "variants" in d and "v1_v2_identity" in d:
+        return "composite_variant_test", sorted({r["strategy"] for r in d.get("rows") or []})
+    if isinstance(d.get("siblings"), dict) and "prereg" in d:
+        return "grade_family_siblings", sorted(
+            s for s, r in d["siblings"].items() if isinstance(r, dict) and "holdout_n" in r)
+    if "family" in d and "trials_total" in d and "rows" in d:
+        # a live run names every strategy it processed (strategies_read); an
+        # artifact written before 7d names those with a graded row or a skip
+        if d.get("strategies_read"):
+            return "institutional_companion_grid", sorted(d["strategies_read"])
+        return "institutional_companion_grid", sorted(
+            {r["strategy"] for r in d.get("rows") or []}
+            | {s["strategy"] for s in d.get("skipped_axis_strategy_pairs") or []})
+    if isinstance(d.get("members"), dict) and "overlap" in d and "cube" in d:
+        return "family_pregate", sorted(
+            s for s, r in d["members"].items()
+            if isinstance(r, dict) and "holdout_gradable_exits" in r)
+    return None
+
+
+# ---------------------------------------------------------------------------
 # THE FROZEN CENSUS (S6-B3395 Batch 7c, the owner's option (a)): every non-test
 # .py under scripts/ and backtest/ that touches holdout performance - calls a
 # function or method named holdout, names the HO_START / HO_END bounds, or
 # carries the holdout start date outside a docstring - is listed with its class
 # in CENSUS_CSV, and test_b3395c fails while the scan and the list differ: a new
 # file is classed - a door that counts its reads, or the reason it needs none -
-# before it lands. 49 files at B3139q-r179.
+# before it lands. 50 files at B3139q-r180 - the 50th is this module's own
+# date constant (the 7c comment said 49, written before that constant landed).
 # ---------------------------------------------------------------------------
 CENSUS_CSV = ROOT / "output_audit" / "holdout_touching_files.csv"
 HO_DATE_LITERAL = "2025-05-05"
@@ -438,8 +554,6 @@ CENSUS_CLASSES = {
     "ROSTER_REPORT": "re-grades admitted or R5-funnel lines whose reads are spent",
     "R5_PROGRAMME": "R5/R6-era programme analysis of the R5 cube's holdout "
                     "(runbook 1.1 item 6's prior spends)",
-    "CAMPAIGN_READER_PRE_LEDGER": "read a campaign's holdout before the ledger, "
-                                  "outside the four backfilled shapes",
     "COUNT_ONLY": "counts trades in the holdout window; computes no performance",
     "IN_SAMPLE_ONLY": "uses the boundary to stay inside the in-sample window",
     "WINDOW_DEFINITION": "defines or checks the window; reads no performance",
@@ -514,8 +628,13 @@ def census_rows(path=None) -> dict:
 # pairs entries - so a recognised shape can LENGTHEN an earlier entry's
 # derivable history, and an entry keeps what was known when it was written
 # (test_b3395b requires its rereads to be a subset of what git derives now).
-# The campaign readers that read before the ledger and leave other shapes are
-# listed by class in CENSUS_CSV; their reads are not backfilled here.
+# Batch 7d added the five campaign readers' shapes (_campaign_shape: 7 tracked
+# artifacts, 75 strategy reads, one entry per strategy). A later-recognised read
+# can also make a recorded FIRST read a re-read: the b2633 family pre-gate read
+# pead_with_smart_money_long's holdout before the b2651 Step-2 read did, so
+# b2651 derives declared False where the ledger recorded None - the one change
+# test_b3395b accepts beside a longer rereads list. Within one commit git
+# cannot order two reads; the read_id order decides, a stated tie-break.
 # Each is dated by the commit that first added its artifact, so the order is
 # reproducible from git alone; a re-read is marked by whether its artifact
 # carried a re-read label (the depth read's rerun_of_spent_holdout, the
@@ -583,6 +702,20 @@ def backfill_candidates(root=None) -> list:
         try:
             d = json.loads((rootp / relpath).read_text(encoding="utf-8"))
         except (OSError, ValueError):
+            continue
+        camp = _campaign_shape(d)
+        if camp is not None:
+            ts = _first_added(relpath, rootp)
+            hrl = d.get("holdout_read_ledger") if isinstance(d.get("holdout_read_ledger"), dict) else {}
+            prov = d.get("provenance") if isinstance(d.get("provenance"), list) else []
+            label = bool(hrl.get("rereads")) or any(
+                str(p).startswith("DISCLOSED-RE-READ") for p in prov)
+            for s in camp[1]:
+                found.append({"read_id": f"{relpath}#{s}", "strategy": s, "leg": None,
+                              "door": camp[0], "config": None, "artifact": relpath,
+                              "grid_config": None, "source": None,
+                              "owner_word": d.get("owner_word"), "ts": ts,
+                              "declared": label})
             continue
         if not isinstance(d, dict) or not d.get("strategy"):
             continue

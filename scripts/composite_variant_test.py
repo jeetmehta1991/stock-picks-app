@@ -32,6 +32,12 @@ the fail-closed check is that the BASELINE composite recomputes True on
 per-leg presence census is recorded for the reader. next_pivot_target is
 flagged on every row
 and excluded from any headline selection (runbook 11.2b2 bar).
+
+S6-B3395 Batch 7d (owner ruling 2026-11-03 'A approved'): the read passes
+holdout_reads.campaign_door first - the owner's word (--ruling /
+--ruling-ticket), a new --out, and each of the seven strategies unread in the
+holdout-read ledger unless --rereads names a recorded read - and is recorded
+there, one entry per strategy graded, once taken.
 """
 from __future__ import annotations
 
@@ -47,6 +53,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 import roster_core as rc  # noqa: E402
+import holdout_reads as hr  # noqa: E402  (S6-B3395: the campaign door)
 
 CUBE = ROOT / "output_r5_merged_1_7" / "trade_exit_detail.csv"
 TRADE_LOG = ROOT / "output_r5_merged_1_7" / "trade_log.csv"
@@ -90,7 +97,16 @@ def _parse(s):
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
+    ap.add_argument("--ruling", required=True,
+                    help="the owner's words opening this read (S6-B3395)")
+    ap.add_argument("--ruling-ticket", required=True,
+                    help="the ticket whose row records --ruling")
+    ap.add_argument("--rereads", action="append", default=[],
+                    help="a recorded holdout read this one repeats")
     a = ap.parse_args()
+    gate = hr.campaign_door("composite_variant_test", list(STRATS), out=a.out,
+                            ruling=a.ruling, ruling_ticket=a.ruling_ticket,
+                            rereads=a.rereads)
     t0 = time.time()
 
     tl = pd.read_csv(TRADE_LOG, low_memory=False,
@@ -175,6 +191,12 @@ def main() -> int:
            "trials": len(rows),
            "qualifiers_all_six_gates_non_npt": len(quals),
            "rows": rows}
+    rec["owner_word"] = gate["word"]
+    rec["holdout_read_ledger"] = {
+        "read_ids": hr.campaign_record("composite_variant_test", rec, out=a.out,
+                                       word=gate["word"], prior=gate["prior"],
+                                       rereads=a.rereads),
+        "prior_reads": gate["prior"], "rereads": a.rereads}
     Path(a.out).write_text(json.dumps(rec, indent=2), encoding="utf-8")
     print(f"{len(rows):,} graded lines | {len(quals)} all-six non-npt qualifiers "
           f"-> {a.out} ({time.time()-t0:.0f}s)")

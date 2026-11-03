@@ -26,6 +26,12 @@ COVERAGE RULE per axis x strategy: an axis is skipped for a strategy when the
 magnitude is present on < MIN_COVERAGE of its fires (the level would silently
 drop the uncovered rows - the offline_level_sweep reproduction class); every
 skip is recorded.
+
+S6-B3395 Batch 7d (owner ruling 2026-11-03 'A approved'): the family's
+strategies are read from the trade log first (fires, not the holdout), then
+the read passes holdout_reads.campaign_door - the owner's word, a new --out,
+and each strategy unread in the holdout-read ledger unless --rereads names a
+recorded read - and is recorded there, one entry per strategy, once taken.
 """
 from __future__ import annotations
 
@@ -42,6 +48,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 import roster_core as rc  # noqa: E402
+import holdout_reads as hr  # noqa: E402  (S6-B3395: the campaign door)
 
 CUBE = ROOT / "output_r5_merged_1_7" / "trade_exit_detail.csv"
 TRADE_LOG = ROOT / "output_r5_merged_1_7" / "trade_log.csv"
@@ -76,12 +83,21 @@ def _parse(s):
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
+    ap.add_argument("--ruling", required=True,
+                    help="the owner's words opening this read (S6-B3395)")
+    ap.add_argument("--ruling-ticket", required=True,
+                    help="the ticket whose row records --ruling")
+    ap.add_argument("--rereads", action="append", default=[],
+                    help="a recorded holdout read this one repeats")
     a = ap.parse_args()
     t0 = time.time()
 
     tl = pd.read_csv(TRADE_LOG, low_memory=False,
                      usecols=["strategy", "ticker", "entry_date", "signals_at_entry"])
     fam = tl[tl.strategy.str.startswith(FAMILY)].copy()
+    gate = hr.campaign_door("institutional_companion_grid",
+                            sorted(set(fam.strategy)), out=a.out, ruling=a.ruling,
+                            ruling_ticket=a.ruling_ticket, rereads=a.rereads)
     sigs = [_parse(s) for s in fam["signals_at_entry"]]
     for key, _ in AXES:
         fam[key] = pd.to_numeric(pd.Series([d.get(key) for d in sigs]),
@@ -153,6 +169,13 @@ def main() -> int:
                        "trials - disclosed, per the standing flagged risk",
            "skipped_axis_strategy_pairs": skips,
            "qualifiers": quals, "rows": rows}
+    rec["strategies_read"] = sorted(set(m.strategy))     # S6-B3395: every one processed
+    rec["owner_word"] = gate["word"]
+    rec["holdout_read_ledger"] = {
+        "read_ids": hr.campaign_record("institutional_companion_grid", rec, out=a.out,
+                                       word=gate["word"], prior=gate["prior"],
+                                       rereads=a.rereads),
+        "prior_reads": gate["prior"], "rereads": a.rereads}
     Path(a.out).write_text(json.dumps(rec, indent=2), encoding="utf-8")
 
     md = [f"# INSTITUTIONAL COMPANION/KNOB GRID - holdout-graded (B2662)",

@@ -71894,9 +71894,15 @@ def test_b3395b_the_holdout_read_ledger(tmp_path, monkeypatch):
             continue
         c = cands.get(rid)
         assert c is not None, ("a backfilled read whose artifact is no longer tracked", rid)
-        for k in ("strategy", "door", "config", "grid_config", "declared", "ts"):
+        for k in ("strategy", "door", "config", "grid_config", "ts"):
             assert x[k] == c[k], ("the ledger differs from what git derives", rid, k)
         assert x["leg"] == (c["leg"] or "both"), rid
+        # 7d: a later-recognised earlier read can make a recorded FIRST read
+        # (declared None) an unlabelled re-read (False) - that change only
+        grew = set(c["rereads"]) - set(x["rereads"])
+        assert x["declared"] == c["declared"] or (
+            x["declared"] is None and c["declared"] is False and grew), (
+            "declared differs from what git derives", rid, x["declared"], c["declared"])
         # 7c: a shape recognised later can LENGTHEN an earlier entry's history
         # (the b3140c read predates two pairs entries); an append-only entry
         # keeps what was known when written - a subset, never a contradiction
@@ -72152,6 +72158,268 @@ def test_b3395c_the_engine_and_declared_row_doors_and_the_frozen_census(tmp_path
         with pytest.raises(SystemExit) as e:
             hr.census_rows(cp)
         assert why in str(e.value), e.value
+
+
+def test_b3395d_the_five_campaign_readers_are_doors(tmp_path, monkeypatch, capsys):
+    """S6-B3395 Batch 7d (B3139q-r181), owner ruling 2026-11-03 'A approved':
+    the five readers that graded campaigns' holdouts before the ledger existed
+    - b2701_smc_lsr_step2, composite_variant_test, grade_family_siblings,
+    institutional_companion_grid, family_pregate - are doors; the R5-era
+    programme scripts and the roster reports stay classed only.
+
+    (1) campaign_door / campaign_record on a temp ledger: the word is checked,
+    a non-campaign door, an empty subject list and an existing --out refuse;
+    a first read passes and records one entry per strategy the artifact READ
+    (_campaign_shape - a member it did not grade is not recorded); a re-run
+    refuses unless --rereads names a recorded read, the artifact path naming
+    every per-strategy read of it; a declaration naming another subject's read,
+    or nothing recorded, refuses; a record whose artifact is not the door's
+    shape refuses.
+
+    (2) Every one of the five mains: --ruling-ticket is required, and an
+    unrecorded word refuses BEFORE any data is loaded (each loader is stubbed
+    to fail loudly if reached); three of them also refuse an undeclared
+    re-read before loading.
+
+    (3) End to end on two of them (fixture data): family_pregate and
+    grade_family_siblings record their reads and a re-run refuses until it is
+    declared; the other three record before they write (AST order).
+
+    (4) The census retired CAMPAIGN_READER_PRE_LEDGER: the five are
+    LEDGER_DOORs and a row in the retired class refuses."""
+    import ast as _ast
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    import pandas as pd
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import holdout_reads as hr
+    import owner_word as ow
+    assert hr.ledger_path() != hr.LEDGER_PROD, "the conftest isolation is off"
+    q = tmp_path / "queue.md"
+    q.write_text("| **S6-B9397** | **OPEN** | P1 | **RULED: 'read the fixture family once' "
+                 "and 'proceed, engulfing + momentum q40 both pre-registered' (fixture)** "
+                 "| _reason:_ OPEN |" + chr(10), encoding="utf-8")
+    monkeypatch.setattr(ow, "QUEUE", q)
+    W = dict(ruling="read the fixture family once", ruling_ticket="S6-B9397")
+
+    # (1) the primitives
+    pre = {"members": {"fam_a": {"holdout_gradable_exits": 2}, "fam_b": {"n_trades": 0}},
+           "overlap": {}, "cube": "x"}
+    o1 = tmp_path / "pg1.json"
+    with pytest.raises(SystemExit) as e:
+        hr.campaign_door("family_pregate", ["fam_a"], out=o1, ruling="an unrecorded word",
+                         ruling_ticket="S6-B9397")
+    assert "S6-B3338" in str(e.value)
+    with pytest.raises(SystemExit):
+        hr.campaign_door("offline_holdout_read", ["fam_a"], out=o1, **W)
+    with pytest.raises(SystemExit):
+        hr.campaign_door("family_pregate", [], out=o1, **W)
+    spent = tmp_path / "spent.json"
+    spent.write_text("{}", encoding="utf-8")
+    with pytest.raises(SystemExit) as e:
+        hr.campaign_door("family_pregate", ["fam_a"], out=spent, **W)
+    assert "exists" in str(e.value)
+    g1 = hr.campaign_door("family_pregate", ["fam_a", "fam_b"], out=o1, **W)
+    assert g1["prior"] == {"fam_a": [], "fam_b": []}
+    ids = hr.campaign_record("family_pregate", pre, out=o1, word=g1["word"], prior=g1["prior"])
+    assert ids == [hr.campaign_read_id(o1, "fam_a")], "only the member it graded"
+    e1 = hr.entries()[-1]
+    assert (e1["door"], e1["strategy"], e1["declared"]) == ("family_pregate", "fam_a", None)
+    o2 = tmp_path / "pg2.json"
+    with pytest.raises(SystemExit) as e:
+        hr.campaign_door("family_pregate", ["fam_a"], out=o2, **W)
+    assert "S6-B3395" in str(e.value) and ids[0] in str(e.value) and "--rereads" in str(e.value)
+    assert hr.campaign_door("family_pregate", ["fam_b"], out=o2, **W)["prior"] == {"fam_b": []}
+    g2 = hr.campaign_door("family_pregate", ["fam_a"], out=o2, rereads=[hr.repo_rel(o1)], **W)
+    hr.campaign_record("family_pregate", pre, out=o2, word=g2["word"], prior=g2["prior"],
+                       rereads=[hr.repo_rel(o1)])
+    assert hr.entries()[-1]["declared"] is True and hr.entries()[-1]["rereads"] == ids
+    hr.record(read_id="other.json", strategy="zz", leg=None, door="offline_holdout_read",
+              artifact="other.json", source="s")
+    with pytest.raises(SystemExit) as e:
+        hr.campaign_door("family_pregate", ["fam_a"], out=tmp_path / "pg3.json",
+                         rereads=["other.json"], **W)
+    assert "S6-B3395" in str(e.value), "a declaration naming another subject's read"
+    with pytest.raises(SystemExit) as e:
+        hr.campaign_door("family_pregate", ["fam_a"], out=tmp_path / "pg3.json",
+                         rereads=["nothing.json"], **W)
+    assert "names no recorded" in str(e.value)
+    with pytest.raises(SystemExit):
+        hr.campaign_record("composite_variant_test", pre, out=tmp_path / "pg3.json",
+                           word=g2["word"], prior={})
+    shapes = {
+        "b2701_smc_lsr_step2": {"strategy": "s1", "admission_bearing": {}, "peeked_lines": []},
+        "composite_variant_test": {"variants": [], "v1_v2_identity": [],
+                                   "rows": [{"strategy": "c1"}, {"strategy": "c2"}]},
+        "grade_family_siblings": {"prereg": "p", "siblings": {"g1": {"holdout_n": 3},
+                                                               "g2": {"verdict": "NO_EXIT"}}},
+        "institutional_companion_grid": {"family": "f", "trials_total": 1,
+                                         "rows": [{"strategy": "i1"}],
+                                         "skipped_axis_strategy_pairs": [{"strategy": "i2"}]},
+    }
+    want = {"b2701_smc_lsr_step2": ["s1"], "composite_variant_test": ["c1", "c2"],
+            "grade_family_siblings": ["g1"], "institutional_companion_grid": ["i1", "i2"]}
+    for door, doc in shapes.items():
+        assert hr._campaign_shape(doc) == (door, want[door]), door
+    live = dict(shapes["institutional_companion_grid"], strategies_read=["i1", "i2", "i3"])
+    assert hr._campaign_shape(live)[1] == ["i1", "i2", "i3"], "a live run names every one"
+    assert hr._campaign_shape({"strategy": "x"}) is None
+
+    # (2) every main: the ticket is required, the word is checked before any data
+    import b2701_smc_lsr_step2 as m1
+    import composite_variant_test as m2
+    import grade_family_siblings as m3
+    import institutional_companion_grid as m4
+    import family_pregate as m5
+
+    def boom(*a, **k):
+        raise AssertionError("data loaded before the door")
+    real_pregate = m5.pregate
+    monkeypatch.setattr(m1, "build", boom)
+    monkeypatch.setattr(m3, "load_family", boom)
+    monkeypatch.setattr(m5, "pregate", boom)
+    tl = tmp_path / "tl.csv"
+    pd.DataFrame({"strategy": ["institutional_x"], "ticker": ["T"], "entry_date": ["2024-01-02"],
+                  "signals_at_entry": ["{}"]}).to_csv(tl, index=False)
+    monkeypatch.setattr(m4, "TRADE_LOG", tl)
+    monkeypatch.setattr(m4, "CUBE", tmp_path / "no_cube.csv")
+    monkeypatch.setattr(m2, "TRADE_LOG", tmp_path / "no_tl.csv")
+    verb = "proceed, engulfing + momentum q40 both pre-registered"
+    mains = [
+        (m1, ["b2701", "--ruling", verb]),
+        (m2, ["cvt", "--ruling", W["ruling"]]),
+        (m3, ["gfs", "--ruling", W["ruling"]]),
+        (m4, ["icg", "--ruling", W["ruling"]]),
+        (m5, ["fp", "--strategies", "fam_x", "--ruling", W["ruling"]]),
+    ]
+    for mod, argv in mains:
+        out = str(tmp_path / f"{mod.__name__}.json")
+        monkeypatch.setattr(_s, "argv", argv + ["--out", out])
+        with pytest.raises(SystemExit) as e:
+            mod.main()
+        assert e.value.code == 2, (mod.__name__, "argparse must require --ruling-ticket")
+        monkeypatch.setattr(_s, "argv", argv + ["--out", out, "--ruling-ticket", "S6-B9999"])
+        with pytest.raises(SystemExit) as e:
+            mod.main()
+        assert "S6-B3338" in str(e.value), (mod.__name__, e.value)
+    for mod, argv, subject in ((m1, mains[0][1], "smc_liquidity_sweep_reversal"),
+                               (m4, mains[3][1], "institutional_x"),
+                               (m5, mains[4][1], "fam_x")):
+        hr.record(read_id=f"prior_{subject}.json", strategy=subject, leg=None,
+                  door="offline_holdout_read", artifact="p", source="s")
+        monkeypatch.setattr(_s, "argv", argv + ["--out", str(tmp_path / f"r_{subject}.json"),
+                                                "--ruling-ticket", "S6-B9397"])
+        with pytest.raises(SystemExit) as e:
+            mod.main()
+        assert "S6-B3395" in str(e.value) and f"prior_{subject}.json" in str(e.value), (
+            mod.__name__, e.value)
+
+    # (3) end to end: family_pregate and grade_family_siblings record their reads
+    from datetime import date, timedelta
+    rows = []
+    for i in range(30):
+        for st in ("fam_c", "fam_d"):
+            for ex, pnl in (("e1", 2.0 + i % 5), ("e2", 0.5 + i % 3)):
+                rows.append((st, ex, date(2024, 6, 3) + timedelta(days=i), f"T{i}", pnl, 10.0))
+                rows.append((st, ex, date(2025, 6, 2) + timedelta(days=i), f"H{i}", pnl, 10.0))
+    df = pd.DataFrame(rows, columns=["strategy", "exit_method", "entry_date", "ticker",
+                                     "pnl_pct", "hold_days"])
+    monkeypatch.setattr(m5, "pregate", real_pregate)
+    monkeypatch.setattr(m5, "load", lambda sts, cube_path=None: df[df["strategy"].isin(sts)])
+    f1 = tmp_path / "fp_e2e_1.json"
+    monkeypatch.setattr(_s, "argv", ["fp", "--strategies", "fam_c,fam_d", "--out", str(f1),
+                                     "--ruling", W["ruling"], "--ruling-ticket", "S6-B9397"])
+    assert m5.main() == 0
+    rec = _j.loads(f1.read_text(encoding="utf-8"))
+    got = [e for e in hr.entries() if e["artifact"] == hr.repo_rel(f1)]
+    assert sorted(e["strategy"] for e in got) == ["fam_c", "fam_d"]
+    assert rec["holdout_read_ledger"]["read_ids"] == [hr.campaign_read_id(f1, s)
+                                                      for s in ("fam_c", "fam_d")]
+    f2 = tmp_path / "fp_e2e_2.json"
+    monkeypatch.setattr(_s, "argv", ["fp", "--strategies", "fam_c", "--out", str(f2),
+                                     "--ruling", W["ruling"], "--ruling-ticket", "S6-B9397"])
+    with pytest.raises(SystemExit):
+        m5.main()
+    assert not f2.exists()
+    monkeypatch.setattr(_s, "argv", _s.argv + ["--rereads", hr.repo_rel(f1)])
+    assert m5.main() == 0 and hr.entries()[-1]["declared"] is True
+    prereg = tmp_path / "prereg.json"
+    prereg.write_text(_j.dumps({"population": ["sib_x"], "reference_holdout_sharpe": 0.757}),
+                      encoding="utf-8")
+    monkeypatch.setattr(m3, "PREREG", prereg)
+    monkeypatch.setattr(m3, "load_family", lambda: _b2628_fixture_df())
+    s1 = tmp_path / "gfs.json"
+    monkeypatch.setattr(_s, "argv", ["gfs", "--out", str(s1), "--ruling", W["ruling"],
+                                     "--ruling-ticket", "S6-B9397"])
+    assert m3.main() == 0
+    assert hr.entries()[-1]["read_id"] == hr.campaign_read_id(s1, "sib_x")
+    for mod in (m1, m2, m4):
+        mainf = next(n for n in _ast.parse(_P(mod.__file__).read_text(encoding="utf-8")).body
+                     if isinstance(n, _ast.FunctionDef) and n.name == "main")
+        calls = [n for n in _ast.walk(mainf) if isinstance(n, _ast.Call)]
+        door = [n.lineno for n in calls if _ast.unparse(n.func) == "hr.campaign_door"]
+        recd = [n.lineno for n in calls if _ast.unparse(n.func) == "hr.campaign_record"]
+        write = [n.lineno for n in calls if _ast.unparse(n.func).endswith("write_text")]
+        assert len(door) == 1 and len(recd) == 1 and write, mod.__name__
+        assert door[0] < recd[0] < min(write), (mod.__name__, door, recd, write)
+
+    # (4) the census: the five are doors, and the retired class refuses
+    rows_c = hr.census_rows()
+    for name in hr.CAMPAIGN_DOORS:
+        assert rows_c[f"scripts/{name}.py"]["class"] == "LEDGER_DOOR", name
+    assert "CAMPAIGN_READER_PRE_LEDGER" not in hr.CENSUS_CLASSES
+    bad = tmp_path / "census.csv"
+    bad.write_text("path,hits,class,reason" + chr(10) + "a.py,call,CAMPAIGN_READER_PRE_LEDGER,x"
+                   + chr(10), encoding="utf-8")
+    with pytest.raises(SystemExit):
+        hr.census_rows(bad)
+
+
+def test_b3395e_every_runbook_ticket_citation_has_an_address():
+    """S6-B3395 Batch 7d (B3139q-r181, L604's addendum): a ticket id the runbook
+    cites must exist in EXECUTION_QUEUE.md. Batch 7c's runbook text cited
+    S6-B3395a, which never existed - the remainder sat under S6-B3395 itself -
+    and no pin noticed: test_b1945 holds L-number citations and test_b1971
+    CHECKLIST ones, and this third namespace had none. The rule is a MENTION
+    anywhere in the queue, not a row of its own: 5 of the 182 ids the runbook
+    cited at B3139q-r181 live there only as bullet tickets, lettered children's
+    parents or batch references. A mention must not be a prefix of a longer id
+    (S6-B339 is not mentioned by S6-B3395). A mention inside inline code is
+    not an address - B1738's mention-vs-use on the address side - because the
+    row recording a mis-citation names the dangling id, and the first draft of
+    7d's own row, naming it in plain text, would have made this pin pass a
+    re-citation of exactly that id. Zero allowed; the extractor is proved on a
+    known-present id, a planted dangling one and a planted documenting row."""
+    import re
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    plan = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+    queue = (root / "EXECUTION_QUEUE.md").read_text(encoding="utf-8")
+    pat = re.compile(r"S6-[A-Z][A-Za-z0-9-]*[0-9][a-z]?")
+    span = re.compile(r"`[^`\n]*`")
+
+    def address_text(q):
+        # Per line (L615): one unpaired backtick must not flip the rest.
+        return "\n".join(span.sub(" ", line) for line in q.splitlines())
+
+    def dangling(text, q):
+        q = address_text(q)
+        cited = {m.group(0).rstrip("-") for m in pat.finditer(text)}
+        return sorted(c for c in cited
+                      if not re.search(re.escape(c) + r"(?![0-9])", q))
+    assert "S6-B3395" in {m.group(0) for m in pat.finditer(plan)}, "control: a cited id"
+    assert dangling("see S6-B9999x here", queue) == ["S6-B9999x"]
+    assert dangling("see S6-B339 here", "only S6-B3395 is recorded") == ["S6-B339"]
+    assert dangling("see S6-B1771 here", "| **S6-B1771a** |") == [], "a parent is mentioned"
+    assert dangling("see S6-B9999x here", "| a row recording `S6-B9999x` as a mis-citation |") \
+        == ["S6-B9999x"], "a documenting mention is not an address"
+    assert dangling("see S6-B9999x here", "| **S6-B9999x** | `note` |") == [], \
+        "a plain mention beside inline code still addresses"
+    assert dangling(plan, queue) == [], dangling(plan, queue)
 
 
 def test_b3411_history_read_is_judged_at_segment_grain():

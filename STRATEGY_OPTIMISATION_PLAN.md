@@ -150,7 +150,15 @@ records each engine Step-2 grade (`run_postconfig`, row `step2_holdout_ledger`; 
 fails step 2), and `scripts/declared_row_holdout_read.py` (S6-B3140c) checks the owner's word, the
 committed artifact and the ledger. Every file that touches holdout performance is classed in
 `output_audit/holdout_touching_files.csv` (50 files at B3139q-r180), and test_b3395c fails on a
-file the list does not class.
+file the list does not class. **Since Batch 7d (B3139q-r181, owner ruling 2026-11-03 'A
+approved'):** the five campaign readers that graded holdouts before the ledger -
+`b2701_smc_lsr_step2.py`, `composite_variant_test.py`, `grade_family_siblings.py`,
+`institutional_companion_grid.py` and `family_pregate.py` - are doors too: each needs the owner's
+word and refuses an undeclared re-read before it reads, then records one entry per strategy read
+(`holdout_reads.campaign_door` / `campaign_record`, pinned by test_b3395d). A family pre-gate reads
+each member's holdout, so a member's later offline Step-2 read declares it (S6-B3413 asks whether
+the pre-gate should read in-sample instead). The R5-era programme scripts and the roster reports
+stay classed only.
 
 **Three more family-born rules promoted to the template (B2672, owner class-directive 2026-09-11:
 *"Class is to be rectified and not just the instance"*):**
@@ -361,13 +369,14 @@ intermediate optimisation happens in-sample. The governing constraints:
    levels), not strategy-specific configs, and the Sharpe bar was chosen on principle from a
    sensitivity curve presented before the choice. L351 stands as a discipline (count holdout reads
    project-wide) with its magnitude corrected. **Counted since S6-B3395 (B3139q-r179):**
-   `output_audit/holdout_reads.jsonl` records each read at the four live doors when it is taken, and
-   holds the 24 earlier reads backfilled from the tracked artifacts of the four read shapes it
+   `output_audit/holdout_reads.jsonl` records each read at the nine doors when it is taken, and
+   holds the 99 earlier reads backfilled from the tracked artifacts of the nine read shapes it
    recognises, each dated by its artifact's first commit (9 depth reads, 7 breadth reads, 7 engine
-   Step-2 grades, 1 declared-row read). That is a LOWER BOUND: the 5 campaign readers that read
-   before the ledger (class CAMPAIGN_READER_PRE_LEDGER in `output_audit/holdout_touching_files.csv`)
-   leave other shapes - S6-B3395a. test_b3395b fails when a tracked artifact of the four shapes has
-   no entry; `python scripts/holdout_reads.py --list` prints the ledger.
+   Step-2 grades, 1 declared-row read, and 75 reads by the five campaign readers - one per
+   strategy). Not counted, by the owner's ruling of 2026-11-03: the R5-era programme scripts and the
+   roster reports, classed in `output_audit/holdout_touching_files.csv`. test_b3395b fails when a
+   tracked artifact of the nine shapes has no entry; `python scripts/holdout_reads.py --list` prints
+   the ledger.
 
 ### 1.2 THE STEP TABLE - windows, universes and trade floors (owner 2026-08-29; formerly §10.1, §0b, and the STEP 2 ENTRY floor/window paragraphs)
 

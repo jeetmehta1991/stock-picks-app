@@ -20,8 +20,14 @@ own consideration). It never launches anything.
 
 Usage:
   python scripts/family_pregate.py --strategies pead_long,pead_short,... \
-      --out output_audit/b2633_pead_pregate.json
-  python scripts/family_pregate.py --prefix pead --out ...
+      --out output_audit/b2633_pead_pregate.json --ruling WORDS --ruling-ticket S6-Bnnnn
+  python scripts/family_pregate.py --prefix pead --out ... --ruling ... --ruling-ticket ...
+
+S6-B3395 Batch 7d (owner ruling 2026-11-03 'A approved'): member_stats reads
+each member's HOLDOUT sharpe, so the gate is a holdout read: main passes
+holdout_reads.campaign_door first - the owner's word, a new --out, and every
+member unread in the holdout-read ledger unless --rereads names a recorded
+read - and records one entry per member whose holdout it graded.
 """
 from __future__ import annotations
 
@@ -37,6 +43,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import roster_core as rc  # noqa: E402
+import holdout_reads as hr  # noqa: E402  (S6-B3395: the campaign door)
 
 CUBE = ROOT / "output_r5_merged_1_7" / "trade_exit_detail.csv"
 
@@ -112,6 +119,12 @@ def main() -> int:
     ap.add_argument("--strategies", default="")
     ap.add_argument("--prefix", default="")
     ap.add_argument("--out", required=True)
+    ap.add_argument("--ruling", required=True,
+                    help="the owner's words opening this read (S6-B3395)")
+    ap.add_argument("--ruling-ticket", required=True,
+                    help="the ticket whose row records --ruling")
+    ap.add_argument("--rereads", action="append", default=[],
+                    help="a recorded holdout read this one repeats")
     a = ap.parse_args()
     if a.strategies:
         sts = [s.strip() for s in a.strategies.split(",") if s.strip()]
@@ -124,7 +137,15 @@ def main() -> int:
     else:
         print("--strategies or --prefix required")
         return 2
+    gate = hr.campaign_door("family_pregate", sts, out=a.out, ruling=a.ruling,
+                            ruling_ticket=a.ruling_ticket, rereads=a.rereads)
     out = pregate(sts)
+    out["owner_word"] = gate["word"]
+    out["holdout_read_ledger"] = {
+        "read_ids": hr.campaign_record("family_pregate", out, out=a.out,
+                                       word=gate["word"], prior=gate["prior"],
+                                       rereads=a.rereads),
+        "prior_reads": gate["prior"], "rereads": a.rereads}
     Path(a.out).write_text(json.dumps(out, indent=1), encoding="utf-8")
     print(f"{'member':44} {'n':>6} {'ho_n':>5} {'band':>4} "
           f"{'best_exit':22} {'best_sh':>8} {'median_sh':>9}")

@@ -21,6 +21,12 @@ population its IS selection was made on).
 CONTROL-FAMILY COMPARISON (11.2b2 promoted rule, B2658): each pre-registered
 cell's axis/level/exit applied to the control strategy's recorded fires;
 control-shared lift = general structure, reported beside the subject.
+
+S6-B3395 Batch 7d (owner ruling 2026-11-03 'A approved'): a re-run is a
+campaign re-read, so the read passes holdout_reads.campaign_door first - the
+owner's word checked against its ledger row (--ruling-ticket), a new --out,
+and the strategy unread in the holdout-read ledger unless --rereads names
+the recorded read - and is recorded there once taken.
 """
 from __future__ import annotations
 
@@ -35,6 +41,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 import roster_core as rc  # noqa: E402
+import holdout_reads as hr  # noqa: E402  (S6-B3395: the campaign door)
 from breadth_step1_grid import _parse  # noqa: E402
 from smc_lsr_step1 import build, STRAT, B_AXES, ARM_KEYS  # noqa: E402
 
@@ -124,6 +131,10 @@ def control_lift(cm: pd.DataFrame, key: str, mask, exit_name: str) -> dict:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--ruling", required=True)
+    ap.add_argument("--ruling-ticket", required=True,
+                    help="the ticket whose row records --ruling (S6-B3395)")
+    ap.add_argument("--rereads", action="append", default=[],
+                    help="a recorded holdout read this one repeats (S6-B3395)")
     ap.add_argument("--out", required=True)
     a = ap.parse_args()
     if not a.ruling.strip():
@@ -132,6 +143,9 @@ def main() -> int:
     if prereg["ruling_verbatim"] not in a.ruling:
         raise SystemExit("REFUSED: --ruling does not carry the committed "
                          "pre-registration's verbatim word")
+    gate = hr.campaign_door("b2701_smc_lsr_step2", [STRAT], out=a.out,
+                            ruling=a.ruling, ruling_ticket=a.ruling_ticket,
+                            rereads=a.rereads)
     t0 = time.time()
 
     m = build()
@@ -202,6 +216,12 @@ def main() -> int:
            "peeked_lines": peeked,
            "spent": "the pre-registration is spent - no other cell can ever carry "
                     "admission from this campaign's Step-1 grid"}
+    rec["owner_word"] = gate["word"]
+    rec["holdout_read_ledger"] = {
+        "read_ids": hr.campaign_record("b2701_smc_lsr_step2", rec, out=a.out,
+                                       word=gate["word"], prior=gate["prior"],
+                                       rereads=a.rereads),
+        "prior_reads": gate["prior"], "rereads": a.rereads}
     Path(a.out).write_text(json.dumps(rec, indent=2), encoding="utf-8")
     print(f"wrote {a.out} ({time.time()-t0:.0f}s)")
     return 0

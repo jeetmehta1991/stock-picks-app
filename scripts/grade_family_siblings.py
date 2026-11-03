@@ -18,7 +18,14 @@ correlated grades cannot read as independent evidence.
 
 Usage:
   python scripts/grade_family_siblings.py \
-      --out output_audit/b2628_institutional_family_grades.json
+      --out output_audit/b2628_institutional_family_grades.json \
+      --ruling WORDS --ruling-ticket S6-Bnnnn
+
+S6-B3395 Batch 7d (owner ruling 2026-11-03 'A approved'): main passes
+holdout_reads.campaign_door before grade_all reads a holdout - the owner's
+word, a new --out, and every pre-registered sibling unread in the
+holdout-read ledger unless --rereads names a recorded read - and records one
+entry per sibling graded once the read is taken.
 """
 from __future__ import annotations
 
@@ -34,6 +41,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import roster_core as rc  # noqa: E402
+import holdout_reads as hr  # noqa: E402  (S6-B3395: the campaign door)
 
 CUBE = ROOT / "output_r5_merged_1_7" / "trade_exit_detail.csv"
 PREREG = ROOT / "output_audit" / "b2628_family_pass_prereg.json"
@@ -123,9 +131,25 @@ def grade_all(df: pd.DataFrame) -> dict:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
+    ap.add_argument("--ruling", required=True,
+                    help="the owner's words opening this read (S6-B3395)")
+    ap.add_argument("--ruling-ticket", required=True,
+                    help="the ticket whose row records --ruling")
+    ap.add_argument("--rereads", action="append", default=[],
+                    help="a recorded holdout read this one repeats")
     a = ap.parse_args()
+    population = json.loads(PREREG.read_text(encoding="utf-8"))["population"]
+    gate = hr.campaign_door("grade_family_siblings", list(population), out=a.out,
+                            ruling=a.ruling, ruling_ticket=a.ruling_ticket,
+                            rereads=a.rereads)
     df = load_family()
     out = grade_all(df)
+    out["owner_word"] = gate["word"]
+    out["holdout_read_ledger"] = {
+        "read_ids": hr.campaign_record("grade_family_siblings", out, out=a.out,
+                                       word=gate["word"], prior=gate["prior"],
+                                       rereads=a.rereads),
+        "prior_reads": gate["prior"], "rereads": a.rereads}
     Path(a.out).write_text(json.dumps(out, indent=1), encoding="utf-8")
     print(f"{'sibling':46} {'n':>5} {'ovl':>5} {'exit':22} {'ho_n':>5} "
           f"{'ho_sharpe':>9} {'gates':>5} {'verdict':7} {'R1':>3} {'R2':>3}")
