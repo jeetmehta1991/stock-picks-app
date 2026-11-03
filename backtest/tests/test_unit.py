@@ -53245,6 +53245,10 @@ def test_b3139ah_reader_provenance_comes_from_the_caller(tmp_path, monkeypatch):
                          "--out", str(grid), "--band-ruling", "pin probe",
                          "--basis", "net", "--cube-dir", str(run)])
     assert bg.main() == 0
+    # S6-B3395: the read refuses an uncommitted Step-1 artifact; this tmp
+    # grid can never be committed (test_b3395a drives the check itself)
+    import holdout_reads as _hr
+    monkeypatch.setattr(_hr, "step1_uncommitted", lambda *a, **k: None)
 
     def _read(out, prior, disclosure):
         argv = ["r", "--step1-artifact", str(grid), "--ruling", "pin probe",
@@ -54683,6 +54687,10 @@ def test_b3139bx_every_holdout_read_carries_its_own_chance_price(tmp_path, monke
            "rows": [{"axis": "k", "op": "ge", "level": lv} for lv in (0.0, 5.0, 10.0)]}
     s1 = tmp_path / "step1.json"
     s1.write_text(_j.dumps(art), encoding="utf-8")
+    # S6-B3395: the read refuses an uncommitted Step-1 artifact; this tmp
+    # fixture can never be committed (test_b3395a drives the check itself)
+    import holdout_reads as _hr
+    monkeypatch.setattr(_hr, "step1_uncommitted", lambda *a, **k: None)
     out = tmp_path / "read.json"
     monkeypatch.setattr(sys, "argv", [
         "breadth_step2_read.py", "--step1-artifact", str(s1), "--ruling", "pin probe",
@@ -67202,6 +67210,13 @@ def test_b3353_step2_readers_and_closures_name_both_legs(tmp_path, monkeypatch):
             "peek_bound": {"cells_clearing_all_gates_besides_admission": 0}}
     monkeypatch.setattr(ohr, "read_step2", lambda *a, **k: dict(fake))
     monkeypatch.setattr(ohr, "render_table", lambda rec: "")
+    # S6-B3395 (B3139q-r178): the Step-1 artifact must be committed and
+    # reconciled before the read - a tmp fixture is never committed, so the
+    # committed check is stubbed here (test_b3395a drives it on a real repo)
+    import holdout_reads as _hr
+    monkeypatch.setattr(_hr, "step1_uncommitted", lambda *a, **k: None)
+    (tmp_path / "s1.json").write_text(_j.dumps({"multiplicity": {"reconciles": True}}),
+                                      encoding="utf-8")
     monkeypatch.setattr(_sys, "argv", base + ["--breadth-leg", "not_run",
                                                "--breadth-ticket", "S6-B9353"])
     assert ohr.main() == 0
@@ -71416,6 +71431,180 @@ def test_b3399d_one_hourly_cron_per_chain():
     out = _m.scan_duplicate_chain_monitor(entries)
     assert out and "b3146" in out[0], (
         "two live arms for one chain, parsed from the prompts, must fire", out)
+
+
+def test_b3395a_committed_step1_multiplicity_and_control_on_the_depth_read(tmp_path, monkeypatch):
+    """S6-B3395 Batch 7a (B3139q-r178), three of the M-HOLD census rules.
+
+    (1) Runbook 1.1 item 2 / F4 (census line 300): the Step-1 artifact a
+    holdout read rests on is COMMITTED before any holdout code path runs -
+    holdout_reads.step1_uncommitted, driven against a REAL throwaway git
+    repository: untracked refuses, staged-but-uncommitted refuses (git's
+    index holds it, so ls-files alone would pass it), committed passes,
+    modified refuses; outside the repository and missing refuse.
+
+    (2) Runbook 2.7 row 5 (census line 880): the depth reader refuses an
+    unreconciled Step 1 as the breadth reader has since B2839 - one
+    definition, holdout_reads.require_multiplicity, imported by both.
+
+    (3) Runbook T6 / 3.5 (census line 913): the depth read's all-six
+    qualifiers get the control-family comparison - a disclosure that never
+    changes a verdict: NO_QUALIFIERS loads nothing, a subject that is the
+    control is NOT_RUN, a control-frame refusal is RECORDED not raised, the
+    barred next_pivot_target and FAIL lines are not compared.
+
+    Door order in the depth reader's main: the spent-holdout guard, then the
+    committed check, then multiplicity, then the read."""
+    import importlib.util as _ilu
+    import json as _j
+    import subprocess as _sp
+    import sys as _s
+    from datetime import date as _date
+    from pathlib import Path as _P
+    import pandas as _pd
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import holdout_reads as hr
+
+    # (1) the committed check on a real repository
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    def git(*args):
+        return _sp.run(["git", "-C", str(repo)] + list(args), capture_output=True,
+                       text=True, timeout=60)
+    assert git("init", "-q").returncode == 0
+    git("config", "user.email", "pin@example.invalid")
+    git("config", "user.name", "pin")
+    art = repo / "step1.json"
+    art.write_text('{"a": 1}', encoding="utf-8")
+    why = hr.step1_uncommitted(art, root=repo)
+    assert why and "not tracked" in why, why
+    git("add", "step1.json")
+    why = hr.step1_uncommitted(art, root=repo)
+    assert why and "uncommitted" in why, ("a STAGED file is not committed", why)
+    assert git("commit", "-q", "-m", "pin").returncode == 0
+    assert hr.step1_uncommitted(art, root=repo) is None, "committed and clean passes"
+    assert hr.step1_uncommitted("step1.json", root=repo) is None, "relative to root"
+    art.write_text('{"a": 2}', encoding="utf-8")
+    why = hr.step1_uncommitted(art, root=repo)
+    assert why and "uncommitted" in why, why
+    outside = tmp_path / "outside.json"
+    outside.write_text("{}", encoding="utf-8")
+    assert "outside" in hr.step1_uncommitted(outside, root=repo)
+    assert "does not exist" in hr.step1_uncommitted(repo / "gone.json", root=repo)
+
+    # (2) one multiplicity definition for both readers
+    import breadth_step2_read as b2
+    assert b2.require_multiplicity is hr.require_multiplicity
+    assert "def require_multiplicity" not in (root / "scripts" / "breadth_step2_read.py"
+                                               ).read_text(encoding="utf-8")
+
+    # the depth reader's doors, driven through main()
+    import owner_word as ow
+    q = tmp_path / "queue.md"
+    q.write_text("| **S6-B9395** | **OPEN** | P1 | **RULED: 'read the fixture holdout once' "
+                 "(fixture).** | _reason:_ OPEN |\n", encoding="utf-8")
+    monkeypatch.setattr(ow, "QUEUE", q)
+    spec = _ilu.spec_from_file_location("ohr_b3395a", root / "scripts" / "offline_holdout_read.py")
+    ohr = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(ohr)
+    s1 = tmp_path / "s1.json"
+    out = tmp_path / "read.json"
+    argv = ["ohr", "--sweep-artifact", str(s1), "--out", str(out),
+            "--ruling", "read the fixture holdout once", "--ruling-ticket", "S6-B9395",
+            "--breadth-leg", "not_run", "--breadth-ticket", "S6-B9395"]
+    monkeypatch.setattr(_s, "argv", argv)
+    def _never(*a, **k):
+        raise AssertionError("read_step2 ran past a refusing door")
+    monkeypatch.setattr(ohr, "read_step2", _never)
+    # an uncommitted Step-1 artifact (a tmp file is never committed) refuses
+    s1.write_text(_j.dumps({"multiplicity": {"reconciles": True}}), encoding="utf-8")
+    with pytest.raises(SystemExit) as e:
+        ohr.main()
+    assert "S6-B3395" in str(e.value) and "outside" in str(e.value), e.value
+    monkeypatch.setattr(hr, "step1_uncommitted", lambda *a, **k: None)
+    for bad in ({}, {"multiplicity": {"reconciles": False}}):
+        s1.write_text(_j.dumps(bad), encoding="utf-8")
+        with pytest.raises(SystemExit) as e:
+            ohr.main()
+        assert "multiplicity" in str(e.value), e.value
+    s1.write_text(_j.dumps({"multiplicity": {"reconciles": True}, "axes": []}), encoding="utf-8")
+    adm = {"levels": [], "exit": "x", "holdout_sharpe": 0.4, "holdout_n": 20, "full_n": 80,
+           "profit_factor": 1.1, "sortino": 0.5, "psr": 0.6, "n_gates": 3,
+           "n_gates_evaluable": 6, "verdict": "FAIL"}
+    monkeypatch.setattr(ohr, "read_step2", lambda *a, **k: {
+        "strategy": "fx", "verdict": "FAIL", "basis": "net", "basis_source": "fx",
+        "admission": adm, "trials": 1,
+        "peek_bound": {"cells_clearing_all_gates_besides_admission": 0}})
+    monkeypatch.setattr(ohr, "render_table", lambda rec: "")
+    assert ohr.main() == 0, "a committed, reconciled Step 1 reaches the read"
+    rec = _j.loads(out.read_text(encoding="utf-8"))
+    assert rec["control"]["status"].startswith("NO_QUALIFIERS"), rec["control"]
+    body = (root / "scripts" / "offline_holdout_read.py").read_text(encoding="utf-8").split(
+        "def main(", 1)[1]
+    order = [body.index(k) for k in ("if out.exists() and not a.force_rerun",
+                                     "holdout_reads.step1_uncommitted(a.sweep_artifact)",
+                                     "holdout_reads.require_multiplicity(rec1",
+                                     "rec = read_step2(",
+                                     "control_comparison(rec, rec1, a.control)")]
+    assert order == sorted(order), ("door order", order)
+    # the breadth reader: committed check after the --cube-dir refusal and
+    # before the artifact is read (a refusing stub fires before any load)
+    bbody = (root / "scripts" / "breadth_step2_read.py").read_text(encoding="utf-8").split(
+        "def main(", 1)[1]
+    assert (bbody.index("if a.cube_dir:") < bbody.index("holdout_reads.step1_uncommitted(")
+            < bbody.index("art = json.loads"))
+    assert "default=holdout_reads.CONTROL_DEFAULT" in bbody
+    assert "default=holdout_reads.CONTROL_DEFAULT" in body
+
+    # (3) the control comparison, on a synthetic control frame
+    ho = [_date(2025, 6, 2 + i % 20) for i in range(40)]
+    frame = _pd.DataFrame({
+        "entry_date": ho, "exit_method": ["time_stop_10d"] * 40,
+        "pnl_pct": [(-1.0) ** i * 0.5 + (0.3 if i < 20 else -0.2) for i in range(40)],
+        "hold_days": [5] * 40,
+        "k": [0.9 if i < 20 else 0.1 for i in range(40)]})
+    loads = []
+    def _load(strategy, axes, **kw):
+        loads.append(strategy)
+        return frame, {}
+    monkeypatch.setattr(ohr.ols, "load", _load)
+    rec1 = {"axes": [{"key": "k", "op": "ge", "levels": [0.5]}]}
+    rows = [{"levels": [0.5], "exit": "time_stop_10d", "verdict": "QUALIFIES",
+             "admission_bearing": True, "holdout_sharpe": 1.4},
+            {"levels": [0.5], "exit": "next_pivot_target", "verdict": "QUALIFIES",
+             "admission_bearing": False, "holdout_sharpe": 2.0},
+            {"levels": [0.5], "exit": "time_stop_20d", "verdict": "FAIL",
+             "admission_bearing": False, "holdout_sharpe": 0.2}]
+    blk = ohr.control_comparison({"strategy": "subj", "rows": rows}, rec1, "ctl")
+    assert blk["status"] == "RAN" and len(blk["rows"]) == 1, blk
+    r = blk["rows"][0]
+    assert r["exit"] == "time_stop_10d" and r["admission_bearing"] is True
+    assert r["control_filtered_ho_n"] == 20
+    assert r["control_lift"] == round(r["control_filtered_ho_sharpe"]
+                                      - r["control_base_ho_sharpe"], 3)
+    assert loads == ["ctl"]
+    loads.clear()
+    assert ohr.control_comparison({"strategy": "subj", "rows": rows[2:]}, rec1,
+                                  "ctl")["status"].startswith("NO_QUALIFIERS")
+    assert loads == [], "no qualifier, no data load"
+    assert ohr.control_comparison({"strategy": "ctl", "rows": rows}, rec1,
+                                  "ctl")["status"].startswith("NOT_RUN")
+    def _refuse(*a, **k):
+        raise SystemExit("REFUSED: ctl has no rows")
+    monkeypatch.setattr(ohr.ols, "load", _refuse)
+    blk = ohr.control_comparison({"strategy": "subj", "rows": rows}, rec1, "ctl")
+    assert blk["status"].startswith("REFUSED") and blk["rows"] == [], blk
+    # the render carries the section only when a line was compared
+    base_rec = {"strategy": "subj", "design": "d", "window": {"holdout": ["a", "b"]},
+                "trials": 1, "graded": 1, "verdict": "FAIL", "admission": adm,
+                "rows": []}
+    plain = ohr.render_table(base_rec)
+    assert "CONTROL COMPARISON" not in ohr.render_table(dict(base_rec, control=blk))
+    assert ohr.render_table(dict(base_rec, control={"strategy": "ctl", "rows": [r]})
+                            ).startswith(plain)
 
 
 def test_b3411_history_read_is_judged_at_segment_grain():

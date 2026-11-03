@@ -57,26 +57,11 @@ def grade_holdout(sub) -> dict | None:
                        full_period_n=len(sub))
 
 
-def require_multiplicity(art: dict, source: str) -> None:
-    """S6-B2836a (B2839): a Step-2 holdout read may only follow a Step-1 whose
-    MULTIPLICITY BLOCK RECONCILED. Under the B2836 no-pruning ruling the full
-    combination population touches the holdout, so the trials-count honesty
-    lives entirely in Step-1's multiplicity instrument - and this reader
-    previously never looked (found by the B2836 enforcement-map grep).
-    FAIL CLOSED on the absent key (L642: the absent case is the case the
-    guard exists for), and on any value other than True.
-    """
-    mult = art.get("multiplicity")
-    if not isinstance(mult, dict) or "reconciles" not in mult:
-        raise SystemExit(
-            f"REFUSED: {source} carries NO multiplicity block - Step-1 must "
-            "run the runbook section 1.4 multiplicity instrument before any holdout read "
-            "(S6-B2836a; fail closed on absence)")
-    if mult.get("reconciles") is not True:
-        raise SystemExit(
-            f"REFUSED: {source} multiplicity.reconciles = "
-            f"{mult.get('reconciles')!r} - a non-reconciled Step-1 cannot "
-            "feed a holdout read (S6-B2836a)")
+# S6-B2836a's check now lives in scripts/holdout_reads.py, ONE definition for
+# both Step-2 readers (S6-B3395); imported here so this module's name for it
+# still resolves for every caller.
+import holdout_reads  # noqa: E402
+from holdout_reads import require_multiplicity  # noqa: E402,F401
 
 
 # S6-B3139bx: the owner's ruling fixes the count; the seed is the null
@@ -119,7 +104,7 @@ def main() -> int:
     ap.add_argument("--step1-artifact", required=True)
     ap.add_argument("--ruling", required=True,
                     help="the owner's Step-2 word, verbatim (runbook section 0.6, fail-closed)")
-    ap.add_argument("--control", default="pead_long_high_yoy_growth_only",
+    ap.add_argument("--control", default=holdout_reads.CONTROL_DEFAULT,
                     help="control strategy for the B2658 comparison")
     # B2849 (S6-B2848d, owner-approved): T5's ran-or-waived stops being
     # prose - the Step-2 read refuses unless the breadth leg's disposition
@@ -194,6 +179,11 @@ def main() -> int:
             if not _f.exists():
                 raise SystemExit(f"REFUSED: --cube-dir file missing: {_f}")
         print(f"cube-dir override (subject frame): {a.cube_dir} (S6-B3113a)")
+    # S6-B3395 (runbook 1.1 item 2 / F4): the registered cells are COMMITTED
+    # before any holdout code path runs - the commit is the pre-registration
+    _why = holdout_reads.step1_uncommitted(a.step1_artifact)
+    if _why:
+        raise SystemExit(_why)
     art = json.loads(Path(a.step1_artifact).read_text(encoding="utf-8"))
     require_multiplicity(art, a.step1_artifact)   # S6-B2836a, fail closed
     strategy = art["strategy"]

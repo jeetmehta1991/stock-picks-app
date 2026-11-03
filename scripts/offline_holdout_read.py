@@ -40,6 +40,15 @@ Usage:
 read - a Step-2 holdout read is a one-way door - checked against the ticket's
 ledger rows (scripts/owner_word.py) before the read, and stamped into the
 artifact as owner_word.
+
+S6-B3395 (census cluster M-HOLD): before any holdout code path runs, the
+Step-1 artifact must be COMMITTED (scripts/holdout_reads.step1_uncommitted -
+runbook 1.1 item 2 and F4, the commit is the pre-registration) and its
+multiplicity block must RECONCILE (holdout_reads.require_multiplicity, the
+breadth reader's check since B2839 - runbook 2.7 row 5). After the read, every
+all-six qualifier gets the control-family comparison (control_comparison,
+--control; runbook T6 and 3.5), recorded as a disclosure that changes no
+verdict.
 """
 from __future__ import annotations
 
@@ -243,6 +252,75 @@ def read_step2(sweep_artifact: Path, coverage_min: float, repro_min: float,
             "rows": rows}
 
 
+def control_comparison(rec: dict, rec1: dict, control: str) -> dict:
+    """S6-B3395 (runbook T6, line 938: 'control-family comparison on any
+    all-six qualifier'; section 3.5): every qualifying (levels, exit) line of
+    the read - the admission-bearing one and the peeked ones, the barred
+    next_pivot_target excepted as in the breadth reader - gets the SAME levels
+    and exit applied to the CONTROL strategy's own R5 fires, and the control's
+    holdout-sharpe lift (filtered minus unfiltered, same exit) is recorded
+    beside the subject's. The breadth reader has run this since B2678; the
+    depth read never did. A DISCLOSURE: it changes no verdict and no row - a
+    control showing the same lift says the levels are general market
+    structure, not the subject's edge, and that reading is the owner's at
+    admission.
+
+    The control frame takes the subject's own axes, derive module and P&L
+    basis (L912: the subject comes from the artifacts), the control's own
+    fires with no direction filter and its survival filter on R5 - the
+    breadth reader's control frame. A loader refusal is RECORDED as the
+    block's status rather than raised: the read itself has already been
+    taken and must be written."""
+    quals, seen = [], set()
+    for r in rec.get("rows") or []:
+        if r.get("verdict") != "QUALIFIES" or r.get("exit") == ols.NPT:
+            continue
+        key = (tuple(r["levels"]), r["exit"])
+        if key not in seen:
+            seen.add(key)
+            quals.append(r)
+    block = {"strategy": control,
+             "note": "same levels and exit on the control's own R5 fires; lift = "
+                     "filtered minus unfiltered holdout sharpe, same exit "
+                     "(S6-B3395, runbook T6 / 3.5) - a disclosure, never a verdict",
+             "rows": []}
+    if not quals:
+        block["status"] = "NO_QUALIFIERS - nothing to compare"
+        return block
+    if control == rec.get("strategy"):
+        block["status"] = ("NOT_RUN - the subject is the control strategy; pass "
+                           "--control naming another")
+        return block
+    axes = [dict(x) for x in rec1["axes"]]
+    derive_fn = None
+    der = (rec.get("subject") or {}).get("derive")
+    if der:
+        derive_fn, _now = ols.load_derive(ROOT / der["path"])
+    try:
+        cm, _ev = ols.load(control, axes, direction=None, survival=True,
+                           derive=derive_fn, basis=rec.get("basis") or "gross")
+    except SystemExit as exc:
+        block["status"] = f"REFUSED - the control's frame: {exc}"
+        return block
+    for q in quals:
+        base = cm[cm.exit_method == q["exit"]]
+        filt = ols.keep(base, axes, tuple(q["levels"]))
+        hb, hf = rc.holdout(base), rc.holdout(filt)
+        rb = rc._sharpe(hb["pnl_pct"].values, hb["hold_days"], min_n=10)
+        rf = rc._sharpe(hf["pnl_pct"].values, hf["hold_days"], min_n=10)
+        block["rows"].append({
+            "levels": list(q["levels"]), "exit": q["exit"],
+            "admission_bearing": bool(q.get("admission_bearing")),
+            "control_base_ho_sharpe": rb["sharpe"] if rb else None,
+            "control_filtered_ho_sharpe": rf["sharpe"] if rf else None,
+            "control_lift": (round(rf["sharpe"] - rb["sharpe"], 3)
+                             if (rb and rf) else None),
+            "control_filtered_ho_n": int(len(hf)),
+            "subject_qualifier_ho_sharpe": q.get("holdout_sharpe")})
+    block["status"] = "RAN"
+    return block
+
+
 def render_table(rec: dict, top: int = 20) -> str:
     rows = []
     head = (f"# STEP-2 HOLDOUT READ - {rec['strategy']}\n\n"
@@ -278,7 +356,20 @@ def render_table(rec: dict, top: int = 20) -> str:
             f"{r.get('sortino')} | {r.get('psr')} | "
             f"{r.get('n_gates')}/{r.get('n_gates_evaluable')} | {r['verdict']} "
             f"| {status} |")
-    return head + "\n".join(rows) + "\n"
+    out = head + "\n".join(rows) + "\n"
+    # S6-B3395: the control comparison renders only when it graded a line, so
+    # a read without one renders byte-identically to its committed table
+    ctl = rec.get("control") or {}
+    if ctl.get("rows"):
+        out += (f"\n**CONTROL COMPARISON ({ctl.get('strategy')})** - "
+                f"{ctl.get('note', '')}\n\n"
+                "| levels | exit | subject HO sharpe | control base | control filtered "
+                "| control lift | control filtered n |\n" + "|" + "---|" * 7 + "\n")
+        for c in ctl["rows"]:
+            out += (f"| {c['levels']} | {c['exit']} | {c.get('subject_qualifier_ho_sharpe')} "
+                    f"| {c.get('control_base_ho_sharpe')} | {c.get('control_filtered_ho_sharpe')} "
+                    f"| {c.get('control_lift')} | {c.get('control_filtered_ho_n')} |\n")
+    return out
 
 
 def main() -> int:
@@ -307,6 +398,11 @@ def main() -> int:
     # before anything is read, and both legs ride the artifact
     import step2_legs
     step2_legs.add_cli(ap, "breadth")
+    # S6-B3395 (runbook T6 / 3.5): the control for the comparison on every
+    # all-six qualifier - the breadth reader's default, one constant for both
+    import holdout_reads
+    ap.add_argument("--control", default=holdout_reads.CONTROL_DEFAULT,
+                    help="control strategy for the control-family comparison")
     a = ap.parse_args()
 
     import owner_word
@@ -326,8 +422,18 @@ def main() -> int:
     if out.exists() and not a.force_rerun:
         raise SystemExit(f"REFUSED: {out} exists - the holdout is already spent; "
                          "--force-rerun labels a re-read as such")
+    # S6-B3395: the Step-1 artifact is COMMITTED (runbook 1.1 item 2 / F4 - the
+    # commit is the pre-registration) and its multiplicity block RECONCILES
+    # (runbook 2.7 row 5) before any holdout code path runs - the two checks
+    # the breadth read makes, from the one module both readers import
+    _why = holdout_reads.step1_uncommitted(a.sweep_artifact)
+    if _why:
+        raise SystemExit(_why)
+    rec1 = json.loads(Path(a.sweep_artifact).read_text(encoding="utf-8"))
+    holdout_reads.require_multiplicity(rec1, a.sweep_artifact)
     rec = read_step2(Path(a.sweep_artifact), a.coverage_min, a.repro_min, a.min_n,
                      coverage_artifacts=[Path(c) for c in a.coverage_artifact])
+    rec["control"] = control_comparison(rec, rec1, a.control)   # S6-B3395, T6
     rec["owner_word"] = word
     rec["legs"] = legs                                        # S6-B3353
     rec["disposition"] = step2_legs.disposition(rec["verdict"] != "QUALIFIES", legs)
@@ -350,6 +456,8 @@ def main() -> int:
     print(f"  gates passed {adm.get('n_gates')} of {adm.get('n_gates_evaluable')}")
     print(f"  peek bound (diagnostic): {rec['peek_bound']['cells_clearing_all_gates_besides_admission']} "
           f"other lines of {rec['trials']} clear all gates")
+    print(f"  control comparison ({rec['control']['strategy']}): "
+          f"{rec['control']['status']}, {len(rec['control']['rows'])} line(s)")
     print(f"wrote {out} and {out.with_suffix('.md')}")
     return 0
 
