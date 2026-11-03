@@ -1033,28 +1033,47 @@ DOWNSTREAM_ARTIFACTS = ("PHASE_1B_ROSTER.md",
                         "LEARNINGS.md", "CHECKLIST.md", "CLAUDE.md")
 
 
-def scan_postfix_recheck(commit_msg, changed_files):
-    """Flag a FIX commit that touched no downstream artifact and no queue entry.
+def scan_postfix_recheck(commit_msg, changed_files, *, cmds=None, text=None):
+    """Flag a FIX commit whose turn ran no CONCLUSION SEARCH (runbook 1927).
 
-    A fix with zero downstream footprint is either genuinely self-contained or
-    an unrecorded invalidation. The gate cannot tell which - so it asks, and an
-    EXECUTION_QUEUE entry saying "self-contained" satisfies it.
-    """
+    S6-B3399 (B3139q-r176): the old predicate - "touched no downstream
+    artifact" - was VACUOUS, because EXECUTION_QUEUE.md was in the satisfying
+    set and preflight C8 stages the queue on EVERY commit, so the gate had
+    nothing it could ever fire on. Rule 1927's demand is a SEARCH: after any
+    fix, GREP the shipped conclusions that depended on the old behaviour,
+    measure the overlap, and ticket each (or state why it survives). The gate
+    is now keyed on that search: a FIX commit's turn must show an executed
+    grep/search over a conclusion surface (output_audit/ or a .md doc), or a
+    recorded 'self-contained' declaration. Touching a downstream DOC other
+    than the queue still satisfies it - a fix that rewrote the roster or the
+    runbook carries its re-check in the diff. `cmds` (executed command
+    strings) and `text` (the response) are the seams."""
     low = (commit_msg or "").lower()
     if not _any_word(FIX_WORDS, low):
         return []
+    blob = (low + " " + (text or "").lower())
+    if "self-contained" in blob or "self contained" in blob:
+        return []
+    # the queue is staged on every commit (C8), so it proves nothing here;
+    # any OTHER downstream doc in the diff is a real re-check footprint
     touched = [f for f in (changed_files or [])
-               if any(a in f for a in DOWNSTREAM_ARTIFACTS)]
+               if any(a in f for a in DOWNSTREAM_ARTIFACTS)
+               and "EXECUTION_QUEUE.md" not in f]
     if touched:
         return []
-    return [("TURN-GATE BLOCK (CHECKLIST #196 / L467): this turn commits a FIX "
-             "but touched no downstream artifact and no queue entry. A fix can "
-             "invalidate a conclusion the defect left intact - the roster "
-             "relabel was reverted by the next regeneration because the fix "
-             "belonged in the GENERATOR, not the output. GREP for shipped "
-             "conclusions that depended on the old behaviour, MEASURE the "
-             "overlap, and ticket each - or record 'self-contained' in "
-             "EXECUTION_QUEUE and end the turn again.")]
+    searchers = ("grep", "rg ", "select-string", "findstr", "ticket_history")
+    surfaces = ("output_audit", ".md", "ticket_history")
+    for c in cmds or ():
+        cl = str(c).lower()
+        if any(s in cl for s in searchers) and any(s in cl for s in surfaces):
+            return []
+    return [("TURN-GATE BLOCK (CHECKLIST #196 / runbook 1927, S6-B3399): this "
+             "turn commits a FIX and its turn ran NO conclusion search - no "
+             "grep over output_audit/ or the docs, and no downstream doc in "
+             "the diff. A fix can invalidate a conclusion the defect left "
+             "intact. GREP for shipped conclusions that depended on the old "
+             "behaviour, MEASURE the overlap, and ticket each - or record "
+             "'self-contained' with its reason and end the turn again.")]
 
 
 # B1602 / CHECKLIST #193 -> AUTO-GATED. Launching a config against an
@@ -1147,7 +1166,8 @@ def scan_unverified_universe(entries):
 
 
 def check_postfix_recheck() -> str | None:
-    """#190 auto-gate: a FIX commit must show downstream re-check."""
+    """#190 auto-gate: a FIX commit's turn must show a conclusion search
+    (runbook 1927, S6-B3399 - the old downstream-touch key was vacuous)."""
     try:
         import subprocess
         m = subprocess.run(["git", "log", "-1", "--pretty=%B"],
@@ -1156,7 +1176,11 @@ def check_postfix_recheck() -> str | None:
                            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=15).stdout
     except Exception:
         return None
-    bad = scan_postfix_recheck(m, [x for x in (f or "").splitlines() if x.strip()])
+    entries = _read_entries()
+    bad = scan_postfix_recheck(
+        m, [x for x in (f or "").splitlines() if x.strip()],
+        cmds=[_executed_tool_text(entries)],
+        text=_response_text(entries, None))
     return bad[0] if bad else None
 
 
@@ -5875,6 +5899,48 @@ def scan_campaign_open_unrecorded(entries, *, rows=None, diff_text=None,
              + opening[0][:120])]
 
 
+def scan_chain_running_close(entries, *, text=None, inflight=None) -> list[str]:
+    """S6-B3399 (B3139q-r176), runbook line 2629 second half / 8.12: WHILE A
+    CHAIN RUNS, the turn-close carries the hourly report - at minimum a
+    chain-status line naming the wave with a liveness reading (sim-day,
+    heartbeat, legs, or an ALIVE/STALLED/DEAD/LANDED verdict). The census
+    found the rule prose-only: the hourly cron delivers between turns, and
+    nothing made a CLOSE say how the chain stood (L743's dead-reporter shape -
+    a quiet close reads as a quiet chain). Inflight comes from the chain's own
+    record, pyramid_gate._chain_inflight (serial_chain.log: a LAUNCH with no
+    finished line); 'unknown' stays quiet - a broken detector must not block
+    every close (the helper's own disclosure-over-refusal rule), and the log
+    being unreadable is its own finding. `text` and `inflight` are the seams."""
+    if inflight is None:
+        try:
+            _here = str(Path(__file__).resolve().parent)
+            if _here not in sys.path:
+                sys.path.insert(0, _here)
+            import pyramid_gate as _pg
+            inflight = _pg._chain_inflight()
+        except Exception:
+            inflight = "unknown"
+    if not inflight or inflight in ("none", "unknown"):
+        return []
+    t = _response_text(entries, text).lower()
+    if not t:
+        return []
+    waves = [w for w in str(inflight).split(",") if w.strip()]
+    tokens = ("sim-day", "sim_day", "heartbeat", "leg ", "legs", "alive",
+              "stalled", "dead", "landed", "chain done", "cap_stop")
+    named = any(w.lower() in t for w in waves) or "chain" in t
+    status = any(k in t for k in tokens)
+    return require_each(
+        "CHAIN RUNNING, CLOSE CARRIES NO STATUS (runbook 2629 / 8.12, "
+        f"S6-B3399): serial_chain.log shows {inflight} in flight",
+        {"names the chain or its wave": named,
+         "carries a liveness reading (sim-day/heartbeat/legs or an "
+         "ALIVE/STALLED/DEAD/LANDED verdict)": status},
+        why="while a chain runs, the turn-close carries a chain-status line, "
+            "derived from the artifacts and never typed from memory (L839). "
+            "Add it and end the turn again.")
+
+
 def scan_chain_halt(entries, *, text=None, halts=None) -> list[str]:
     """B2577 (S6-B2573f.a): a serial chain that HALTED is REPORTED to the
     owner before a turn may end - the same contract B2520 gives a landed
@@ -6027,15 +6093,27 @@ def check_monitor_armed() -> str | None:
 
 
 def check_compliance_marker() -> str | None:
-    """Read the shared transcript cache; if a git commit happened this turn
-    but the final response has no CHECKLIST compliance statement, block."""
-    commit_made, marker = scan_transcript_entries(_read_entries())
-    if commit_made and not marker:
-        return ("TURN-GATE BLOCK (Gate B v2, B1338): a git commit was made "
-                "this turn but the final response has NO 'CHECKLIST "
-                "compliance' statement (skill Phase 6 / CLAUDE.md "
-                "mandatory end-of-response statement). Add the compliance "
-                "statement and end the turn again.")
+    """Every observable turn-close carries the CHECKLIST compliance statement
+    (runbook 2629 / 8.12; CLAUDE.md Pass-52 'every response... No exceptions').
+
+    S6-B3399 (B3139q-r176): this gate used to fire only when `commit_made` -
+    so an analysis turn, a measurement turn or an owner answer could close
+    with no compliance statement at all, while the rule it enforces names
+    EVERY turn-close. The commit condition is dropped; the B1733b guard
+    stays - zero entries is no visibility, not compliance."""
+    entries = _read_entries()
+    if not entries:
+        return None
+    commit_made, marker = scan_transcript_entries(entries)
+    if not marker:
+        kind = "a git commit was made this turn but" if commit_made else \
+               "this turn closes and"
+        return ("TURN-GATE BLOCK (Gate B v2, B1338; widened S6-B3399, runbook "
+                f"2629): {kind} the final response has NO 'CHECKLIST "
+                "compliance' statement (skill Phase 6 / CLAUDE.md mandatory "
+                "end-of-response statement, which binds every turn-close, not "
+                "only commit turns). Add the compliance statement and end the "
+                "turn again.")
     # B1844 (S6-B1841c): a duplicated unreachable `return None` sat here. Same
     # shape as the shadowed-definition class (B1795) - a duplicate makes the
     # survivor ambiguous to the next reader.
@@ -7328,6 +7406,9 @@ def main(argv: list[str] | None = None) -> int:
                 scan_undelivered_landing,
                 # B2577: so must a HALTED serial chain.
                 scan_chain_halt,
+                # S6-B3399 (runbook 2629 / 8.12): while a chain runs, the
+                # close carries a chain-status line.
+                scan_chain_running_close,
                 # B2817 (S6-B2705a): JUDGMENT-ONLY is earned by a named search.
                 scan_judgment_only_without_search,
                 # S6-B2925 (B2929): an owner decision must not be taken

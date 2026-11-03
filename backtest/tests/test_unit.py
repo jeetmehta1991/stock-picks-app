@@ -15042,11 +15042,26 @@ def test_b1602_postfix_and_universe_gates_pinned():
     m = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(m)
 
-    # #190 - a FIX commit must show a downstream re-check
+    # #190 - a FIX commit's turn must show a CONCLUSION SEARCH (runbook 1927,
+    # S6-B3399 B3139q-r176: the queue no longer satisfies - C8 stages it on
+    # every commit, which made the old key vacuous)
     assert m.scan_postfix_recheck("B1: fixed the thing", ["scripts/x.py"])
     assert m.scan_postfix_recheck("B1: fixed", ["PHASE_1B_ROSTER.md"]) == []
-    assert m.scan_postfix_recheck("B1: fixed", ["EXECUTION_QUEUE.md"]) == []
+    assert m.scan_postfix_recheck("B1: fixed", ["EXECUTION_QUEUE.md"]), (
+        "the queue is staged on every commit (C8) - it proves no re-check")
     assert m.scan_postfix_recheck("B1: add a feature", ["scripts/x.py"]) == []
+    assert m.scan_postfix_recheck(
+        "B1: fixed", ["scripts/x.py"],
+        cmds=["grep -rn old_formula output_audit scripts"]) == [], (
+        "an executed conclusion search satisfies rule 1927")
+    assert m.scan_postfix_recheck(
+        "B1: fixed", ["scripts/x.py"],
+        cmds=["python -m pytest backtest/tests/test_unit.py -q"]), (
+        "a test run is not a conclusion search")
+    assert m.scan_postfix_recheck(
+        "B1: fixed; self-contained (a draft-only helper, no shipped "
+        "conclusion reads it)", ["scripts/x.py"]) == [], (
+        "the recorded self-contained declaration stays the escape")
 
     # B1603: the detector now requires an EXECUTED Bash/PowerShell command, so
     # fixtures must carry the tool NAME and a `command` field. Writing a file
@@ -48545,6 +48560,12 @@ _B3121_SEAMS_SOUND = {
     ("scan_owner_time_is_delivery_time", "rows"):
         "list seam (list[str] of queue rows) for the list _history_rows_this_turn returns; "
         "both feed owner_time_mismatches unchanged",
+    # B3139q-r176 (S6-B3399 rule 2629b): the chain-status close gate's seam.
+    ("scan_chain_running_close", "inflight"):
+        "str seam for pyramid_gate._chain_inflight()'s return - the injected value has the "
+        "live helper's type (a wave-name string, 'none' or 'unknown') and gets the same "
+        "split-and-match processing; the live import branch is driven with the helper's "
+        "real return by test_b3399c's #276b arm",
     # B3139q-r175 (S6-B3399 rule 259): the campaign-open gate's two seams.
     ("scan_campaign_open_unrecorded", "rows"):
         "list seam (list[str] of queue rows) for the list _queue_rows_added(diff_text) "
@@ -71253,6 +71274,76 @@ def test_b3412_table_c_renders_a_knob_family_grid_and_batch5_rules():
                "OPEN - 4 remain |")
     assert _m.scan_campaign_open_unrecorded([], rows=[doc_row], touched=False) == [], (
         "a row ABOUT rule 259 is a mention, never an opening (L867 family)")
+
+
+def test_b3399c_compliance_every_close_and_chain_status_line():
+    """Lane 2 Batch 6a (B3139q-r176), two of S6-B3399's last rules.
+
+    (1) Runbook 2629 first half / 8.12: the turn-close carries the CHECKLIST
+    compliance statement on EVERY observable turn - check_compliance_marker
+    used to fire only when a git commit was made, so analysis and answer
+    turns could close with no statement at all. Must-fire: a non-commit turn
+    without the marker; must-quiet: the same turn with it, and zero entries
+    (no visibility is not compliance - B1733b).
+
+    (2) Runbook 2629 second half: while a chain runs, the close carries a
+    chain-status line (the wave + a liveness reading). Must-fire: a close
+    with neither while inflight names a wave; must-quiet: a status-carrying
+    close, no chain in flight, and the detector's own 'unknown'. The live
+    inflight branch is driven once with pyramid_gate._chain_inflight's real
+    return type (#276b)."""
+    import importlib.util as _ilu
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    _spec = _ilu.spec_from_file_location(
+        "_vtc6", root / "scripts" / "verify_turn_compliance.py")
+    _m = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(_m)
+
+    def _turn(final_text):
+        return [{"type": "user", "message": {"content": "whats the status?"}},
+                {"type": "assistant", "message": {"content": [
+                    {"type": "tool_use", "name": "Bash",
+                     "input": {"command": "python scripts/queue_state.py"}}]}},
+                {"type": "assistant", "message": {"content": [
+                    {"type": "text", "text": final_text}]}}]
+
+    # (1) the widened marker gate, driven through the shared entries cache
+    try:
+        _m._ENTRIES_CACHE = _turn("All quiet; counts unchanged.")
+        out = _m.check_compliance_marker()
+        assert out and "2629" in out, (
+            "a NON-commit close without the marker must block (S6-B3399)", out)
+        _m._ENTRIES_CACHE = _turn("All quiet. CHECKLIST compliance: #94 ok.")
+        assert _m.check_compliance_marker() is None
+        _m._ENTRIES_CACHE = []
+        assert _m.check_compliance_marker() is None, (
+            "zero entries is no visibility, not a violation (B1733b)")
+    finally:
+        _m._ENTRIES_CACHE = None
+
+    # (2) the chain-status close gate
+    wave = "b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45"
+    bare = _turn("Batch landed; commit pushed; next is the packet.")
+    out = _m.scan_chain_running_close(bare, inflight=wave)
+    assert out and wave in out[0], out
+    withstat = _turn(f"chain {wave} ALIVE at sim-day 320 of 1003 per the "
+                     "heartbeat; 3 legs done. Batch landed.")
+    assert _m.scan_chain_running_close(withstat, inflight=wave) == []
+    assert _m.scan_chain_running_close(bare, inflight="none") == []
+    assert _m.scan_chain_running_close(bare, inflight="unknown") == [], (
+        "a broken detector must not block every close")
+    # live branch, real helper type (#276b): with no chain in flight the
+    # live read returns 'none' (or 'unknown' on an unreadable log) and the
+    # gate stays quiet on the same bare close
+    import pyramid_gate as _pg
+    live = _pg._chain_inflight()
+    assert isinstance(live, str) and live
+    if live in ("none", "unknown"):
+        assert _m.scan_chain_running_close(bare) == []
 
 
 def test_b3411_history_read_is_judged_at_segment_grain():

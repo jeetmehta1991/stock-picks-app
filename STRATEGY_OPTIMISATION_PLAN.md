@@ -1981,7 +1981,10 @@ defect fixed during the cycle: (1) GREP for the shipped conclusions that depende
 grids, rosters, docs; do not recall them; (2) MEASURE the overlap - do not assume a fix is purely
 additive; (3) ticket each affected conclusion for re-derivation, or state explicitly why it survives.
 Lineage: an exit fix once landed on one of only two robust roster cells, whose numbers had been a
-different exit's all along. **Admitted lines are closed (§1.3, owner 2026-09-12 - a ruling that
+different exit's all along. **Mechanism (S6-B3399, B3139q-r176):** `scan_postfix_recheck` is keyed on
+the SEARCH - a FIX commit's turn shows an executed grep over output_audit/ or the docs, a non-queue
+downstream doc in its diff, or a recorded 'self-contained'; the old downstream-touch key was vacuous
+(C8 stages the queue on every commit), pinned by test_b1602. **Admitted lines are closed (§1.3, owner 2026-09-12 - a ruling that
 postdates this step's pre-B3096 wording):** a re-check that would re-grade an admitted strategy is put
 to the owner, never run.
 
@@ -2681,7 +2684,11 @@ control; mirrors are listed, never blended; any refused member refuses the artif
 
 Ticket table with six classes and the delta (`scripts/queue_state.py`), the SKILLS INVOKED three-skill
 block, the #237 sweep, the compliance statement, and - while a chain runs - the hourly report and any
-`LANDING REPORT: <cube>` the landings file says is unreported.
+`LANDING REPORT: <cube>` the landings file says is unreported. **Mechanisms (S6-B3399, B3139q-r176):**
+the compliance statement binds EVERY observable turn-close, not only commit turns -
+`check_compliance_marker`'s commit condition dropped; and a close while `serial_chain.log` shows a
+wave in flight must name the chain with a liveness reading - `scan_chain_running_close`; both pinned
+both directions by test_b3399c.
 
 ---
 

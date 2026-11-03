@@ -284,6 +284,15 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
         True,
         {"rows": []},
     ),
+    # S6-B3399 (B3139q-r176), runbook 2629 second half / 8.12: constructed -
+    # a close posted while serial_chain.log shows a wave in flight, carrying
+    # no chain-status line at all (the L743 dead-reporter shape).
+    "scan_chain_running_close": (
+        "Batch 6 landed: both rules mechanized, commit pushed; next is the "
+        "decision packet.",
+        True,
+        {"inflight": "b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45"},
+    ),
     "scan_unverified_count": (
         "317 tickets created in the last 48h, 271 already closed.",
         True,
@@ -773,17 +782,36 @@ PURE_INCIDENTS: dict[str, list[tuple[tuple, bool, str]]] = {
     ],
     "scan_postfix_recheck": [
         (("B1: fixed the thing", ["scripts/verify_turn_compliance.py"]), True,
-         "L467/#196 - a FIX commit touching no downstream artifact and no "
-         "queue entry. The roster relabel was reverted by the next "
-         "regeneration because the fix belonged in the GENERATOR."),
+         "L467/#196 - a FIX commit whose turn ran no conclusion search. The "
+         "roster relabel was reverted by the next regeneration because the "
+         "fix belonged in the GENERATOR."),
+        # S6-B3399 rule 1927 (B3139q-r176): the queue alone no longer
+        # satisfies - C8 stages it on EVERY commit, which made the old
+        # must-quiet case the gate's vacuity in miniature.
         (("B1: fixed the thing",
-          ["scripts/verify_turn_compliance.py", "EXECUTION_QUEUE.md"]), False,
-         "the queue entry IS the disclosure the gate asks for - must go quiet"),
+          ["scripts/verify_turn_compliance.py", "EXECUTION_QUEUE.md"]), True,
+         "S6-B3399 rule 1927 - the queue is staged on every commit (C8), so "
+         "it proves no re-check; the gate was vacuous while it satisfied"),
+        (("B1: fixed the thing",
+          ["scripts/verify_turn_compliance.py", "PHASE_1B_ROSTER.md"]), False,
+         "a NON-queue downstream doc in the diff is a real re-check footprint"),
     ],
 }
 
 
 EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
+    # S6-B3399 rule 2629b (B3139q-r176): must-QUIET three ways - a close that
+    # names the wave with a liveness reading; no chain in flight; and the
+    # detector's own 'unknown', which must not block every close.
+    "scan_chain_running_close": [
+        ("chain b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45 ALIVE at sim-day "
+         "320 of 1003 per the heartbeat; 3 legs done.", False,
+         {"inflight": "b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45"}),
+        ("Batch 6 landed: both rules mechanized, commit pushed.", False,
+         {"inflight": "none"}),
+        ("Batch 6 landed: both rules mechanized, commit pushed.", False,
+         {"inflight": "unknown"}),
+    ],
     # S6-B3399 rule 259 (B3139q-r175): must-QUIET both ways - the same
     # opening row WITH the register touched in the turn, and a shortlist
     # row (the S6-B3249 shape) whose head says OPENED about members, not
