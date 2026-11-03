@@ -67,6 +67,7 @@ from grid_population import grid_population, ranked_count  # noqa: E402  (B2521 
 MEGA = ("NVDA", "MSFT", "GOOGL", "META", "TSLA", "AAPL")
 TERMINAL = ("DONE", "N/A")
 _GRADER_CHECKS = ("step2_grade_auto", "step2_free_levels", "step2_legs",
+                  "step2_holdout_ledger",
                   "step4_spot_check_auto", "step7_engine_implemented")
 _LEDGER_WIDE = ("ledger_status_matches_evidence",)
 
@@ -718,6 +719,22 @@ def run_family(fam_name: str, cube_dir: Path, p: dict,
             legs_errs[0] if legs_errs else
             (_sl.disposition(True, legs) if _s2v == "FAIL" else
              "both legs named: depth ran, breadth " + str(legs["breadth"].get("state")))))
+    # S6-B3395 Batch 7c (runbook 0.3 / 1.1 item 6 / 4.4 item 6): a Step-2 grade
+    # that read the holdout is COUNTED in the holdout-read ledger, once per grid
+    # artifact; an undeclared re-read of the same arm-env config fails step 2
+    # closed - its run passed no launch door (holdout_reads.engine_grade)
+    ledger_why = None
+    _s2g = _grid.get("step2") if isinstance(_grid, dict) else None
+    if step == 2 and ok2 and isinstance(_s2g, dict) and _s2g.get("holdout_read") is True:
+        import holdout_reads as _hr
+        _arm, _ = _arm0(manifest)
+        try:
+            ledger_why, _lev = _hr.engine_grade(grid_out, _grid, _arm, strategy=fam_name,
+                                                owner_word=manifest.get("owner_word"))
+        except SystemExit as exc:      # an unreadable ledger fails step 2 (L642)
+            ledger_why, _lev = str(exc), ""
+        results.append(("step2_holdout_ledger", "FAIL" if ledger_why else "PASS",
+                        ledger_why or _lev))
     # B2569 (owner directive 2026-09-02): a family whose band carries FREE
     # levels grades them on EVERY landing, reproduction-gated - never once at
     # strategy level (the S6-B2501/B2504 class bug). A reproduction failure
@@ -738,6 +755,8 @@ def run_family(fam_name: str, cube_dir: Path, p: dict,
     notes["2_grade_with_config_params"] = (
         ("FAIL", f"Step-2 legs unproven (S6-B3367): {legs_errs[0][:200]}")
         if ok2 and okf and legs_errs else
+        ("FAIL", f"Step-2 holdout read not admissible (S6-B3395): {ledger_why[:200]}")
+        if ok2 and okf and ledger_why else
         ("DONE", f"{note2}: {Path(gb['script']).stem} at manifest {label} -> "
                  f"{grid_out.name}"
                  + (f"; {why2[:160]}" if why2 else "")

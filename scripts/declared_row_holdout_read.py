@@ -16,7 +16,11 @@ CONTRACT (fail closed at every step, L642):
      sharpe, ci_lo to the artifact's rounding). A mismatch means this reader
      is not looking at what was pre-registered; nothing is read.
   4. SPEND-ONCE: refuses when --out already exists. The holdout is a one-way
-     door; there is no re-roll flag.
+     door; there is no re-roll flag. S6-B3395 Batch 7c: the read also needs
+     the owner's word (--ruling / --ruling-ticket, checked against its ledger
+     row) and a COMMITTED free-levels artifact, and it is counted in the
+     holdout-read ledger (scripts/holdout_reads.py) - a read of a strategy
+     the ledger already records refuses unless --rereads names that read.
   5. THE READ: the declared levels select holdout-ENTERED trades; those trades
      at the declared exit are graded with roster_core.evaluate on the net
      basis, full_period_n = the declared row's count at that exit over the
@@ -212,17 +216,61 @@ def main(argv=None) -> int:
     ap.add_argument("--out", required=True)
     ap.add_argument("--min-n", type=int, default=10)
     ap.add_argument("--disclosure", default="")
+    # S6-B3395 Batch 7c: the fourth holdout-read door - the owner's own word,
+    # checked against its ledger row (scripts/owner_word.py, S6-B3338), and the
+    # holdout-read ledger (scripts/holdout_reads.py)
+    ap.add_argument("--ruling", required=True,
+                    help="the owner's words opening this read, verbatim as its row records them")
+    ap.add_argument("--ruling-ticket", required=True,
+                    help="the ticket whose row records --ruling")
+    ap.add_argument("--rereads", default=None,
+                    help="the read_id of the recorded holdout read this one repeats")
     a = ap.parse_args(argv)
+    import owner_word
+    import holdout_reads as hr
+    word = {"ticket": a.ruling_ticket.strip(), "verbatim": owner_word.normalise(a.ruling)}
+    werrs = owner_word.refusals(word, door="declared-row holdout read")
+    if werrs:
+        print(f"[REFUSED] {werrs[0]} - the holdout was NOT read")
+        return 3
     out = Path(a.out)
     if out.exists():
         print(f"[REFUSED] {out} exists - the holdout read is spend-once")
         return 3
+    # runbook 1.1 item 2 / F4: the declared row's artifact is COMMITTED before
+    # any holdout code path runs (the check both offline readers make)
+    why = hr.step1_uncommitted(a.free_levels)
+    if why:
+        print(f"[REFUSED] {why} - the holdout was NOT read")
+        return 3
+    try:
+        strat = json.loads(Path(a.free_levels).read_text(encoding="utf-8")).get("strategy")
+    except (OSError, ValueError) as exc:
+        print(f"[REFUSED] the free-levels artifact is unreadable ({exc!r}) - the "
+              "holdout was NOT read")
+        return 2
+    read_id = hr.repo_rel(out)
+    why = (hr.reread_refusal(strat, None, declared=a.rereads,
+                             door="declared_row_holdout_read")
+           or hr.read_id_refusal(read_id, door="declared_row_holdout_read"))
+    if why:
+        print(f"[REFUSED] {why} - the holdout was NOT read")
+        return 3
+    prior = [e["read_id"] for e in hr.prior_reads(strat, None)]
     try:
         rec = read(Path(a.cube), Path(a.free_levels), a.level, a.exit,
                    min_n=a.min_n, disclosure=a.disclosure)
     except Refused as exc:
         print(f"[REFUSED] {exc} - the holdout was NOT read")
         return 2
+    hr.record(read_id=read_id, strategy=strat, leg=None,
+              door="declared_row_holdout_read", artifact=read_id,
+              source=hr.repo_rel(a.cube), owner_word=word,
+              rereads=[a.rereads] if a.rereads else [],
+              declared=True if a.rereads else None)
+    rec["owner_word"] = word
+    rec["holdout_read_ledger"] = {"read_id": read_id, "prior_reads": prior,
+                                  "rereads": [a.rereads] if a.rereads else []}
     out.write_text(json.dumps(rec, indent=2, default=str), encoding="utf-8")
     print(json.dumps({k: rec.get(k) for k in
                       ("verdict", "gates_passed", "gates", "sharpe", "ci_lo",

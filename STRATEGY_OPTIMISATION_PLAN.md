@@ -143,9 +143,14 @@ two offline Step-2 readers - the depth and breadth reads - consult the holdout-r
 `output_audit/holdout_reads.jsonl`) before the read and record the read when it is taken; a read of
 a subject the ledger already records - (strategy, leg), shared by the depth and breadth reads -
 refuses unless it is DECLARED (`offline_holdout_read.py --rereads <read_id>`; `breadth_step2_read.py
---prior-read` naming the recorded read), pinned by test_b3395b. Not yet counted, S6-B3395 Batch 7c:
-the engine's Step-2 grade and `scripts/declared_row_holdout_read.py` (a pre-registered free-level
-row's read, S6-B3140c), the other two of the 4 live holdout-read doors.
+--prior-read` naming the recorded read), pinned by test_b3395b. **The other two of the 4 live doors
+count since Batch 7c (B3139q-r180):** `scripts/run_wave.py` refuses a Step-2 launch whose arm env
+the ledger records for the strategy unless the arm names that read in `holdout_rereads`, the battery
+records each engine Step-2 grade (`run_postconfig`, row `step2_holdout_ledger`; an undeclared re-read
+fails step 2), and `scripts/declared_row_holdout_read.py` (S6-B3140c) checks the owner's word, the
+committed artifact and the ledger. Every file that touches holdout performance is classed in
+`output_audit/holdout_touching_files.csv` (50 files at B3139q-r180), and test_b3395c fails on a
+file the list does not class.
 
 **Three more family-born rules promoted to the template (B2672, owner class-directive 2026-09-11:
 *"Class is to be rectified and not just the instance"*):**
@@ -356,12 +361,13 @@ intermediate optimisation happens in-sample. The governing constraints:
    levels), not strategy-specific configs, and the Sharpe bar was chosen on principle from a
    sensitivity curve presented before the choice. L351 stands as a discipline (count holdout reads
    project-wide) with its magnitude corrected. **Counted since S6-B3395 (B3139q-r179):**
-   `output_audit/holdout_reads.jsonl` records each depth and breadth read when it is taken, and holds
-   the 23 earlier reads backfilled from the tracked artifacts of the three read shapes it recognises,
-   each dated by its artifact's first commit (9 depth reads, 7 breadth reads, 7 engine Step-2
-   grades). That is a LOWER BOUND: a declared-row read (S6-B3140c) and the historical one-off readers
-   leave other shapes, which S6-B3395 Batch 7c classes. test_b3395b fails when a tracked artifact of
-   the three shapes has no entry; `python scripts/holdout_reads.py --list` prints the ledger.
+   `output_audit/holdout_reads.jsonl` records each read at the four live doors when it is taken, and
+   holds the 24 earlier reads backfilled from the tracked artifacts of the four read shapes it
+   recognises, each dated by its artifact's first commit (9 depth reads, 7 breadth reads, 7 engine
+   Step-2 grades, 1 declared-row read). That is a LOWER BOUND: the 5 campaign readers that read
+   before the ledger (class CAMPAIGN_READER_PRE_LEDGER in `output_audit/holdout_touching_files.csv`)
+   leave other shapes - S6-B3395a. test_b3395b fails when a tracked artifact of the four shapes has
+   no entry; `python scripts/holdout_reads.py --list` prints the ledger.
 
 ### 1.2 THE STEP TABLE - windows, universes and trade floors (owner 2026-08-29; formerly §10.1, §0b, and the STEP 2 ENTRY floor/window paragraphs)
 
@@ -1189,7 +1195,9 @@ the owner's word on a `reopen_candidate` flag, never a workflow step.
    FAMILY. Lineage: the programme's one resim success came from a FACTORIAL (the instance is in the
    campaign log), and coordinate descent alone cannot see a joint optimum off its axes.
 5. Breadth runs free on the winning line only (§0.3). 6. One Step-2 read, then the campaign closes
-   (§0.6).
+   (§0.6). **Mechanism (S6-B3395 Batch 7c):** the holdout-read ledger - a renamed wave of a config
+   already read is refused at `scripts/run_wave.py`, keyed on the arm's env rather than the wave's
+   name, unless the arm declares the read it repeats; pinned by test_b3395c.
 
 ### 4.5 Step 1 on the engine - Steps 1.0-1.7 (formerly §11 STEP 1 and §11.2 steps 1-1.4)
 

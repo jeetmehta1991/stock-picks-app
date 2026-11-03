@@ -1,0 +1,51 @@
+path,hits,class,reason
+scripts/b2701_smc_lsr_step2.py,call,CAMPAIGN_READER_PRE_LEDGER,B2701: the smc LSR Step-2 read (owner word 2026-09-12); its artifact is not a backfilled shape
+scripts/b2960_discrepancy_extract.py,literal,IN_SAMPLE_ONLY,--end defaults to the IS/HO boundary
+scripts/best_exit_by_gates.py,bound,R5_PROGRAMME,B1451/B1452: R5/R6-era programme analysis of the R5 cube's holdout - each cell's chosen exit graded on the holdout
+scripts/breadth_holdout_null.py,bound,READ_COMPANION,S6-B3139bx: the null runs inside breadth_step2_read on that read's own qualifiers
+scripts/breadth_step1_grid.py,literal,IN_SAMPLE_ONLY,"the grid's window note: IS only, holdout untouched"
+scripts/breadth_step2_read.py,call,LEDGER_DOOR,the breadth Step-2 read; checks and records the ledger (S6-B3395 Batch 7b)
+scripts/build_phase1b_portfolio.py,bound;call,ROSTER_REPORT,S6-B3204: holdout-window statistics of the admitted lines' portfolio
+scripts/build_phase_1b_roster.py,bound;literal,ROSTER_REPORT,B1453: the roster funnel re-grades the R5 lines' chosen exits on the holdout at each build
+scripts/build_r6_change_list.py,literal,IN_SAMPLE_ONLY,IS-window text in the pre-registered R6 change list
+scripts/build_strategy_return_correlation.py,bound,IN_SAMPLE_ONLY,IS only: exit_date before HO_START
+scripts/candle_grid_feasibility.py,call,COUNT_ONLY,S6-B2914/B2916: in-sample and holdout trade counts per candle cell
+scripts/canonical_criteria_check.py,bound,R5_PROGRAMME,B1387: R5/R6-era programme analysis of the R5 cube's holdout - the full canonical criteria on the holdout window
+scripts/compare_sample_fix_variants.py,bound,R5_PROGRAMME,B1459: R5/R6-era programme analysis of the R5 cube's holdout - the funnel's holdout grade under each sample fix
+scripts/composite_variant_test.py,call,CAMPAIGN_READER_PRE_LEDGER,B2674 (S6-B2654): holdout grades of the composite upgrades
+scripts/declared_row_holdout_read.py,bound,LEDGER_DOOR,S6-B3140c: a pre-registered free-level row's read; owner word and ledger (S6-B3395 Batch 7c)
+scripts/eligibility_leak.py,bound;call,REPRODUCTION,S6-B3134a: re-derives recorded admitted and funnel holdout lines and must equal them
+scripts/family_pregate.py,call,CAMPAIGN_READER_PRE_LEDGER,B2633: family members' best and median-exit holdout sharpe for the collinearity pre-gate
+scripts/feasibility_rung.py,call,COUNT_ONLY,S6-B2914 R10: in-sample and holdout trade counts per level
+scripts/free_level_window.py,bound,WINDOW_DEFINITION,S6-B3128a: splits the IS and HO windows and refuses a holdout row in an IS score
+scripts/grade_bollinger_config.py,bound;call,ENGINE_GRADER,battery grade script (SPECS tools.grade); its Step-2 grade reads the landed cube's holdout and run_postconfig records it
+scripts/grade_candle_config.py,bound;call,ENGINE_GRADER,battery grade script (SPECS tools.grade); its Step-2 grade reads the landed cube's holdout and run_postconfig records it
+scripts/grade_family_siblings.py,call,CAMPAIGN_READER_PRE_LEDGER,B2628 (S6-B2627): the family siblings' pre-registered holdout grades
+scripts/grade_institutional_config.py,bound;call,ENGINE_GRADER,battery grade script (SPECS tools.grade); its Step-2 grade reads the landed cube's holdout and run_postconfig records it
+scripts/grade_knob_config.py,call,ENGINE_GRADER,battery grade script (SPECS tools.grade); its Step-2 grade reads the landed cube's holdout and run_postconfig records it
+scripts/grade_npoc_config.py,bound;call,ENGINE_GRADER,battery grade script (SPECS tools.grade); its Step-2 grade reads the landed cube's holdout and run_postconfig records it
+scripts/grade_pairs_config.py,bound;call,ENGINE_GRADER,battery grade script (SPECS tools.grade); its Step-2 grade reads the landed cube's holdout and run_postconfig records it
+scripts/grade_r6_predictions.py,bound,R5_PROGRAMME,B1428: R5/R6-era programme analysis of the R5 cube's holdout - the R6 predictions graded out of sample
+scripts/holdout_reads.py,literal,LEDGER_DOOR,the ledger module itself; its one hit is the census's own date literal
+scripts/institutional_companion_grid.py,bound,CAMPAIGN_READER_PRE_LEDGER,"B2662: the 13,104-trial companion and knob grid graded holdout lines"
+scripts/instrument_breaker_block.py,literal,IN_SAMPLE_ONLY,--end defaults to the IS end
+scripts/lever4_step1.py,call,ENGINE_GRADER,battery grade script (SPECS tools.grade); its Step-2 grade reads the landed cube's holdout and run_postconfig records it (--step2)
+scripts/mae_fitted_stop_census.py,bound,IN_SAMPLE_ONLY,"in-sample entries only, before HO_START"
+scripts/measure_criterion_11.py,bound,R5_PROGRAMME,B1456: R5/R6-era programme analysis of the R5 cube's holdout
+scripts/measure_roster_breadth.py,bound,R5_PROGRAMME,B1461: R5/R6-era programme analysis of the R5 cube's holdout - independent bets in the holdout
+scripts/measure_roster_breadth_and_alpha.py,bound,R5_PROGRAMME,B1462: R5/R6-era programme analysis of the R5 cube's holdout
+scripts/offline_holdout_read.py,bound;call,LEDGER_DOOR,the depth Step-2 read; checks and records the ledger (S6-B3395 Batch 7b)
+scripts/optimize_strategies_from_cube.py,literal,IN_SAMPLE_ONLY,--is-end defaults to the IS end
+scripts/phase_table.py,literal,WINDOW_DEFINITION,"IS_HO_BOUNDARY, the ruled phase table's boundary"
+scripts/producer_sandbox.py,literal,IN_SAMPLE_ONLY,the IS window; the holdout locked
+scripts/producer_variant_table.py,literal,WINDOW_DEFINITION,RULED_STEP1_WINDOW and IS_HO_BOUNDARY constants
+scripts/r5_gate_ladder_analysis.py,bound,R5_PROGRAMME,B1379: R5/R6-era programme analysis of the R5 cube's holdout
+scripts/regime_conditional_gate.py,bound,R5_PROGRAMME,B1385: R5/R6-era programme analysis of the R5 cube's holdout - per-regime grades
+scripts/rescore_admissions_net.py,call,ROSTER_REPORT,"S6-B3122: re-scores the admitted lines on the net basis, read-only"
+scripts/roster_core.py,bound,WINDOW_DEFINITION,"defines HO_START, HO_END and the holdout() slicer the readers use"
+scripts/run_postconfig.py,bound,LEDGER_DOOR,records each engine Step-2 grade (S6-B3395 Batch 7c); its bound hits are the M4 holdout-touch check and derive_step
+scripts/short_regime_affinity_census.py,bound,IN_SAMPLE_ONLY,"in-sample entries only, before HO_START"
+scripts/smoke_candle_step05.py,literal,COUNT_ONLY,B2850 smoke: the holdout fire count
+scripts/tighten_breaker_block.py,call,ENGINE_GRADER,battery grade script (SPECS tools.grade); its Step-2 grade reads the landed cube's holdout and run_postconfig records it
+scripts/universe_ladder_run.py,call,R5_PROGRAMME,B1514: R5/R6-era programme analysis of the R5 cube's holdout - the in-sample-picked exit graded on the holdout per universe rung
+scripts/walk_forward_r5_cells.py,literal,R5_PROGRAMME,"the 1A-alpha gate: in-sample pick, out-of-sample measure on the R5 cells"

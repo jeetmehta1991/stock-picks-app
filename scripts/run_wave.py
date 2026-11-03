@@ -58,7 +58,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
-from producer_variant_table import launch_refusals  # noqa: E402  (B2578 launch gate)
+from producer_variant_table import launch_refusals, strategies_of  # noqa: E402  (B2578 launch gate)
+import holdout_reads as _hr  # noqa: E402  (S6-B3395: the holdout-read ledger's engine door)
 import owner_word  # noqa: E402  (S6-B3338: the owner's word at the launch door)
 from prelaunch_gate import OWNER_LOCAL_CAP_HOURS  # noqa: E402  (B2613 S6-B2612g)
 import wave_identity as _wi  # noqa: E402  (B3104 S6-B3102a: one identity, one decision)
@@ -778,6 +779,14 @@ def main() -> int:
     _second_read = _wi.step2_rerun_refusal(spec, prior)
     if _second_read:
         print(_second_read)
+        return 3
+    # S6-B3395 Batch 7c (runbook 4.4 item 6): that guard keys on this wave's own
+    # summary, so a RENAMED wave of a config already read passed it; the
+    # holdout-read ledger keys on the arm's env. Nothing archived or written.
+    _reread = _hr.engine_launch_refusals(spec, strategies_of(spec, ROOT))
+    if _reread:
+        for r in _reread:
+            print(r)
         return 3
     stale = archive_stale_summary(spec["wave"])
     lineage = None

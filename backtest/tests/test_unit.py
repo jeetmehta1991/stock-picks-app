@@ -54820,7 +54820,7 @@ def test_b3140b_table_d_reads_the_offline_factorial_block():
 
 
 
-def test_b3140c_declared_row_holdout_read_reproduces_then_reads_once(tmp_path):
+def test_b3140c_declared_row_holdout_read_reproduces_then_reads_once(tmp_path, monkeypatch):
     """S6-B3140c (B3139q-r66): the declared-row holdout reader refuses an
     adapter without AXES/passes/parse_signals, a combo absent from the
     artifact, a score that does not reproduce, a logged signal that fails
@@ -54905,8 +54905,15 @@ def test_b3140c_declared_row_holdout_read_reproduces_then_reads_once(tmp_path):
 
     out = tmp_path / "read.json"
     out.write_text("{}", encoding="utf-8")
+    # S6-B3395 Batch 7c: the read needs the owner's word, quoted by a ledger row
+    import owner_word as _ow
+    _q = tmp_path / "queue_b3395.md"
+    _q.write_text("| **S6-B9140** | **OPEN** | P1 | **RULED: 'read the fixture row once' "
+                  "(fixture)** | _reason:_ OPEN - fixture |\n", encoding="utf-8")
+    monkeypatch.setattr(_ow, "QUEUE", _q)
     assert dr.main(["--cube", str(cube), "--free-levels", str(good),
-                    "--exit", "r_multiple_3r", "--out", str(out)]
+                    "--exit", "r_multiple_3r", "--out", str(out),
+                    "--ruling", "read the fixture row once", "--ruling-ticket", "S6-B9140"]
                    + [x for l in lv for x in ("--level", l)]) == 3
 
     bad_tl = _pd.DataFrame(tl)
@@ -71887,9 +71894,13 @@ def test_b3395b_the_holdout_read_ledger(tmp_path, monkeypatch):
             continue
         c = cands.get(rid)
         assert c is not None, ("a backfilled read whose artifact is no longer tracked", rid)
-        for k in ("strategy", "door", "config", "grid_config", "rereads", "declared", "ts"):
+        for k in ("strategy", "door", "config", "grid_config", "declared", "ts"):
             assert x[k] == c[k], ("the ledger differs from what git derives", rid, k)
         assert x["leg"] == (c["leg"] or "both"), rid
+        # 7c: a shape recognised later can LENGTHEN an earlier entry's history
+        # (the b3140c read predates two pairs entries); an append-only entry
+        # keeps what was known when written - a subset, never a contradiction
+        assert set(x["rereads"]) <= set(c["rereads"]), ("rereads git does not derive", rid)
     b2646 = next(x for x in hr.entries(hr.LEDGER_PROD)
                  if x["read_id"].endswith("b2646_pead_step2_postfix.json"))
     assert b2646["declared"] is False and any(r.endswith("b2644_pead_step2_holdout.json")
@@ -71910,6 +71921,237 @@ def test_b3395b_the_holdout_read_ledger(tmp_path, monkeypatch):
             "each engine identity re-derives from the tracked spec arm", rid)
     with pytest.raises(SystemExit):
         hr._engine_config("x.json", "output_no_such_wave_tag/trade_exit_detail.csv", envs)
+
+
+def test_b3395c_the_engine_and_declared_row_doors_and_the_frozen_census(tmp_path, monkeypatch, capsys):
+    """S6-B3395 Batch 7c (B3139q-r180), owner ruling 2026-11-03 'A approved':
+    runbook 4.4 item 6 (census line 1146, one Step-2 read) at the engine door,
+    the fourth door, and the frozen census of holdout-touching files.
+
+    (1) The launch half: engine_launch_refusals refuses a Step-2 arm whose env
+    the ledger records for the strategy, passes the waterfall's next config, a
+    declared re-read and a non-Step-2 spec, and refuses a declaration naming no
+    recorded read; run_wave.main refuses a RENAMED wave of a recorded config
+    before anything is archived or written - the B3104 guard keyed on the
+    wave's own summary and could not see it - and a declared one goes on to
+    the launch gate's own refusals.
+
+    (2) The grading half, through run_institutional on the S6-B3367 harness:
+    a Step-2 grade that read the holdout is recorded once (a re-grade appends
+    nothing); the same arm env under another cube fails step 2 closed and is
+    recorded declared=False; a declared one passes; a grid that read no
+    holdout records nothing; the row is a grader check, not cube sanity.
+
+    (3) The declared-row reader: its word is checked, an uncommitted
+    free-levels artifact refuses, an undeclared re-read refuses before read()
+    runs, a declared one is read and recorded.
+
+    (4) The census: the AST scan of scripts/ and backtest/ equals
+    output_audit/holdout_touching_files.csv, hit kinds included, so a new file
+    - or a classed file that starts reading the holdout differently - fails
+    until classed; a LEDGER_DOOR imports the ledger, an ENGINE_GRADER is a
+    battery grade script; a planted reader in a temp tree is caught, a
+    docstring date is not; an unknown class or a duplicate path refuses."""
+    import ast as _ast
+    import csv as _csv
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import holdout_reads as hr
+    import owner_word as ow
+    assert hr.ledger_path() != hr.LEDGER_PROD, "the conftest isolation is off"
+
+    # (1) the launch half
+    cfg = hr.engine_identity({"K": "1"})
+    hr.record(read_id="output_audit/g_fx.json", strategy="fx", leg="long",
+              door="engine_step2", artifact="g", source="c", config=cfg)
+    spec2 = {"step": 2, "arms": [{"tag": "a", "env": {"K": "1"}}]}
+    errs = hr.engine_launch_refusals(spec2, ["fx"])
+    assert len(errs) == 1 and "S6-B3395" in errs[0] and hr.REREADS_ARM_KEY in errs[0], errs
+    assert hr.engine_launch_refusals(dict(spec2, step=1), ["fx"]) == []
+    assert hr.engine_launch_refusals({"step": 2, "arms": [{"tag": "b", "env": {"K": "2"}}]},
+                                     ["fx"]) == [], "the waterfall's next config is a new read"
+    assert hr.engine_launch_refusals({"step": 2, "arms": [{"tag": "a", "env": {"K": "1"},
+                                      hr.REREADS_ARM_KEY: "output_audit/g_fx.json"}]},
+                                     ["fx"]) == [], "a declared re-read passes"
+    bad = hr.engine_launch_refusals({"step": 2, "arms": [{"tag": "b", "env": {"K": "2"},
+                                     hr.REREADS_ARM_KEY: "nope.json"}]}, ["fx"])
+    assert len(bad) == 1 and "not a recorded read" in bad[0], bad
+    assert hr.engine_launch_refusals(spec2, []) == [], "launch_refusals refuses an empty subset"
+    import producer_variant_table as pvt
+    import run_wave as rw
+    monkeypatch.setattr(pvt, "KNOB_READERS", tuple(str(root / r) for r in pvt.KNOB_READERS))
+    monkeypatch.setattr(rw, "ROOT", tmp_path)
+    (tmp_path / "output_audit").mkdir()
+    called = []
+    monkeypatch.setattr(rw, "run_arm", lambda spec, arm, engine_cmd=None: (
+        called.append(arm["tag"]) or {"arm": arm["tag"], "status": "COMPLETE", "legs": 1}))
+    sub = tmp_path / "sub.txt"
+    sub.write_text("fx" + chr(10), encoding="utf-8")
+    spec = {"wave": "b3395c_renamed", "step": 2, "strategy_subset": str(sub),
+            "arms": [{"tag": "a", "env": {"K": "1"}}]}
+    sp = tmp_path / "spec.json"
+    sp.write_text(_j.dumps(spec), encoding="utf-8")
+    monkeypatch.setattr(_s, "argv", ["run_wave.py", "--spec", str(sp)])
+    capsys.readouterr()
+    assert rw.main() == 3 and called == []
+    assert "S6-B3395" in capsys.readouterr().out
+    assert list((tmp_path / "output_audit").iterdir()) == [], "nothing archived or written"
+    spec["arms"][0][hr.REREADS_ARM_KEY] = "output_audit/g_fx.json"
+    sp.write_text(_j.dumps(spec), encoding="utf-8")
+    assert rw.main() == 3 and called == []
+    out = capsys.readouterr().out
+    assert "S6-B3395" not in out and "LAUNCH REFUSED" in out, (
+        "a declared re-read passes the ledger door; the launch gate refuses the fixture next")
+
+    # (2) the grading half
+    import step2_legs as sl
+    import scripts.run_postconfig as rp
+    q = tmp_path / "queue.md"
+    q.write_text("| **S6-B9395** | **OPEN** | P1 | **RULED: 'read the fixture row once' "
+                 "(fixture) - the fixture breadth decision** | _reason:_ OPEN |" + chr(10),
+                 encoding="utf-8")
+    monkeypatch.setattr(ow, "QUEUE", q)
+    nr = {"state": "not_run", "ticket": "S6-B9395"}
+    monkeypatch.setattr(rp, "ROOT", tmp_path)
+    p = {"min_consecutive_quarters": 4, "growth_lookback_quarters": 4,
+         "growth_multiple": 1.1, "ema_span": 200}
+
+    fam = "institutional_committed_growth_long"   # the family run_institutional grades
+
+    def grid_doc(read=True, strategy=fam):
+        return {"strategy": strategy, "config": {"P9_span": 200},
+                "cube": "cube/trade_exit_detail.csv", "results": [{"verdict": "FAIL"}],
+                "step2": {"verdict": "FAIL", "gates": {"pooled_sharpe": False},
+                          "holdout_read": read, "leg": "long"}}
+
+    def make_run(doc):
+        def _run(cmd, env=None):
+            class R:
+                returncode = 0
+                stdout = b""
+                stderr = b""
+            outs = [str(a) for a in cmd if str(a).endswith(".json")]
+            if outs:
+                _P(outs[-1]).write_text(_j.dumps(doc), encoding="utf-8")
+            return R()
+        return _run
+
+    def grade(name, arm_extra=None, read=True, strategy=fam):
+        cube = tmp_path / name
+        cube.mkdir(exist_ok=True)
+        (cube / "trade_exit_detail.csv").write_text("x", encoding="utf-8")
+        doc = grid_doc(read, strategy)
+        if strategy is None:
+            doc.pop("strategy")
+        monkeypatch.setattr(rp, "_run", make_run(doc))
+        man = {"window": {"start": "2021-05-05", "end": "2026-05-05"},
+               "arms": [dict({"env": {"STRAT_EMA_SPAN": "200"}, sl.ARM_KEY: nr},
+                             **(arm_extra or {}))]}
+        res, notes, _go, _so = rp.run_institutional(cube, p, man, step=2)
+        return {n: (st, m) for n, st, m in res}, notes
+
+    n0 = len(hr.entries())
+    by, notes = grade("cube_a")
+    assert by["step2_holdout_ledger"][0] == "PASS", by.get("step2_holdout_ledger")
+    first = hr.entries()[-1]
+    assert len(hr.entries()) == n0 + 1 and first["door"] == "engine_step2"
+    assert first["config"] == hr.engine_identity({"STRAT_EMA_SPAN": "200"})
+    assert first["grid_config"] == {"P9_span": 200} and first["declared"] is None
+    by, _ = grade("cube_a")
+    assert by["step2_holdout_ledger"][0] == "PASS" and len(hr.entries()) == n0 + 1, (
+        "a re-grade of the same landing is the same read")
+    by, notes = grade("cube_renamed")
+    assert by["step2_holdout_ledger"][0] == "FAIL" and "S6-B3395" in by["step2_holdout_ledger"][1]
+    assert notes["2_grade_with_config_params"][0] == "FAIL", notes["2_grade_with_config_params"]
+    second = hr.entries()[-1]
+    assert second["declared"] is False and second["rereads"] == [first["read_id"]]
+    by, notes = grade("cube_declared", {hr.REREADS_ARM_KEY: first["read_id"]})
+    assert by["step2_holdout_ledger"][0] == "PASS" and hr.entries()[-1]["declared"] is True
+    n1 = len(hr.entries())
+    by, _ = grade("cube_noread", read=False)
+    assert "step2_holdout_ledger" not in by and len(hr.entries()) == n1
+    by, _ = grade("cube_other", strategy="someone_else")
+    assert by["step2_holdout_ledger"][0] == "FAIL" and "battery graded" in by[
+        "step2_holdout_ledger"][1], "a grid naming another strategy is not attributed"
+    assert len(hr.entries()) == n1, "and nothing is recorded under a guess"
+    by, _ = grade("cube_nameless", strategy=None)
+    assert hr.entries()[-1]["strategy"] == fam, "a nameless grid takes the battery's strategy"
+    assert "step2_holdout_ledger" in rp._GRADER_CHECKS, "a ledger FAIL is step 2's, not cube sanity"
+
+    # (3) the declared-row reader
+    import declared_row_holdout_read as dr
+    fl = tmp_path / "fl.json"
+    fl.write_text(_j.dumps({"strategy": "fx", "grader": "x"}), encoding="utf-8")
+    args = ["--cube", str(tmp_path / "cube_a"), "--free-levels", str(fl), "--exit", "x",
+            "--out", str(tmp_path / "dr1.json")]
+    word = ["--ruling", "read the fixture row once", "--ruling-ticket", "S6-B9395"]
+    with pytest.raises(SystemExit):
+        dr.main(args)
+    capsys.readouterr()
+    assert dr.main(args + ["--ruling", "an unrecorded word here",
+                           "--ruling-ticket", "S6-B9395"]) == 3
+    assert "S6-B3338" in capsys.readouterr().out
+    assert dr.main(args + word) == 3
+    assert "outside the repository" in capsys.readouterr().out, "the committed check"
+    monkeypatch.setattr(hr, "step1_uncommitted", lambda *a, **k: None)
+    reads = []
+    monkeypatch.setattr(dr, "read", lambda *a, **k: reads.append(1) or {"verdict": "FAIL"})
+    assert dr.main(args + word) == 3 and reads == [], "refused BEFORE the holdout is read"
+    assert "S6-B3395" in capsys.readouterr().out
+    assert dr.main(args + word + ["--rereads", "output_audit/g_fx.json"]) == 0 and reads == [1]
+    last = hr.entries()[-1]
+    assert last["door"] == "declared_row_holdout_read" and last["declared"] is True
+    assert last["rereads"] == ["output_audit/g_fx.json"]
+    rec = _j.loads((tmp_path / "dr1.json").read_text(encoding="utf-8"))
+    assert rec["holdout_read_ledger"]["read_id"] == last["read_id"]
+    assert rec["owner_word"]["ticket"] == "S6-B9395"
+
+    # (4) the frozen census
+    scan = hr.holdout_touching_files()
+    rows = hr.census_rows()
+    assert set(scan) == set(rows), (
+        "class each new holdout-touching file in output_audit/holdout_touching_files.csv",
+        sorted(set(scan) ^ set(rows)))
+    for path, r in rows.items():
+        assert r["hits"] == ";".join(scan[path]), ("the file reads the holdout differently "
+                                                   "now - re-class it", path)
+    grade_scripts = {str(s["tools"]["grade"]["script"]) for s in pvt.SPECS.values()
+                     if isinstance(s, dict) and isinstance(s.get("tools"), dict)
+                     and isinstance(s["tools"].get("grade"), dict)}
+    for path, r in rows.items():
+        if r["class"] == "LEDGER_DOOR" and not path.endswith("holdout_reads.py"):
+            tree = _ast.parse((root / path).read_text(encoding="utf-8"))
+            names = {a.name for n in _ast.walk(tree) if isinstance(n, _ast.Import)
+                     for a in n.names} | {n.module for n in _ast.walk(tree)
+                                          if isinstance(n, _ast.ImportFrom)}
+            assert "holdout_reads" in names, ("a LEDGER_DOOR that never imports the ledger", path)
+        if r["class"] == "ENGINE_GRADER":
+            assert _P(path).name in grade_scripts, ("not a battery grade script", path)
+    fake = tmp_path / "tree"
+    (fake / "scripts").mkdir(parents=True)
+    (fake / "scripts" / "new_reader.py").write_text(
+        "import roster_core as rc" + chr(10) + "x = rc.holdout(frame)" + chr(10), encoding="utf-8")
+    (fake / "scripts" / "doc_only.py").write_text(
+        '"""mentions 2025-05-05 in a docstring only."""' + chr(10) + "y = 1" + chr(10),
+        encoding="utf-8")
+    (fake / "scripts" / "literal.py").write_text(
+        'END = "2025-05-05"' + chr(10), encoding="utf-8")
+    assert hr.holdout_touching_files(fake) == {"scripts/new_reader.py": ["call"],
+                                               "scripts/literal.py": ["literal"]}
+    for body, why in (("path,hits,class,reason" + chr(10) + "a.py,call,NOT_A_CLASS,x" + chr(10),
+                       "not one of"),
+                      ("path,hits,class,reason" + chr(10) + "a.py,call,COUNT_ONLY,x" + chr(10)
+                       + "a.py,call,COUNT_ONLY,y" + chr(10), "twice")):
+        cp = tmp_path / "census.csv"
+        cp.write_text(body, encoding="utf-8")
+        with pytest.raises(SystemExit) as e:
+            hr.census_rows(cp)
+        assert why in str(e.value), e.value
 
 
 def test_b3411_history_read_is_judged_at_segment_grain():

@@ -18,9 +18,13 @@ RUNBOOK RULES THIS MODULE MECHANIZES (census S6-B3344, cluster M-HOLD):
     Batch 7b: ONE owner-worded Step-2 read, a re-read DECLARED, and holdout
     reads COUNTED project-wide - the ledger below (output_audit/
     holdout_reads.jsonl), which both offline readers consult before the read
-    and append to when the read is taken. Section 4.4 item 6 (census line
-    1146) at the engine door, and the declared-row reader
-    (scripts/declared_row_holdout_read.py, S6-B3140c), are Batch 7c.
+    and append to when the read is taken.
+  * Batch 7c: section 4.4 item 6 (census line 1146) at the engine door -
+    run_wave refuses a Step-2 launch that re-reads a recorded config, and the
+    battery records each engine grade (engine_launch_refusals, engine_grade);
+    the fourth door, scripts/declared_row_holdout_read.py (S6-B3140c), checks
+    the owner's word and the ledger; and the frozen census of every
+    holdout-touching file, by class (CENSUS_CSV, holdout_touching_files).
 
 MEASURED before the change (B3139q-r177, scratchpad r177 prereg_all.py):
 18 tracked artifacts carry a preregistration_candidate; 6 are unread and
@@ -35,6 +39,7 @@ never a pass.
 """
 from __future__ import annotations
 
+import ast
 import json
 import os
 import subprocess
@@ -155,7 +160,8 @@ def step1_uncommitted(path, *, root=None) -> str | None:
 # ---------------------------------------------------------------------------
 LEDGER_PROD = ROOT / "output_audit" / "holdout_reads.jsonl"
 ENV_KEY = "HOLDOUT_READS_LEDGER"
-DOORS = ("offline_holdout_read", "breadth_step2_read", "engine_step2")
+DOORS = ("offline_holdout_read", "breadth_step2_read", "engine_step2",
+         "declared_row_holdout_read")
 
 
 def ledger_path() -> Path:
@@ -322,12 +328,194 @@ def repo_rel(path) -> str:
 
 
 # ---------------------------------------------------------------------------
+# THE ENGINE DOOR (S6-B3395 Batch 7c; runbook 4.4 item 6, census line 1146),
+# two halves on one identity, engine_identity of the arm's env:
+#   * AT LAUNCH, run_wave refuses a Step-2 spec whose arm would re-read a
+#     (strategy, config) the ledger records, unless the arm DECLARES the
+#     recorded read it repeats (REREADS_ARM_KEY) - before anything is archived
+#     or written, beside the B3104 guard, which keys on the wave's own summary
+#     and so passed a RENAMED wave of a config already read.
+#   * AT GRADING, the battery (run_postconfig.run_family, step 2) records the
+#     read its grader took - once per grid artifact, so re-running the battery
+#     on one landing re-grades the same read - and an undeclared re-read that
+#     reached grading (a launch outside run_wave) fails step 2 closed.
+# A launch knows no leg (the graders set it), so it checks every leg - the
+# refusing direction; the grading records the grader's leg.
+# ---------------------------------------------------------------------------
+REREADS_ARM_KEY = "holdout_rereads"
+
+
+def arm_rereads(arm) -> list:
+    """The recorded reads an arm declares it repeats - one read_id or a list."""
+    v = arm.get(REREADS_ARM_KEY) if isinstance(arm, dict) else None
+    if v is None:
+        return []
+    return [str(x) for x in (v if isinstance(v, (list, tuple)) else [v]) if str(x).strip()]
+
+
+def engine_launch_refusals(spec, strategies, *, path=None) -> list:
+    """run_wave's half, for a Step-2 spec ("step": 2): a refusal per (arm,
+    strategy) whose arm env the ledger already records with no declaration
+    naming one of those reads, and per declared id that is no recorded read.
+    [] for any other spec, and for an empty strategy list - launch_refusals,
+    which runs next, refuses a subset that names none."""
+    if not isinstance(spec, dict) or spec.get("step") != 2:
+        return []
+    known = {e["read_id"] for e in entries(path)}
+    errs = []
+    for arm in spec.get("arms") or []:
+        if not isinstance(arm, dict):
+            continue
+        tag, declared = arm.get("tag"), arm_rereads(arm)
+        errs += [f"REFUSED (engine_step2, S6-B3395): arm {tag!r} declares "
+                 f"{REREADS_ARM_KEY} {d!r}, which is not a recorded read"
+                 for d in declared if d not in known]
+        config = engine_identity(arm.get("env"))
+        for s in strategies:
+            ids = [e["read_id"] for e in prior_reads(s, None, config=config, path=path)]
+            if ids and not set(ids) & set(declared):
+                errs.append(f"arm {tag!r}: " + reread_refusal(
+                    s, None, config=config, door="engine_step2", path=path)
+                    + f" (name it in the arm's {REREADS_ARM_KEY})")
+    return errs
+
+
+def engine_grade(grid_path, grid, arm, *, strategy=None, owner_word=None,
+                 path=None) -> tuple:
+    """The battery's half: record the read a Step-2 grader took. Returns
+    (refusal or None, evidence). `strategy` is the strategy the battery
+    graded (run_family's family); the grid's own `strategy`, when present,
+    must agree - a disagreement refuses, and with neither the read is
+    refused, never recorded under a guess (L642). A grid already recorded is
+    a re-grade of the same read and appends nothing. A read of a recorded
+    (strategy, leg, arm env) with no declaration naming one of those reads is
+    recorded declared=False and returned as the refusal - the run passed no
+    launch door and its verdict is not admissible."""
+    read_id = repo_rel(grid_path)
+    if any(e.get("read_id") == read_id for e in entries(path)):
+        return None, f"{read_id} already recorded - a re-grade of the same read"
+    grid = grid if isinstance(grid, dict) else {}
+    s2 = grid.get("step2") if isinstance(grid.get("step2"), dict) else {}
+    own = grid.get("strategy")
+    if strategy and own and own != strategy:
+        return (f"REFUSED (engine_step2, S6-B3395): the grid grades {own!r} while the "
+                f"battery graded {strategy!r} - the read cannot be attributed"), ""
+    strategy, leg = strategy or own, s2.get("leg")
+    if not strategy:
+        return ("REFUSED (engine_step2, S6-B3395): neither the battery nor the grid "
+                "names the strategy, so the read cannot be counted"), ""
+    config = engine_identity((arm or {}).get("env") if isinstance(arm, dict) else None)
+    prior = [e["read_id"] for e in prior_reads(strategy, leg, config=config, path=path)]
+    named = [d for d in arm_rereads(arm) if d in prior]
+    why = (reread_refusal(strategy, leg, config=config, door="engine_step2", path=path)
+           if prior and not named else None)
+    cube = grid.get("cube")
+    record(read_id=read_id, strategy=strategy, leg=leg, door="engine_step2",
+           artifact=read_id, source=repo_rel(cube) if cube else None,
+           owner_word=owner_word, rereads=prior, config=config,
+           grid_config=grid.get("config"),
+           declared=(bool(named) if prior else None), path=path)
+    return why, (f"{read_id} recorded in the holdout-read ledger; earlier reads of "
+                 f"this config: {prior or 'none'}")
+
+
+# ---------------------------------------------------------------------------
+# THE FROZEN CENSUS (S6-B3395 Batch 7c, the owner's option (a)): every non-test
+# .py under scripts/ and backtest/ that touches holdout performance - calls a
+# function or method named holdout, names the HO_START / HO_END bounds, or
+# carries the holdout start date outside a docstring - is listed with its class
+# in CENSUS_CSV, and test_b3395c fails while the scan and the list differ: a new
+# file is classed - a door that counts its reads, or the reason it needs none -
+# before it lands. 49 files at B3139q-r179.
+# ---------------------------------------------------------------------------
+CENSUS_CSV = ROOT / "output_audit" / "holdout_touching_files.csv"
+HO_DATE_LITERAL = "2025-05-05"
+CENSUS_CLASSES = {
+    "LEDGER_DOOR": "consults and appends to the holdout-read ledger",
+    "ENGINE_GRADER": "a battery grade script; run_postconfig records its read",
+    "READ_COMPANION": "runs inside a counted read, on that read's own rows",
+    "REPRODUCTION": "re-derives a recorded read's own numbers; refuses on a mismatch",
+    "ROSTER_REPORT": "re-grades admitted or R5-funnel lines whose reads are spent",
+    "R5_PROGRAMME": "R5/R6-era programme analysis of the R5 cube's holdout "
+                    "(runbook 1.1 item 6's prior spends)",
+    "CAMPAIGN_READER_PRE_LEDGER": "read a campaign's holdout before the ledger, "
+                                  "outside the four backfilled shapes",
+    "COUNT_ONLY": "counts trades in the holdout window; computes no performance",
+    "IN_SAMPLE_ONLY": "uses the boundary to stay inside the in-sample window",
+    "WINDOW_DEFINITION": "defines or checks the window; reads no performance",
+}
+
+
+def _census_hits(tree) -> set:
+    docs = set()
+    for n in ast.walk(tree):
+        if isinstance(n, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            if (n.body and isinstance(n.body[0], ast.Expr)
+                    and isinstance(n.body[0].value, ast.Constant)):
+                docs.add(id(n.body[0].value))
+    hits = set()
+    for n in ast.walk(tree):
+        if isinstance(n, ast.Call) and (
+                (isinstance(n.func, ast.Name) and n.func.id == "holdout")
+                or (isinstance(n.func, ast.Attribute) and n.func.attr == "holdout")):
+            hits.add("call")
+        elif ((isinstance(n, ast.Name) and n.id in ("HO_START", "HO_END"))
+              or (isinstance(n, ast.Attribute) and n.attr in ("HO_START", "HO_END"))):
+            hits.add("bound")
+        elif (isinstance(n, ast.Constant) and isinstance(n.value, str)
+              and HO_DATE_LITERAL in n.value and id(n) not in docs):
+            hits.add("literal")
+    return hits
+
+
+def holdout_touching_files(root=None) -> dict:
+    """{repo-relative path: sorted hit kinds} over every non-test .py under
+    scripts/ and backtest/. A file that does not parse is listed as
+    'unparseable' - never silently skipped (L642)."""
+    rootp = Path(root or ROOT)
+    out = {}
+    for d in ("scripts", "backtest"):
+        for p in sorted((rootp / d).rglob("*.py")):
+            if "tests" in p.parts or "__pycache__" in p.parts:
+                continue
+            try:
+                tree = ast.parse(p.read_text(encoding="utf-8", errors="replace"))
+            except SyntaxError:
+                out[p.relative_to(rootp).as_posix()] = ["unparseable"]
+                continue
+            hits = _census_hits(tree)
+            if hits:
+                out[p.relative_to(rootp).as_posix()] = sorted(hits)
+    return out
+
+
+def census_rows(path=None) -> dict:
+    """{path: row} from CENSUS_CSV; a row whose class is not a CENSUS_CLASSES
+    key, or a duplicate path, refuses."""
+    import csv
+    p = Path(path) if path else CENSUS_CSV
+    rows = {}
+    with open(p, encoding="utf-8", newline="") as fh:
+        for r in csv.DictReader(fh):
+            if r.get("class") not in CENSUS_CLASSES:
+                raise SystemExit(f"REFUSED (S6-B3395): {p} classes {r.get('path')} as "
+                                 f"{r.get('class')!r}, not one of {sorted(CENSUS_CLASSES)}")
+            if r["path"] in rows:
+                raise SystemExit(f"REFUSED (S6-B3395): {p} lists {r['path']} twice")
+            rows[r["path"]] = r
+    return rows
+
+
+# ---------------------------------------------------------------------------
 # BACKFILL - the reads taken before the ledger existed, read off the tracked
 # artifacts they left (B3139q-r177 measured 23: 9 depth, 7 breadth, 7 engine).
-# Three artifact shapes are recognised (below). A read by any other script -
-# the declared-row reader, the historical one-off readers - leaves a shape
-# this does not see, so the 23 are a LOWER BOUND until Batch 7c classes every
-# holdout-touching file (49 by the B3139q-r179 AST scan).
+# Three artifact shapes were recognised at 7b; Batch 7c added the fourth, the
+# declared-row read (S6-B3140c), whose one tracked read predates two committed
+# pairs entries - so a recognised shape can LENGTHEN an earlier entry's
+# derivable history, and an entry keeps what was known when it was written
+# (test_b3395b requires its rereads to be a subset of what git derives now).
+# The campaign readers that read before the ledger and leave other shapes are
+# listed by class in CENSUS_CSV; their reads are not backfilled here.
 # Each is dated by the commit that first added its artifact, so the order is
 # reproducible from git alone; a re-read is marked by whether its artifact
 # carried a re-read label (the depth read's rerun_of_spent_holdout, the
@@ -413,6 +601,10 @@ def backfill_candidates(root=None) -> list:
             source = d.get("cube")
             config = _engine_config(relpath, source, spec_envs)
             declared = None
+        elif "free_levels_artifact" in d and "declared_exit" in d:
+            door, leg = "declared_row_holdout_read", None
+            source, config = d.get("cube"), None
+            declared = (d.get("holdout_read_ledger") or {}).get("rereads") not in (None, [])
         else:
             continue
         found.append({"read_id": relpath, "strategy": d["strategy"], "leg": leg,
