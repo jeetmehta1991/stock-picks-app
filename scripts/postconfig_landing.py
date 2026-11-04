@@ -158,6 +158,14 @@ def uncommitted_events(events: list[dict]) -> list[dict]:
             if not ev.get("committed") and ev["cube"] not in swept]
 
 
+# The battery's per-landing artifacts, <cube>_<kind>.json - ONE list the
+# landing commit and the stray sweep both read. B2574 added free_levels at
+# one site after five landings left it untracked; S6-B3397 (B3139q-r188)
+# adds resim_evidence, the battery's registration of a variant's levels.
+ARTIFACT_KINDS = ("grid_auto", "spot_check", "lenses", "free_levels",
+                  "resim_evidence")
+
+
 def pending_artifact_paths(exclude: str = "") -> tuple[list, list[str]]:
     """(paths still on disk, cube names) for every uncommitted landing except
     `exclude` (the landing currently being committed carries its own)."""
@@ -166,8 +174,7 @@ def pending_artifact_paths(exclude: str = "") -> tuple[list, list[str]]:
     paths, cubes = [], []
     for ev in pend:
         cube = ev["cube"]
-        arts = [AUDIT / f"{cube}_{k}.json"
-                for k in ("grid_auto", "spot_check", "lenses", "free_levels")]
+        arts = [AUDIT / f"{cube}_{k}.json" for k in ARTIFACT_KINDS]
         arts = [a for a in arts if a.is_file()]
         if arts:
             paths += arts
@@ -441,9 +448,7 @@ def commit_and_push(cube: str, battery_exit: int, summary: str) -> dict:
     # B2574: free_levels joined the list - B2569 added the artifact to the
     # battery but not to this commit, so five landings left their
     # <cube>_free_levels.json untracked (git status 2026-09-03).
-    paths = [LEDGER, REPORT] + [AUDIT / f"{cube}_{k}.json"
-                                for k in ("grid_auto", "spot_check", "lenses",
-                                          "free_levels")]
+    paths = [LEDGER, REPORT] + [AUDIT / f"{cube}_{k}.json" for k in ARTIFACT_KINDS]
     if queue_row:
         paths.append(QUEUE)
     # B2623 (S6-B2620a): a landing whose commit failed was never revisited -

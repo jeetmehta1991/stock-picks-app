@@ -103,6 +103,11 @@ CHECK_MEANING = {
         "cube entries equal the grid's largest trade count (S6-B3397)",
         "a shortfall = the grader silently dropped trades it could not "
         "diagnose (L454)"),
+    "step2_resim_evidence": (
+        "a graded variant landing is registered as resim evidence (S6-B3397)",
+        "unregistered = the levels this run paid for read UNTESTED to the "
+        "band-coverage gate; a disagreement = the grader and the arm name "
+        "different levels"),
     "step2_grid_contract": (
         "the landed grid carries the B2505 contract (R4, S6-B3397)",
         "a missing field = a reader of this grid cannot place its rows"),
@@ -138,7 +143,8 @@ GROUPS = [
      ["M4_holdout_touch", "M3_fill_date", "M10_gate_receipt"]),
     ("Does the arithmetic reproduce?",
      ["M5_pnl_integrity", "M7_degraded_exits", "ledger_status_matches_evidence",
-      "step2_grade_auto", "step2_grid_contract", "step4_spot_check_auto",
+      "step2_grade_auto", "step2_grid_contract", "step2_resim_evidence",
+      "step4_spot_check_auto",
       "step4_sampling_contract", "step4_coverage",
       "step7_engine_implemented"]),
 ]

@@ -1171,7 +1171,7 @@ generalised to every family):
 4. **The registry closes the loop:** every landed variant cube's manifest carries the knob identity;
    L2's lookup scans manifests BEFORE proposing hours, so a level another family already paid for is
    never bought twice. The band-coverage gate accepts these cubes as resim evidence via
-   `resim_configs` (written by the knob grader scripts/grade_knob_config.py since S6-B3248) / `--resim-evidence`.
+   `resim_configs` (written by the knob grader scripts/grade_knob_config.py since S6-B3248) / `--resim-evidence`. ENFORCED on every landing: the battery registers each graded variant cube as <cube>_resim_evidence.json, an axis-grid artifact the gate counts, derived through grade_knob_config.knob_rows + resim_configs (run_postconfig.register_resim_evidence, test_b3397f; S6-B3397).
 
 **STATED ASSUMPTIONS (none silent - each traceable to a ruling):** windows are the ruled shapes (Step 1
 200 tickers x 1 year; Steps 2-3 4 years x 544; §1.2); IN-CAMPAIGN rows belong to their tickets;
@@ -1991,7 +1991,7 @@ a false negative, they are a LOSS OF INFORMATION. Run every lens, every config:
 | **Fail-open** | when this component meets unexpected input, does it PASS? Every branch that `continue`s, defaults, or falls back is a candidate | a comment satisfying a code check, a missing key skipped by the band gate, a wrong file found by the grader, a dropped ticker vanishing, an exit falling back to a time stop, a gate scoring "unknown" above "known bad" (L482, L483, L484) |
 | **Self-referential verification** | does this check compare code to REALITY, or to another piece of the same author's code? | a spot check re-implemented the producer and agreed 100/100 while 4 parameters did not exist in the engine; a pin asserting a STRING passed for the whole inert life of a fix; an orphan gate keyword-matched and missed 4 of 4 (L476, L481, L485) |
 | **Completion vs artifact** | did the work happen, or did the command merely return? | a smoke reported "PASSED" with no cube written; a killed child reported exit 0 at simulated day 25 of 504 (L486) |
-| **Effective parameter** | a flag that was ACCEPTED - does changing it change the answer? Run it at two values and compare. Enforced by `scripts/verify_flag_binds.py` | `--min-n 10` was accepted while another module's `OOS_MIN_N=30` decided which cells got a Sharpe, so `--min-n 10` and `--min-n 20` were byte-identical (S6-B1705b, fixed B1714) |
+| **Effective parameter** | a flag that was ACCEPTED - does changing it change the answer? Run it at two values and compare. Enforced by `scripts/verify_flag_binds.py`; on every Step-1 landing the battery moves each grade flag alone and requires the grader to refuse it (run_postconfig.effective_parameter_lens, test_b3397f; S6-B3397) | `--min-n 10` was accepted while another module's `OOS_MIN_N=30` decided which cells got a Sharpe, so `--min-n 10` and `--min-n 20` were byte-identical (S6-B1705b, fixed B1714) |
 
 **The four lenses below the original seven were added B1631 from actual defects** - every example is a
 defect the original seven did not name and that shipped anyway. A lens list that only grows after a

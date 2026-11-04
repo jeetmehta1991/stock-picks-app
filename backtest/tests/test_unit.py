@@ -33285,8 +33285,11 @@ def test_b2575_chain_launch_path_exists_and_engine_hash_gate_records(tmp_path, m
         assert a["arms"][0][k] == b["arms"][0][k], k
 
     # (e) the supervisor commits the free-level artifact (five landings had left it untracked)
-    pl = (root / "scripts" / "postconfig_landing.py").read_text(encoding="utf-8")
-    assert '"free_levels")]' in pl
+    # S6-B3397 (B3139q-r188): the kinds are ONE constant both sites read
+    # (test_b3397f_landing_commit_carries_the_resim_evidence pins the sites);
+    # this pins the behaviour, where the literal list it once grepped lived
+    import postconfig_landing as _pl
+    assert "free_levels" in _pl.ARTIFACT_KINDS
 
 
 def test_b2576_battery_runs_armed_and_refuses_the_wrong_precompute(tmp_path, monkeypatch):
@@ -73660,3 +73663,158 @@ def test_b3397e_grading_surface_covers_what_the_battery_imports(tmp_path, monkey
     d2 = rw.grading_surface_sha256()
     assert d1["digest"] != d2["digest"], "a battery-imported module's edit must move the digest"
     assert "battery import scan unavailable" not in d2.get("note", "")
+
+def test_b3397f_resim_evidence_registers_a_variant_the_gate_counts(tmp_path, monkeypatch):
+    """S6-B3397 (runbook 4.3 item 4, census 1079): a graded variant landing
+    writes <key>_resim_evidence.json, which band_coverage_gate reads as an
+    axis-grid artifact and counts as a tested level; a production arm writes
+    nothing; a grid whose own resim_configs disagree FAILs."""
+    import json
+    rp = _rp_b3397a()
+    import band_coverage_gate as bcg
+    monkeypatch.setattr(rp, "ROOT", tmp_path)
+    (tmp_path / "output_audit").mkdir()
+    fam = "bollinger_lower"
+    row = {r["id"]: r for r in rp.SPECS[fam]["params"]}["P4"]
+    prod = row["production"]
+    moved = next(v for v in row["band"] if str(v) != str(prod))
+    grid = tmp_path / "g.json"
+    st, ev, errs = rp.register_resim_evidence(fam, tmp_path / "cube_x", {"ema_span": moved},
+                                              "cube_x", grid)
+    art = tmp_path / "output_audit" / "cube_x_resim_evidence.json"
+    assert st == "PASS" and not errs and art.exists(), (st, ev)
+    doc = json.loads(art.read_text(encoding="utf-8"))
+    assert bcg.artifact_kind(doc) == bcg.KIND_AXIS_GRID
+    rep = bcg.coverage_report(fam, [str(art)])
+    ema = [p for p in rep["params"] if p["param"] == row["param"]]
+    assert ema and moved in ema[0]["tested"], ema
+    art.unlink()
+    st, ev, errs = rp.register_resim_evidence(fam, tmp_path / "cube_x", {"ema_span": prod},
+                                              "cube_x", grid)
+    assert st == "SKIP" and not art.exists(), (st, ev)
+    grid.write_text(json.dumps({"resim_configs": [{"something else": 1}]}), encoding="utf-8")
+    st, ev, errs = rp.register_resim_evidence(fam, tmp_path / "cube_x", {"ema_span": moved},
+                                              "cube_x", grid)
+    assert st == "FAIL" and errs and "disagree" in ev, ev
+
+
+def test_b3397f_alt_flag_value_is_type_compatible():
+    """Lens 12's second value: production, then band and free-band levels,
+    the first that differs and is numeric when the landed value is; a LEVER4
+    gate budget moves each k by one; nothing derivable is None."""
+    import json
+    rp = _rp_b3397a()
+    assert rp.alt_flag_value({"production": 20, "band": [10, 20]}, 20) == 10
+    assert rp.alt_flag_value({"production": 20, "band": [20]}, 9) == 20
+    assert rp.alt_flag_value({"production": "", "band": ["q1", 5]}, 5) is None
+    j = rp.alt_flag_value({"production": ""}, json.dumps({"s": {"k": 3, "mandatory": ["a"]}}))
+    assert json.loads(j) == {"s": {"k": 4, "mandatory": ["a"]}}
+    assert rp.alt_flag_value({"production": ""}, "not json") is None
+
+
+def test_b3397f_effective_parameter_lens_requires_a_refusal(tmp_path, monkeypatch):
+    """S6-B3397 (Lens 12, census 1910): each grade flag moved alone must be
+    REFUSED; a grader that grades on is a WARN naming the flag; an argparse
+    rejection is untested, never a pass; a Step-2 cube or one with holdout
+    entries is N/A and the grader is never run."""
+    import types
+    rp = _rp_b3397a()
+    fam = "squeeze_breakout"
+    keys = rp.SPECS[fam]["tools"]["keys"]
+    monkeypatch.setattr(rp, "read_manifest", lambda c: {})
+    monkeypatch.setattr(rp, "params_from_manifest",
+                        lambda f, m: ({k: 7 for k in keys.values()}, "fixture"))
+    calls = []
+
+    def runner(code, text=""):
+        def fake(cmd, env_extra=None):
+            calls.append(cmd)
+            return types.SimpleNamespace(returncode=code, stdout="", stderr=text)
+        return fake
+    monkeypatch.setattr(rp, "_run", runner(2, "REFUSED: the flags do not match"))
+    n, lv, ev = rp.effective_parameter_lens(tmp_path, 1, fam, 0)
+    assert lv == "INFO" and f"{len(keys)} of {len(keys)} grade flags verified" in ev, ev
+    monkeypatch.setattr(rp, "_run", runner(0))
+    n, lv, ev = rp.effective_parameter_lens(tmp_path, 1, fam, 0)
+    assert lv == "WARN" and "graded on at a moved value" in ev, ev
+    monkeypatch.setattr(rp, "_run", runner(2, "usage: x\nx: error: argument --kc-mult"))
+    n, lv, ev = rp.effective_parameter_lens(tmp_path, 1, fam, 0)
+    assert lv == "INFO" and "argparse rejected" in ev and "0 of" in ev, ev
+    calls.clear()
+    assert rp.effective_parameter_lens(tmp_path, 2, fam, 0)[1] == "INFO"
+    assert rp.effective_parameter_lens(tmp_path, 1, fam, 3)[1] == "INFO"
+    assert not calls, "a Step-2 cube or a holdout-touching one must never be re-graded"
+
+
+def test_b3397f_battery_wires_resim_evidence_and_lens12(tmp_path, monkeypatch):
+    """S6-B3397 (L654 - the wiring): run_family records step2_resim_evidence
+    and writes the artifact for a graded variant arm; lenses() carries the
+    effective_parameter row; the new row is a grader check."""
+    import json
+    import os
+    import types
+    from pathlib import Path
+    rp = _rp_b3397a()
+    monkeypatch.setattr(rp, "ROOT", tmp_path)
+    monkeypatch.setattr(rp, "knob_is_read", lambda env, root: True)
+    monkeypatch.setattr(rp, "knob_consumers", lambda env: ())
+    monkeypatch.setattr(rp, "declared_consumers", lambda spec, env: ())
+    (tmp_path / "output_audit").mkdir()
+    fam = "squeeze_breakout"
+    own = {}
+
+    def fake_run(cmd, env_extra=None):
+        cmd = [str(c) for c in cmd]
+        body = "{}"
+        if os.path.basename(cmd[1]) == "grade_knob_config.py":
+            body = json.dumps({"config": {}, "strategy": fam,
+                               "generator": "scripts/grade_knob_config.py",
+                               "cube_rows": 48, "is_rows": 48, "holdout_rows": 0,
+                               "rows": [{"cell": "base:long"}], **own})
+        for i, c in enumerate(cmd):
+            if c == "--out":
+                Path(cmd[i + 1]).write_text(body, encoding="utf-8")
+        return types.SimpleNamespace(returncode=0, stdout="", stderr="")
+    monkeypatch.setattr(rp, "_run", fake_run)
+    cube = tmp_path / "cube_sq"
+    cube.mkdir()
+    p = {k: 1 for k in rp.SPECS[fam]["tools"]["keys"].values()}
+    res, notes, _, _ = rp.run_family(fam, cube, p, {"window": {}}, step=1)
+    by = {n: (s, e) for n, s, e in res}
+    assert by["step2_resim_evidence"][0] == "PASS", by["step2_resim_evidence"]
+    assert (tmp_path / "output_audit" / "cube_sq_resim_evidence.json").exists()
+    assert notes["2_grade_with_config_params"][0] == "DONE", notes
+    assert "step2_resim_evidence" in rp._GRADER_CHECKS
+    own["resim_configs"] = [{"not the arm's level": 0}]
+    res, notes, _, _ = rp.run_family(fam, cube, p, {"window": {}}, step=1)
+    assert notes["2_grade_with_config_params"][0] == "FAIL", notes
+    assert "resim evidence not registered" in notes["2_grade_with_config_params"][1]
+    rows = ["ticker,strategy,entry_date,direction,exit_method,pnl_pct,hold_days",
+            "T,g,2024-06-03,long,time_stop_10d,1.0,10"]
+    (cube / "trade_exit_detail.csv").write_text("\n".join(rows) + "\n", encoding="utf-8")
+    names = [n for n, _l, _e in rp.lenses(cube, 1, {"step1_ranking": []}, None)]
+    assert "effective_parameter" in names, names
+
+def test_b3397f_landing_commit_carries_the_resim_evidence(tmp_path, monkeypatch):
+    """S6-B3397 (the B2574 class): the battery's new per-landing artifact,
+    <cube>_resim_evidence.json, is one of postconfig_landing.ARTIFACT_KINDS,
+    the ONE list the landing commit and the stray sweep both read - so a
+    landing never leaves it untracked."""
+    import importlib
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+    import postconfig_landing as pl
+    pl = importlib.reload(pl)
+    assert "resim_evidence" in pl.ARTIFACT_KINDS
+    assert {"grid_auto", "spot_check", "lenses", "free_levels"} <= set(pl.ARTIFACT_KINDS)
+    monkeypatch.setattr(pl, "_SWEPT", tmp_path / "swept.json")
+    monkeypatch.setattr(pl, "AUDIT", tmp_path)
+    monkeypatch.setattr(pl, "read_landings",
+                        lambda p: [{"cube": "b", "committed": False}])
+    (tmp_path / "b_resim_evidence.json").write_text("{}", encoding="utf-8")
+    paths, cubes = pl.pending_artifact_paths()
+    assert cubes == ["b"] and [p.name for p in paths] == ["b_resim_evidence.json"]
+    import inspect
+    src = inspect.getsource(pl)
+    assert src.count("for k in ARTIFACT_KINDS") == 2, "both sites read the one list"

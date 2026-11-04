@@ -68,7 +68,7 @@ MEGA = ("NVDA", "MSFT", "GOOGL", "META", "TSLA", "AAPL")
 TERMINAL = ("DONE", "N/A")
 _GRADER_CHECKS = ("step2_grade_auto", "step2_free_levels", "step2_legs",
                   "step2_holdout_ledger",
-                  "step2_grid_contract",
+                  "step2_grid_contract", "step2_resim_evidence",
                   "step4_spot_check_auto", "step4_sampling_contract", "step4_coverage",
                   "step7_engine_implemented")
 # S6-B3397: a check that compares the cube with the GRADER's output is a
@@ -843,10 +843,21 @@ def run_family(fam_name: str, cube_dir: Path, p: dict,
                         "; ".join(cerrs) if cerrs else
                         "B2505 contract holds: config, strategy, instrument, "
                         "cube / in-sample / holdout counts, population"))
+    # S6-B3397 (runbook 4.3 item 4, census 1079): a graded variant landing is
+    # registered as engine resim evidence - a crash is a FAIL row (L642)
+    rerrs: list = []
+    if ok2:
+        try:
+            _rs, _rev, rerrs = register_resim_evidence(fam_name, cube_dir, p, _key, grid_out)
+        except Exception as exc:                      # noqa: BLE001
+            _rs, _rev, rerrs = "FAIL", f"crashed: {exc!r}"[:200], [repr(exc)]
+        results.append(("step2_resim_evidence", _rs, _rev))
     note2 = gb.get("note", "AUTO")
     notes["2_grade_with_config_params"] = (
         ("FAIL", f"grid contract broken (R4, S6-B3397): {'; '.join(cerrs)[:200]}")
         if ok2 and okf and cerrs else
+        ("FAIL", f"resim evidence not registered (S6-B3397): {rerrs[0][:200]}")
+        if ok2 and okf and rerrs else
         ("FAIL", f"Step-2 legs unproven (S6-B3367): {legs_errs[0][:200]}")
         if ok2 and okf and legs_errs else
         ("FAIL", f"Step-2 holdout read not admissible (S6-B3395): {ledger_why[:200]}")
@@ -1197,6 +1208,12 @@ def lenses(cube_dir: Path, step: int, grid: dict, spot_out: Path | None,
                     "no family resolved - no grid keys to check"))
     except Exception as exc:                          # noqa: BLE001
         out.append(("band_levels_change_outcome", "FAIL", f"crashed: {exc!r}"[:200]))
+    # S6-B3397 (Lens 12, census 1910): each grade flag moved alone must be
+    # REFUSED by its grader - a crash is a FAIL row, never a skip
+    try:
+        out.append(effective_parameter_lens(cube_dir, step, family, touched))
+    except Exception as exc:                          # noqa: BLE001
+        out.append(("effective_parameter", "FAIL", f"crashed: {exc!r}"[:200]))
     # S6-B3397 (runbook 2.4 item 19 + 1.5, census 817 / 1293; the redundancy
     # row, census 588): the landed leg against the R5 baseline over the
     # cube's own tickers and window - a crash is a FAIL row, never a skip
@@ -1690,6 +1707,153 @@ def grid_contract_errors(grid: dict, leg) -> list:
     if not any(isinstance(grid.get(k), list) for k in ("results", "per_exit", "rows")):
         errs.append("no population list (`results` / `per_exit` / `rows`)")
     return errs
+
+
+def register_resim_evidence(fam_name: str, cube_dir: Path, p: dict, key: str,
+                            grid_out: Path) -> tuple:
+    """S6-B3397 (runbook 4.3 item 4, census 1079): a graded VARIANT landing
+    is registered as engine resim evidence the band-coverage gate counts -
+    <key>_resim_evidence.json, an axis-grid artifact (no rows, a
+    resim_configs list) that band_coverage_gate.artifact_kind reads and its
+    _gather counts. Derived through grade_knob_config.knob_rows and
+    resim_configs over the landed arm's values - the ONE definition the knob
+    grader writes into its own grid; a grid that carries its own and
+    disagrees FAILs (status, evidence, errors). A production arm registers
+    nothing. MEASURED at B3139q-r188 over 101 ledger cubes resolving to a
+    family with arm values: 95 variants, 94 of them without resim evidence
+    (only the knob grader wrote it), 6 production arms; run live (output
+    into a scratch root) it registered 95 - the knob grader's own entry
+    agreeing - skipped 6 and failed 0, and the gate's coverage_report
+    counted a registered bollinger level as tested."""
+    import grade_knob_config as _gkc
+    try:
+        derived = _gkc.resim_configs(fam_name, _gkc.knob_rows(fam_name), p)
+    except SystemExit as exc:
+        msg = f"the family's knobs cannot be read: {exc}"[:200]
+        return "FAIL", msg, [msg]
+    try:
+        own = (json.loads(grid_out.read_text(encoding="utf-8")) or {}).get("resim_configs")
+    except (OSError, ValueError):
+        own = None
+    if own is not None and own != derived:
+        msg = (f"the grader's resim_configs {own} disagree with the landed arm's "
+               f"{derived} - one of them names the wrong levels")
+        return "FAIL", msg[:240], [msg]
+    if not derived:
+        return "SKIP", ("production arm - no knob ran away from production, so "
+                        "there is no resim level to register"), []
+    out = ROOT / "output_audit" / f"{key}_resim_evidence.json"
+    out.write_text(json.dumps({
+        "strategy": fam_name, "cube": cube_dir.name,
+        "generator": "scripts/run_postconfig.py register_resim_evidence (S6-B3397)",
+        "graded_by": grid_out.name, "resim_configs": derived,
+        "basis": "the landed arm's values (params_from_manifest) through "
+                 "grade_knob_config.knob_rows + resim_configs"},
+        indent=1), encoding="utf-8")
+    return "PASS", (f"registered {out.name}: {derived} - band_coverage_gate reads "
+                    "it as engine resim evidence (pass it with --artifacts)"), []
+
+
+def _same_value(a, b) -> bool:
+    def _n(v):
+        try:
+            return repr(round(float(v), 9))
+        except (TypeError, ValueError):
+            return str(v).strip()
+    return _n(a) == _n(b)
+
+
+def alt_flag_value(row: dict, landed):
+    """A second, TYPE-COMPATIBLE value for a grade flag (Lens 12): the
+    param's production, then its band and free-band levels, the first that
+    differs from the landed value; a LEVER4 gate budget moves each k by one.
+    None when no such value exists (the flag is then reported untested)."""
+    def _num(v):
+        try:
+            float(v)
+            return True
+        except (TypeError, ValueError):
+            return False
+    if _num(landed):
+        for v in ([row.get("production")] + list(row.get("band") or [])
+                  + list(row.get("free_band") or [])):
+            if v is not None and not isinstance(v, bool) and _num(v) \
+                    and not _same_value(v, landed):
+                return v
+        return None
+    try:
+        d = json.loads(str(landed))
+    except ValueError:
+        return None
+    if isinstance(d, dict) and d and all(
+            isinstance(x, dict) and isinstance(x.get("k"), int) for x in d.values()):
+        return json.dumps({s: {**x, "k": x["k"] + 1} for s, x in d.items()})
+    return None
+
+
+def effective_parameter_lens(cube_dir: Path, step: int, family, touched: int) -> tuple:
+    """Lens 12 (runbook 5.3 lens table, census 1910 - 'a flag that was
+    ACCEPTED: does changing it change the answer?'). A grade flag names the
+    level the cube RAN at, so the right answer to a moved value is a
+    REFUSAL - the grader verifies the flag against the landed arm (S6-B2900).
+    Each tools.grade flag is moved ALONE to a type-compatible second value
+    and the grader re-run into a temp dir: refused = verified; graded on =
+    WARN, the flag is a stamp (one cube could be filed under another
+    config's name). Runs only on a Step-1 cube with no holdout entry, so a
+    re-grade can never read a holdout outside the ledger; a Step-2 cube is
+    N/A with that reason. MEASURED at B3139q-r188 on the latest Step-1
+    landing of each grade script (8 of 11 have one with arm values): 18 of
+    24 flags verified; 6 graded on - grade_institutional_config 4 of 4,
+    lever4_step1's --gate-budget and tighten_breaker_block's --span - the
+    stamp class S6-B3417 fixes; until then those landings WARN here."""
+    import tempfile
+    name = "effective_parameter"
+    if not family or family not in FAMILIES:
+        return (name, "INFO", "no family resolved - no grade flags to move (N/A)")
+    gb = SPECS[family]["tools"]["grade"]
+    flags = dict(gb.get("flags") or {})
+    if not flags:
+        return (name, "INFO", f"{gb['script']} takes no grade flags (N/A)")
+    if step != 1 or touched:
+        return (name, "INFO", "N/A on a Step-2 cube or one with holdout entries - a "
+                              "re-grade could read the holdout outside the ledger")
+    manifest = read_manifest(cube_dir)
+    p, why = params_from_manifest(family, manifest)
+    if p is None:
+        return (name, "INFO", f"no landed flag values: {why} (N/A)")
+    tools = SPECS[family]["tools"]
+    rows = {r["id"]: r for r in SPECS[family]["params"]}
+    env = _sub_env(_arm_env(manifest), gb)
+    verified, stamped, untested = [], [], []
+    with tempfile.TemporaryDirectory() as tmp:
+        for pid, flag in flags.items():
+            key = tools["keys"][pid]
+            alt = alt_flag_value(rows[pid], p[key])
+            if alt is None:
+                untested.append(f"{flag} (no second value)")
+                continue
+            q = dict(p)
+            q[key] = alt
+            r = _run([sys.executable, str(ROOT / "scripts" / gb["script"]),
+                      "--cube", _cube_arg(cube_dir, gb), *_flag_args(gb, tools, q),
+                      *list(gb.get("extra") or []),
+                      "--out", str(Path(tmp) / f"{pid}.json")], env)
+            said = (r.stdout or "") + (r.stderr or "")
+            tag = f"{flag} {p[key]}->{alt}"
+            if r.returncode == 0:
+                stamped.append(tag)
+            elif "error: argument" in said:
+                untested.append(f"{tag} (argparse rejected the value)")
+            else:
+                verified.append(tag)
+    n = len(flags)
+    text = (f"{len(verified)} of {n} grade flags verified (a moved value was refused)"
+            + (f"; untested {untested}" if untested else ""))
+    if stamped:
+        return (name, "WARN", f"{len(stamped)} of {n} grade flags graded on at a moved "
+                              f"value - stamped, not verified against the landed arm: "
+                              f"{stamped[:3]}; " + text)
+    return (name, "INFO", text + f" ({gb['script']})")
 
 
 def spot_coverage(strategy, checker_script) -> tuple:
