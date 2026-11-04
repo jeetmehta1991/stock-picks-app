@@ -7,9 +7,9 @@ the first, institutional_companion_grid.py, is family-hardcoded).
 WHAT IT DOES - offline, zero engine hours, HOLDOUT UNTOUCHED:
   - loads ONE strategy's recorded R5 fires + signals_at_entry,
   - applies an optional DEPTH base filter (the already-admitted line),
-  - REPRODUCTION GATE (fail-closed): the base cell at --repro-exit must
-    reproduce the admission artifact's is_sharpe/is n, or the run refuses -
-    the offline_level_sweep class,
+  - REPRODUCTION GATE (fail-closed): with a --depth line the base cell at
+    --repro-exit must reproduce the admission artifact (refused without one);
+    with none the base IS the cube's own production rows (S6-B3394),
   - sweeps each breadth axis at retention quantiles derived from the IS BASE
     fires only (holdout signal values never read for band construction),
   - grades IN-SAMPLE ONLY (rc.in_sample; Step-1 is a ranked list, no gates,
@@ -294,6 +294,18 @@ def main() -> int:
     _ruling = require_band_ruling(a.band_ruling, a.strategy)   # S6-B2848a + B2855
     _stamp = require_fresh_status()                # S6-B2848b
     _widen_word = widen_word(a)                    # S6-B3338 door 3, before any load
+    # S6-B3394 (runbook 3.6 item 5, census 1028 + 1026), both before any load:
+    # a DUAL strategy's grid is per leg, and a depth line - the admitted base -
+    # must reproduce its admission artifact (fail closed on the absent artifact)
+    from build_phase_1b_roster import is_dual
+    if a.leg == "both" and is_dual(a.strategy):
+        raise SystemExit(f"REFUSED (S6-B3394): {a.strategy} is a DUAL strategy - its "
+                         "breadth grid is per leg (--leg long | short; runbook 3.6 item 5); "
+                         "a pooled grid mixes the legs' fires")
+    if a.depth and not a.repro_artifact:
+        raise SystemExit(f"REFUSED (S6-B3394): --depth {a.depth} grades an ADMITTED base, "
+                         "which the base cell must reproduce - pass --repro-artifact, the "
+                         "admission artifact (runbook 3.6 item 5)")
     # S6-B3112c: a breadth subject whose depth line is a producer
     # reconfiguration has its fires only in its OWN cube - R5 cannot
     # express it as a row filter, so the source must be overridable.
@@ -345,7 +357,13 @@ def main() -> int:
     if br is None:
         raise SystemExit("REFUSED: base cell ungradable")
     repro = {"exit": a.repro_exit, "base_is_sharpe": br["sharpe"], "base_is_n": int(len(bi)),
-             "base_full_n": int(base_cell.shape[0])}
+             "base_full_n": int(base_cell.shape[0]),
+             # S6-B3394: what the base was compared with - with no depth line the
+             # base IS the cube's own production cell (build_frame keeps every
+             # cube row), so it holds by construction; a depth line compares to
+             # its admission artifact (refused above without one)
+             "compared": ("admission artifact" if a.repro_artifact else
+                          "none needed - production base, the cube's own rows on the graded fires")}
     if a.repro_artifact:
         art = json.loads(Path(a.repro_artifact).read_text(encoding="utf-8"))
         want = next(r for r in art["results"] if r["strategy"] == a.strategy)
@@ -353,7 +371,7 @@ def main() -> int:
         repro["artifact_full_n"] = want["full_period_n"]
         if abs(want["is_sharpe"] - br["sharpe"]) > 1e-3 or want["full_period_n"] != repro["base_full_n"]:
             raise SystemExit(f"REFUSED: reproduction mismatch {repro}")
-    print(f"reproduction OK: {repro}")
+    print(f"reproduction ({repro['compared']}): {repro}")
 
     # ---- band from IS base fires only ---------------------------------------
     is_all = rc.in_sample(m)

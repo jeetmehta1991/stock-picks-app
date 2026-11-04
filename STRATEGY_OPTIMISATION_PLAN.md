@@ -1083,8 +1083,8 @@ meaning. ENFORCED by validate_spec: a formula carries the PRODUCER LAYER and STR
    Nothing runs earlier.
 5. **THE IN-SAMPLE GRID** (Step 3's search; the tool's name predates the renumbering) -
    `scripts/breadth_step1_grid.py` (shared `build_frame`; fail-closed reproduction
-   gate against the admitted or production base; IS-only grading; `next_pivot_target` barred from
-   ranking; per-leg for dual strategies; `--survival` when the subject's gate changed since R5 - the
+   gate against the admitted or production base (a --depth line refuses without its admission artifact; with none the base is the cube's own rows, recorded so - test_b3394c/d, S6-B3394); IS-only grading; `next_pivot_target` barred from
+   ranking; per-leg for dual strategies (a pooled grid on a dual refuses, test_b3394c); `--survival` when the subject's gate changed since R5 - the
    loader refuses otherwise, and the read and the holdout null inherit the grid's setting, S6-B3321).
    **An axis the 0.98 coverage floor skips stays UNTESTED until the owner rules on it; on the owner's
    word it is graded on its COVERED fires by `--widen-coverage <key>` (S6-B3248 (1)(a), the B2698

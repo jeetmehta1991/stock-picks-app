@@ -74567,3 +74567,77 @@ def test_b3394b_the_consistent_set_takes_two_exact_screens_at_the_runbook_exits(
     assert rec["unindexed"]["n"] == 0 and rec["clusters"] == {}
     r, po = run(be, ts)
     assert r.returncode == 0, r.stderr[-300:]
+
+def test_b3394c_a_dual_grid_is_per_leg_and_a_depth_line_brings_its_artifact(tmp_path, monkeypatch):
+    """S6-B3394 (runbook 3.6 item 5, census 1028 + 1026): breadth_step1_grid
+    refuses, before any data loads, a pooled grid on a DUAL strategy
+    (build_phase_1b_roster.is_dual) and a --depth line without --repro-artifact
+    (an admitted base the base cell must reproduce). The arms that pass those
+    checks reach the next refusal - a missing --cube-dir - which proves the
+    checks let them through without loading anything."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import importlib
+    import breadth_step1_grid as bg
+    importlib.reload(bg)
+    from build_phase_1b_roster import is_dual
+    dual = "bollinger_lower"
+    assert is_dual(dual) and not is_dual("zz_fx_b3394c")
+    monkeypatch.setattr(bg, "require_band_ruling", lambda *a, **k: "stub")
+    monkeypatch.setattr(bg, "require_fresh_status", lambda *a, **k: "stub")
+    missing = tmp_path / "no_such_run_dir"
+
+    def run(*extra):
+        monkeypatch.setattr(_sys, "argv", ["breadth_step1_grid.py", "--axes", "k:ge",
+                                           "--out", str(tmp_path / "o.json"),
+                                           "--band-ruling", "pin probe", "--basis", "net",
+                                           "--cube-dir", str(missing), *extra])
+        with pytest.raises(SystemExit) as e:
+            bg.main()
+        return str(e.value)
+    assert "DUAL" in run("--strategy", dual) and "S6-B3394" in run("--strategy", dual)
+    for leg in ("long", "short"):
+        assert "--cube-dir file missing" in run("--strategy", dual, "--leg", leg)
+    assert "--cube-dir file missing" in run("--strategy", "zz_fx_b3394c")
+    msg = run("--strategy", "zz_fx_b3394c", "--depth", "k:ge:1")
+    assert "S6-B3394" in msg and "--repro-artifact" in msg, msg
+    art = tmp_path / "admission.json"
+    art.write_text("{}", encoding="utf-8")
+    assert "--cube-dir file missing" in run("--strategy", "zz_fx_b3394c", "--depth", "k:ge:1",
+                                            "--repro-artifact", str(art))
+
+
+def test_b3394d_the_reproduction_record_says_what_it_compared(tmp_path, monkeypatch, capsys):
+    """S6-B3394 (census 1026): with no depth line the grid's base cell is the
+    cube's own rows on the graded fires, so it reproduces the production base
+    by construction - the record and the printed line say so (compared:
+    'none needed - production base ...') instead of 'reproduction OK' over a
+    comparison that never ran (MEASURED B3139q-r195: 20 of 21 committed grid
+    records printed OK and compared nothing, all 20 with no depth line)."""
+    import json as _j
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import importlib
+    import breadth_step1_grid as bg
+    importlib.reload(bg)
+    run = _b3139ag_fixture(tmp_path)
+    monkeypatch.setattr(bg, "require_band_ruling", lambda *a, **k: "stub")
+    monkeypatch.setattr(bg, "require_fresh_status", lambda *a, **k: "stub")
+    out = tmp_path / "grid.json"
+    monkeypatch.setattr(sys, "argv",
+                        ["breadth_step1_grid.py", "--strategy", "fx",
+                         "--axes", "k:ge", "--out", str(out),
+                         "--band-ruling", "pin probe", "--basis", "net",
+                         "--null-perms", "5", "--cube-dir", str(run)])
+    capsys.readouterr()
+    assert bg.main() == 0
+    printed = capsys.readouterr().out
+    rec = _j.loads(out.read_text(encoding="utf-8"))
+    assert rec["reproduction"]["compared"].startswith("none needed - production base"), rec["reproduction"]
+    assert "reproduction OK" not in printed and "reproduction (none needed" in printed, printed[-600:]
