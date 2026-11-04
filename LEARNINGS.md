@@ -22178,6 +22178,21 @@ statement, pinned by
 families - whether smc's six columns are RIGHT for `smc_inverse_fvg` is a
 separate question this makes visible and testable, not true.
 
+**Addendum (B3139q-r193, S6-B3393 slice 9d): THE LOOSE PROBE THIS ENTRY
+NAMED STAYED IN THE RUNBOOK FOR 44 DAYS.** This entry recorded that the R2
+probe `'<strategy>' in D_AXIS_FAMILIES` returns False for a served strategy,
+because the map is keyed by FAMILY - and the R-table kept that probe text from
+2026-09-21 to 2026-11-04 with no ticket to change it. MEASURED when the
+on-ramp probe built for census 634 first reproduced it: it printed False for
+15 of the 17 SPECS entries a family serves. The R2 row now tests membership in
+a family's `serves` tuple. **Compliance failure against #164**: a finding that
+names future work - here, rewrite the probe - becomes a ticket, and a lesson
+paragraph is not one. Mechanism: test_b3393l reads every `python -c` probe of
+the R-table (R1, R2, R3, R8 - pinned) out of the runbook and runs it on a
+strategy that passes the on-ramp, so a probe that drifts from the code fails
+the pyramid; scripts/onramp_probe.py runs R1-R9 through the launch gate's own
+functions and make_spec refuses an engine spec on any FAIL (test_b3393k).
+
 ### L834 - A PATCHER CAN COMMENT OUT WHAT IT MEANT TO ADD (B2942, 2026-09-21)
 
 Found while verifying B2941's anchors, not by any gate.
@@ -25576,6 +25591,19 @@ MEASURED from the transcript: before the r139 gate, launched 18:34:32Z, I ran a 
 **Rule.** No new rule - #315 stands, with its L950 row: run scripts/pregate_select.py --run before the gate.
 
 **Mechanism.** S6-B3360: pregate_select --run stamps the tree it ran on in .pregate_stamp (gitignored) - each changed path with the sha256 of its bytes - and scripts/pyramid_gate.py prints a NOTE before pytest starts and footers pregate= (PASSED or FAILED on this tree, STALE, NONE, NOTHING CHANGED). Pinned by test_b3360_the_gate_discloses_whether_a_pregate_run_passed_on_its_tree, 7 of 7 mutants killed, each by its own assertion. LIMIT: the gate runs with its stdout in a file, so the NOTE reaches me when the run ends; only a refusal or a fail-fast pre-run would save the cycle, and rule 7(c) puts that behaviour change with the owner (S6-B3361).
+
+**Addendum (B3139q-r193, S6-B3393 slice 9d): SKIPPED AGAIN, TO SAVE TIME, AND
+THE FULL GATE PAID FOR IT.** With both rides on the r190 stamp used, I ran the
+full gate r193 without scripts/pregate_select.py, reasoning that the slice's
+pre-gates had each taken 16 minutes and the commit needed the full gate
+anyway. It went RED on 1 of 2,013: test_b3240 registers a minimal synthetic
+SPECS entry and runs make_spec --dry, and the on-ramp probe this slice wired
+into make_spec called validate_spec on it, which raised KeyError. My targeted
+run had selected the make_spec tests by ticket number and missed this one. The
+cost was a second 34-minute gate. The probe now reports any exception as that
+R's FAIL line and never raises into make_spec (test_b3393k's crash arm).
+**Compliance failure against #315**; record-of-fact - the gate's pregate=
+footer disclosed the skip, and a refusal is the owner's decision S6-B3361.
 
 ### L985 - THE PRE-GATE SELECTOR'S RUN MODE HAD NO PIN, AND IT COULD NOT RUN THIS BATCH'S SELECTION (B3139q-r139, 2026-10-29)
 

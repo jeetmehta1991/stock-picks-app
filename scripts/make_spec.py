@@ -519,6 +519,20 @@ def main() -> int:
     if spec_entry is None:
         return refuse(f"{a.strategy!r} has no SPECS entry - register the "
                       "family (R1) before generating engine specs")
+    # S6-B3393 (census 634): the runbook R1-R9 on-ramp runs before any engine
+    # spec is written (scripts/onramp_probe.py) - a --dry draft prints every
+    # line, a real run refuses a FAIL. MEASURED B3139q-r193: 17 of 17 SPECS
+    # entries pass all nine.
+    import onramp_probe
+    _onramp = onramp_probe.probe(a.strategy)
+    if a.dry:
+        for _rid, _ok, _line in _onramp:
+            print(f"ONRAMP {_rid} {'PASS' if _ok else 'FAIL'}: {_line}")
+    _onramp_bad = [f"{_rid}: {_line}" for _rid, _ok, _line in _onramp if not _ok]
+    if _onramp_bad and not a.dry:
+        return refuse("the runbook R1-R9 on-ramp fails (S6-B3393): "
+                      + "; ".join(_onramp_bad) + " - python scripts/onramp_probe.py "
+                      f"--strategy {a.strategy}")
     p = next((x for x in spec_entry["params"] if x["id"] == a.param), None)
     if p is None:
         return refuse(f"{a.strategy} has no param {a.param!r}; ids: "

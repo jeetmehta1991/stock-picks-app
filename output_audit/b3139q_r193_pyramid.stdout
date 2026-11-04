@@ -1,0 +1,161 @@
+........................................................................ [  3%]
+........................................................................ [  7%]
+........................................................................ [ 10%]
+........................................................................ [ 14%]
+........................................................................ [ 17%]
+........................................................................ [ 21%]
+........................................................................ [ 25%]
+........................................................................ [ 28%]
+..............................................s......................... [ 32%]
+....................s.................................................s. [ 35%]
+........................................................................ [ 39%]
+........................................................................ [ 42%]
+........................................................................ [ 46%]
+........................................................................ [ 50%]
+........................................................................ [ 53%]
+........................................................................ [ 57%]
+........................................................................ [ 60%]
+........................................................................ [ 64%]
+........................................................................ [ 67%]
+........................................................................ [ 71%]
+........................................................................ [ 75%]
+........................................................................ [ 78%]
+........................................................................ [ 82%]
+..................................F..................................... [ 85%]
+........................................................................ [ 89%]
+........................................................................ [ 92%]
+........................................................................ [ 96%]
+........................................................................ [100%]
+================================== FAILURES ===================================
+________ test_b3240_make_spec_matches_a_json_companion_by_parsed_value ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E1B532B310>
+capsys = <_pytest.capture.CaptureFixture object at 0x000001E1B5410350>
+
+    def test_b3240_make_spec_matches_a_json_companion_by_parsed_value(monkeypatch, capsys):
+        """B3139q-r89b (the r89 gate's test_b3171b catch): make_spec reads a level
+        on two paths - --levels and the --with companion - and both match a
+        JSON-typed level to the band's own TEXT by parsed value. The r89 draft
+        mapped an object only inside a JSON array, so the comma path refused the
+        bare production '{}', and --with json.loads'd a companion with no mapping
+        at all. A synthetic two-knob entry drives --with through make_spec.main:
+        a JSON companion in band is accepted, so the run reaches the NEXT refusal
+        (no projected fires for a strategy the status artifact does not carry),
+        never the companion's level refusal; an off-band object is refused."""
+        import json
+        import sys
+        from pathlib import Path as _P
+        root = _P(__file__).resolve().parents[2]
+        if str(root / "scripts") not in sys.path:
+            sys.path.insert(0, str(root / "scripts"))
+        import make_spec as ms
+        import producer_variant_table as pvt
+        name = "x_b3240_synth"
+        budget = json.dumps({name: {"k": 1, "mandatory": []}})
+        monkeypatch.setitem(pvt.SPECS, name, {
+            "params": [{"id": "P1", "env": "X_B3240_SYNTH_A", "production": 1,
+                        "resim_band": [2]},
+                       {"id": "P2", "env": "LEVER4_GATE_BUDGET", "type": "json",
+                        "production": "{}", "resim_band": [budget]}],
+            "tools": {"keys": {}}})
+    
+        def run(*extra):
+            monkeypatch.setattr(sys, "argv", ["make_spec.py", "--strategy", name,
+                                              "--param", "P1", "--levels", "2",
+                                              "--wave-prefix", "t_b3240", "--dry",
+                                              *extra])
+            capsys.readouterr()
+            rc = ms.main()
+            return rc, capsys.readouterr().out
+        for lev in ("{}", budget):
+>           rc, out = run("--with", f"P2={lev}")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backtest\tests\test_unit.py:62192: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+backtest\tests\test_unit.py:62189: in run
+    rc = ms.main()
+         ^^^^^^^^^
+scripts\make_spec.py:527: in main
+    _onramp = onramp_probe.probe(a.strategy)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts\onramp_probe.py:81: in probe
+    errs = validate_spec(spec)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+spec = {'params': [{'env': 'X_B3240_SYNTH_A', 'id': 'P1', 'production': 1, 'resim_band': [2]}, {'env': 'LEVER4_GATE_BUDGET', ...'P2', 'production': '{}', 'resim_band': ['{"x_b3240_synth": {"k": 1, "mandatory": []}}'], ...}], 'tools': {'keys': {}}}
+
+    def validate_spec(spec: dict) -> list[str]:
+        """Formula and Table A must not drift apart. Every P-id in the formula needs
+        a params row and every params row needs a formula step - a mechanical check,
+        because a hand-maintained pair of views silently diverges (L368 class)."""
+        import re as _re
+        # B2708: [PB] - B-rows are Table A inventory (owner ruling) and the
+        # P-only regex false-fired "no formula step" on every breadth row
+        ids_formula = set(_re.findall(r"^([PB]\d+)\s", spec.get("formula", ""), _re.M))
+        ids_params = {p["id"] for p in spec["params"]}
+        errs = []
+        for i in sorted(ids_formula - ids_params):
+            errs.append(f"{i} appears in the formula but has no Table A row")
+        for i in sorted(ids_params - ids_formula):
+            errs.append(f"{i} has a Table A row but no formula step")
+        if not spec.get("formula"):
+            errs.append("SPEC has no `formula` - it is REQUIRED (B1510 standard)")
+        # S6-B3139an: a grid row's axis maps to ONE column - a signal key that
+        # repeats, or equals another param's label, would credit two columns.
+        _owner: dict = {}
+        for _p in spec["params"]:
+            _keys = _p.get("signal_keys")
+            if _keys is None:
+                continue
+            if not isinstance(_keys, list) or not all(
+                    isinstance(k, str) and k for k in _keys):
+                errs.append(f"{_p['id']}: signal_keys must be a list of non-empty strings")
+                continue
+            for _k in _keys:
+                if _k in _owner and _owner[_k] != _p["id"]:
+                    errs.append(f"{_p['id']}: signal key {_k!r} also maps to {_owner[_k]}")
+                _owner[_k] = _p["id"]
+>       _labels = {_p["param"]: _p["id"] for _p in spec["params"]}
+                   ^^^^^^^^^^^
+E       KeyError: 'param'
+
+scripts\producer_variant_table.py:5807: KeyError
+---------------------------- Captured stdout call -----------------------------
+NOTE (S6-B3338 door 4, --dry draft): x_b3240_synth: the strategy status view has no row for it - rebuild scripts/build_strategy_status.py before launching (S6-B3338; an unknown status is not permission, L642)
+============================== warnings summary ===============================
+backtest/tests/test_unit.py::test_b3383_return_correlation_states_its_basis
+backtest/tests/test_unit.py::test_b3383_return_correlation_states_its_basis
+  C:\Users\jeetm\Github\stock-picks-app\scripts\build_strategy_return_correlation.py:116: RuntimeWarning: invalid value encountered in sqrt
+    return s_bar * np.sqrt(n / (1 + (n - 1) * rho))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b3240_make_spec_matches_a_json_companion_by_parsed_value
+1 failed, 2012 passed, 3 skipped, 2 warnings in 2065.30s (0:34:25)
+
+pytest_exit=1
+tree=SAME
+exit=1
+elapsed_s=2099
+chain_inflight=none
+chain_inflight_start=none
+chain_inflight_end=none
+power_start=ac
+power_end=ac
+engine_inflight=none
+engine_inflight_start=none
+engine_inflight_end=none
+engine_dead_within_window=none
+beside_wave_override=none
+output_audit_created=none
+output_audit_modified_tracked=none
+output_audit_modified_untracked=none
+readset=CLEAN
+readset_rerun=none
+readset_suite_writes=2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
+moved_line_citations=none
+pregate=STALE (7 of 8 changed path(s) differ from the run at 2026-11-04T20:12:15Z, first EXECUTION_QUEUE.md)
+runbook_drift=tickets 1, not named in the runbook 0; lessons 0, not cited 0
+stamp_binding=already-red

@@ -59,6 +59,7 @@ def require_band_ruling(text, strategy=None, *, registry=None) -> str:
         # S6-B3393: R1 is validity as well as registration, and a stale
         # Table A file is regenerated before a campaign reads it
         require_valid_spec(strategy.strip())
+        print(require_t1_floor(strategy.strip()))
         print(require_current_table_a(strategy.strip()))
     return text.strip()
 
@@ -146,6 +147,44 @@ def require_valid_spec(strategy: str, *, specs=None) -> None:
             f"validate_spec with {len(new)} message(s) outside the frozen set: "
             f"{new[:3]} - R1 binds an offline Step 1 too. Fix the entry (a SPECS "
             "entry supersedes the PHASE0 pre-registration) and re-run.")
+
+
+# S6-B3393 (B3139q-r193, runbook T1, census 908): a Step-1 grid runs only on a
+# strategy whose CURRENT gate keeps at least T1_MIN_SURVIVORS of its R5 fires;
+# under it the strategy re-lanes to LOOSEN (the W-L workflow), never a tighter
+# grid. 10 is the runbook's T1 number - the min_n the breadth grids score a
+# cell at (breadth_step1_grid's rc._sharpe min_n=10). MEASURED B3139q-r193:
+# 8 of the 225 status rows keep 1-9 fires (5 LOOSEN, 2 BOTH, 1 DISABLED).
+T1_MIN_SURVIVORS = 10
+
+
+def require_t1_floor(strategy: str, *, rows=None) -> str:
+    """The T1 floor from the stamped status view (`rows` a test seam):
+    kept = round(r5_fires x survives_pct), the number the line shows and the
+    one the decision reads (L716). Refuses under the floor and on an absent
+    row (L642); an unmeasured survival is reported, since
+    require_surviving_or_unchanged governs that case."""
+    if rows is None:
+        try:
+            rows = json.loads(STATUS_JSON.read_text(encoding="utf-8"))["rows"]
+        except Exception as exc:
+            raise SystemExit(f"REFUSED (S6-B3393): status view unreadable "
+                             f"({type(exc).__name__}) - the T1 floor cannot be read")
+    r = next((x for x in rows if x.get("strategy") == strategy), None)
+    if r is None:
+        raise SystemExit(f"REFUSED (S6-B3393, runbook T1): {strategy} has no status-view "
+                         "row - regenerate scripts/build_strategy_status.py")
+    n, pct = r.get("r5_fires"), r.get("survives_pct")
+    if n is None or pct is None:
+        return (f"t1: {strategy}'s surviving fires are unmeasured (r5_fires {n}, "
+                f"survives_pct {pct}) - require_surviving_or_unchanged governs (S6-B3393)")
+    kept = int(round(float(n) * float(pct)))
+    if kept < T1_MIN_SURVIVORS:
+        raise SystemExit(
+            f"REFUSED (S6-B3393, runbook T1): {strategy} keeps {kept} of its {n} R5 "
+            f"fires, under the T1 floor of {T1_MIN_SURVIVORS} - the strategy re-lanes "
+            "to LOOSEN (W-L); no Step-1 grid scores a cell on fewer fires")
+    return f"t1: {strategy} keeps {kept} of {n} R5 fires (floor {T1_MIN_SURVIVORS}; S6-B3393)"
 
 
 def _render_one(strategy: str) -> Path:
@@ -271,6 +310,10 @@ def surviving_fam(strategy: str, fam):
     be confirmed a survivor. Refuses when no fire survives (fail closed)."""
     import build_table_a as _bta
     from offline_level_sweep import _survival_inputs
+    # S6-B3393 (census 908): the T1 floor binds the instruments that reach
+    # survival here without the band-ruling path (smc_lsr_step1,
+    # tighten_breaker_block); it reads the status view, not `fam`
+    print(require_t1_floor(strategy))
     pct, unmeasured = _survival_inputs(strategy)
     kept, _sigs, _filtered = _bta.surviving_fires(strategy, fam, pct, unmeasured)
     if kept.empty:

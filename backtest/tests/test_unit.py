@@ -74330,3 +74330,175 @@ def test_b3393i_a_stale_table_a_file_refuses_an_offline_step1(tmp_path, monkeypa
     monkeypatch.setattr(g, "require_current_table_a", lambda s: seen.append(s) or f"line for {s}")
     assert g.require_band_ruling("words", none) == "words"
     assert seen == [none] and f"line for {none}" in capsys.readouterr().out
+
+def test_b3393j_the_t1_floor_refuses_a_starved_step1(monkeypatch, capsys):
+    """S6-B3393 (runbook T1, census 908): an offline Step 1 runs only on a
+    strategy whose current gate keeps at least 10 of its R5 fires, read from
+    the stamped status view (round(r5_fires x survives_pct), the number the
+    line shows - L716). The boundary sits AT 10; an unmeasured survival is
+    reported; an absent row refuses; every real row obeys the rule; and
+    require_band_ruling's live path calls it."""
+    import json as _json
+    pvt, bta, g = _b3393_gates()
+    assert g.T1_MIN_SURVIVORS == 10
+
+    def one(n, pct):
+        return [{"strategy": "zz_b3393j", "r5_fires": n, "survives_pct": pct}]
+    for n, pct, ok in ((10, 1.0, True), (9, 1.0, False), (20, 0.5, True),
+                       (20, 0.45, False), (0, 1.0, False), (1000, 0.0101, True)):
+        if ok:
+            assert "keeps" in g.require_t1_floor("zz_b3393j", rows=one(n, pct)), (n, pct)
+        else:
+            with pytest.raises(SystemExit) as ex:
+                g.require_t1_floor("zz_b3393j", rows=one(n, pct))
+            assert "T1 floor" in str(ex.value) and "LOOSEN" in str(ex.value), (n, pct)
+    assert "unmeasured" in g.require_t1_floor("zz_b3393j", rows=one(50, None))
+    with pytest.raises(SystemExit) as ex:
+        g.require_t1_floor("zz_b3393j", rows=[])
+    assert "no status-view row" in str(ex.value)
+    rows = _json.loads(g.STATUS_JSON.read_text(encoding="utf-8"))["rows"]
+    refused = 0
+    for r in rows:
+        n, pct = r.get("r5_fires"), r.get("survives_pct")
+        if n is None or pct is None:
+            assert "unmeasured" in g.require_t1_floor(r["strategy"], rows=rows)
+            continue
+        below = int(round(float(n) * float(pct))) < 10
+        if below:
+            refused += 1
+            with pytest.raises(SystemExit):
+                g.require_t1_floor(r["strategy"], rows=rows)
+        else:
+            assert "keeps" in g.require_t1_floor(r["strategy"], rows=rows)
+    assert refused >= 1, "positive control: a real row sits under the floor"
+    names = sorted(set(pvt.SPECS) | set(pvt.SPECS_PHASE0))
+    none = next(n for n in names if bta.table_a_file(n) is None)
+    seen = []
+    monkeypatch.setattr(g, "require_t1_floor", lambda s: seen.append(s) or f"t1 line for {s}")
+    assert g.require_band_ruling("words", none) == "words"
+    assert seen == [none] and f"t1 line for {none}" in capsys.readouterr().out
+
+    def _refuse(s):
+        raise SystemExit(f"t1 floor for {s}")
+    monkeypatch.setattr(g, "require_t1_floor", _refuse)
+    with pytest.raises(SystemExit) as ex:
+        g.surviving_fam("camarilla_r4_breakout", None)
+    assert "t1 floor for camarilla_r4_breakout" in str(ex.value), str(ex.value)
+
+
+def test_b3393k_the_onramp_probe_runs_r1_to_r9_and_make_spec_reads_it(monkeypatch, capsys):
+    """S6-B3393 (runbook section 11.1, census 634): scripts/onramp_probe.py runs
+    R1-R9 through the launch gate's own functions and every SPECS entry passes
+    all nine (MEASURED 17 of 17); each R can fail (R1 validate_spec, R2 no
+    serving family, R3 a family refusal that also fails R4-R7, R4/R6 a script
+    without a parser, R7 a missing anchor script, R8 an unread knob); the
+    runbook's corrected R2 probe, read out of its row, prints True for a served
+    strategy and False for an unserved name; make_spec --dry prints the nine
+    ONRAMP lines and a real run refuses on a FAIL."""
+    import copy as _copy
+    import re as _re
+    import subprocess as _sp
+    import sys as _sys
+    from pathlib import Path as _P
+    pvt = _pvt_b3393a()
+    import onramp_probe as op
+    import run_postconfig as rp
+    root = _P(__file__).resolve().parents[2]
+    ids = [f"R{i}" for i in range(1, 10)]
+    for s in sorted(pvt.SPECS):
+        rows = op.probe(s)
+        assert [r[0] for r in rows] == ids and all(ok for _r, ok, _l in rows), (s, rows)
+    s = next(n for n in sorted(pvt.SPECS)
+             if any(p.get("env") for p in pvt.SPECS[n]["params"]))
+
+    def failed(**kw):
+        return sorted(r for r, ok, _l in op.probe(s) if not ok)
+    with monkeypatch.context() as m:
+        m.setattr(pvt, "validate_spec", lambda spec: ["a planted error"])
+        assert failed() == ["R1"]
+    with monkeypatch.context() as m:
+        m.setattr(pvt, "D_AXIS_FAMILIES", {})
+        assert failed() == ["R2"]
+    with monkeypatch.context() as m:
+        m.setattr(rp, "family_refusal", lambda n: "a planted refusal")
+        assert failed() == ["R3", "R4", "R5", "R6", "R7"]
+    with monkeypatch.context() as m:
+        m.setattr(op, "_has_parser", lambda p: False)
+        assert {"R4", "R6"} <= set(failed()) and "R1" not in failed()
+    with monkeypatch.context() as m:
+        e = _copy.deepcopy(pvt.SPECS[s])
+        e.setdefault("tools", {})["engine_anchors"] = {"script": "zz_no_such_anchor_b3393k.py"}
+        m.setitem(pvt.SPECS, s, e)
+        assert failed() == ["R7"]
+    with monkeypatch.context() as m:
+        m.setattr(pvt, "knob_is_read", lambda k, r: False)
+        assert failed() == ["R8"]
+    with monkeypatch.context() as m:
+        m.setitem(pvt.SPECS, "zz_b3393k_min", {"params": [{"id": "P1", "production": 1}],
+                                               "tools": {"keys": {}}})
+        rows = op.probe("zz_b3393k_min")
+        assert [r[0] for r in rows] == ids, rows
+        assert not rows[0][1] and rows[0][2].startswith("raised KeyError"), rows[0]
+    row = next(ln for ln in (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(
+        encoding="utf-8").splitlines() if ln.startswith("| R2 |"))
+    probes = _re.findall(r'`python -c "([^`"]*)"`', row)
+    assert len(probes) == 1 and "serves" in probes[0], probes
+    for name, want in ((s, "True"), ("zz_unserved_b3393k", "False")):
+        r = _sp.run([_sys.executable, "-c", probes[0].replace("<strategy>", name)],
+                    cwd=root / "scripts", capture_output=True, text=True, timeout=600)
+        assert r.returncode == 0 and r.stdout.strip().splitlines()[-1] == want, (name, r.stdout, r.stderr[-300:])
+    import make_spec as ms
+    import owner_word
+    pid = next(p["id"] for p in pvt.SPECS[s]["params"] if p.get("env"))
+    monkeypatch.setattr(_sys, "argv", ["make_spec.py", "--strategy", s, "--param", pid,
+                                       "--levels", "1", "--wave-prefix", "t_b3393k", "--dry"])
+    capsys.readouterr()
+    ms.main()
+    out = capsys.readouterr().out
+    assert [ln.split()[1] for ln in out.splitlines() if ln.startswith("ONRAMP ")] == ids, out[-800:]
+    monkeypatch.setattr(owner_word, "refusals", lambda *a, **k: [])
+    monkeypatch.setattr(op, "probe", lambda st, root=None: [("R1", True, "SPEC OK"),
+                                                          ("R2", False, "planted")])
+    monkeypatch.setattr(_sys, "argv", ["make_spec.py", "--strategy", s, "--param", pid,
+                                       "--levels", "1", "--wave-prefix", "t_b3393k",
+                                       "--owner-word", "w", "--owner-word-ticket", "S6-B3393"])
+    rc = ms.main()
+    out = capsys.readouterr().out
+    assert rc != 0 and "on-ramp fails" in out and "R2: planted" in out, (rc, out[-600:])
+
+def test_b3393l_every_executable_r_probe_in_the_runbook_prints_its_expected_line():
+    """S6-B3393 (the R2 probe printed False for 15 of 17 served SPECS entries
+    - the B2883b class, a documented probe nothing ran): every R-row probe
+    written as `python -c "..."` is read out of the runbook and run for a
+    SPECS entry that passes the on-ramp, from the repository root with
+    scripts/ on PYTHONPATH, and its last output line must equal the row's
+    expected value (the first backticked token of the expected column). The
+    rows found are pinned, so a new executable probe joins the run."""
+    import os as _os
+    import re as _re
+    import subprocess as _sp
+    import sys as _sys
+    from pathlib import Path as _P
+    pvt = _pvt_b3393a()
+    import onramp_probe as op
+    root = _P(__file__).resolve().parents[2]
+    s = next(n for n in sorted(pvt.SPECS)
+             if any(p.get("env") for p in pvt.SPECS[n]["params"])
+             and all(ok for _r, ok, _l in op.probe(n)))
+    env = dict(_os.environ, PYTHONPATH=str(root / "scripts"))
+    ran = []
+    for ln in (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8").splitlines():
+        m = _re.match(r"^\| (R[1-9]) \|", ln)
+        if not m:
+            continue
+        cells = [c.strip() for c in ln.strip().strip("|").split(" | ")]
+        probes = _re.findall(r'`python -c "([^`"]*)"`', cells[-2])
+        if not probes:
+            continue
+        want = _re.findall(r"`([^`]+)`", cells[-1])[0]
+        r = _sp.run([_sys.executable, "-c", probes[0].replace("<strategy>", s)],
+                    cwd=root, env=env, capture_output=True, text=True, timeout=900)
+        got = (r.stdout.strip().splitlines() or [""])[-1]
+        assert r.returncode == 0 and got == want, (m.group(1), want, got, r.stderr[-300:])
+        ran.append(m.group(1))
+    assert ran == ["R1", "R2", "R3", "R8"], ran
