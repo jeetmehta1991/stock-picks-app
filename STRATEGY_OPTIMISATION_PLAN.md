@@ -637,7 +637,7 @@ own strategy, leaving the base keys and the roster untouched until an admission 
 | Assert the optimiser has no holdout path in scope | accidental leakage | L276 (B1452) |
 | Assert `full_period_n` is passed wherever the gate is evaluated | a silently no-op gate leg | B1492 |
 | Positive control: a config identical to the current gates must reproduce the current result | extractor / replay bugs | L323 |
-| Negative control: a deliberately absurd threshold must produce zero trades | silent no-op filters | L322 |
+| Negative control: a deliberately absurd threshold must produce zero trades. ENFORCED on every landing: each free-levels grader runs its own keep path at an absurd bound per graded axis and fails closed on a kept row, and the battery's negative_control lens fails closed on an artifact without the record (free_level_window.negative_control, run_postconfig.negative_control_lens, test_b3397g; S6-B3397) | silent no-op filters | L322 |
 | Assert every scored config's trade count > 0 before scoring | vacuous passes | L325 |
 | Re-derive every published count from the artifact, never from a running tally | count drift | L298 |
 | Run `scripts/audit_registration_redundancy.py` after any loosening (CHECKLIST #169) and after a tightening campaign (the pre-B3096 row). ENFORCED on every landing: the battery's registration_redundancy lens compares the landed leg with every other R5 registration and the cube's riders over the cube's own tickers and window, with this tool's own bars, and WARNs on a pair the change pushed to REDUNDANT (run_postconfig.redundancy_row, test_b3397e; S6-B3397) | a change collapsing two strategies together | CHECKLIST #169 |

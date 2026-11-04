@@ -25763,6 +25763,24 @@ MEASURED, each before any commit: (1) r155's runbook paragraph named a strategy 
 
 **Mechanism.** The pins that fired are the mechanism for (1)-(3) and held 3 of 3; scripts/pregate_select.py ran them before the gate. (4): scan_help_on_parserless_script fires on a parserless script only, so a --help on a script with a parser passes by design - the read-first half is JUDGMENT-ONLY (no scan can see whether a source was read before a command that is harmless anyway), durability by #327's own text.
 
+**Addendum (B3139q-r189, S6-B3397 batch 8g): A GRADER RUN TO VALIDATE A CHANGE
+REWROTE TWO TRACKED VIEWS, BECAUSE I HAD READ ITS KEEP PATH AND NOT ITS TAIL.**
+To check the new negative control live I ran each free-levels grader on a
+landed cube with --out in the scratchpad. scripts/grade_free_levels_pairs.py
+also runs scripts/build_strategy_status.py and breadth_step1_grid.py against
+the production tree whatever --out says - its T3 breadth leg, by design on a
+landing. MEASURED: STRATEGY_OPTIMISATION_STATUS.md (1 line, its build stamp)
+and output_audit/strategy_optimisation_status.json (84 / 32 lines) were
+rewritten at 16:45:37Z; the probe hit its own timeout before the breadth
+grid, and no python process outlived it (the process list was empty).
+Restored to the HEAD blobs with git show, byte-equal, nothing committed; the
+five other graders' runs and a sandboxed pairs run (both subprocesses
+replaced, the tracked tree verified unchanged) gave the evidence. **Compliance
+failure against #327** - its tripwire reads "or call any script you have not
+read": I had read the part I changed and called the whole. Mechanism: BATCHED
+(S6-B3418) - confine the pairs grader's two production writes, so a run
+outside the battery cannot touch a tracked view.
+
 ### L1002 - A CHECKLIST RULE HELD SINCE B1626 RECURRED A THIRD TIME BECAUSE NOTHING RAN IT, AND A SELECTED PRE-GATE CANNOT SEE ITS VICTIMS (B3139q-r162b, 2026-10-31)
 
 MEASURED: r162's producer spot check set an arm's knobs by exporting them and calling importlib.reload(backtest.config), and test_b3248f called it in process, then reloaded config again in its finally to put it back. The pre-gate (120 tests) passed; the full gate, output_audit/b3139q_r162_pyramid.stdout, failed test_bug_30 and test_bug_232 - 2 of 1938 - which pass alone and after test_b3248f alone and fail only when exit_manager, which imports CIRCUIT_BREAKERS and TRAILING_STOP by value, is imported before the reload: the ordered run test_bug_232, test_b3248f, test_bug_30 failed test_bug_30. They are the victims of L330 (S6-B1468a) and L484, and CHECKLIST #209 (B1626) says never to reload a config module inside a test. The reload looked like the RIGHT way to make a producer see new knobs, since config parses its environment at import, and the second reload looked like hygiene.

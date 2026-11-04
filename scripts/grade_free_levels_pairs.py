@@ -285,6 +285,17 @@ def main() -> int:
     ted["entry_date"] = ted["entry_date"].astype(str).str[:10]
     covered["entry_date"] = covered["entry_date"].astype(str).str[:10]
 
+    # S6-B3397 (census 585): passes() at an absurd level on each axis keeps 0
+    def _kept_at(key):
+        def _count(b):
+            lv = dict(prod_levels)
+            lv[key] = b
+            return int(covered["_vals"].apply(lambda v: passes(lv, v)).sum())
+        return _count
+    neg = [flw.negative_control(f"{pid} {key} {tight_op}", tight_op, len(covered),
+                                _kept_at(key))
+           for pid, key, _prod, _po, tight_op in AXES]
+
     def ids_for(levels: dict) -> set:
         keep = covered[covered["_vals"].apply(lambda v: passes(levels, v))]
         return set(zip(keep["ticker"].astype(str), keep["entry_date"]))
@@ -452,6 +463,13 @@ def main() -> int:
                            "is unsimulated (L812, S6-B3139r); EXPLORATORY "
                            "registration rides (B2085/F24)"),
     }
+    # S6-B3397 (census 585, L322): the keep path at an absurd bound keeps 0
+    if flw.negative_control_failures(neg):
+        print(f"[FAIL] negative control (S6-B3397, L322): {neg} - the keep path "
+              "kept rows at a level no value can pass, so it filters nothing; "
+              "grading nothing")
+        return 2
+    doc["negative_control"] = neg
     out = Path(a.out) if a.out else (
         ROOT / "output_audit" / f"{cube_dir.name}_free_levels.json")
     out.parent.mkdir(parents=True, exist_ok=True)

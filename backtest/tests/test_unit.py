@@ -73818,3 +73818,93 @@ def test_b3397f_landing_commit_carries_the_resim_evidence(tmp_path, monkeypatch)
     import inspect
     src = inspect.getsource(pl)
     assert src.count("for k in ARTIFACT_KINDS") == 2, "both sites read the one list"
+
+def test_b3397g_absurd_bound_keeps_nothing_and_a_noop_filter_fails():
+    """S6-B3397 (census 585, L322): absurd_bound is -inf for a ceiling and
+    +inf for a floor; negative_control PASSes a real keep path (0 kept) and
+    FAILs a no-op one; an unknown op raises rather than guessing."""
+    import pytest
+    _rp_b3397a()
+    import free_level_window as flw
+    assert flw.absurd_bound("lt") == flw.absurd_bound("le") == float("-inf")
+    assert flw.absurd_bound("gt") == flw.absurd_bound("ge") == float("inf")
+    with pytest.raises(ValueError):
+        flw.absurd_bound("eq")
+    vals = [1.0, 5.0, 9.0]
+    ok = flw.negative_control("x lt", "lt", len(vals), lambda b: sum(v < b for v in vals))
+    assert ok["kept"] == 0 and ok["verdict"] == "PASS" and ok["level"] == "-inf", ok
+    noop = flw.negative_control("x gt", "gt", len(vals), lambda b: len(vals))
+    assert noop["verdict"] == "FAIL" and flw.negative_control_failures([ok, noop]) == [noop]
+
+
+def test_b3397g_every_free_levels_grader_records_and_enforces_the_control():
+    """S6-B3397 (census 585): every free-levels script a SPECS family
+    registers calls free_level_window.negative_control, writes the
+    negative_control key, and has an `if` on negative_control_failures whose
+    body returns or raises - read from the AST, never from prose."""
+    import ast
+    from pathlib import Path
+    rp = _rp_b3397a()
+    root = Path(__file__).resolve().parents[2]
+    scripts = sorted({rp.SPECS[f]["tools"]["free_levels"]["script"] for f in rp.FAMILIES
+                      if rp.SPECS[f]["tools"].get("free_levels")})
+    assert len(scripts) == 6, scripts
+    for s in scripts:
+        tree = ast.parse((root / "scripts" / s).read_text(encoding="utf-8"))
+        calls = {(n.func.attr if isinstance(n.func, ast.Attribute) else getattr(n.func, "id", ""))
+                 for n in ast.walk(tree) if isinstance(n, ast.Call)}
+        assert "negative_control" in calls, s
+        keys = {n.value for n in ast.walk(tree)
+                if isinstance(n, ast.Constant) and n.value == "negative_control"}
+        assert keys, f"{s} never writes a negative_control key"
+        guarded = False
+        for n in ast.walk(tree):
+            if isinstance(n, ast.If) and "negative_control_failures" in ast.dump(n.test):
+                guarded = any(isinstance(x, (ast.Return, ast.Raise))
+                              for b in n.body for x in ast.walk(b))
+        assert guarded, f"{s} does not fail closed on a kept row"
+
+
+def test_b3397g_lens_fails_closed_on_a_missing_or_failed_control(tmp_path, monkeypatch):
+    """S6-B3397 (census 585): the negative_control lens FAILs an artifact
+    with no record, an unreadable one and one whose axis kept rows; INFO
+    when every axis kept 0; N/A for a family without free levels, a
+    not-comparable artifact or no live axis."""
+    import json
+    rp = _rp_b3397a()
+    monkeypatch.setattr(rp, "ROOT", tmp_path)
+    (tmp_path / "output_audit").mkdir()
+    cube = tmp_path / "cube_n"
+    cube.mkdir()
+    fam = "naked_poc_retest_long"
+    art = tmp_path / "output_audit" / f"{rp.artifact_key(cube, fam)}_free_levels.json"
+    assert rp.negative_control_lens(cube, fam)[1] == "FAIL"           # absent
+    art.write_text(json.dumps({"levels": {}}), encoding="utf-8")
+    lv, ev = rp.negative_control_lens(cube, fam)[1:]
+    assert lv == "FAIL" and "records no negative control" in ev, ev
+    good = {"axis": "P6 dist lt", "population": 9, "kept": 0, "verdict": "PASS"}
+    art.write_text(json.dumps({"negative_control": [good]}), encoding="utf-8")
+    lv, ev = rp.negative_control_lens(cube, fam)[1:]
+    assert lv == "INFO" and "1 of 1" in ev, ev
+    bad = dict(good, kept=3, verdict="FAIL")
+    art.write_text(json.dumps({"negative_control": [good, bad]}), encoding="utf-8")
+    lv, ev = rp.negative_control_lens(cube, fam)[1:]
+    assert lv == "FAIL" and "1 of 2" in ev, ev
+    art.write_text(json.dumps({"negative_control": []}), encoding="utf-8")
+    assert rp.negative_control_lens(cube, fam)[1] == "INFO"
+    art.write_text(json.dumps({"not_comparable": "x"}), encoding="utf-8")
+    assert rp.negative_control_lens(cube, fam)[1] == "INFO"
+    lv, ev = rp.negative_control_lens(cube, "smc_breaker_block_long")[1:]
+    assert lv == "INFO" and "declares no free levels" in ev, ev
+
+
+def test_b3397g_lenses_carry_the_negative_control_row(tmp_path):
+    """S6-B3397 (L654 - the wiring): lenses() emits negative_control."""
+    rp = _rp_b3397a()
+    cube = tmp_path / "cube"
+    cube.mkdir()
+    rows = ["ticker,strategy,entry_date,direction,exit_method,pnl_pct,hold_days",
+            "T,g,2024-06-03,long,time_stop_10d,1.0,10"]
+    (cube / "trade_exit_detail.csv").write_text("\n".join(rows) + "\n", encoding="utf-8")
+    names = [n for n, _l, _e in rp.lenses(cube, 1, {"step1_ranking": []}, None)]
+    assert "negative_control" in names, names

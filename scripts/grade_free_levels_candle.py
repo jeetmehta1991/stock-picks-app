@@ -236,6 +236,10 @@ def main() -> int:
               "(owner ruling 2026-09-02). Grading nothing.")
         return 2
 
+    neg = [flw.negative_control(f"P6 {KEY} {direction}", direction, len(covered),
+                                lambda b: int(covered["_rsi"].apply(
+                                    lambda v: keep_row(v, direction, b)).sum()))]
+
     # ---- grade each free level on the exit-expanded cube -----------------
     ted_all = pd.read_csv(ted_path, low_memory=False)
     ted_strat = ted_all[ted_all["strategy"].astype(str) == strat]
@@ -337,6 +341,13 @@ def main() -> int:
                            "a bound in either direction while occupancy "
                            "is unsimulated (L812, S6-B3139r)"),
     }
+    # S6-B3397 (census 585, L322): the keep path at an absurd bound keeps 0
+    if flw.negative_control_failures(neg):
+        print(f"[FAIL] negative control (S6-B3397, L322): {neg} - the keep path "
+              "kept rows at a level no value can pass, so it filters nothing; "
+              "grading nothing")
+        return 2
+    doc["negative_control"] = neg
     out = Path(a.out) if a.out else (
         ROOT / "output_audit" / f"{cube_dir.name}_free_levels.json")
     out.parent.mkdir(parents=True, exist_ok=True)

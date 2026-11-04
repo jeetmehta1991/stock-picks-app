@@ -277,7 +277,14 @@ def p11_p8_sections(tl, ted, min_n) -> dict:
                 "kept": len(kept), "rejected_by_level": rejected,
                 "per_exit": grade_kept(ted, kept, min_n)[:6]}
 
+    # S6-B3397 (census 585): P11's keep path at an absurd edge shift keeps 0;
+    # P8 re-bands fires between regimes and has no threshold to make absurd
+    nc_p11 = flw.negative_control(
+        "P11 rsi edge shift", "ge", len(rows),
+        lambda b: sum(1 for r in rows
+                      if rsi_leg(r["direction"], r["rsi2"], r["rsi14"], r["band"], b)))
     out = {
+        "negative_control_p11": nc_p11,
         "p11_tight": {
             "axis": "P11 vix-conditional rsi edges, TIGHT -5 long / +5 short "
                     "(T3-approved single-axis enumeration)",
@@ -431,6 +438,10 @@ def main() -> int:
               "(owner ruling 2026-09-02). Grading nothing.")
         return 2
 
+    neg = [flw.negative_control(f"P9 {KEY} {DIRECTION}", DIRECTION, len(covered),
+                                lambda b: int(covered["_adx"].apply(
+                                    lambda v: keep_row(v, DIRECTION, b)).sum()))]
+
     # ---- grade each free level on the exit-expanded cube -----------------
     ted_all = pd.read_csv(ted_path, low_memory=False)
     ted_strat = ted_all[ted_all["strategy"].astype(str) == strat]
@@ -500,6 +511,7 @@ def main() -> int:
     # S6-B3117 (B3120 Batch C): the T3 single-axis enumerations ride the
     # same landing leg - battery-wired, never executed-once (L752/#290)
     t3 = p11_p8_sections(tl, ted, a.min_n)
+    neg.append(t3["negative_control_p11"])
 
     doc = {
         "strategy": strat, "axis": "P9 " + str(p9["param"]),
@@ -538,6 +550,13 @@ def main() -> int:
                            "a bound in either direction while occupancy "
                            "is unsimulated (L812, S6-B3139r)"),
     }
+    # S6-B3397 (census 585, L322): the keep path at an absurd bound keeps 0
+    if flw.negative_control_failures(neg):
+        print(f"[FAIL] negative control (S6-B3397, L322): {neg} - the keep path "
+              "kept rows at a level no value can pass, so it filters nothing; "
+              "grading nothing")
+        return 2
+    doc["negative_control"] = neg
     out = Path(a.out) if a.out else (
         ROOT / "output_audit" / f"{cube_dir.name}_free_levels.json")
     out.parent.mkdir(parents=True, exist_ok=True)

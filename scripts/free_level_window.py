@@ -118,3 +118,35 @@ def gap_breakdown(ted_all: pd.DataFrame, exit_method: str) -> str:
     return (f"cube rows for {exit_method}: in-sample {w['in_sample']} / "
             f"holdout {w['holdout']} / outside {w['outside_both']}; "
             f"by strategy {by}")
+
+
+# ---------------------------------------------------------------------------
+# S6-B3397 (census 585; the runbook verification table's first row: "a
+# deliberately absurd threshold must produce zero trades", L322 - a silent
+# no-op filter). ONE definition: every free-levels grader runs its OWN keep
+# path at absurd_bound(op) and records negative_control(); a grader with a
+# kept row fails closed, and the battery's negative_control lens fails closed
+# on an artifact that records none.
+def absurd_bound(op: str) -> float:
+    """A level no finite value passes under `op`: -inf for a ceiling (lt /
+    le - keep below), +inf for a floor (gt / ge - keep above)."""
+    if op in ("lt", "le"):
+        return float("-inf")
+    if op in ("gt", "ge"):
+        return float("inf")
+    raise ValueError(f"no absurd bound for op {op!r}")
+
+
+def negative_control(axis: str, op: str, population: int, kept_at) -> dict:
+    """`kept_at(level)` is the grader's own keep path counting the rows of
+    `population` it keeps at `level`; at absurd_bound(op) it must keep 0."""
+    lvl = absurd_bound(op)
+    kept = int(kept_at(lvl))
+    return {"axis": axis, "op": op, "level": "-inf" if lvl < 0 else "inf",
+            "population": int(population), "kept": kept,
+            "verdict": "PASS" if kept == 0 else "FAIL"}
+
+
+def negative_control_failures(records: list) -> list:
+    """The records whose keep path kept a row at the absurd bound."""
+    return [r for r in records if not isinstance(r, dict) or r.get("verdict") != "PASS"]

@@ -220,6 +220,16 @@ def grade_levels(cube_csv: Path, flags: pd.DataFrame, *, min_n: int = 10,
         f"{unmatched} cube rows failed the trade-log join - the (ticker, "
         "entry_date, direction) key is not the trade identity here")
     merged = merged[merged["covered"]]  # S6-B2512 rows never graded
+    # S6-B3397 (census 585, L322): the OR gate at an absurd P7 AND P8 keeps 0
+    import free_level_window as _flw
+    neg = [_flw.negative_control(
+        "P7/P8 committed-growth OR gate", "ge", len(merged),
+        lambda b: sum(1 for c, i in zip(merged["committed"], merged["increased"])
+                      if keep_row(c, i, b, b)))]
+    if _flw.negative_control_failures(neg):
+        print(f"[FAIL] negative control (S6-B3397, L322): {neg} - the gate kept "
+              "rows at a level no value can pass; grading nothing")
+        raise SystemExit(2)
 
     doc = {"ticket": ticket, "strategy": STRAT, "cube": str(cube_csv),
            "method": method,
@@ -244,6 +254,7 @@ def grade_levels(cube_csv: Path, flags: pd.DataFrame, *, min_n: int = 10,
                         "max over the exits graded, and every level is a "
                         "nested subset of ONE engine run - levels are not "
                         "independent measurements")},
+           "negative_control": neg,
            "levels": {}}
 
     for name, p7, p8 in levels:

@@ -300,12 +300,23 @@ def main() -> int:
     prod_sub, prod_row = grade_keep(prod_keep, f"landed (count>0, dist<{ceiling})",
                                     "base", ceiling, True)
     results.append(prod_row)
+    def keep_p6(lvl):
+        return covered[covered["_dist"] < float(lvl)]
+
+    def keep_p5(floor):
+        return covered[covered["_cnt"] > float(floor)]
+    # S6-B3397 (census 585): each graded axis's keep path at an absurd bound
+    neg = [flw.negative_control("P6 dist lt", "lt", len(covered),
+                                lambda b: len(keep_p6(b)))]
+    if p5_floors:
+        neg.append(flw.negative_control("P5 count gt", "gt", len(covered),
+                                        lambda b: len(keep_p5(b))))
     for lvl in p6_levels:
-        keep = covered[covered["_dist"] < float(lvl)]
+        keep = keep_p6(lvl)
         results.append(grade_keep(keep, f"P6 dist<{lvl}", "P6",
                                   float(lvl), False)[1])
     for floor in p5_floors:
-        keep = covered[covered["_cnt"] > float(floor)]
+        keep = keep_p5(floor)
         results.append(grade_keep(keep, f"P5 count>{floor}", "P5",
                                   float(floor), False)[1])
 
@@ -359,6 +370,13 @@ def main() -> int:
                            "a bound in either direction while occupancy is "
                            "unsimulated (L812, S6-B3139r)"),
     }
+    # S6-B3397 (census 585, L322): the keep path at an absurd bound keeps 0
+    if flw.negative_control_failures(neg):
+        print(f"[FAIL] negative control (S6-B3397, L322): {neg} - the keep path "
+              "kept rows at a level no value can pass, so it filters nothing; "
+              "grading nothing")
+        return 2
+    doc["negative_control"] = neg
     out = Path(a.out) if a.out else (
         ROOT / "output_audit" / f"{cube_dir.name}_free_levels.json")
     out.parent.mkdir(parents=True, exist_ok=True)

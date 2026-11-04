@@ -278,6 +278,16 @@ def main(argv=None) -> int:
                 "exits_evaluable": len(per_exit),
                 "best": per_exit[0] if per_exit else None, "per_exit": per_exit[:6]}
 
+    # S6-B3397 (census 585): each live axis's keep path at an absurd bound
+    neg = [flw.negative_control(
+        f"{ax['pid']} {ax['key']} {ax['op']}", ax["op"], len(passed),
+        lambda b, ax=ax: sum(1 for v in passed["_" + ax["pid"]]
+                             if v is not None and OPS[ax["op"]](v, b)))
+        for ax in live]
+    if flw.negative_control_failures(neg):
+        print(f"[FAIL] negative control (S6-B3397, L322): {neg} - a keep path "
+              "kept rows at a level no value can pass; grading nothing")
+        return 2
     base_ids = set(zip(passed["ticker"], passed["entry_date"]))
     results = [grade(base_ids, leg, f"landed ({leg})", "base", None) for leg in legs]
     for ax in live:
@@ -344,6 +354,7 @@ def main(argv=None) -> int:
            "derive": derive_rec,
            "levels_searched": {ax["pid"]: ax["levels"] for ax in live},
            "reproduction": repro, "score_reproduction": srep,
+           "negative_control": neg,
            "occupancy": occupancy_disclosure(cube_dir, strat,
                                              window=(rc.IS_START, rc.IS_END)),
            "results": results,

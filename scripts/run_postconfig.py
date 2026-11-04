@@ -1214,6 +1214,11 @@ def lenses(cube_dir: Path, step: int, grid: dict, spot_out: Path | None,
         out.append(effective_parameter_lens(cube_dir, step, family, touched))
     except Exception as exc:                          # noqa: BLE001
         out.append(("effective_parameter", "FAIL", f"crashed: {exc!r}"[:200]))
+    # S6-B3397 (census 585): the free-levels leg's negative control
+    try:
+        out.append(negative_control_lens(cube_dir, family))
+    except Exception as exc:                          # noqa: BLE001
+        out.append(("negative_control", "FAIL", f"crashed: {exc!r}"[:200]))
     # S6-B3397 (runbook 2.4 item 19 + 1.5, census 817 / 1293; the redundancy
     # row, census 588): the landed leg against the R5 baseline over the
     # cube's own tickers and window - a crash is a FAIL row, never a skip
@@ -1789,6 +1794,48 @@ def alt_flag_value(row: dict, landed):
             isinstance(x, dict) and isinstance(x.get("k"), int) for x in d.values()):
         return json.dumps({s: {**x, "k": x["k"] + 1} for s, x in d.items()})
     return None
+
+
+def negative_control_lens(cube_dir: Path, family) -> tuple:
+    """S6-B3397 (census 585; the verification table's first row, L322 - 'a
+    deliberately absurd threshold must produce zero trades'): every
+    free-levels grader runs its own keep path at an absurd bound per graded
+    threshold axis (free_level_window.negative_control) and fails closed on
+    a kept row; this lens reads the record on the landing's free-levels
+    artifact and FAILs when it is absent or any axis kept a row - a filter
+    never shown to exclude anything. N/A for a family with no free levels, a
+    not-comparable artifact or no live axis. MEASURED at B3139q-r189 on the
+    latest landing of each of the 6 free-levels graders: 11 of 11 axes kept 0
+    (bollinger 2, candle 1, institutional 1, knob 2, npoc 2, pairs 3)."""
+    name = "negative_control"
+    if not family or family not in FAMILIES:
+        return (name, "INFO", "no family resolved - no free-levels leg (N/A)")
+    if not SPECS[family]["tools"].get("free_levels"):
+        return (name, "INFO", f"{family} declares no free levels (N/A)")
+    path = ROOT / "output_audit" / f"{artifact_key(cube_dir, family)}_free_levels.json"
+    try:
+        doc = json.loads(path.read_text(encoding="utf-8")) or {}
+    except (OSError, ValueError) as exc:
+        return (name, "FAIL", f"{path.name} unreadable ({type(exc).__name__}) - the "
+                              "negative control cannot be read (fail closed, L642)")
+    if doc.get("not_comparable"):
+        return (name, "INFO", "the free-levels leg graded no level (not comparable) - "
+                              "no control is owed (N/A)")
+    recs = doc.get("negative_control")
+    if recs is None:
+        return (name, "FAIL", f"{path.name} records no negative control - its filters "
+                              "were never shown to exclude anything (L322)")
+    if not recs:
+        return (name, "INFO", "no live free-level axis on this landing (N/A)")
+    bad = [r for r in recs if not isinstance(r, dict) or r.get("verdict") != "PASS"
+           or r.get("kept")]
+    if bad:
+        return (name, "FAIL", f"{len(bad)} of {len(recs)} axes kept rows at an absurd "
+                              f"level - a no-op filter: {bad[:2]}")
+    return (name, "INFO", f"{len(recs)} of {len(recs)} graded axes kept 0 of their "
+                          "population at an absurd level: "
+                          + "; ".join(f"{r.get('axis')} 0 of {r.get('population')}"
+                                      for r in recs[:4]))
 
 
 def effective_parameter_lens(cube_dir: Path, step: int, family, touched: int) -> tuple:
