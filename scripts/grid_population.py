@@ -32,6 +32,13 @@ def grid_population(grid: dict) -> tuple[list, str, str]:
         return [], "results", "rows"
     if isinstance(grid.get("per_exit"), list) and grid["per_exit"]:
         return grid["per_exit"], "per_exit", "exits"
+    # S6-B3397 (B3139q-r184): lever4_step1 and grade_knob_config write their
+    # graded (cell, exit) lines as a `rows` LIST - there `rows` is the
+    # population, not the B2505 cube-row count. Read as `results` (absent)
+    # they rendered '0 combinations enumerated' on 7 of 7 such landings.
+    rows = grid.get("rows")
+    if isinstance(rows, list) and rows and all(isinstance(r, dict) for r in rows):
+        return rows, "rows", "cell-exit lines"
     return (grid.get("results") or []), "results", "combinations"
 
 
@@ -85,6 +92,20 @@ def main() -> int:
 if __name__ == "__main__":
     import sys
     sys.exit(main())
+
+
+def starved_count(rows: list, field: str) -> int:
+    """S6-B3397: population lines that never received a grade - ONE
+    definition for every renderer. results / per_exit: NO_EXIT_SELECTABLE,
+    or an admit block at BELOW_POWER_FLOOR (a row meeting both counts once);
+    the rows-LIST dialect carries no verdict, so a line with no is_sharpe is
+    starved (0 of 520 landed lines at B3139q-r184 - the arm is pinned on a
+    fixture and unexercised on real data)."""
+    if field == "rows":
+        return sum(1 for r in rows if isinstance(r, dict) and r.get("is_sharpe") is None)
+    return sum(1 for r in rows if isinstance(r, dict) and (
+        r.get("verdict") == "NO_EXIT_SELECTABLE"
+        or (r.get("admit") or {}).get("verdict") == "BELOW_POWER_FLOOR"))
 
 
 def ranked_count(row: dict) -> str:

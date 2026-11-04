@@ -73092,3 +73092,172 @@ def test_b3397a_landing_report_renders_every_named_check():
     text = "\n".join(lines)
     assert "Other checks" in text and "zz_future_check" in text, text
     assert "**<-- NOT PASS**" in text
+
+def _b3397b_cube(tmp_path, name, strategy, exits=("ex_a", "ex_b", "ex_c"), n=40,
+                 env=None):
+    """A synthetic landed cube: `n` in-sample entries x `exits`, where ex_b is
+    byte-identical to ex_a (so exits_effective is len(exits) - 1), plus a
+    manifest naming `strategy` as the graded subset and the arm env."""
+    import json
+    cube = tmp_path / name
+    cube.mkdir()
+    lines = ["strategy,direction,ticker,entry_date,exit_method,pnl_pct,hold_days"]
+    for i in range(n):
+        d = f"2023-{(i % 12) + 1:02d}-{(i % 27) + 1:02d}"
+        for ex in exits:
+            pnl = (1.5 if i % 3 else -0.8) if ex != "ex_c" else (0.9 if i % 2 else -1.1)
+            lines.append(f"{strategy},long,T{i},{d},{ex},{pnl},{3 if ex != 'ex_c' else 5}")
+    (cube / "trade_exit_detail.csv").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    (tmp_path / f"{name}_subset.txt").write_text(strategy + "\n", encoding="utf-8")
+    man = {"strategy_subset": f"{name}_subset.txt", "arms": [{"env": env or {}}]}
+    (cube / "run_manifest.json").write_text(json.dumps(man), encoding="utf-8")
+    return cube, man
+
+
+def test_b3397b_rows_dialect_is_a_population_and_starved_has_one_definition():
+    """S6-B3397 (census 1956's ripple, B3139q-r184): lever4_step1 and
+    grade_knob_config write their graded (cell, exit) lines as a `rows` LIST;
+    grid_population read `results` (absent) and 7 of 7 such landings' step-8
+    verdicts read '0 combinations enumerated'. The rows list is now a
+    population, the verdict names its lines and cells, and the renderers'
+    two starved counts share grid_population.starved_count (they differed:
+    one summed the two conditions, the other OR-ed them - 0 of 11,580 landed
+    rows met both, so no rendered number moved)."""
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    sys.path.insert(0, str(root / "scripts"))
+    import grid_population as gp
+    import postconfig_doc as pd_
+    rp = _rp_b3397a()
+
+    rows_grid = {"strategy": "x", "rows": [
+        {"cell": "base:long", "exit": "a", "is_sharpe": 0.4, "is_ci_lo": 0.1, "is_n": 50},
+        {"cell": "base:long", "exit": "b", "is_sharpe": None, "is_ci_lo": None, "is_n": 9}],
+        "step1_ranking": []}
+    res, field, unit = gp.grid_population(rows_grid)
+    assert (len(res), field, unit) == (2, "rows", "cell-exit lines")
+    assert gp.starved_count(res, field) == 1                     # is_sharpe None
+    # a B2505 grid keeps its int `rows` count and its results population
+    res2, f2, u2 = gp.grid_population({"rows": 900, "results": [{"verdict": "PASS"}]})
+    assert (len(res2), f2, u2) == (1, "results", "combinations")
+    both = [{"verdict": "NO_EXIT_SELECTABLE", "admit": {"verdict": "BELOW_POWER_FLOOR"}},
+            {"verdict": "PASS"}]
+    assert gp.starved_count(both, "results") == 1                # counted ONCE
+    s = rp.verdict_from_grid(rows_grid, 1)
+    assert "1 of 2 cell-exit lines graded across 1 cell(s)" in s and "0 combinations" not in s, s
+    # the LANDING REPORT funnel reads the same definition
+    lines = pd_.config_section("c", {}, {"grid": rows_grid})
+    funnel = [ln for ln in lines if "STARVED in-sample" in ln]
+    assert funnel and "**1 (50%) STARVED" in funnel[0], funnel
+    assert any("2 cell-exit lines enumerated" in ln for ln in lines), lines
+
+
+def test_b3397b_band_levels_lens_flags_an_inert_level():
+    """S6-B3397 (runbook 2.4 item 7 / 5.3 step 3, census 795 + 1844): every
+    swept LEVEL must change the outcome. The lens runs verify_grid_bands over
+    the family's own grid_keys with the SPECS production anchors. MEASURED at
+    B3139q-r184 over 114 landed grids: 81 sweep no key, 23 clean, 10 flag
+    tail_n 5 -> 10 (the documented B1610 saturation)."""
+    rp = _rp_b3397a()
+    fam = "smc_breaker_block_long"
+    keys = rp.SPECS[fam]["tools"]["grid_keys"]
+    assert "tail_n" in keys
+    res = []
+    for tail in (3, 5, 10, 20):
+        for brk in (0.02, 0.05):
+            # tail_n 5 and 10 give the SAME outcome in every group - inert
+            fires = {3: 40, 5: 60, 10: 60, 20: 90}[tail] + (5 if brk == 0.05 else 0)
+            res.append({"close_mitigation": False, "break_pct_max": brk,
+                        "age_bars_max": None, "tail_n": tail, "fires": fires,
+                        "exit": "time_stop_10d", "sharpe": fires / 100.0})
+    lens, level, ev = rp.grid_bands_lens({"results": res}, fam)
+    assert (lens, level) == ("band_levels_change_outcome", "WARN"), ev
+    assert "tail_n" in ev and "5" in ev and "10" in ev, ev
+    # make 5 -> 10 discriminate: clean
+    for r in res:
+        if r["tail_n"] == 10:
+            r["fires"] += 7
+            r["sharpe"] = r["fires"] / 100.0
+    assert rp.grid_bands_lens({"results": res}, fam)[1] == "INFO"
+    # a grid that sweeps none of the family's keys is N/A, said as INFO
+    lens, level, ev = rp.grid_bands_lens({"per_exit": [{"exit": "a", "fires": 3}]}, fam)
+    assert level == "INFO" and "nothing swept" in ev, ev
+
+
+def test_b3397b_verdict_states_its_denominators(tmp_path):
+    """S6-B3397 (runbook 5.3 step 8, census 1956): the verdict also states X
+    of Y producers varied, exits_effective of the registry at the cube's SHA
+    (roster_core.select_exit's collapse, the ONE definition), and the ci_lo
+    of every PASS. MEASURED at B3139q-r184: computed on 110 of 110 landed
+    cubes, 0 errors."""
+    rp = _rp_b3397a()
+    fam = "squeeze_breakout"
+    p2 = next(p for p in rp.SPECS[fam]["params"] if p["id"] == "P2")
+    moved = "1.5" if float(p2["production"]) != 1.5 else "2.5"
+    cube, man = _b3397b_cube(tmp_path, "c_den", fam, env={p2["env"]: moved})
+    grid = {"strategy": fam, "per_exit": [
+        {"exit": "ex_a", "fires": 40, "verdict": "PASS", "ci_lo": 0.42},
+        {"exit": "ex_c", "fires": 40, "verdict": "FAIL", "ci_lo": -0.1}]}
+    s = rp.verdict_denominators(cube, man, fam, grid)
+    assert "producers varied 1 of " in s and "arm-moved ['P2']" in s, s
+    assert "exits_effective 2 of 3 registered at the cube's SHA" in s, s
+    assert "ci_lo of every PASS: [0.42]" in s, s
+    # no PASS row is said, never left blank
+    grid["per_exit"][0]["verdict"] = "FAIL"
+    assert "no PASS row" in rp.verdict_denominators(cube, man, fam, grid)
+    # a family the registry does not hold cannot state them - it raises
+    import pytest
+    with pytest.raises(KeyError):
+        rp.verdict_denominators(cube, man, "not_a_family", grid)
+
+
+def test_b3397b_step8_carries_the_denominators_or_stays_open(tmp_path, monkeypatch, capsys):
+    """S6-B3397 (L654 - the wiring, not the callee): the battery's main path
+    appends the denominators to step 8 and keeps step 8 OPEN when they cannot
+    be stated. A stub family lands a per-exit grid over a synthetic cube."""
+    import json
+    import sys
+    rp = _rp_b3397a()
+    monkeypatch.setattr(rp, "ROOT", tmp_path)
+    (tmp_path / "output_audit").mkdir()
+    # the printed step line is cut at 220 characters; a short verdict keeps
+    # the denominators clause inside it (no --write-ledger: the ledger path is
+    # the production one, L689)
+    monkeypatch.setattr(rp, "verdict_from_grid", lambda grid, step: "V")
+
+    def stub(fam):
+        def run(c, p, m, step=None):
+            key = rp.artifact_key(c, fam)
+            g = rp.ROOT / "output_audit" / f"{key}_grid_auto.json"
+            s = rp.ROOT / "output_audit" / f"{key}_spot_check.json"
+            g.write_text(json.dumps({"strategy": fam, "per_exit": [
+                {"exit": "ex_a", "fires": 40, "verdict": "PASS", "ci_lo": 0.3}],
+                "results": [], "step1_ranking": []}), encoding="utf-8")
+            s.write_text(json.dumps({"seed": 42, "n_sampled": 40, "agree": 40,
+                                     "disagree": 0, "skipped": 0}), encoding="utf-8")
+            res = [("step2_grade_auto", "PASS", "stub"),
+                   ("step4_spot_check_auto", "PASS", "stub"),
+                   ("step7_engine_implemented", "PASS", "stub")]
+            return res, {"2_grade_with_config_params": ("DONE", "stub"),
+                         "4_three_leg_spot_check": ("DONE", "stub")}, g, s
+        return {"params": lambda m: ({"x": 1}, "stub"), "run": run,
+                "single_combination": True}
+
+    def step8(fam, name):
+        cube, _ = _b3397b_cube(tmp_path, name, fam)
+        monkeypatch.setitem(rp.FAMILIES, fam, stub(fam))
+        monkeypatch.setattr(sys, "argv", ["run_postconfig.py", "--cube", str(cube),
+                                          "--step1-cube"])
+        capsys.readouterr()
+        rp._main_unguarded()
+        out = capsys.readouterr().out
+        hit = [ln for ln in out.splitlines()
+               if ln.startswith("  ") and " 8_verdict_with_denominators: " in ln]
+        assert hit, out
+        return hit[-1].split()[0], hit[-1]
+
+    st, line = step8("squeeze_breakout", "c_known")
+    assert st == "DONE" and "producers varied" in line, line
+    st, line = step8("zz_unregistered_alpha", "c_unknown")
+    assert st == "OPEN" and "cannot state its denominators" in line, line

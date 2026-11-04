@@ -1102,7 +1102,8 @@ def grading_provenance_lens(cube_dir: Path) -> tuple:
             "graded_with stamp")
 
 
-def lenses(cube_dir: Path, step: int, grid: dict, spot_out: Path | None) -> list:
+def lenses(cube_dir: Path, step: int, grid: dict, spot_out: Path | None,
+           family=None) -> list:
     import pandas as pd
     from roster_core import HO_START
     out = []
@@ -1163,8 +1164,17 @@ def lenses(cube_dir: Path, step: int, grid: dict, spot_out: Path | None) -> list
     rk = grid.get("step1_ranking") or []
     # B2521 (S6-B2520m): the population question has ONE owner now.
     _, _pop_field, _pop_unit = grid_population(grid)
-    unit = "exits" if _pop_field == "per_exit" else "outcome classes"
+    unit = {"per_exit": "exits", "rows": "cell-exit lines"}.get(_pop_field,
+                                                                "outcome classes")
     out.append(selection_margin_row(rk, unit, step))
+    # S6-B3397 (runbook 2.4 item 7 / 5.3 step 3, census 795 + 1844): every
+    # swept level changes the outcome - a crash is a FAIL row, never a skip
+    try:
+        out.append(grid_bands_lens(grid, family) if family else
+                   ("band_levels_change_outcome", "INFO",
+                    "no family resolved - no grid keys to check"))
+    except Exception as exc:                          # noqa: BLE001
+        out.append(("band_levels_change_outcome", "FAIL", f"crashed: {exc!r}"[:200]))
 
     # B2574 (S6-B2512 CAUSE FOUND): the empty share is the SYMPTOM; the
     # consequence is that the cube replay priced every such trade's exits
@@ -1257,6 +1267,12 @@ def verdict_from_grid(grid: dict, step: int) -> str:
         s = (f"{len(ranked)} of {len(pe)} exits RANKED at min-trades >= "
              f"{grid.get('min_n')} on {grid.get('is_rows')} IS rows "
              f"({grid.get('rows')} cube rows, {grid.get('holdout_rows')} holdout rows)")
+    elif _pf == "rows":                          # lever4_step1 / grade_knob_config
+        # S6-B3397: these lines carry no verdict - graded means is_sharpe set
+        _graded = [r for r in _rows if r.get("is_sharpe") is not None]
+        _cells = sorted({str(r.get("cell")) for r in _rows})
+        s = (f"{len(_graded)} of {len(_rows)} cell-exit lines graded across "
+             f"{len(_cells)} cell(s) {_cells[:4]}")
     else:
         cnt = Counter(str(r.get("verdict")) for r in res)
         s = (f"{len(res)} combinations enumerated: "
@@ -1353,6 +1369,84 @@ def entries_vs_grid_count(grid: dict, leg_all, leg_is) -> tuple[str, str]:
         return "FAIL", "; ".join(bad) + " - trades lost between the cube and the grid (L454)"
     return "PASS", ("grid " + ", ".join(f"{k} {v}" for k, v in c.items())
                     + f" = the cube's {leg_is} in-sample / {leg_all} full-period entries")
+
+
+def grid_bands_lens(grid: dict, family) -> tuple:
+    """S6-B3397 (runbook 2.4 item 7 / 5.3 step 3, census lines 795 and 1844):
+    every swept LEVEL must change the outcome - verify_grid_bands.analyse over
+    the family's own grid_keys (SPECS tools), anchored at each param's
+    production value (the anchor is carried for reproducibility, never judged
+    inert). A grid that sweeps none of its keys is N/A, said as INFO. MEASURED
+    at B3139q-r184 over 114 landed grids: 81 sweep no key, 23 clean, 10 flag
+    tail_n 5 -> 10 (the documented B1610 saturation)."""
+    import verify_grid_bands as vgb
+    spec = SPECS.get(family) or {}
+    keys = list((spec.get("tools") or {}).get("grid_keys") or [])
+    rows, _f, _u = grid_population(grid)
+    swept = [k for k in keys if len({repr(r.get(k)) for r in rows
+                                      if isinstance(r, dict) and k in r}) >= 2]
+    if not swept:
+        return ("band_levels_change_outcome", "INFO",
+                f"no grid key of {keys} carries 2+ levels in this grid - "
+                "nothing swept in-cube to check (N/A)")
+    by_param = {p.get("param"): p for p in spec.get("params") or []}
+    anchors = {k: by_param[k].get("production") for k in swept if k in by_param}
+    reports, failures = vgb.analyse(rows, swept, vgb.DEFAULT_MIN_EFFECT, anchors)
+    swept_txt = ", ".join(f"{r['param']} {r['changed']}/{r['groups']}" for r in reports)
+    if failures:
+        return ("band_levels_change_outcome", "WARN",
+                f"{len(failures)} inert level pair(s): " + "; ".join(
+                    f.split(". These")[0] for f in failures[:3])
+                + f" (swept: {swept_txt}; anchors {anchors})")
+    return ("band_levels_change_outcome", "INFO",
+            f"every swept level changes the outcome (swept: {swept_txt})")
+
+
+def verdict_denominators(cube_dir: Path, manifest: dict, family, grid: dict) -> str:
+    """S6-B3397 (runbook 5.3 step 8, census line 1956): what the verdict
+    must also state - X of Y producers varied, exits_effective of the
+    registry at the cube's SHA, and the ci_lo of every PASS. Raises when a
+    part cannot be computed; the caller records step 8 OPEN with why."""
+    import pandas as pd
+    import roster_core as rc
+    spec = SPECS[family]
+    params = spec.get("params") or []
+    _arm, env = _arm0(manifest)
+    rows, _f, _u = grid_population(grid)
+
+    def _n(v):
+        try:
+            return repr(float(v))
+        except (TypeError, ValueError):
+            return repr(str(v).strip())
+    moved = [p for p in params if p.get("env") and p["env"] in env
+             and _n(env[p["env"]]) != _n(p.get("production"))]
+    swept = [p for p in params if len({repr(r.get(p.get("param"))) for r in rows
+                                       if isinstance(r, dict) and p.get("param") in r}) >= 2]
+    varied = {p["id"]: p for p in moved + swept}
+    prods = {str(p.get("producer")) for p in params}
+    v_prods = {str(p.get("producer")) for p in varied.values()}
+    part1 = (f"producers varied {len(v_prods)} of {len(prods)} "
+             f"(params {sorted(varied) or 'none'} of {len(params)}; arm-moved "
+             f"{sorted(p['id'] for p in moved) or 'none'}, swept in-grid "
+             f"{sorted(p['id'] for p in swept) or 'none'})")
+    cube = rc.load_cube(cube_dir / "trade_exit_detail.csv")
+    leg = cube[cube["strategy"].astype(str) == str(family)]
+    registered = int(leg["exit_method"].nunique())
+    _ex, stats = rc.select_exit(leg)
+    eff = (stats or {}).get("exits_effective")
+    part2 = (f"exits_effective {eff} of {registered} registered at the cube's SHA"
+             if eff is not None else
+             f"exits_effective not measurable - no exit graded in-sample "
+             f"({registered} registered at the cube's SHA)")
+    pass_ci = [r.get("ci_lo") for r in rows
+               if isinstance(r, dict) and r.get("verdict") == "PASS"]
+    s2 = grid.get("step2")
+    if isinstance(s2, dict) and s2.get("verdict") == "PASS":
+        pass_ci.append(s2.get("ci_lo"))
+    part3 = (f"ci_lo of every PASS: {pass_ci}" if pass_ci else
+             "no PASS row, so no PASS ci_lo")
+    return f"{part1}; {part2}; {part3}"
 
 
 def rc_live_gates() -> tuple:
@@ -1575,7 +1669,7 @@ def _main_unguarded() -> int:
 
     # step 5 lenses -> artifact
     try:
-        lens_rows = lenses(cube_dir, step, grid, spot_out)
+        lens_rows = lenses(cube_dir, step, grid, spot_out, family=fam_name)
     except Exception as exc:
         lens_rows = [("lenses_crashed", "FAIL", repr(exc))]
     # S6-B2918: same per-leg key as the grid/spot/free artifacts.
@@ -1696,6 +1790,15 @@ def _main_unguarded() -> int:
             ("DONE", f"engine check PASS on a Step-2 cube: {e7[1][:160]}")
             if e7[0] == "PASS" else
             ("OPEN", f"engine check FAIL on a Step-2 cube: {e7[1][:160]}"))
+    # S6-B3397 (runbook 5.3 step 8, census 1956): the verdict also states X of
+    # Y producers varied, exits_effective at the cube's SHA and every PASS
+    # ci_lo; a verdict that cannot state them stays OPEN, never DONE
+    _den, _den_err = "", None
+    if grid:
+        try:
+            _den = "; " + verdict_denominators(cube_dir, manifest, fam_name, grid)
+        except Exception as exc:                      # noqa: BLE001
+            _den_err = f"{type(exc).__name__}: {exc}"[:200]
     # 8
     # B2574: a verdict on a cube whose replay ran on the ATR proxy is a
     # verdict on a different population - it is written (the numbers are
@@ -1706,11 +1809,16 @@ def _main_unguarded() -> int:
         steps["8_verdict_with_denominators"] = (
             "OPEN", f"{NOT_COMPARABLE_TAG} (B2574: {not_comparable[0][:160]}) - "
                     f"AUTO VERDICT (denominators from {grid_out.name}): "
+                    + verdict_from_grid(grid, step) + _den)
+    elif grid and _den_err:
+        steps["8_verdict_with_denominators"] = (
+            "OPEN", f"the verdict cannot state its denominators (S6-B3397): "
+                    f"{_den_err} - AUTO VERDICT (from {grid_out.name}): "
                     + verdict_from_grid(grid, step))
     elif grid:
         steps["8_verdict_with_denominators"] = (
             "DONE", f"AUTO (B2520) VERDICT (denominators from {grid_out.name}): "
-                    + verdict_from_grid(grid, step))
+                    + verdict_from_grid(grid, step) + _den)
     else:
         steps["8_verdict_with_denominators"] = (
             "OPEN", "no grid artifact - step 2 produced nothing to derive a "

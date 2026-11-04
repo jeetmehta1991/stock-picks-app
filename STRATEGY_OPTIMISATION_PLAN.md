@@ -715,7 +715,7 @@ hand; R2's producer-level fire count stays a hand probe.
 | R3 | The strategy's post-config battery family: `run_postconfig.family_entry` derives it from the SPECS `tools` block, `FAMILIES` holds the ready ones and `FAMILY_REFUSALS` names the missing piece of any other. A family's runner executes EVERY `_GRADER_CHECKS` leg - `step2_grade_auto`, `step2_free_levels`, `step4_spot_check_auto`, `step7_engine_implemented` | `python -c "from run_postconfig import family_refusal; print(repr(family_refusal('<strategy>')))"`, then read `run_<family>` and tick each leg | `''` (no refusal) AND 4 legs present - `family_refusal` treats the free-levels block as optional, so a family can pass it with 3 of 4 legs. **S6-B3385 (B3139q-r164): R1 now refuses that gap where it matters - `validate_spec` refuses an adapter whose P-params carry a non-production free level while its `tools` block names no `free_levels` script, and `launch_refusals` refuses a launch of a family grandfathered in the registry (`FREE_LEVEL_GRADER_GRANDFATHERED`, shrink-only, each with its reason) until it gains one (test_b3385)** |
 | R4 | Step-1 grader for the family (`tools.grade`): grades the landed cube at the manifest's own params and emits the B2505 grid contract (`config`, `strategy`, `grader`, `rows`, `is_rows`, `holdout_rows`, `results[]`) | `--help` of the grader | usage text |
 | R5 | Free-levels re-scorer (`tools.free_levels`): tighter-only subset re-score off `signals_at_entry`, gated on REPRODUCING the landed baseline. **`scripts/offline_level_sweep.py` is the GENERIC one (B2638)** - the axis map is an argument, so a new strategy is a new `--axes`, not a new script | `--help` | usage text |
-| R6 | Three-leg spot check (`tools.spot_check`): precompute / production consumer / engine record, n=50 seed 42. One family's leg A re-derives from raw bars instead and never imports the producer (B2899) - the stronger form, because it makes the agreement evidence rather than a tautology | `--help` | usage text |
+| R6 | Three-leg spot check (`tools.spot_check`): precompute / production consumer / engine record, n=50 seed 42. One family's leg A re-derives from raw bars instead and never imports the producer (B2899) - the stronger form, because it makes the agreement evidence rather than a tautology. ENFORCED on every landing: the battery appends --n 50 --seed 42 to each family's spot-check argv and FAILs step 4 unless the artifact records seed 42 and min(50, entries) trades (run_postconfig.spot_sampling_check, test_b3397a; S6-B3397) | `--help` | usage text |
 | R7 | Battery-step-7 engine-anchor set: the tokens that prove each swept parameter reaches the engine path (`scripts/verify_engine_implemented.py` is the first family's form) | grep the tokens in the engine files | every token found |
 | R8 | Every env knob in the spec's arm is READ by the engine or precompute (`knob_is_read`, B2578) and its full consumer list is MEASURED and pinned equal to the declaration (blast radius; `knob_consumers` tokenizes `backtest/**` and reads `os.environ` sites under `scripts/`, so a name inside a docstring is prose, not a consumer - B2579) | `python -c "import sys; sys.path.insert(0,'scripts'); from producer_variant_table import SPECS, declared_consumers, knob_consumers, knob_is_read; from pathlib import Path; s=SPECS['<strategy>']; print(all(knob_is_read(p['env'], Path('.')) and declared_consumers(s,p['env'])==knob_consumers(p['env']) for p in s['params'] if p.get('env')))"` | `True` - and the launch gate refuses any drift |
 | R9 | The precompute the strategy reads exists for every scheduled level (tagged cache dirs), built BEFORE the spec launches | `ls` the cache dir per level | one dir per level |
@@ -848,7 +848,7 @@ the L-number is the incident, and its LEARNINGS entry carries the detail.
 | # | gate | why |
 |---|---|---|
 | 6 | **Instrument the QUALIFYING EVENT before tuning.** Record what actually satisfied the signal - age, distance, rank - not just the aggregate fire rate. | L360 - saturation (every bar true) was ONE stale event latching, invisible at the aggregate level. |
-| 7 | **Derive band values from the measured distribution.** Never percentile-by-reflex, never a round number. Anchor level 1 at the production value. **Then VERIFY the band against its own derivation text before running, and run `scripts/verify_grid_bands.py` on the grid AFTER - a level that changes nothing is a wasted dimension.** | L356 (deciles on an integer count), L369 (a band silently narrowed 5 -> 2), **L473 (an axis claimed to span four ranks moved 0 of 50 groups between two levels, and 72 pct of a config's 200 combinations were redundant)**. |
+| 7 | **Derive band values from the measured distribution.** Never percentile-by-reflex, never a round number. Anchor level 1 at the production value. **Then VERIFY the band against its own derivation text before running, and run `scripts/verify_grid_bands.py` on the grid AFTER - a level that changes nothing is a wasted dimension.** The post-run half is ENFORCED on every landing as the band_levels_change_outcome lens (run_postconfig.grid_bands_lens, test_b3397b; S6-B3397). | L356 (deciles on an integer count), L369 (a band silently narrowed 5 -> 2), **L473 (an axis claimed to span four ranks moved 0 of 50 groups between two levels, and 72 pct of a config's 200 combinations were redundant)**. |
 | 8 | **State the economic event the signal captures, then check the threshold DIRECTION serves it.** | L359 - a retest pattern's lever is an UPPER bound on distance; the first version selected harder for the noise. |
 | 9 | **Terminate each band where the holdout or full-period trade floor would bind** (§1.2; the pre-B3096 row said holdout n < 25 or full-period n <= 100, the floors before the owner's 2026-08-29 rulings). The gates set the last rung, not taste. | The strict end was untestable on every run - the sample, not the effect, was binding. |
 
@@ -1889,7 +1889,7 @@ not an error (`run_postconfig.py:117-137`; the pre-B3096 rule was exactly one st
 `[len(EXIT_STRATEGIES)]` - **derive it live** (`python -c "from backtest.engine.exit_strategies import
 EXIT_STRATEGIES; print(len(EXIT_STRATEGIES))"` -> 24 since B2110) and judge each cube against the
 registry AT ITS OWN SHA (B2117c; §7.6); and the mega-caps PRESENT - their absence means an abandoned
-alphabetical chunk universe (L445).
+alphabetical chunk universe (L445). The graded-strategy clause is ENFORCED on every landing by graded_strategy_present in step 1 (run_postconfig.checks, test_b3397a; S6-B3397).
 
 **Battery step 2 - Grade with the CONFIG'S OWN parameters (per family - the B2569 generalisation).**
 This step is family-dispatched, never strategy-specific prose: `run_postconfig.py::FAMILIES` fails
@@ -1919,13 +1919,13 @@ Each family's grader and free-levels commands are in the campaign log.
 
 | check | why |
 |---|---|
-| cube entries == grid max fires | catches silent diagnosis loss (L454) |
+| cube entries == grid max fires | catches silent diagnosis loss (L454); ENFORCED on every landing as M12_entries_vs_grid_fires in step 3's core (test_b3397a; S6-B3397) |
 | verdict distribution | `NO_EXIT_SELECTABLE` is a SAMPLE-SIZE verdict, not exit quality |
 | rank by `ci_lo`, NOT `sharpe` | the higher Sharpe can have a NEGATIVE lower bound (L455) |
 | `exits_effective` vs the LIVE registry | duplicate exits collapse; "best of N" is usually fewer (L461). **Derive N live** (B2140) |
 | PASS rows with a marginal `ci_lo` | 5 of 200 at `ci_lo` +0.08 is a WEAK positive, not a result |
 | any PASS selecting `regime_flip` | **run `measure_degraded_exits(cube)`** - do not judge by date; a multi-leg cube from a PRE-B3098 engine lost the regime map at every resume (fixed B3098 - a cube carrying `regime_map_coverage.json` with `missing_count` 0 has the full map; §4.8, S6-B3094c) |
-| **every swept LEVEL changes the outcome** | **a level that changes nothing is a wasted dimension (L473)** |
+| **every swept LEVEL changes the outcome** | **a level that changes nothing is a wasted dimension (L473)** - ENFORCED on every landing by the band_levels_change_outcome lens (test_b3397b; S6-B3397) |
 | **the top-N holds N DISTINCT fire-sets** | **N rows can be a few real candidates restated - one config's top 10 was 4 (L473)** |
 | **measure DEGRADED exits per cube** | `regime_flip` was a time stop in every cube before B2043 made its flip branch live (B1622's fix never ran, found at B1680; the post-B1682 claim was falsified at B2018) - the pre-B3096 row said "every pre-B1622 cube", which those findings made stale; measured, not assumed (L483) |
 | **equivalence-class members keep the SAME FIRES** | a de-dup key of `(fires, exit, sharpe)` could merge different fire-sets that tie; verified 6 of 6 (B1612) |
@@ -2042,7 +2042,7 @@ radius is in the campaign log.
 **Battery step 8 - Report the verdict WITH its denominators.** Never a bare PASS count. State: N of M
 combinations, X of Y producers varied, `exits_effective` of the registry at the cube's SHA (the
 pre-B3096 text said "of 26", the registry before B2110), and the
-`ci_lo` of every PASS. **Margin of error is part of the verdict, not a footnote.**
+`ci_lo` of every PASS. **Margin of error is part of the verdict, not a footnote.** ENFORCED on every landing: run_postconfig.verdict_denominators states all three, and step 8 stays OPEN when it cannot (test_b3397b; S6-B3397).
 
 ---
 

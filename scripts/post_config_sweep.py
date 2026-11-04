@@ -27,6 +27,13 @@ visible instead of absent.
        SAME FIRES                            can merge different fire-sets
    10  DEGRADED exits per cube               delegated to measure_degraded_exits
 
+SUPERSEDED IN THE BATTERY (S6-B3397, B3139q-r183/r184): rows 1, 4 and 7 run
+on every landing in scripts/run_postconfig.py - M12_entries_vs_grid_fires
+(step 3), the exits_effective clause of the step-8 verdict, and the
+band_levels_change_outcome lens (step 5), each over the FAMILY's own keys.
+This hand-run form keeps the smc keys and a stale "vs 26" and is kept for
+its history only.
+
 HAND-RUN:
     python scripts/post_config_sweep.py --cube output_w1_sw20_span50 \
                                         --grid output_audit/b1718_p0fix_span50.json
