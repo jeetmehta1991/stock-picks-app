@@ -848,7 +848,7 @@ the L-number is the incident, and its LEARNINGS entry carries the detail.
 | # | gate | why |
 |---|---|---|
 | 6 | **Instrument the QUALIFYING EVENT before tuning.** Record what actually satisfied the signal - age, distance, rank - not just the aggregate fire rate. | L360 - saturation (every bar true) was ONE stale event latching, invisible at the aggregate level. |
-| 7 | **Derive band values from the measured distribution.** Never percentile-by-reflex, never a round number. Anchor level 1 at the production value. **Then VERIFY the band against its own derivation text before running, and run `scripts/verify_grid_bands.py` on the grid AFTER - a level that changes nothing is a wasted dimension.** The post-run half is ENFORCED on every landing as the band_levels_change_outcome lens (run_postconfig.grid_bands_lens, test_b3397b; S6-B3397). | L356 (deciles on an integer count), L369 (a band silently narrowed 5 -> 2), **L473 (an axis claimed to span four ranks moved 0 of 50 groups between two levels, and 72 pct of a config's 200 combinations were redundant)**. |
+| 7 | **Derive band values from the measured distribution.** Never percentile-by-reflex, never a round number. Anchor level 1 at the production value - ENFORCED for a numeric P-row: validate_spec refuses a production value that is not a level of its band (test_b3393a; S6-B3393). **Then VERIFY the band against its own derivation text before running, and run `scripts/verify_grid_bands.py` on the grid AFTER - a level that changes nothing is a wasted dimension.** The post-run half is ENFORCED on every landing as the band_levels_change_outcome lens (run_postconfig.grid_bands_lens, test_b3397b; S6-B3397). | L356 (deciles on an integer count), L369 (a band silently narrowed 5 -> 2), **L473 (an axis claimed to span four ranks moved 0 of 50 groups between two levels, and 72 pct of a config's 200 combinations were redundant)**. |
 | 8 | **State the economic event the signal captures, then check the threshold DIRECTION serves it.** | L359 - a retest pattern's lever is an UPPER bound on distance; the first version selected harder for the noise. |
 | 9 | **Terminate each band where the holdout or full-period trade floor would bind** (§1.2; the pre-B3096 row said holdout n < 25 or full-period n <= 100, the floors before the owner's 2026-08-29 rulings). The gates set the last rung, not taste. | The strict end was untestable on every run - the sample, not the effect, was binding. |
 
@@ -1078,7 +1078,7 @@ meaning.
    takes that leg's ops. `band_coverage_gate` counts a legs-declaring row PER LEG, so one leg's grid
    never covers the other leg's row (a pooled grid counts for both); per-leg depth params carry the
    same field, and `validate_spec` refuses a param whose label names a side (an upper-case LONG or
-   SHORT) without it, or with any other side (S6-B3325).
+   SHORT) without it, or with any other side (S6-B3325). ENFORCED for the B-rows: validate_spec refuses a legless B-row on a DUAL strategy's registry entry; the 9 rows that predate the rule are frozen in DUAL_BROW_LEGS_GRANDFATHERED (test_b3393c; S6-B3393).
 4. **BAND REVIEW** - the owner reviews the full band (depth + breadth rows) before Step 1 (§0.6).
    Nothing runs earlier.
 5. **THE IN-SAMPLE GRID** (Step 3's search; the tool's name predates the renumbering) -
@@ -2206,7 +2206,7 @@ One row per `Pn` (and per `Bn` for breadth axes). Required fields, all test-pinn
 | `production` | the LIVE value today (a knob's unset default equals it, test_b3392) |
 | `band` | every value to be tested |
 | `subset_safe` | `True` = cube-gradable free, `False` = needs engine resim, `None` = no parameter (per level: `free_band` / `resim_band`) |
-| `status` | `TESTED` / `UNTESTED` / `PENDING` (tested but never gradable) / `N/A` |
+| `status` | `TESTED` / `UNTESTED` / `PENDING` (tested but never gradable) / `N/A` - ENFORCED by validate_spec; the free texts that predate the rule are frozen in STATUS_GRANDFATHERED (test_b3393b; S6-B3393) |
 | `derivation` | **WHY this band holds these values** - must cite a measurement or a stated rule |
 | `evidence` | source `file:line`. **Never inference.** |
 

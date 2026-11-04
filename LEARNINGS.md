@@ -25781,6 +25781,22 @@ read": I had read the part I changed and called the whole. Mechanism: BATCHED
 (S6-B3418) - confine the pairs grader's two production writes, so a run
 outside the battery cannot touch a tracked view.
 
+**Addendum (B3139q-r190, S6-B3393 batch 9a): A GRANDFATHER KEYED ON OBJECT
+IDENTITY JUDGED A COPY AS NEW, AND A PIN OVERWROTE ITS OWN INPUT.** MEASURED,
+each before any commit: (1) the first draft froze the 167 free-text Table A
+statuses per registry entry, found by an `is` comparison; test_b3325
+validates a deep copy of cmf_flip and expects no error, and the copy was
+refused on its first free-text status. The production callers pass the entry
+itself (launch_refusals, both render paths), so only copies were exposed; the
+frozen key is now the (param id, status-text digest) pair, 133 pairs, and the
+39 tests that reach validate_spec pass. I had run a 10-test slice before
+grepping all 39. (2) test_b3393b's first run failed in the test itself: the
+param it gave a frozen text could be the same dict it then reset to TESTED;
+the two lines were swapped and the pin re-run, and 6 of 6 mutations then
+failed it or its siblings. **Compliance failures against #196 and #226**;
+record-of-fact, no new item - the pins that fired are the mechanism and held
+2 of 2.
+
 ### L1002 - A CHECKLIST RULE HELD SINCE B1626 RECURRED A THIRD TIME BECAUSE NOTHING RAN IT, AND A SELECTED PRE-GATE CANNOT SEE ITS VICTIMS (B3139q-r162b, 2026-10-31)
 
 MEASURED: r162's producer spot check set an arm's knobs by exporting them and calling importlib.reload(backtest.config), and test_b3248f called it in process, then reloaded config again in its finally to put it back. The pre-gate (120 tests) passed; the full gate, output_audit/b3139q_r162_pyramid.stdout, failed test_bug_30 and test_bug_232 - 2 of 1938 - which pass alone and after test_b3248f alone and fail only when exit_manager, which imports CIRCUIT_BREAKERS and TRAILING_STOP by value, is imported before the reload: the ordered run test_bug_232, test_b3248f, test_bug_30 failed test_bug_30. They are the victims of L330 (S6-B1468a) and L484, and CHECKLIST #209 (B1626) says never to reload a config module inside a test. The reload looked like the RIGHT way to make a producer see new knobs, since config parses its environment at import, and the second reload looked like hygiene.

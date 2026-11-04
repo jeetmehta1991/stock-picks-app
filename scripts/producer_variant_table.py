@@ -5573,6 +5573,191 @@ def free_level_params(spec: dict) -> list:
     return out
 
 
+# S6-B3393 (B3139q-r190): the Table A field schema's status vocabulary
+# (runbook section 7, the `status` row) - ONE definition validate_spec reads.
+TABLE_A_STATUSES = ("TESTED", "UNTESTED", "PENDING", "N/A")
+# The params whose status was free text when the vocabulary was mechanized,
+# as (param id, sha256[:16] of the status text) - MEASURED 133 pairs over 167
+# params in 26 registry entries at B3139q-r190 (ACTUATED ...,
+# NOT-SWEPT-BY-DESIGN, RE-BANDED-AND-TESTED and the like). Keyed on the text,
+# not the entry, so a copy of a registry entry validates as its source does.
+# FROZEN and shrink-only: rewriting the texts changes rendered Table A text,
+# which the S6-B3139bo council left to the owner; a NEW param uses the
+# vocabulary and carries its commentary in derivation / evidence.
+STATUS_GRANDFATHERED = frozenset({
+    ('B1', '0bafd9958c6d1303'),
+    ('B1', '0daeaf204ff8c5f0'),
+    ('B1', '86cfcdd1fc8b51ef'),
+    ('B1', 'a3ecd3150130959b'),
+    ('B1', 'bf0eed98aac85029'),
+    ('B1', 'c3febd45edd070ac'),
+    ('B2', '1e6772b5ca677c6b'),
+    ('B2', '743a25b238858615'),
+    ('B2', '7eed69c3fdc750c3'),
+    ('B2', 'ba916040ac620dd7'),
+    ('B2', 'c3febd45edd070ac'),
+    ('B3', '0daeaf204ff8c5f0'),
+    ('B3', '1e6772b5ca677c6b'),
+    ('B3', '50a0f29798364407'),
+    ('B3', '74a3ccbfa865ddab'),
+    ('B3', 'c3febd45edd070ac'),
+    ('B4', '05e4b6f8c947b0e6'),
+    ('B4', '1dc5eaa44c6291f6'),
+    ('B4', '74a3ccbfa865ddab'),
+    ('B4', '8f69cfc44c23a67b'),
+    ('B4', 'c3febd45edd070ac'),
+    ('B5', '1e6772b5ca677c6b'),
+    ('B5', '5bf630cf07123767'),
+    ('B5', '676a2f92de34f211'),
+    ('B5', '7eed69c3fdc750c3'),
+    ('B5', '8f69cfc44c23a67b'),
+    ('B6', '20f29983caf4f7f5'),
+    ('B6', '74a3ccbfa865ddab'),
+    ('B6', '77c8054f5249b8bd'),
+    ('B6', 'ba916040ac620dd7'),
+    ('B6', 'c3febd45edd070ac'),
+    ('B7', '1041dab95e8e2ab1'),
+    ('B7', '585d5da8c0be1d30'),
+    ('B7', '74a3ccbfa865ddab'),
+    ('B7', 'fdbd1ccbe43a38f8'),
+    ('B8', '9dc48de7c18284ef'),
+    ('B8', 'c3febd45edd070ac'),
+    ('B8', 'f774bca682ad51a8'),
+    ('B9', 'c3ce9d9cb731e5e1'),
+    ('B9', 'c3febd45edd070ac'),
+    ('B10', '1041dab95e8e2ab1'),
+    ('B10', '3b31a6496651594e'),
+    ('B11', 'c3ce9d9cb731e5e1'),
+    ('B11', 'fdbd1ccbe43a38f8'),
+    ('B12', '3b31a6496651594e'),
+    ('B12', '85fff8040bb7245c'),
+    ('B13', '1c9069a5a26bbc75'),
+    ('B13', '66c51fe17fcaae43'),
+    ('B14', '597f404c2abe11dc'),
+    ('P1', '00141f507fb6e5e9'),
+    ('P1', '012b42911404e244'),
+    ('P1', '193cd9c21e78aeec'),
+    ('P1', '52e7b1bc77857ea1'),
+    ('P1', '599648faca22877a'),
+    ('P1', '714c0b36507da27a'),
+    ('P1', '8da7a5dff69098aa'),
+    ('P1', '95539438d35707e8'),
+    ('P1', 'dfa889b600205390'),
+    ('P1', 'e03f2b360c63db3b'),
+    ('P1', 'f09dd921e109d70f'),
+    ('P2', '223ee5e1c7a4844a'),
+    ('P2', '28c31c253d58b89a'),
+    ('P2', '6aab1d85fed290d9'),
+    ('P2', '78b7af8fff61e679'),
+    ('P2', '8243284dc172c8a4'),
+    ('P2', '88c3e9e72f15bcae'),
+    ('P2', '8da7a5dff69098aa'),
+    ('P2', '92bf298b20d4626a'),
+    ('P2', '9ad7d4218e003f51'),
+    ('P2', 'bf0da7ff767235dd'),
+    ('P2', 'c34b94c6cf569e33'),
+    ('P2', 'f09dd921e109d70f'),
+    ('P3', '1ec9ca83dc3e104c'),
+    ('P3', '2c5d019ed30104cf'),
+    ('P3', '37c96741659afed9'),
+    ('P3', '457dce823d0e3d2e'),
+    ('P3', '482e5c46210ae321'),
+    ('P3', '6eeba92738b7e0e8'),
+    ('P3', '78b7af8fff61e679'),
+    ('P3', '804e781f4e3e5d96'),
+    ('P3', 'b97c3bcd76bdcf08'),
+    ('P3', 'd0987be8159095b3'),
+    ('P3', 'e1d873d121fedd08'),
+    ('P3', 'e21512d83513aa9b'),
+    ('P3', 'f09dd921e109d70f'),
+    ('P4', '286b782165c2cde4'),
+    ('P4', '6eeba92738b7e0e8'),
+    ('P4', '78b7af8fff61e679'),
+    ('P4', '80c65c41c260dbc4'),
+    ('P4', '867187cb194674ba'),
+    ('P4', '8b9bf9ca683f1419'),
+    ('P4', '9270c1b452db35cf'),
+    ('P4', '9d31fff8be586803'),
+    ('P4', 'c34b94c6cf569e33'),
+    ('P4', 'dfdb6958f9c68128'),
+    ('P4', 'e1d873d121fedd08'),
+    ('P4', 'f09dd921e109d70f'),
+    ('P5', '0b1bfef58f9edd25'),
+    ('P5', '1b816235764a5238'),
+    ('P5', '332576a9c39e480c'),
+    ('P5', '3eed5a12abb6f6aa'),
+    ('P5', '78b7af8fff61e679'),
+    ('P5', '8243284dc172c8a4'),
+    ('P5', 'b4662eda8876b38b'),
+    ('P5', 'be57ca2ef90a0c0f'),
+    ('P5', 'db356e6acd76b1ac'),
+    ('P5', 'f09dd921e109d70f'),
+    ('P6', '0d67ae6fc7bae7e2'),
+    ('P6', '0f4b423c4b8700ab'),
+    ('P6', '4d0c6ae6f695c3c2'),
+    ('P6', '6e9a7d0f9981843e'),
+    ('P6', '8243284dc172c8a4'),
+    ('P6', 'a677c1160c7ddd23'),
+    ('P6', 'b0dae4ce1fc21f0e'),
+    ('P6', 'd050c7afc222306d'),
+    ('P7', '0fab8a1426ac9649'),
+    ('P7', '3a074618624b0c99'),
+    ('P7', '486609c7fc6c5ac6'),
+    ('P7', 'a908ee47efac0b25'),
+    ('P7', 'c99c356c1f79e936'),
+    ('P7', 'f09dd921e109d70f'),
+    ('P8', '705e51fbba02bc30'),
+    ('P8', 'b61b06542f248899'),
+    ('P8', 'c568a62555044b09'),
+    ('P8', 'dad8cc2d43a8a6c6'),
+    ('P9', '0051e169f4f99b3c'),
+    ('P9', '0fbc4675ae5b792d'),
+    ('P9', '4eae70bb26f8a004'),
+    ('P9', 'a24193d181a68f99'),
+    ('P10', '0fbc4675ae5b792d'),
+    ('P10', '7806ae76b642a0f7'),
+    ('P11', '0fbc4675ae5b792d'),
+    ('P11', 'ebaf52e81af6c464'),
+})
+# A dual strategy's B-rows carry `legs` (runbook 3.6 step 3, S6-B3304). The
+# rows that predate that rule, MEASURED 9 rows in 2 entries at B3139q-r190
+# (all SPECS_PHASE0): adding legs re-scopes a decided campaign's per-leg
+# coverage, so they are frozen here; a NEW dual B-row must name its legs.
+DUAL_BROW_LEGS_GRANDFATHERED = {
+    ('SPECS_PHASE0', 'bollinger_lower'): frozenset(['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8']),
+    ('SPECS_PHASE0', 'smc_liquidity_sweep_reversal'): frozenset(['B1']),
+}
+
+
+def _status_key(p: dict) -> tuple:
+    """(param id, sha256[:16] of its status text) - the STATUS_GRANDFATHERED key."""
+    import hashlib
+    return (str(p.get("id", "")),
+            hashlib.sha256(str(p.get("status")).encode("utf-8")).hexdigest()[:16])
+
+
+def _registry_identity(spec) -> tuple:
+    """(registry name, strategy) of `spec` when it IS a registry entry
+    (identity, not equality), else (None, None). The dual-legs rule needs the
+    strategy's name, which a spec dict does not carry; a synthetic or merged
+    spec skips that rule (every production caller passes the entry itself)."""
+    for rn, reg in (("SPECS", SPECS), ("SPECS_PHASE0", SPECS_PHASE0)):
+        for name, entry in reg.items():
+            if entry is spec:
+                return rn, name
+    return None, None
+
+
+def _numeric(v) -> bool:
+    if isinstance(v, bool):
+        return True
+    try:
+        float(v)
+        return True
+    except (TypeError, ValueError):
+        return False
+
+
 def validate_spec(spec: dict) -> list[str]:
     """Formula and Table A must not drift apart. Every P-id in the formula needs
     a params row and every params row needs a formula step - a mechanical check,
@@ -5795,6 +5980,34 @@ def validate_spec(spec: dict) -> list[str]:
         elif _named and set(_legs) != _named:
             errs.append(f"{_p['id']} {_p['param']}: legs {_legs} disagree "
                         f"with the side its label names ({sorted(_named)})")
+    # S6-B3393 (runbook 2.4 item 7; the Table A field schema; 3.6 step 3,
+    # census 795 / 2122 / 1017). MEASURED at B3139q-r190 over the 34 registry
+    # entries: 0 numeric P-rows with production outside the band; the other
+    # two rules' backlogs are frozen above, so a NEW param or row must comply.
+    _where = _registry_identity(spec)
+    _dual = None
+    if _where[1] is not None:
+        from build_phase_1b_roster import is_dual as _is_dual   # one definition
+        _dual = _is_dual(_where[1])
+    for _p in spec["params"]:
+        _pid = str(_p.get("id", ""))
+        _b = list(_p.get("band") or [])
+        if (_pid.startswith("P") and _p.get("status") != "N/A" and _b
+                and _numeric(_p.get("production")) and all(_numeric(x) for x in _b)
+                and not any(abs(float(x) - float(_p["production"])) < 1e-12 for x in _b)):
+            errs.append(f"{_pid} {_p.get('param')}: production {_p.get('production')!r} "
+                        f"is not a level of its band {_b} - anchor level 1 at the "
+                        "production value (runbook 2.4 item 7, S6-B3393)")
+        if (_p.get("status") not in TABLE_A_STATUSES
+                and _status_key(_p) not in STATUS_GRANDFATHERED):
+            errs.append(f"{_pid}: status {_p.get('status')!r} is not one of "
+                        f"{TABLE_A_STATUSES} - the Table A field schema; carry "
+                        "commentary in derivation / evidence (S6-B3393)")
+        if (_dual and _pid.startswith("B") and "legs" not in _p
+                and _pid not in DUAL_BROW_LEGS_GRANDFATHERED.get(_where, frozenset())):
+            errs.append(f"{_pid}: {_where[1]} is a DUAL strategy and this B-row carries "
+                        "no `legs` field - name the legs whose screen chose it "
+                        "(runbook 3.6 step 3, S6-B3304 / S6-B3393)")
     b = spec.get("baseline")
     if not isinstance(b, dict):
         errs.append("SPEC has no `baseline` block - main() reads it for the "

@@ -73908,3 +73908,142 @@ def test_b3397g_lenses_carry_the_negative_control_row(tmp_path):
     (cube / "trade_exit_detail.csv").write_text("\n".join(rows) + "\n", encoding="utf-8")
     names = [n for n, _l, _e in rp.lenses(cube, 1, {"step1_ranking": []}, None)]
     assert "negative_control" in names, names
+
+def _pvt_b3393a():
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    return pvt
+
+
+def test_b3393a_production_is_a_level_of_its_band():
+    """S6-B3393 (runbook 2.4 item 7, census 795): a numeric P-row's production
+    value is a level of its band. validate_spec refuses a value outside it,
+    accepts every band level, and exempts an N/A row; MEASURED 0 registry
+    entries carry the defect at B3139q-r190 and none may."""
+    import copy as _copy
+    pvt = _pvt_b3393a()
+    base = _copy.deepcopy(pvt.SPECS_PHASE0["cmf_flip"])
+    assert pvt.validate_spec(base) == [], pvt.validate_spec(base)
+    rows = [p for p in base["params"] if str(p["id"]).startswith("P")
+            and p.get("status") != "N/A" and p.get("band")
+            and pvt._numeric(p.get("production"))
+            and all(pvt._numeric(x) for x in p["band"])]
+    assert rows, "positive control: cmf_flip carries a numeric P-row"
+
+    def hit(e):
+        return [m for m in pvt.validate_spec(e) if "is not a level of its band" in m]
+    e = _copy.deepcopy(base)
+    q = next(x for x in e["params"] if x["id"] == rows[0]["id"])
+    outside = max(float(x) for x in q["band"]) + 1.0
+    q["production"] = outside
+    assert len(hit(e)) == 1 and q["id"] in hit(e)[0], hit(e)
+    for lvl in q["band"]:
+        q["production"] = lvl
+        assert hit(e) == [], (lvl, hit(e))
+    q["production"], q["status"] = outside, "N/A"
+    assert hit(e) == []
+    for reg in (pvt.SPECS, pvt.SPECS_PHASE0):
+        for s, ent in reg.items():
+            assert not [m for m in pvt.validate_spec(ent)
+                        if "is not a level of its band" in m], s
+
+
+def test_b3393b_status_vocabulary_with_a_frozen_text_grandfather():
+    """S6-B3393 (the Table A field schema's status row, census 2122): a param's
+    status is TESTED / UNTESTED / PENDING / N/A. The free texts that predate the
+    rule are frozen as (param id, text digest) pairs, so a copy of a registry
+    entry validates as its source does, a frozen text passes only under the id
+    it was frozen with, and the frozen set equals the live off-vocabulary set -
+    a new free text in a registry fails here, a rewritten one must leave the
+    set, and the set never grows past its 133 pairs (MEASURED B3139q-r190)."""
+    import copy as _copy
+    pvt = _pvt_b3393a()
+    voc = ("TESTED", "UNTESTED", "PENDING", "N/A")
+    assert pvt.TABLE_A_STATUSES == voc
+    base = _copy.deepcopy(pvt.SPECS_PHASE0["cmf_flip"])
+
+    def bad(e):
+        return [m for m in pvt.validate_spec(e) if "is not one of" in m]
+    assert bad(base) == []
+    e = _copy.deepcopy(base)
+    p = e["params"][0]
+    for ok in voc:
+        p["status"] = ok
+        assert bad(e) == [], ok
+    for wrong in ("ACTUATED-AND-NEW", "tested", None, ""):
+        p["status"] = wrong
+        assert len(bad(e)) == 1 and str(p["id"]) in bad(e)[0], (wrong, bad(e))
+    live = {}
+    for reg in (pvt.SPECS, pvt.SPECS_PHASE0):
+        for ent in reg.values():
+            for q in ent["params"]:
+                if q.get("status") not in voc:
+                    live.setdefault(q["status"], set()).add(str(q["id"]))
+    text, ids = next((t, i) for t, i in live.items()
+                     if any(str(q["id"]) not in i for q in e["params"]))
+    other = next(q for q in e["params"] if str(q["id"]) not in ids)
+    p["status"] = "TESTED"
+    other["status"] = text
+    assert len(bad(e)) == 1 and str(other["id"]) in bad(e)[0], bad(e)
+    own = next((q for q in e["params"] if str(q["id"]) in ids), None)
+    if own is not None:
+        other["status"] = "TESTED"
+        own["status"] = text
+        assert bad(e) == [], bad(e)
+    keys = {pvt._status_key({"id": i, "status": t}) for t, s in live.items() for i in s}
+    assert keys - pvt.STATUS_GRANDFATHERED == set(), "a NEW free-text status in a registry"
+    assert pvt.STATUS_GRANDFATHERED - keys == set(), "a frozen pair no registry carries - remove it"
+    assert len(pvt.STATUS_GRANDFATHERED) <= 133
+
+
+def test_b3393c_a_dual_strategys_new_b_row_names_its_legs(monkeypatch):
+    """S6-B3393 (runbook 3.6 step 3, census 1017): a B-row of a DUAL strategy's
+    registry entry carries `legs`. The 9 legless rows that predate the rule are
+    frozen per entry and must stay exactly the live legless set; a new legless
+    B-row on a dual entry is refused, the same row with legs passes, and a
+    non-dual strategy's B-row stays free."""
+    import copy as _copy
+    pvt = _pvt_b3393a()
+    from build_phase_1b_roster import is_dual
+
+    def legs_errs(ent):
+        return [m for m in pvt.validate_spec(ent) if "is a DUAL strategy" in m]
+    assert is_dual("bollinger_lower")
+    e = _copy.deepcopy(pvt.SPECS_PHASE0["bollinger_lower"])
+    monkeypatch.setitem(pvt.SPECS_PHASE0, "bollinger_lower", e)
+    assert legs_errs(e) == []
+    b = _copy.deepcopy(next(q for q in e["params"] if str(q["id"]).startswith("B")))
+    b["id"] = "B99"
+    b.pop("legs", None)
+    e["params"].append(b)
+    errs = legs_errs(e)
+    assert len(errs) == 1 and errs[0].startswith("B99:"), errs
+    b["legs"] = ["long"]
+    assert legs_errs(e) == []
+
+    solo = next(((rn, s) for rn in ("SPECS", "SPECS_PHASE0")
+                 for s, ent in getattr(pvt, rn).items()
+                 if not is_dual(s) and any(str(q["id"]).startswith("B") for q in ent["params"])),
+                None)
+    assert solo is not None, "positive control: a non-dual entry with a B-row"
+    f = _copy.deepcopy(getattr(pvt, solo[0])[solo[1]])
+    monkeypatch.setitem(getattr(pvt, solo[0]), solo[1], f)
+    for q in f["params"]:
+        if str(q["id"]).startswith("B"):
+            q.pop("legs", None)
+    assert legs_errs(f) == [], (solo, legs_errs(f))
+    monkeypatch.undo()
+
+    assert sum(len(v) for v in pvt.DUAL_BROW_LEGS_GRANDFATHERED.values()) == 9
+    for (rn, s), ids in pvt.DUAL_BROW_LEGS_GRANDFATHERED.items():
+        assert is_dual(s), s
+        legless = {str(q["id"]) for q in getattr(pvt, rn)[s]["params"]
+                   if str(q["id"]).startswith("B") and "legs" not in q}
+        assert ids == legless, (rn, s, sorted(ids ^ legless))
+    for reg in (pvt.SPECS, pvt.SPECS_PHASE0):
+        for s, ent in reg.items():
+            assert legs_errs(ent) == [], s
