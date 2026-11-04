@@ -32,10 +32,13 @@ Usage
 
 Exit codes: 0 = every level earns its place, 2 = at least one inert level.
 
-**HAND-RUN-ONLY (B1704).** Nothing invokes this automatically - no Stop hook, no
-pre-commit, no launcher. An audit found 12 of 16 gate scripts in this state, so
-presence is NOT enforcement (CHECKLIST #224). Run it explicitly and read its exit
-code; if you need it to bind, wire it and say where.
+**WIRED (header corrected B3139q-r186, S6-B3397).** This block used to read
+"HAND-RUN-ONLY ... nothing invokes this automatically" (B1704), and that is
+false now: since B3139q-r184 scripts/run_postconfig.py's grid_bands_lens runs
+analyse() on EVERY landing over the family's own grid_keys (step 5's
+band_levels_change_outcome lens, census 795 / 1844).
+A banner left saying nothing calls a gate teaches every reader that the gate
+is decorative (#224; the prelaunch_gate precedent, B2159).
 """
 from __future__ import annotations
 

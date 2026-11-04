@@ -69,7 +69,7 @@ TERMINAL = ("DONE", "N/A")
 _GRADER_CHECKS = ("step2_grade_auto", "step2_free_levels", "step2_legs",
                   "step2_holdout_ledger",
                   "step2_grid_contract",
-                  "step4_spot_check_auto", "step4_sampling_contract",
+                  "step4_spot_check_auto", "step4_sampling_contract", "step4_coverage",
                   "step7_engine_implemented")
 # S6-B3397: a check that compares the cube with the GRADER's output is a
 # step-3 discrepancy, not step-1 cube sanity - it fails step 3 alone.
@@ -897,6 +897,11 @@ def run_family(fam_name: str, cube_dir: Path, p: dict,
         tail = f"{tail}; {why}" if ok4 else why
     results.append(("step4_spot_check_auto", "PASS" if ok4 else "FAIL",
                     f"exit {sc.returncode}; {tail[:180]}"))
+    # S6-B3397 (census 1874): the coverage audit, on every landing
+    cov_st, cov_ev = spot_coverage(fam_name, sb["script"])
+    results.append(("step4_coverage", cov_st, cov_ev))
+    if ok4:
+        tail = f"{tail}; coverage {cov_ev}"
     notes["4_three_leg_spot_check"] = (
         ("DONE", f"{sb.get('note', 'AUTO')}: {Path(sb['script']).stem} at "
                  f"manifest {label}; {tail[:200]}") if ok4 else
@@ -1495,6 +1500,31 @@ def grid_contract_errors(grid: dict, leg) -> list:
     if not any(isinstance(grid.get(k), list) for k in ("results", "per_exit", "rows")):
         errs.append("no population list (`results` / `per_exit` / `rows`)")
     return errs
+
+
+def spot_coverage(strategy, checker_script) -> tuple:
+    """S6-B3397 (runbook 5.3 step 4, census 1874): may the spot check CERTIFY
+    this strategy? verify_spotcheck_coverage.audit with the family checker's
+    own verifiable families. PASS = CERTIFIED; WARN = NOT CERTIFIED, the
+    uncovered families and keys named - a disclosure, never a FAIL: whether it
+    holds step 4 open is the owner's word (S6-B3415, L857 (c)). MEASURED at
+    B3139q-r186: 7 of 17 battery families CERTIFIED, 10 NOT (8 on borrow_ok,
+    1 also on the VIX bands, 4 checked by spot_check_replay, which re-derives
+    no input family). Unmeasurable -> WARN with why, never a silent pass."""
+    try:
+        import verify_spotcheck_coverage as _vsc
+        can = _vsc.checker_verifies(checker_script)
+        fams, gaps = _vsc.audit(strategy, can)
+    except (Exception, SystemExit) as exc:            # noqa: BLE001
+        return ("WARN", f"coverage NOT MEASURABLE ({type(exc).__name__}: {exc})"[:200])
+    if not gaps:
+        return ("PASS", f"CERTIFIED: every input family the strategy reads "
+                        f"({sorted(fams)}) is re-derived by {checker_script}")
+    return ("WARN", "NOT CERTIFIED for " + "; ".join(
+        f"{g} {fams[g][:4]}" for g in gaps)
+        + f" - {checker_script} re-derives "
+        + (", ".join(sorted(can)) if can else "no input family")
+        + " (whether this holds step 4 open: S6-B3415)")
 
 
 def rc_live_gates() -> tuple:

@@ -106,6 +106,10 @@ CHECK_MEANING = {
     "step2_grid_contract": (
         "the landed grid carries the B2505 contract (R4, S6-B3397)",
         "a missing field = a reader of this grid cannot place its rows"),
+    "step4_coverage": (
+        "the spot check can certify every input family (S6-B3397)",
+        "NOT CERTIFIED = an input no checker leg re-derives - the check "
+        "agreeing says nothing about it"),
     "step4_sampling_contract": (
         "the spot check sampled min(50, entries) trades with seed 42 (R6)",
         "another seed or size = the checker ignored the battery's flags"),
@@ -135,7 +139,7 @@ GROUPS = [
     ("Does the arithmetic reproduce?",
      ["M5_pnl_integrity", "M7_degraded_exits", "ledger_status_matches_evidence",
       "step2_grade_auto", "step2_grid_contract", "step4_spot_check_auto",
-      "step4_sampling_contract",
+      "step4_sampling_contract", "step4_coverage",
       "step7_engine_implemented"]),
 ]
 

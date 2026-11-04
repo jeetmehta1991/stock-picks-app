@@ -20,10 +20,13 @@ Usage:
     python scripts/verify_spotcheck_coverage.py --all
 Exit: 0 = every key the strategy reads is verifiable; 2 = a gap.
 
-**HAND-RUN-ONLY (B1704).** Nothing invokes this automatically - no Stop hook, no
-pre-commit, no launcher. An audit found 12 of 16 gate scripts in this state, so
-presence is NOT enforcement (CHECKLIST #224). Run it explicitly and read its exit
-code; if you need it to bind, wire it and say where.
+**WIRED (header corrected B3139q-r186, S6-B3397).** This block used to read
+"HAND-RUN-ONLY ... nothing invokes this automatically" (B1704), and that is
+false now: scripts/run_postconfig.py's spot_coverage runs audit() on EVERY landing
+with the family checker's own verifiable families (checker_verifies), and
+step 4 says CERTIFIED or NOT CERTIFIED with the gap named (census 1874).
+A banner left saying nothing calls a gate teaches every reader that the gate
+is decorative (#224; the prelaunch_gate precedent, B2159).
 """
 from __future__ import annotations
 
@@ -37,6 +40,15 @@ VERIFIABLE_FAMILIES = {"ohlcv"}
 
 # key prefix/substring -> data family. Order matters: first match wins.
 FAMILY_RULES: tuple[tuple[str, str], ...] = (
+    # S6-B3397 (B3139q-r186): OHLCV-derived keys the patterns below misfiled or
+    # missed, MEASURED on the 17 battery families - force_index_* matched
+    # `index_` and read as an index EVENT (it is price x volume); camarilla
+    # (above_cam_*), floor pivots (above_r1 / below_s1), the naked POC (a
+    # volume-profile level), the pairs spread keys and xs_ivol (idiosyncratic
+    # vol from returns) matched nothing and counted UNKNOWN. Most specific first.
+    (r"^(force_index_|above_cam_|below_cam_|above_r\d|below_s\d|naked_poc_|"
+     r"pair_|xs_ivol)", "ohlcv"),
+    (r"^committed_growth_", "smart_money"),
     # SPECIFIC families FIRST. B1634: `sma` matched inside `smart_money_score`
     # and classified a smart-money signal as OHLCV - a substring collision, the
     # exact L472 class (a match is not evidence of the RIGHT presence). Ordering
@@ -62,6 +74,35 @@ FAMILY_RULES: tuple[tuple[str, str], ...] = (
      r"crow|marubozu|pin_bar|harami|tweezer|52w|dc20|breakout|breakdown|"
      r"retest|trend|regime|swing|hh_|ll_|higher_|lower_)", "ohlcv"),
 )
+
+
+# S6-B3397 (census 1874): what each battery spot checker's legs re-derive
+# INDEPENDENTLY of the engine record, by input family - read from each
+# checker's own leg docstring at B3139q-r186. The raw-arithmetic and producer
+# checkers recompute their condition from cached bars; the institutional
+# checker also reads the 13F persistence precompute directly (its leg A);
+# spot_check_replay's leg A IS the engine record and leg B replays the
+# strategy on it, so it re-derives no input family at all. A checker missing
+# here verifies nothing (fail closed, L642).
+CHECKER_VERIFIES: dict = {
+    "spot_check_trades.py": frozenset({"ohlcv"}),
+    "spot_check_smc_family.py": frozenset({"ohlcv"}),
+    "spot_check_smc_lsr.py": frozenset({"ohlcv"}),
+    "spot_check_smc_obb.py": frozenset({"ohlcv"}),
+    "spot_check_bollinger.py": frozenset({"ohlcv"}),
+    "spot_check_npoc.py": frozenset({"ohlcv"}),
+    "spot_check_pairs.py": frozenset({"ohlcv"}),
+    "spot_check_candle.py": frozenset({"ohlcv"}),
+    "spot_check_producer.py": frozenset({"ohlcv"}),
+    "spot_check_institutional.py": frozenset({"ohlcv", "smart_money"}),
+    "spot_check_replay.py": frozenset(),
+}
+
+
+def checker_verifies(checker_script: str) -> frozenset:
+    """The input families `checker_script` re-derives independently; empty
+    for a checker this table does not name (fail closed)."""
+    return CHECKER_VERIFIES.get(str(checker_script), frozenset())
 
 
 def classify(key: str) -> str:
@@ -98,11 +139,15 @@ def keys_for(strategy_name: str) -> list[str]:
     return sorted(set(keys))
 
 
-def audit(strategy_name: str) -> tuple[dict, list[str]]:
+def audit(strategy_name: str, verifiable=None) -> tuple[dict, list[str]]:
+    """(input families -> keys, the families the check cannot verify).
+    `verifiable` is the checker's own set (checker_verifies); None keeps the
+    CLI's OHLCV-only model."""
+    can = VERIFIABLE_FAMILIES if verifiable is None else verifiable
     fams: dict[str, list[str]] = {}
     for k in keys_for(strategy_name):
         fams.setdefault(classify(k), []).append(k)
-    gaps = [f for f in fams if f not in VERIFIABLE_FAMILIES]
+    gaps = [f for f in fams if f not in can]
     return fams, sorted(gaps)
 
 

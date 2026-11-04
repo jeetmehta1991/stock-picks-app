@@ -73401,3 +73401,102 @@ def test_b3397c_every_family_grader_stamps_the_contract():
                 ok = True
                 break
         assert ok, f"{s}: no output dict carries the B2505 contract"
+
+def test_b3397d_classifier_files_ohlcv_keys_and_keeps_its_controls():
+    """S6-B3397 (census 1874): verify_spotcheck_coverage misfiled
+    force_index_* as an index EVENT (it matched `index_`) and left camarilla,
+    floor-pivot, naked-POC, pairs-spread and xs_ivol keys UNKNOWN - all are
+    computed from bars. The controls keep their families."""
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    sys.path.insert(0, str(root / "scripts"))
+    import verify_spotcheck_coverage as v
+    for k in ("force_index_cross_up", "force_index_cross_dn", "above_cam_r4",
+              "below_cam_s4", "above_r1", "below_s1", "naked_poc_count",
+              "naked_poc_nearest_distance_pct", "pair_zscore_signed",
+              "pair_half_life", "xs_ivol"):
+        assert v.classify(k) == "ohlcv", k
+    assert v.classify("committed_growth_holders") == "smart_money"
+    for k, fam in (("index_rebalance_add", "index_events"),
+                   ("borrow_ok", "short_interest"), ("vix_band_low", "macro"),
+                   ("news_sentiment_5d", "news"), ("smc_ob_bullish", "ohlcv")):
+        assert v.classify(k) == fam, (k, v.classify(k))
+
+
+def test_b3397d_every_battery_checker_declares_what_it_rederives():
+    """S6-B3397: each FAMILIES spot-check script names the input families its
+    legs re-derive independently; one the table does not name verifies
+    nothing (fail closed). spot_check_replay re-derives none - its leg A IS
+    the engine record."""
+    rp = _rp_b3397a()
+    import verify_spotcheck_coverage as v
+    scripts = {rp.SPECS[f]["tools"]["spot_check"]["script"] for f in rp.FAMILIES}
+    assert scripts <= set(v.CHECKER_VERIFIES), sorted(scripts - set(v.CHECKER_VERIFIES))
+    assert v.checker_verifies("spot_check_not_registered.py") == frozenset()
+    assert v.checker_verifies("spot_check_replay.py") == frozenset()
+    assert "smart_money" in v.checker_verifies("spot_check_institutional.py")
+
+
+def test_b3397d_spot_coverage_certifies_or_names_the_gap():
+    """S6-B3397 (census 1874): CERTIFIED only when every input family the
+    strategy reads is one its checker re-derives; otherwise NOT CERTIFIED
+    with the family and keys named - a WARN disclosure, never a FAIL (the
+    blocking half is the owner's word, S6-B3415). MEASURED at B3139q-r186:
+    7 of 17 battery families CERTIFIED."""
+    rp = _rp_b3397a()
+    st, ev = rp.spot_coverage("squeeze_breakout", "spot_check_producer.py")
+    assert st == "PASS" and ev.startswith("CERTIFIED"), ev
+    st, ev = rp.spot_coverage("camarilla_r4_breakout", "spot_check_producer.py")
+    assert st == "WARN" and "NOT CERTIFIED" in ev and "borrow_ok" in ev, ev
+    st, ev = rp.spot_coverage("news_momentum_long", "spot_check_replay.py")
+    assert st == "WARN" and "no input family" in ev and "news" in ev, ev
+    st, ev = rp.spot_coverage("zz_not_a_strategy", "spot_check_producer.py")
+    assert st == "WARN" and "NOT MEASURABLE" in ev, ev
+
+
+def test_b3397d_step4_carries_the_coverage_and_is_not_refused(tmp_path, monkeypatch):
+    """S6-B3397 (L654 - the wiring): run_family records step4_coverage and
+    appends the coverage clause to step 4's evidence; NOT CERTIFIED leaves
+    step 4 DONE (a disclosure), and the row is a grader check, never a
+    step-1 FAIL."""
+    import json
+    import os
+    import types
+    from pathlib import Path
+    rp = _rp_b3397a()
+    monkeypatch.setattr(rp, "ROOT", tmp_path)
+    monkeypatch.setattr(rp, "knob_is_read", lambda env, root: True)
+    monkeypatch.setattr(rp, "knob_consumers", lambda env: ())
+    monkeypatch.setattr(rp, "declared_consumers", lambda spec, env: ())
+    (tmp_path / "output_audit").mkdir()
+
+    def run_for(fam):
+        def fake_run(cmd, env_extra=None):
+            cmd = [str(c) for c in cmd]
+            body = "{}"
+            if os.path.basename(cmd[1]) == "grade_knob_config.py":
+                body = json.dumps({"config": {}, "strategy": fam,
+                                   "generator": "scripts/grade_knob_config.py",
+                                   "cube_rows": 48, "is_rows": 48, "holdout_rows": 0,
+                                   "rows": [{"cell": "base:long"}]})
+            for i, c in enumerate(cmd):
+                if c == "--out":
+                    Path(cmd[i + 1]).write_text(body, encoding="utf-8")
+            return types.SimpleNamespace(returncode=0, stdout="", stderr="")
+        monkeypatch.setattr(rp, "_run", fake_run)
+        cube = tmp_path / f"cube_{fam}"
+        cube.mkdir(exist_ok=True)
+        p = {k: 1 for k in rp.SPECS[fam]["tools"]["keys"].values()}
+        res, notes, _, _ = rp.run_family(fam, cube, p, {"window": {}}, step=1)
+        return {n: (s, e) for n, s, e in res}, notes
+
+    by, notes = run_for("squeeze_breakout")
+    assert by["step4_coverage"][0] == "PASS", by["step4_coverage"]
+    assert notes["4_three_leg_spot_check"][0] == "DONE"
+    assert "coverage CERTIFIED" in notes["4_three_leg_spot_check"][1], notes
+    by, notes = run_for("camarilla_r4_breakout")
+    assert by["step4_coverage"][0] == "WARN" and "borrow_ok" in by["step4_coverage"][1]
+    assert notes["4_three_leg_spot_check"][0] == "DONE", "a disclosure, not a refusal"
+    assert "NOT CERTIFIED" in notes["4_three_leg_spot_check"][1]
+    assert "step4_coverage" in rp._GRADER_CHECKS

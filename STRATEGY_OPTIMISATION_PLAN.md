@@ -1966,7 +1966,7 @@ that never reads the input that gates it - its output would be identical to a re
 MEASURED across the roster (B1634): 185 of 222 strategies had at least one input the spot check cannot
 verify. The gate is fail-CLOSED - an unclassified key counts as unverifiable, because an unrecognised
 input is precisely the one nobody thought about. **Before the spot check certifies any strategy, this
-must exit 0.** Under `--cube-isolation` tier sizing is bypassed (`CUBE_ISOLATION_SIZE_PCT` in `BacktestEngine._process_day`), so tier is
+must exit 0.** ENFORCED on every landing as a disclosure: the battery runs it with the family checker's own verifiable families (verify_spotcheck_coverage.checker_verifies) and step 4 says CERTIFIED or NOT CERTIFIED with the gap named (run_postconfig.spot_coverage, test_b3397d; S6-B3397); whether NOT CERTIFIED holds step 4 open is the owner's word (S6-B3415). Under `--cube-isolation` tier sizing is bypassed (`CUBE_ISOLATION_SIZE_PCT` in `BacktestEngine._process_day`), so tier is
 not an entry input; **at Phase 1B, with tier sizing live and the full roster running, OHLCV-only
 coverage is NOT sufficient** - the smart-money leg re-enters the entry path (tier GATES ENTRY through a
 LOW -> 0.0 size skip, L418 / B1544) and must be checked too.
