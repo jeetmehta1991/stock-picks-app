@@ -1197,6 +1197,14 @@ def lenses(cube_dir: Path, step: int, grid: dict, spot_out: Path | None,
                     "no family resolved - no grid keys to check"))
     except Exception as exc:                          # noqa: BLE001
         out.append(("band_levels_change_outcome", "FAIL", f"crashed: {exc!r}"[:200]))
+    # S6-B3397 (runbook 2.4 item 19 + 1.5, census 817 / 1293; the redundancy
+    # row, census 588): the landed leg against the R5 baseline over the
+    # cube's own tickers and window - a crash is a FAIL row, never a skip
+    try:
+        out.extend(r5_baseline_lenses(cube_dir, read_manifest(cube_dir), grid, family))
+    except Exception as exc:                          # noqa: BLE001
+        out.append(("entries_per_ticker_vs_r5", "FAIL", f"crashed: {exc!r}"[:200]))
+        out.append(("registration_redundancy", "FAIL", f"crashed: {exc!r}"[:200]))
 
     # B2574 (S6-B2512 CAUSE FOUND): the empty share is the SYMPTOM; the
     # consequence is that the cube replay priced every such trade's exits
@@ -1424,6 +1432,19 @@ def grid_bands_lens(grid: dict, family) -> tuple:
             f"every swept level changes the outcome (swept: {swept_txt})")
 
 
+def pass_ci_lo(grid: dict) -> list:
+    """The ci_lo of every PASS the grid records - its population's PASS rows
+    and a PASS step2 block. ONE definition: step 8's denominators and the
+    small-universe entries lens both ask it (S6-B3397)."""
+    rows, _f, _u = grid_population(grid)
+    out = [r.get("ci_lo") for r in rows
+           if isinstance(r, dict) and r.get("verdict") == "PASS"]
+    s2 = grid.get("step2")
+    if isinstance(s2, dict) and s2.get("verdict") == "PASS":
+        out.append(s2.get("ci_lo"))
+    return out
+
+
 def verdict_denominators(cube_dir: Path, manifest: dict, family, grid: dict) -> str:
     """S6-B3397 (runbook 5.3 step 8, census line 1956): what the verdict
     must also state - X of Y producers varied, exits_effective of the
@@ -1461,14 +1482,183 @@ def verdict_denominators(cube_dir: Path, manifest: dict, family, grid: dict) -> 
              if eff is not None else
              f"exits_effective not measurable - no exit graded in-sample "
              f"({registered} registered at the cube's SHA)")
-    pass_ci = [r.get("ci_lo") for r in rows
-               if isinstance(r, dict) and r.get("verdict") == "PASS"]
-    s2 = grid.get("step2")
-    if isinstance(s2, dict) and s2.get("verdict") == "PASS":
-        pass_ci.append(s2.get("ci_lo"))
+    pass_ci = pass_ci_lo(grid)
     part3 = (f"ci_lo of every PASS: {pass_ci}" if pass_ci else
              "no PASS row, so no PASS ci_lo")
     return f"{part1}; {part2}; {part3}"
+
+
+def baseline_scope(cube_dir: Path, manifest: dict, family=None):
+    """(graded leg, tickers, start, end) for an R5 comparison over the landed
+    cube's OWN universe and window (L376 / L378: only a matched scope is
+    comparable), or (None, why) when the manifest cannot name them."""
+    graded, _riders = graded_and_riders(cube_dir)
+    graded = graded or family
+    tk = manifest.get("tickers")
+    rel = tk.get("file") if isinstance(tk, dict) else None
+    win = manifest.get("window") or {}
+    if not graded:
+        return None, "the manifest names no graded strategy"
+    if not rel or not (ROOT / str(rel)).exists():
+        return None, f"the manifest's tickers file {rel!r} is not on disk"
+    if not win.get("start") or not win.get("end"):
+        return None, "the manifest carries no window"
+    tickers = sorted({ln.strip() for ln in (ROOT / str(rel)).read_text(
+        encoding="utf-8").splitlines() if ln.strip() and not ln.lstrip().startswith("#")})
+    return (str(graded), tickers, str(win["start"])[:10], str(win["end"])[:10]), ""
+
+
+def entries_rate_row(n_leg: int, n_r5: int, n_tickers: int, universe_r5: int,
+                     has_pass: bool, graded: str, lo: str, hi: str,
+                     arm_keys=()) -> tuple:
+    """Runbook 2.4 item 19 + 1.5 (census 817 / 1293): the landed leg's entries
+    per ticker against R5's for the same strategy, tickers and window. INFO
+    on every landing; WARN only on a SMALL-universe PASS outside the S2 band
+    (universe_ladder_run.S2_RATIO_BAND, B1514) - L382's rung passed all six
+    gates at 26.63x the R5 rate. A variant arm's own knob moves the rate too,
+    and R5 ran on an older engine, so the ratio also carries every engine
+    change since; the evidence names the arm's settings. MEASURED at
+    B3139q-r187 over 110 landed cubes: 66 inside the band, 10 below, 34
+    above - mostly variant arms (the LEVER4 gate-budget arms 10.6 to 164x,
+    the bollinger span sweep 0.17 to 4.1x); 1 landed grid records a PASS
+    and it ran on the full 544, so 0 of the 110 would WARN."""
+    import universe_ladder_run as ulr
+    b_lo, b_hi = ulr.S2_RATIO_BAND
+    small = n_tickers < universe_r5
+    head = (f"{n_leg} {graded} entries over {n_tickers} tickers "
+            f"({n_leg / n_tickers:.4f}/ticker) vs R5's {n_r5} on the same tickers "
+            f"{lo}..{hi}")
+    arm = (f"; the arm sets {sorted(arm_keys)[:3]}, so the ratio carries the "
+           "variant's own effect beside the universe's") if arm_keys else ""
+    tail = (f"; {'a PASS' if has_pass else 'no PASS'} on a {n_tickers}-ticker "
+            f"universe (R5 ran {universe_r5}); band {b_lo}-{b_hi} "
+            "(universe_ladder_run S2, B1514)")
+    if n_r5 == 0:
+        lvl = "WARN" if (has_pass and small) else "INFO"
+        return ("entries_per_ticker_vs_r5", lvl,
+                head + " - R5 has no baseline rate for it here" + arm + tail)
+    ratio = n_leg / n_r5
+    out = not (b_lo <= ratio <= b_hi)
+    lvl = "WARN" if (has_pass and small and out) else "INFO"
+    note = (" - a small-universe PASS outside the band is an ARTIFACT until the "
+            "rate converges (runbook 2.4 item 19, L382)") if lvl == "WARN" else ""
+    return ("entries_per_ticker_vs_r5", lvl,
+            head + f" ({n_r5 / n_tickers:.4f}/ticker) = {ratio:.2f}x" + arm + tail + note)
+
+
+def redundancy_row(leg, scope, graded: str, riders_frame=None, eligible=None) -> tuple:
+    """The redundancy row of the runbook's verification table (census 588,
+    CHECKLIST #169): does the landed leg now fire on another registration's
+    trades? Jaccard on (ticker, entry_date) per direction against every other
+    R5 registration over the same tickers and window, and against the cube's
+    own riders (same engine run); audit_registration_redundancy's constants
+    - REDUNDANT 0.70, NEAR_IDENTICAL 0.95, MIN_TRADES 50 - imported, one
+    definition. WARN when a pair reaches REDUNDANT and the PRODUCTION pair
+    (R5's own entries for the graded leg, same scope) did not - the change
+    collapsed them; a pair already redundant at production is named as
+    INFO, not this change's finding. `eligible` limits the R5 side to
+    registrations that still trade (registered, not disabled): a pair with
+    a disabled duplicate is already ruled on (STRATEGIES_DISABLED_DUPLICATE).
+    MEASURED at B3139q-r187 over 110 landed cubes: 0 pairs at REDUNDANT; on
+    R5's own squeeze_breakout and macd_crossover entries in a landed squeeze
+    cube's scope it names the B1463 pairs at J 1.000 (the control)."""
+    from audit_registration_redundancy import MIN_TRADES, NEAR_IDENTICAL, REDUNDANT
+
+    def _sets(frame):
+        return {(str(s), str(d)): set(zip(g["ticker"], g["entry_date"]))
+                for (s, d), g in frame.groupby(["strategy", "direction"], observed=True)}
+    mine = _sets(leg)
+    prod = _sets(scope[scope["strategy"] == graded])
+    r5_all = _sets(scope[scope["strategy"] != graded])
+    r5_others = {k: v for k, v in r5_all.items() if eligible is None or k[0] in eligible}
+    retired = len(r5_all) - len(r5_others)
+    # (label, direction, the set compared, R5's production set for that name)
+    cands = [(s, d, b, b) for (s, d), b in r5_others.items()]
+    if riders_frame is not None and len(riders_frame):
+        cands += [(f"{s} (rider)", d, b, r5_others.get((s, d), set()))
+                  for (s, d), b in _sets(riders_frame).items()]
+    compared = skipped = 0
+    new, old, best = [], [], (0.0, None)
+    for (_s, dirn), a in mine.items():
+        if len(a) < MIN_TRADES:
+            continue
+        pa = prod.get((graded, dirn), set())
+        for s, d, b, b_prod in cands:
+            if d != dirn:
+                continue
+            if len(b) < MIN_TRADES:
+                skipped += 1
+                continue
+            compared += 1
+            inter = len(a & b)
+            j = inter / len(a | b) if inter else 0.0
+            if j > best[0]:
+                best = (j, f"{s}|{d}")
+            if j >= REDUNDANT:
+                pj = (len(pa & b_prod) / len(pa | b_prod)) if (pa and pa & b_prod) else 0.0
+                tag = "NEAR-IDENTICAL" if j >= NEAR_IDENTICAL else "REDUNDANT"
+                rec = f"{s}|{d} J {j:.3f} {tag} (production {pj:.3f})"
+                (old if pj >= REDUNDANT else new).append(rec)
+    big = [k for k, v in mine.items() if len(v) >= MIN_TRADES]
+    if not big:
+        return ("registration_redundancy", "INFO",
+                f"{graded}: {max((len(v) for v in mine.values()), default=0)} entries, "
+                f"under MIN_TRADES {MIN_TRADES} - a Jaccard there is noise; not compared")
+    base = (f"{graded} vs {compared} registrations over the same tickers and window "
+            f"({skipped} under {MIN_TRADES} entries skipped, {retired} disabled or "
+            f"retired not compared); bars {REDUNDANT} / {NEAR_IDENTICAL} "
+            "(audit_registration_redundancy)")
+    if new:
+        return ("registration_redundancy", "WARN",
+                f"{len(new)} pair(s) reach REDUNDANT that production did not - the "
+                f"change collapsed them: {new[:3]}; " + base)
+    if old:
+        return ("registration_redundancy", "INFO",
+                f"already redundant at production, not this change's finding: {old[:3]}; "
+                + base)
+    return ("registration_redundancy", "INFO",
+            f"max J {best[0]:.3f} ({best[1]}); " + base)
+
+
+def r5_baseline_lenses(cube_dir: Path, manifest: dict, grid: dict, family=None,
+                       idx_loader=None) -> list:
+    """S6-B3397: the two lenses that read the R5 baseline (r5_entry_index,
+    built once and cached beside the R5 cube). An unnameable scope is N/A,
+    said as INFO; an absent baseline is a WARN - the check did not run, which
+    is never a silent pass (#122)."""
+    names = ("entries_per_ticker_vs_r5", "registration_redundancy")
+    scope_t, why = baseline_scope(cube_dir, manifest, family)
+    if scope_t is None:
+        return [(n, "INFO", f"not measurable: {why} (N/A)") for n in names]
+    graded, tickers, lo, hi = scope_t
+    import pandas as pd
+    import r5_entry_index as rei
+    try:
+        idx = (idx_loader or rei.load)()
+    except FileNotFoundError as exc:
+        return [(n, "WARN", f"the R5 baseline is absent - the check did not run: {exc}")
+                for n in names]
+    d = pd.read_csv(cube_dir / "trade_exit_detail.csv", dtype=str,
+                    usecols=["strategy", "direction", "ticker", "entry_date"])
+    d["entry_date"] = d["entry_date"].str[:10]
+    d = d.drop_duplicates()
+    leg = d[d["strategy"] == graded]
+    _g, riders = graded_and_riders(cube_dir)
+    rider_frame = d[d["strategy"].isin(riders)] if riders else None
+    scope = rei.scope(idx, tickers, lo, hi)
+    n_r5 = int((scope["strategy"] == graded).sum())
+    _arm, env = _arm0(manifest)
+    rate = entries_rate_row(int(len(leg)), n_r5, len(tickers),
+                            int(idx["ticker"].nunique()), bool(pass_ci_lo(grid)),
+                            graded, lo, hi, tuple(env))
+    from backtest.config import (STRATEGIES_DISABLED_DATA_SCARCITY,
+                                 STRATEGIES_DISABLED_DUPLICATE,
+                                 STRATEGIES_DISABLED_MISSING_PRODUCER)
+    from backtest.signals.screener import ALL_STRATEGIES
+    eligible = set(ALL_STRATEGIES) - (set(STRATEGIES_DISABLED_DATA_SCARCITY)
+                                      | set(STRATEGIES_DISABLED_DUPLICATE)
+                                      | set(STRATEGIES_DISABLED_MISSING_PRODUCER))
+    return [rate, redundancy_row(leg, scope, graded, rider_frame, eligible)]
 
 
 def grid_contract_errors(grid: dict, leg) -> list:

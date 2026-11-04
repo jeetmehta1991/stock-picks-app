@@ -46,6 +46,11 @@ R5_CUBE = REPO / "output_r5_merged_1_7" / "trade_exit_detail.csv"
 STRATEGY = "smc_breaker_block_long"
 RUNGS = [5, 10, 20, 50, 100, 200, 381]
 EXPECTED_EXITS = 26
+# S2's band (B1514): an entries-per-ticker ratio against the R5 rate outside it
+# means universe size, not the strategy, drove which entries were taken (L376 /
+# L382). ONE definition - the battery's entries_per_ticker_vs_r5 lens imports
+# it (S6-B3397, runbook 2.4 item 19).
+S2_RATIO_BAND = (0.5, 2.0)
 
 
 def build_ladder() -> tuple[list[str], dict]:
@@ -89,9 +94,10 @@ def sentinels(rung: int, elapsed: float, proj: float | None,
         return trips
     rate = n_entries / rung
     ratio = rate / base["r5_entries_per_ticker"] if base["r5_entries_per_ticker"] else 0
-    if ratio > 2 or ratio < 0.5:
+    lo, hi = S2_RATIO_BAND
+    if ratio > hi or ratio < lo:
         trips.append(f"S2 ENTRY RATIO: {rate:.4f}/ticker vs R5 "
-                     f"{base['r5_entries_per_ticker']:.4f} = {ratio:.2f}x (outside 0.5-2.0)")
+                     f"{base['r5_entries_per_ticker']:.4f} = {ratio:.2f}x (outside {lo}-{hi})")
     bad = g.groupby(["ticker", "entry_date"]).exit_method.nunique()
     off = bad[bad != EXPECTED_EXITS]
     if len(off):

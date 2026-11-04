@@ -73500,3 +73500,163 @@ def test_b3397d_step4_carries_the_coverage_and_is_not_refused(tmp_path, monkeypa
     assert notes["4_three_leg_spot_check"][0] == "DONE", "a disclosure, not a refusal"
     assert "NOT CERTIFIED" in notes["4_three_leg_spot_check"][1]
     assert "step4_coverage" in rp._GRADER_CHECKS
+
+def _b3397e_frame(rows):
+    import pandas as pd
+    return pd.DataFrame(rows, columns=["strategy", "direction", "ticker", "entry_date"])
+
+
+def test_b3397e_r5_entry_index_caches_and_rebuilds_on_a_changed_source(tmp_path, monkeypatch):
+    """S6-B3397: the R5 entry index is the distinct (strategy, direction,
+    ticker, entry_date) set of the R5 cube, cached beside it with the
+    source's size and mtime; a matching stamp reads the cache (no CSV read),
+    a changed source rebuilds, an absent source raises (never a guess)."""
+    import pandas as pd
+    import pytest
+    _rp_b3397a()
+    import r5_entry_index as rei
+    src = tmp_path / "trade_exit_detail.csv"
+    lines = ["ticker,strategy,entry_date,direction,exit_method,pnl_pct"]
+    for ex in ("a", "b"):
+        lines += [f"AAA,s1,2023-01-03,long,{ex},1.0", f"BBB,s1,2023-01-04,long,{ex},2.0",
+                  f"AAA,s2,2023-01-03,short,{ex},-1.0"]
+    src.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    idx = rei.load(src)
+    assert len(idx) == 3 and set(idx.columns) == {"strategy", "direction", "ticker", "entry_date"}
+    assert (tmp_path / "_entry_index.parquet").exists() and (tmp_path / "_entry_index.json").exists()
+
+    def _no_csv(*a, **k):
+        raise AssertionError("a matching stamp must read the cache, not the CSV")
+    monkeypatch.setattr(pd, "read_csv", _no_csv)
+    assert len(rei.load(src)) == 3
+    monkeypatch.undo()
+    with open(src, "a", encoding="utf-8") as fh:
+        fh.write("CCC,s1,2023-01-05,long,a,0.5\n")
+    assert len(rei.load(src)) == 4, "a changed source must rebuild the index"
+    with pytest.raises(FileNotFoundError):
+        rei.load(tmp_path / "absent.csv")
+    sc = rei.scope(rei.load(src), ["AAA", "CCC"], "2023-01-03", "2023-01-04")
+    assert sorted(sc["ticker"]) == ["AAA", "AAA"]
+
+
+def test_b3397e_entries_lens_warns_only_on_a_small_universe_pass_outside_the_band():
+    """S6-B3397 (runbook 2.4 item 19 + 1.5, census 817 / 1293): INFO on every
+    landing with the matched-scope ratio; WARN only for a PASS on a universe
+    smaller than R5's whose ratio leaves the S2 band - the band read from
+    universe_ladder_run.S2_RATIO_BAND, the one definition."""
+    rp = _rp_b3397a()
+    import universe_ladder_run as ulr
+    assert ulr.S2_RATIO_BAND == (0.5, 2.0)
+    args = ("smc_x", "2024-05-05", "2025-05-05")
+    n, lvl, ev = rp.entries_rate_row(300, 100, 200, 544, True, *args)
+    assert lvl == "WARN" and "3.00x" in ev and "ARTIFACT" in ev, ev
+    assert rp.entries_rate_row(300, 100, 200, 544, False, *args)[1] == "INFO"
+    assert rp.entries_rate_row(300, 100, 544, 544, True, *args)[1] == "INFO", "full universe"
+    assert rp.entries_rate_row(150, 100, 200, 544, True, *args)[1] == "INFO", "inside the band"
+    n0 = rp.entries_rate_row(12, 0, 200, 544, False, *args)
+    assert n0[1] == "INFO" and "no baseline rate" in n0[2]
+    arm = rp.entries_rate_row(150, 100, 200, 544, False, *args, ("SQUEEZE_BB_LEN",))
+    assert "SQUEEZE_BB_LEN" in arm[2] and "variant's own effect" in arm[2]
+
+
+def test_b3397e_redundancy_lens_flags_a_collapse_the_change_made():
+    """S6-B3397 (the redundancy row, census 588): a landed leg reaching
+    REDUNDANT (0.70) with another registration that production did not
+    reach is a WARN naming the pair; a pair already redundant at production
+    is INFO; a leg under MIN_TRADES (50) is not compared. The constants are
+    audit_registration_redundancy's own."""
+    rp = _rp_b3397a()
+    import audit_registration_redundancy as arr
+    assert (arr.REDUNDANT, arr.NEAR_IDENTICAL, arr.MIN_TRADES) == (0.70, 0.95, 50)
+    days = [f"2024-06-{d:02d}" for d in range(1, 29)] + [f"2024-07-{d:02d}" for d in range(1, 29)]
+    leg = _b3397e_frame([("g", "long", "T", d) for d in days[:56]])
+    other = [("o", "long", "T", d) for d in days[:50]] + [("o", "long", "U", d) for d in days[:5]]
+    prod_far = [("g", "long", "V", d) for d in days[:56]]
+    lvl_ev = rp.redundancy_row(leg, _b3397e_frame(other + prod_far), "g")
+    assert lvl_ev[1] == "WARN" and "o|long" in lvl_ev[2] and "production 0.000" in lvl_ev[2], lvl_ev
+    prod_same = [("g", "long", "T", d) for d in days[:56]]
+    pre = rp.redundancy_row(leg, _b3397e_frame(other + prod_same), "g")
+    assert pre[1] == "INFO" and "already redundant at production" in pre[2], pre
+    small = rp.redundancy_row(leg.head(40), _b3397e_frame(other + prod_far), "g")
+    assert small[1] == "INFO" and "under MIN_TRADES 50" in small[2], small
+    far = [("o", "long", "W", d) for d in days[:56]]
+    clean = rp.redundancy_row(leg, _b3397e_frame(far + prod_far), "g")
+    assert clean[1] == "INFO" and "max J 0.000" in clean[2], clean
+    gone = rp.redundancy_row(leg, _b3397e_frame(other + prod_far), "g", eligible={"g"})
+    assert gone[1] == "INFO" and "1 disabled or retired not compared" in gone[2], gone
+
+
+def test_b3397e_lenses_carry_both_r5_rows_on_a_real_scope(tmp_path, monkeypatch):
+    """S6-B3397 (L654 - the wiring): lenses() emits entries_per_ticker_vs_r5
+    and registration_redundancy for a cube whose manifest names its graded
+    strategy, tickers and window; an absent baseline is a WARN (the check
+    did not run), never a silent pass; an unnameable scope is INFO N/A."""
+    import json
+    rp = _rp_b3397a()
+    import r5_entry_index as rei
+    monkeypatch.setattr(rp, "ROOT", tmp_path)
+    (tmp_path / "output_audit").mkdir()
+    (tmp_path / "output_audit" / "u.txt").write_text("T\nU\n", encoding="utf-8")
+    (tmp_path / "output_audit" / "sub.txt").write_text("g\n", encoding="utf-8")
+    cube = tmp_path / "cube"
+    cube.mkdir()
+    rows = ["ticker,strategy,entry_date,direction,exit_method,pnl_pct,hold_days"]
+    rows += [f"T,g,2024-06-{d:02d},long,time_stop_10d,1.0,10" for d in range(1, 21)]
+    (cube / "trade_exit_detail.csv").write_text("\n".join(rows) + "\n", encoding="utf-8")
+    man = {"strategy_subset": "output_audit/sub.txt", "window": {"start": "2024-05-05",
+           "end": "2025-05-05"}, "tickers": {"file": "output_audit/u.txt", "n": 2}}
+    (cube / "run_manifest.json").write_text(json.dumps(man), encoding="utf-8")
+    idx = _b3397e_frame([("g", "long", "T", f"2024-06-{d:02d}") for d in range(1, 11)]
+                        + [("g", "long", "Z", "2024-06-01")])
+    monkeypatch.setattr(rei, "load", lambda *a, **k: idx)
+    by = {n: (lv, ev) for n, lv, ev in rp.lenses(cube, 1, {"step1_ranking": []}, None)}
+    assert by["entries_per_ticker_vs_r5"][0] == "INFO" and "2.00x" in by["entries_per_ticker_vs_r5"][1], by
+    assert by["registration_redundancy"][0] == "INFO"
+
+    def _gone(*a, **k):
+        raise FileNotFoundError("R5 baseline cube absent")
+    monkeypatch.setattr(rei, "load", _gone)
+    by = {n: (lv, ev) for n, lv, ev in rp.lenses(cube, 1, {"step1_ranking": []}, None)}
+    assert by["entries_per_ticker_vs_r5"][0] == "WARN" and "did not run" in by["entries_per_ticker_vs_r5"][1]
+    (cube / "run_manifest.json").write_text(json.dumps({}), encoding="utf-8")
+    by = {n: (lv, ev) for n, lv, ev in rp.lenses(cube, 1, {"step1_ranking": []}, None)}
+    assert by["registration_redundancy"][0] == "INFO" and "N/A" in by["registration_redundancy"][1]
+
+
+def test_b3397e_ladder_s2_reads_the_shared_band(tmp_path, monkeypatch):
+    """S6-B3397: universe_ladder_run's S2 sentinel reads S2_RATIO_BAND - the
+    constant the battery lens imports - so the two cannot drift apart."""
+    import universe_ladder_run as ulr
+    d = tmp_path / "rung"
+    d.mkdir()
+    rows = ["strategy,ticker,entry_date,exit_method"]
+    rows += [f"{ulr.STRATEGY},T{i},2024-01-0{1 + i % 9},x" for i in range(30)]
+    (d / "trade_exit_detail.csv").write_text("\n".join(rows) + "\n", encoding="utf-8")
+    base = {"r5_entries_per_ticker": 1.0}
+    trips = ulr.sentinels(10, 1.0, None, d, base)
+    assert any(t.startswith("S2 ") for t in trips), trips
+    monkeypatch.setattr(ulr, "S2_RATIO_BAND", (0.1, 5.0))
+    assert not any(t.startswith("S2 ") for t in ulr.sentinels(10, 1.0, None, d, base))
+
+
+def test_b3397e_grading_surface_covers_what_the_battery_imports(tmp_path, monkeypatch):
+    """S6-B3397 (L844): the grading-surface digest covers every scripts/
+    module the battery imports directly - the lens tools the S6-B3397
+    batches wired included - so a change to one moves the disclosure."""
+    _rp_b3397a()
+    import run_wave as rw
+    live = rw.battery_imports()
+    for m in ("verify_spotcheck_coverage", "verify_grid_bands", "r5_entry_index",
+              "universe_ladder_run", "audit_registration_redundancy"):
+        assert f"scripts/{m}.py" in live, m
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "scripts" / "run_postconfig.py").write_text(
+        "def f():\n    import lens_tool\n", encoding="utf-8")
+    (tmp_path / "scripts" / "lens_tool.py").write_text("X = 1\n", encoding="utf-8")
+    monkeypatch.setattr(rw, "ROOT", tmp_path)
+    assert rw.battery_imports() == {"scripts/lens_tool.py"}, rw.battery_imports()
+    d1 = rw.grading_surface_sha256()
+    (tmp_path / "scripts" / "lens_tool.py").write_text("X = 2\n", encoding="utf-8")
+    d2 = rw.grading_surface_sha256()
+    assert d1["digest"] != d2["digest"], "a battery-imported module's edit must move the digest"
+    assert "battery import scan unavailable" not in d2.get("note", "")

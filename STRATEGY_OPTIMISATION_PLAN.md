@@ -640,7 +640,7 @@ own strategy, leaving the base keys and the roster untouched until an admission 
 | Negative control: a deliberately absurd threshold must produce zero trades | silent no-op filters | L322 |
 | Assert every scored config's trade count > 0 before scoring | vacuous passes | L325 |
 | Re-derive every published count from the artifact, never from a running tally | count drift | L298 |
-| Run `scripts/audit_registration_redundancy.py` after any loosening (CHECKLIST #169) and after a tightening campaign (the pre-B3096 row) | a change collapsing two strategies together | CHECKLIST #169 |
+| Run `scripts/audit_registration_redundancy.py` after any loosening (CHECKLIST #169) and after a tightening campaign (the pre-B3096 row). ENFORCED on every landing: the battery's registration_redundancy lens compares the landed leg with every other R5 registration and the cube's riders over the cube's own tickers and window, with this tool's own bars, and WARNs on a pair the change pushed to REDUNDANT (run_postconfig.redundancy_row, test_b3397e; S6-B3397) | a change collapsing two strategies together | CHECKLIST #169 |
 | Report churn (in/out), never only the net | direction assumed rather than measured | L291 |
 
 - Every number in a report carries its funnel stage (L295).
@@ -870,7 +870,7 @@ the L-number is the incident, and its LEARNINGS entry carries the detail.
 | 16 | **Use the locked artifact (§7 / CHECKLIST #183).** Formula + Tables A-D, generated, never hand-edited (the pre-B3096 row said Formula + Table A + Table B; it predates Tables C and D, which the locked standard now carries). | Hand-maintained views diverge. |
 | 17 | **Report ALL metrics the evaluator emits**, not the headline. | L373 - Sharpe alone hid a `ci_lo` of -0.034, below zero. |
 | 18 | **The verdict MUST carry its denominator** - "N of M combinations across X of Y producers". Computed, never hand-counted. | CHECKLIST #182; L368 - hand-counting reproduced the error the rule exists to prevent. |
-| 19 | **A small-universe PASS is an ARTIFACT until entries/ticker converges to the baseline rate.** | L382 - a rung passed all 6 gates at **26.63x** the R5 entry rate. |
+| 19 | **A small-universe PASS is an ARTIFACT until entries/ticker converges to the baseline rate.** ENFORCED on every landing: the entries_per_ticker_vs_r5 lens states the leg's entries against R5's over the cube's own tickers and window and WARNs on a small-universe PASS outside the S2 band (run_postconfig.entries_rate_row, universe_ladder_run.S2_RATIO_BAND, test_b3397e; S6-B3397). | L382 - a rung passed all 6 gates at **26.63x** the R5 entry rate. |
 | 20 | **A pin test must be BEHAVIOURAL, not textual.** Set the non-default, RUN the engine, assert the FIRE SET changes. | B1520 - a first "pin test" grepped source strings: the grep-found trap wearing a test's clothes (L391). |
 | 21 | **Before any differential test, assert the SUBJECT OCCURS in the chosen window.** A differential with n=0 on BOTH sides reports agreement and reads as a pass. | L393 - the behavioural pin test compared two EMPTY fire sets, because the short window excluded every one of the strategy's fire dates. |
 | 22 | **When a targeted test comes back vacuous, check whether the same artifact answers at a coarser grain before re-running.** | L394 - the cubes about to be discarded already proved the knob works (13/76 vs 16/95 entries). |
@@ -1352,7 +1352,7 @@ A run once finished all 1,003 sim-days and wrote **no cube** (L410) - post-proce
 phase and died with the session, and a sim-day percentage would have reported 100 pct. The process
 can also hang after writing (the pool does not always exit): verify the artifact, then kill if
 needed. Verify on completion: the cube exists; every entry carries exactly `len(EXIT_STRATEGIES)` exits
-at the cube's own SHA (#130; §7.6); entries per ticker against the baseline rate; and gradability - how
+at the cube's own SHA (#130; §7.6); entries per ticker against the baseline rate (the battery's entries_per_ticker_vs_r5 lens, S6-B3397); and gradability - how
 many combinations produced a verdict at all.
 
 **Step 1.6 - Each landing:** the engine hook runs the battery unprompted (§5), and the turn's response

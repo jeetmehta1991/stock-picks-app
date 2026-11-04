@@ -238,6 +238,37 @@ GRADING_SURFACE = (
 )
 
 
+def battery_imports(entry: str = "scripts/run_postconfig.py") -> set:
+    """S6-B3397 (L844: a provenance digest over half the code a run depends
+    on reports clean while the other half drifts): the scripts/ modules the
+    battery imports DIRECTLY, read from its import statements (function-level
+    included). MEASURED at B3139q-r187: the fixed core named 4 files while
+    run_postconfig imported 14 scripts/ modules, 12 outside it - among them
+    the lens tools the S6-B3397 batches wired (verify_grid_bands,
+    verify_spotcheck_coverage); with batch 8e's three (r5_entry_index,
+    universe_ladder_run, audit_registration_redundancy) it imports 17, and
+    the digest now covers 47 files with the adapters. Direct, not transitive: the
+    transitive closure is 44 files and pulls in the commit gates
+    (pyramid_gate, pregate_select, queue_state), so the disclosure would read
+    MOVED on nearly every commit and stop meaning anything (said, not hidden).
+    Raises on an unreadable entry - the caller degrades and SAYS SO (#122)."""
+    import ast
+    tree = ast.parse((ROOT / entry).read_text(encoding="utf-8"))
+    out = set()
+    for n in ast.walk(tree):
+        if isinstance(n, ast.Import):
+            names = [a.name for a in n.names]
+        elif isinstance(n, ast.ImportFrom) and n.module and not n.level:
+            names = [n.module]
+        else:
+            continue
+        for m in names:
+            rel = f"scripts/{m.split('.')[0]}.py"
+            if (ROOT / rel).exists():
+                out.add(rel)
+    return out
+
+
 def grading_surface_sha256() -> dict:
     """Digest of the fixed battery core plus every SPECS adapter script.
     A failed adapter scan DEGRADES to the fixed core and SAYS SO in the
@@ -245,6 +276,11 @@ def grading_surface_sha256() -> dict:
     forever) - never a silent pass."""
     files = set(GRADING_SURFACE)
     note = ""
+    try:
+        files |= battery_imports()
+    except Exception as exc:                            # noqa: BLE001
+        note = (f"battery import scan unavailable ({type(exc).__name__}: {exc}) - "
+                "digest omits the battery's imported modules; ")
     try:
         import sys as _s
         _sp = str(ROOT / "scripts")
@@ -258,8 +294,8 @@ def grading_surface_sha256() -> dict:
                 if scr:
                     files.add("scripts/" + scr)
     except Exception as exc:                            # noqa: BLE001
-        note = (f"adapter scan unavailable ({type(exc).__name__}: {exc}) - "
-                "digest covers the fixed core only")
+        note += (f"adapter scan unavailable ({type(exc).__name__}: {exc}) - "
+                 "digest covers the fixed core only")
     ordered = sorted(f for f in files if (ROOT / f).exists())
     h = hashlib.sha256()
     for rel in ordered:

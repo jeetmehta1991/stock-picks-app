@@ -22931,6 +22931,26 @@ drift ANSWERABLE after the fact, which is exactly what was missing; tightening
 it to a refusal is a separate owner decision. Pinned by
 `test_b2985_battery_path_is_fingerprinted_beside_the_engine`.
 
+**Addendum (B3139q-r187, S6-B3397 batch 8e): THE SAME HALF-COVERAGE ONE LAYER
+UP - AND TWO OF ITS FILES WERE MINE.** The grading-surface digest written
+after this entry (`run_wave.grading_surface_sha256`, S6-B3120c(b)) named a
+fixed core of 4 files plus the family adapters. MEASURED this batch:
+run_postconfig imported 14 `scripts/` modules, 12 outside that core -
+producer_variant_table, whose SPECS pick each family's grader, among them -
+and 2 of the 12 were mine: batches 8b (9f4e19fb1) and 8d (98494f59b) wired
+verify_grid_bands and verify_spotcheck_coverage into the battery without
+asking whether the digest saw them. **Compliance failure against item #224**
+in the form this entry records: "which files does the hash walk" was answered
+once, for one digest, and not asked again when the code it covers grew.
+Fixed: `run_wave.battery_imports()` adds every `scripts/` module the battery
+imports directly (17 after 8e; the transitive closure is 44 and would read
+MOVED on nearly every commit, said in its docstring), pinned by
+`test_b3397e_grading_surface_covers_what_the_battery_imports`. The sibling -
+`run_serial_chain.BATTERY_PATHS`, a second hand list of 7 files hashing "the
+grading path" by a different definition - is ticketed S6-B3416 (one
+definition, L593). **The rule: an import added to a fingerprinted surface
+makes the fingerprint part of the change.**
+
 ### L845 - I NAMED THREE LOCATIONS FOR ONE DEFECT AND THE TICKET HAD IT RIGHT ALL ALONG (B2986, 2026-09-22)
 
 S6-B2919 describes a defect in ONE sentence, correctly, in its own first
