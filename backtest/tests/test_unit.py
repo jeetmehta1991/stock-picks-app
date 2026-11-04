@@ -34132,7 +34132,9 @@ def test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritte
                         "--growth-lookback-quarters", "4", "--growth-multiple", "1.1",
                         "--span", "200", "--min-n", "10", "--out", str(grid_out)], gcmd
     scmd = [c for c, e in seen if "spot_check_institutional" in " ".join(c)][0]
+    # S6-B3397 (R6): the battery appends its own sampling pair LAST
     assert scmd[2:] == ["--cube", str(cube), "--n", "50", "--ema-span", "200",
+                        "--n", "50", "--seed", "42",
                         "--out", str(spot_out),
                         "--start", "2024-05-05", "--end", "2025-05-05"], scmd
     assert "PYTHONPATH" not in [e for c, e in seen
@@ -34180,6 +34182,7 @@ def test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritte
     assert st[2:] == ["--cube", str(cube / "trade_exit_detail.csv"), "--n", "50",
                       "--strategy", "smc_breaker_block_long",
                       "--swing-length", "50", "--ema-span", "50",
+                      "--n", "50", "--seed", "42",
                       "--out", str(spot_out)], st
     by = {n: (s, m) for n, s, m in results}
     assert "step2_free_levels" not in by
@@ -72815,3 +72818,277 @@ def test_b3392e_every_registry_path_citation_resolves_for_a_reader():
     assert _b3392e_unresolved(fake, tracked) == fake
     # must-quiet arm's control: against an empty tracked set every citation fails
     assert len(_b3392e_unresolved(cites, set())) == len(cites)
+
+def _rp_b3397a():
+    """run_postconfig loaded under its own name (pickling-safe, L683)."""
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    for p in (str(root), str(root / "scripts")):
+        if p not in sys.path:
+            sys.path.insert(0, p)
+    import run_postconfig as rp
+    return rp
+
+
+def _b3397a_cube(tmp_path, name, strategies, subset=None, riders=None, n_per=3):
+    """A minimal landed cube: trade_exit_detail.csv rows for each strategy
+    (n_per distinct entries each, in-sample dates) plus a run_manifest naming
+    the strategy_subset / cube_riders files the battery reads."""
+    import json
+    cube = tmp_path / name
+    cube.mkdir()
+    lines = ["strategy,direction,ticker,entry_date,exit_method,pnl_pct,hold_days"]
+    for s in strategies:
+        for i in range(n_per):
+            lines.append(f"{s},long,T{i},2024-01-0{i + 1},atr_trail_1x,0.5,3")
+    (cube / "trade_exit_detail.csv").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    man = {}
+    if subset is not None:
+        (tmp_path / f"{name}_subset.txt").write_text(subset + "\n", encoding="utf-8")
+        man["strategy_subset"] = str((tmp_path / f"{name}_subset.txt").name)
+    if riders:
+        (tmp_path / f"{name}_riders.txt").write_text("\n".join(riders) + "\n", encoding="utf-8")
+        man["cube_riders"] = str((tmp_path / f"{name}_riders.txt").name)
+    (cube / "run_manifest.json").write_text(json.dumps(man), encoding="utf-8")
+    return cube
+
+
+def test_b3397a_graded_strategy_must_be_present_in_the_cube(tmp_path, monkeypatch):
+    """S6-B3397 (runbook 5.3 battery step 1, census line 1803): cube sanity
+    PASS requires the GRADED strategy in the cube. Before B3139q-r183 the rider
+    arm passed a cube whose graded strategy never fired (it read as
+    'declared-but-absent') and the one-strategy arm never compared its single
+    strategy with the manifest's. MEASURED r183 over 184 ledger cubes: 110
+    name a graded strategy and 110 of 110 carry it; 67 legacy manifests name
+    none and get a SKIP that says so (L642 - never an assumed PASS)."""
+    rp = _rp_b3397a()
+    monkeypatch.setattr(rp, "ROOT", tmp_path)
+
+    def row(cube, **kw):
+        out = {n: (st, ev) for n, st, ev in rp.checks(cube, **kw)}
+        return out["graded_strategy_present"]
+
+    ok = _b3397a_cube(tmp_path, "c_ok", ["alpha"], subset="alpha")
+    assert row(ok)[0] == "PASS"
+    wrong = _b3397a_cube(tmp_path, "c_wrong", ["beta"], subset="alpha")
+    st, ev = row(wrong)
+    assert st == "FAIL" and "alpha" in ev, ev
+    # the rider arm: the graded strategy never fired, a rider did
+    rider = _b3397a_cube(tmp_path, "c_rider", ["gamma"], subset="alpha",
+                         riders=["gamma"])
+    assert row(rider)[0] == "FAIL"
+    # an explicit graded leg (--grade-rider) is the leg checked
+    assert row(rider, graded_leg="gamma")[0] == "PASS"
+    legacy = _b3397a_cube(tmp_path, "c_legacy", ["alpha"], subset=None)
+    st, ev = row(legacy)
+    assert st == "SKIP" and "names no single graded strategy" in ev, ev
+    # a FAIL here fails step 1: the row is not a grader check
+    assert "graded_strategy_present" not in rp._GRADER_CHECKS
+
+
+def test_b3397a_spot_check_samples_fifty_with_seed_42_on_every_family(tmp_path, monkeypatch):
+    """S6-B3397 (runbook 2.1 R6, census line 663): every family's spot-check
+    argv - built by the battery, not typed (L827) - carries --n 50 --seed 42,
+    and the artifact must record that seed and min(50, population) trades.
+    MEASURED r183: 4 of 11 checkers defaulted to a date seed (5 of 17
+    families) and 53 of 113 artifacts record `sampled` where spot_summary read
+    only `n_sampled`, so 110 ledger strings read 'n_sampled None'."""
+    import json
+    import os
+    import types
+    rp = _rp_b3397a()
+    monkeypatch.setattr(rp, "ROOT", tmp_path)
+    (tmp_path / "output_audit").mkdir()
+    spot_cmds = {}
+
+    def fake_run(cmd, env_extra=None):
+        cmd = [str(c) for c in cmd]
+        for i, c in enumerate(cmd):
+            if c == "--out":
+                from pathlib import Path
+                Path(cmd[i + 1]).write_text("{}", encoding="utf-8")
+        # the BASENAME: ROOT is tmp_path here, whose name carries this test's
+        # own name ("...spot_check..."), so a path substring matched every call
+        if os.path.basename(cmd[1]).startswith("spot_check"):
+            spot_cmds[cmd[1]] = cmd
+        return types.SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr(rp, "_run", fake_run)
+    # step 7's tree scans are not under test here - the argv is (L827)
+    monkeypatch.setattr(rp, "knob_is_read", lambda env, root: True)
+    monkeypatch.setattr(rp, "knob_consumers", lambda env: ())
+    monkeypatch.setattr(rp, "declared_consumers", lambda spec, env: ())
+    assert len(rp.FAMILIES) >= 17
+    for fam in sorted(rp.FAMILIES):
+        cube = tmp_path / f"cube_{fam}"
+        cube.mkdir(exist_ok=True)
+        spot_cmds.clear()
+        p = {k: 1 for k in rp.SPECS[fam]["tools"]["keys"].values()}
+        rp.run_family(fam, cube, p, {"window": {}}, step=1)
+        assert spot_cmds, fam
+        cmd = next(iter(spot_cmds.values()))
+        # argparse keeps the LAST occurrence, so the battery's pair must be last
+        n_at = max(i for i, c in enumerate(cmd) if c == "--n")
+        s_at = max(i for i, c in enumerate(cmd) if c == "--seed")
+        assert cmd[n_at + 1] == str(rp.SPOT_N) == "50", (fam, cmd)
+        assert cmd[s_at + 1] == str(rp.SPOT_SEED) == "42", (fam, cmd)
+
+    # the reader takes either recorded key
+    assert rp.spot_sample_size({"n_sampled": 50}) == 50
+    assert rp.spot_sample_size({"sampled": 37}) == 37
+    assert rp.spot_sample_size({}) is None
+
+    def check(doc, pop):
+        f = tmp_path / "spot.json"
+        f.write_text(json.dumps(doc), encoding="utf-8")
+        return rp.spot_sampling_check(f, pop)
+
+    assert check({"seed": 42, "n_sampled": 50}, 300)[0] is True
+    assert check({"seed": 42, "sampled": 29}, 29)[0] is True        # bl_span021 shape
+    ok, why = check({"seed": 20260816, "n_sampled": 50}, 300)
+    assert not ok and "seed" in why, why                            # a date seed
+    ok, why = check({"seed": 42, "n_sampled": 12}, 300)
+    assert not ok and "12" in why, why                              # under-sampled
+    assert check({"n_sampled": 50}, 300)[0] is False                # no seed recorded
+    assert check({"seed": 42}, 300)[0] is False                     # no size recorded
+    assert check({"seed": 42, "n_sampled": 50}, None)[0] is False   # population unknown
+
+
+def test_b3397a_cube_entries_equal_the_grids_largest_trade_count():
+    """S6-B3397 (runbook 5.3 step 3, census line 1838): the graded leg's cube
+    entries must equal the grid's largest trade count - a shortfall is silent
+    diagnosis loss (L454). MEASURED r183: 110 of 110 landed grids equal, read
+    through three dialects - `fires` over results / per_exit (in-sample on the
+    per-exit graders, full-period on tighten_breaker_block: b2399 fires 437 =
+    all 437, in-sample 307) and is_n / full_n_count_only over the `rows` list
+    (lever4_step1, grade_knob_config). The check names which count matched."""
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    sys.path.insert(0, str(root / "scripts"))
+    from grid_population import grid_trade_counts
+    rp = _rp_b3397a()
+
+    rows_grid = {"rows": [{"is_n": 90, "full_n_count_only": 120},
+                          {"is_n": 40, "full_n_count_only": 55}]}
+    assert grid_trade_counts(rows_grid) == {"is_n": 90, "full_n_count_only": 120}
+    fires_grid = {"per_exit": [{"fires": 307}, {"fires": 307}]}
+    assert grid_trade_counts(fires_grid) == {"fires": 307}
+    assert grid_trade_counts({"results": [{"fires": 437}, {"fires": 12}]}) == {"fires": 437}
+    assert grid_trade_counts({"results": [{"verdict": "PASS"}]}) == {}
+
+    st, ev = rp.entries_vs_grid_count(rows_grid, 120, 90)
+    assert st == "PASS", ev
+    st, ev = rp.entries_vs_grid_count(rows_grid, 120, 89)
+    assert st == "FAIL" and "is_n" in ev, ev
+    st, ev = rp.entries_vs_grid_count(fires_grid, 437, 307)
+    assert st == "PASS" and "in-sample" in ev, ev
+    st, ev = rp.entries_vs_grid_count({"results": [{"fires": 437}]}, 437, 307)
+    assert st == "PASS" and "full-period" in ev, ev
+    st, ev = rp.entries_vs_grid_count({"results": [{"fires": 430}]}, 437, 307)
+    assert st == "FAIL" and "430" in ev, ev
+    st, ev = rp.entries_vs_grid_count({"results": [{"verdict": "x"}]}, 10, 10)
+    assert st == "FAIL" and "no trade count" in ev, ev               # fail closed
+    assert rp.entries_vs_grid_count({}, 10, 10)[0] == "SKIP"         # no grid
+    assert rp.entries_vs_grid_count(fires_grid, None, None)[0] == "FAIL"
+
+
+def test_b3397a_battery_wires_r6_and_m12_into_steps_4_and_3(tmp_path, monkeypatch, capsys):
+    """S6-B3397 (L654 - a pin on the callee is not a pin on the wiring): the
+    battery's own main path applies R6 to step 4 and M12 to step 3. A stub
+    family lands a grid and a spot artifact over a synthetic cube carrying
+    the registry's full exit set; a matching pair leaves both steps DONE, a
+    date seed FAILs step 4 and a short grid FAILs step 3."""
+    import json
+    import sys
+    rp = _rp_b3397a()
+    from backtest.engine.exit_strategies import EXIT_STRATEGIES
+    monkeypatch.setattr(rp, "ROOT", tmp_path)
+    (tmp_path / "output_audit").mkdir()
+    cube = tmp_path / "output_b3397a_alpha"
+    cube.mkdir()
+    lines = ["strategy,direction,ticker,entry_date,exit_method,pnl_pct,hold_days"]
+    for i in range(3):
+        for ex in EXIT_STRATEGIES:
+            lines.append(f"alpha,long,T{i},2024-01-0{i + 1},{ex},0.5,3")
+    (cube / "trade_exit_detail.csv").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    (tmp_path / "alpha_subset.txt").write_text("alpha\n", encoding="utf-8")
+    (cube / "run_manifest.json").write_text(
+        json.dumps({"strategy_subset": "alpha_subset.txt"}), encoding="utf-8")
+
+    def stub(fires, seed):
+        def run(c, p, m, step=None):
+            key = rp.artifact_key(c, "alpha")
+            g = rp.ROOT / "output_audit" / f"{key}_grid_auto.json"
+            s = rp.ROOT / "output_audit" / f"{key}_spot_check.json"
+            g.write_text(json.dumps({"per_exit": [{"exit": "x", "fires": fires}],
+                                     "results": [], "step1_ranking": []}), encoding="utf-8")
+            s.write_text(json.dumps({"seed": seed, "n_sampled": 3, "agree": 3,
+                                     "disagree": 0, "skipped": 0}), encoding="utf-8")
+            res = [("step2_grade_auto", "PASS", "stub"),
+                   ("step4_spot_check_auto", "PASS", "stub"),
+                   ("step7_engine_implemented", "PASS", "stub")]
+            notes = {"2_grade_with_config_params": ("DONE", "stub grade"),
+                     "4_three_leg_spot_check": ("DONE", "stub spot")}
+            return res, notes, g, s
+        return {"params": lambda m: ({"x": 1}, "stub"), "run": run,
+                "single_combination": True}
+
+    def steps_of(fires, seed):
+        monkeypatch.setitem(rp.FAMILIES, "alpha", stub(fires, seed))
+        monkeypatch.setattr(sys, "argv", ["run_postconfig.py", "--cube", str(cube),
+                                          "--step1-cube"])
+        capsys.readouterr()
+        rp._main_unguarded()
+        out = capsys.readouterr().out
+        found = {}
+        for s in ("3_outlier_discrepancy_sweep", "4_three_leg_spot_check"):
+            hit = [ln for ln in out.splitlines() if f" {s}: " in ln and ln.startswith("  ")]
+            assert hit, (s, out)
+            found[s] = hit[-1].split()[0]
+        return found, out
+
+    def row(out, name):
+        """The check row the battery prints in full: '  <STATUS> <name>: ...'."""
+        hit = [ln.split()[0] for ln in out.splitlines()
+               if ln.startswith("  ") and ln.split()[1:2] == [f"{name}:"]]
+        assert hit, (name, out)
+        return hit[-1]
+
+    found, out = steps_of(3, 42)
+    assert found == {"3_outlier_discrepancy_sweep": "DONE",
+                     "4_three_leg_spot_check": "DONE"}, out
+    assert row(out, "graded_strategy_present") == "PASS"
+    assert row(out, "M12_entries_vs_grid_fires") == "PASS"
+    assert row(out, "step4_sampling_contract") == "PASS"
+    found, out = steps_of(3, 20260816)
+    assert found["4_three_leg_spot_check"] == "FAIL", out
+    assert row(out, "step4_sampling_contract") == "FAIL"
+    found, out = steps_of(2, 42)
+    assert found["3_outlier_discrepancy_sweep"] == "FAIL", out
+    assert row(out, "M12_entries_vs_grid_fires") == "FAIL"
+
+
+def test_b3397a_landing_report_renders_every_named_check():
+    """S6-B3397 ripple (B3139q-r183): postconfig_doc tabulated only the checks
+    named in GROUPS and replaced step 1's evidence with 'tabulated below', so a
+    check outside GROUPS vanished from the LANDING REPORT -
+    one_strategy_or_declared_riders already did. Every parsed check now
+    renders: the new names sit in GROUPS and anything else lands under
+    'Other checks'."""
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    sys.path.insert(0, str(root / "scripts"))
+    import postconfig_doc as pd_
+    grouped = {n for _, names in pd_.GROUPS for n in names}
+    for n in ("graded_strategy_present", "one_strategy_or_declared_riders",
+              "M12_entries_vs_grid_fires", "step4_sampling_contract"):
+        assert n in grouped and n in pd_.CHECK_MEANING, n
+    lines = pd_.render_check_groups(
+        {"graded_strategy_present": ("PASS", "alpha"),
+         "zz_future_check": ("FAIL", "a check no group names yet")})
+    text = "\n".join(lines)
+    assert "Other checks" in text and "zz_future_check" in text, text
+    assert "**<-- NOT PASS**" in text

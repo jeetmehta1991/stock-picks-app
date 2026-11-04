@@ -35,6 +35,29 @@ def grid_population(grid: dict) -> tuple[list, str, str]:
     return (grid.get("results") or []), "results", "combinations"
 
 
+def grid_trade_counts(grid: dict) -> dict:
+    """S6-B3397 (M12, runbook 5.3 step 3): {count key: max over the grid's
+    population rows}. Three dialects carry a trade count: `fires` on the
+    results / per_exit rows, and is_n + full_n_count_only on the `rows` LIST
+    written by lever4_step1 and grade_knob_config - there `rows` is the
+    population, not the B2505 cube-row count. Empty when no row carries one:
+    an unmeasured count stays absent, never 0 (L580)."""
+    if not isinstance(grid, dict):
+        return {}
+    if isinstance(grid.get("rows"), list):
+        pop, keys = grid["rows"], ("is_n", "full_n_count_only")
+    else:
+        pop, keys = grid_population(grid)[0], ("fires",)
+    out = {}
+    for k in keys:
+        vals = [r[k] for r in pop
+                if isinstance(r, dict) and isinstance(r.get(k), (int, float))
+                and not isinstance(r.get(k), bool)]
+        if vals:
+            out[k] = max(vals)
+    return out
+
+
 def population_note(grid: dict) -> str:
     """One clause naming the population and its source field, for a report."""
     rows, field, unit = grid_population(grid)

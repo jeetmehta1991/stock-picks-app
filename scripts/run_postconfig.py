@@ -68,7 +68,11 @@ MEGA = ("NVDA", "MSFT", "GOOGL", "META", "TSLA", "AAPL")
 TERMINAL = ("DONE", "N/A")
 _GRADER_CHECKS = ("step2_grade_auto", "step2_free_levels", "step2_legs",
                   "step2_holdout_ledger",
-                  "step4_spot_check_auto", "step7_engine_implemented")
+                  "step4_spot_check_auto", "step4_sampling_contract",
+                  "step7_engine_implemented")
+# S6-B3397: a check that compares the cube with the GRADER's output is a
+# step-3 discrepancy, not step-1 cube sanity - it fails step 3 alone.
+_STEP3_ONLY = ("M12_entries_vs_grid_fires",)
 _LEDGER_WIDE = ("ledger_status_matches_evidence",)
 
 
@@ -105,7 +109,7 @@ def graded_and_riders(cube_dir: Path) -> tuple:
     return (graded[0] if len(graded) == 1 else None), _names(riders_rel)
 
 
-def checks(cube_dir: Path, step1: bool = False):
+def checks(cube_dir: Path, step1: bool = False, graded_leg: str | None = None):
     import pandas as pd
     from roster_core import HO_START, WINSORIZE
 
@@ -137,6 +141,29 @@ def checks(cube_dir: Path, step1: bool = False):
     else:
         out.append(("one_strategy", "PASS" if n_strat == 1 else "FAIL",
                     f"{n_strat} strategies"))
+    # S6-B3397 (runbook 5.3 battery step 1, census line 1803): cube sanity
+    # PASS requires the GRADED strategy in the cube. The rider arm above
+    # passed a cube whose graded strategy never fired (it read as
+    # 'declared-but-absent') and the one-strategy arm never compared its
+    # single strategy with the manifest's. MEASURED at B3139q-r183 over 184
+    # ledger cubes: 110 name a graded strategy and 110 of 110 carry it; 67
+    # legacy manifests name none - SKIP, said plainly, never an assumed PASS
+    # (L642). `graded_leg` is the leg --grade-rider grades, when given.
+    _leg = graded_leg or _graded
+    _present = sorted(str(x) for x in df["strategy"].dropna().unique())
+    if _leg is None:
+        out.append(("graded_strategy_present", "SKIP",
+                    "the manifest names no single graded strategy (no one-name "
+                    "strategy_subset) - nothing to compare; every post-B2721 "
+                    "launch writes one, so treat SKIP on a NEW cube as a finding"))
+    else:
+        out.append(("graded_strategy_present",
+                    "PASS" if _leg in _present else "FAIL",
+                    f"graded leg {_leg}; the cube carries {len(_present)} "
+                    f"strateg{'y' if len(_present) == 1 else 'ies'} "
+                    f"{_present[:4]}" + ("" if _leg in _present else
+                                         " - the cube does not hold the strategy "
+                                         "it was run to grade")))
     from backtest.engine.exit_strategies import EXIT_STRATEGIES
     # B2724 instance 5 (LATENT): without the strategy key, two strategies
     # firing one ticker on one day summed their exits and read as a
@@ -364,6 +391,56 @@ def _precompute_dir_check(spot_out: Path, arm_env: dict) -> tuple[bool, str]:
                   f"unverifiable, disclosed)")
 
 
+# S6-B3397 (runbook 2.1 R6, census line 663): the spot check samples n=50
+# with seed 42. The battery passes both on every family's argv, so the rule
+# has ONE owner instead of eleven checker defaults - MEASURED at B3139q-r183,
+# 4 of 11 checkers defaulted to a date seed (5 of 17 families) - and
+# spot_sampling_check verifies the artifact recorded what was passed: a
+# checker that accepts --seed and ignores it is the L751 class.
+SPOT_N = 50
+SPOT_SEED = 42
+
+
+def spot_sample_size(doc):
+    """The sample size a spot artifact records: `n_sampled` (6 checkers) or
+    `sampled` (5 checkers). MEASURED r183: 53 of 113 artifacts carry only
+    `sampled`, and spot_summary, reading `n_sampled` alone, wrote
+    'n_sampled None' into the ledger 110 times (the L724 class). None when
+    neither is recorded - an unmeasured size stays absent (L580)."""
+    if not isinstance(doc, dict):
+        return None
+    v = doc.get("n_sampled")
+    return v if v is not None else doc.get("sampled")
+
+
+def spot_sampling_check(spot_out: Path, population) -> tuple[bool, str]:
+    """R6 on the artifact the checker wrote: the recorded seed is SPOT_SEED
+    and the recorded sample is min(SPOT_N, population), the graded leg's
+    distinct cube entries. MEASURED r183: 3 of 3 sub-50 artifacts whose cube
+    is on disk sampled exactly their population (40 of 40, 37 of 37, 29 of
+    29). Fails closed on an unreadable artifact, an unrecorded seed or size,
+    or an unknown population (L642)."""
+    try:
+        doc = json.loads(spot_out.read_text(encoding="utf-8")) or {}
+    except (OSError, ValueError) as exc:
+        return False, f"R6: spot artifact {spot_out.name} unreadable ({exc!r})"
+    seed, size = doc.get("seed"), spot_sample_size(doc)
+    if seed is None or size is None:
+        return False, (f"R6: {spot_out.name} records seed {seed!r} and sample size "
+                       f"{size!r} - the n=50 seed 42 rule cannot be shown (fail closed, L642)")
+    if population is None:
+        return False, ("R6: the graded leg's cube entries could not be counted, so the "
+                       "expected sample size is unknown (fail closed, L642)")
+    want = min(SPOT_N, int(population))
+    if seed != SPOT_SEED:
+        return False, (f"R6: {spot_out.name} sampled with seed {seed}, the battery passed "
+                       f"--seed {SPOT_SEED} - the checker did not apply it (L751)")
+    if int(size) != want:
+        return False, (f"R6: {spot_out.name} sampled {size} of a {population}-entry "
+                       f"population; the rule is min({SPOT_N}, population) = {want}")
+    return True, f"R6: sampled {size} of {population} entries with seed {seed}"
+
+
 def spot_summary(spot_out: Path) -> str:
     """Step-4 evidence from the ARTIFACT, never from stdout - the smc checker
     prints a blank line before 'wrote ...', so a stdout tail lost the tally
@@ -372,7 +449,7 @@ def spot_summary(spot_out: Path) -> str:
         sd = json.loads(spot_out.read_text(encoding="utf-8"))
     except (OSError, ValueError) as exc:
         return f"artifact {spot_out.name} unreadable: {exc!r}"
-    s = (f"n_sampled {sd.get('n_sampled')} seed {sd.get('seed')}: "
+    s = (f"n_sampled {spot_sample_size(sd)} seed {sd.get('seed')}: "
          f"{sd.get('agree')} agree / {sd.get('disagree')} DISAGREE / "
          f"{sd.get('skipped')} skipped; execution failures "
          f"{len(sd.get('execution_failures') or [])}")
@@ -771,7 +848,11 @@ def run_family(fam_name: str, cube_dir: Path, p: dict,
     sb = tools["spot_check"]
     cmd = [sys.executable, str(ROOT / "scripts" / sb["script"]),
            "--cube", _cube_arg(cube_dir, sb), *list(sb.get("extra") or []),
-           *_flag_args(sb, tools, p), "--out", str(spot_out)]
+           *_flag_args(sb, tools, p),
+           # S6-B3397 (R6): the battery owns the sampling rule - LAST, so it
+           # wins over a checker default or an `extra` (argparse keeps the last)
+           "--n", str(SPOT_N), "--seed", str(SPOT_SEED),
+           "--out", str(spot_out)]
     # S6-B2917: a FAMILY can be a long/short PAIR, and a spot checker that
     # defaults to one leg will silently check the wrong one. MEASURED: the
     # candle blocks passed no --strategy, so grading the short leg ran the
@@ -1214,6 +1295,66 @@ def verdict_from_grid(grid: dict, step: int) -> str:
     return s
 
 
+def leg_entry_counts(cube_dir: Path, strategy) -> tuple:
+    """(all, in-sample) distinct (ticker, entry_date) entries of `strategy`
+    in the cube - the populations R6 and M12 compare with (S6-B3397). The
+    in-sample split is roster_core.in_sample, the ONE definition (it excludes
+    the HO_START boundary day). (None, None) when unreadable."""
+    import pandas as pd
+    import roster_core as rc
+    try:
+        df = pd.read_csv(cube_dir / "trade_exit_detail.csv", low_memory=False,
+                         usecols=["strategy", "ticker", "entry_date"])
+    except (OSError, ValueError, KeyError):
+        return None, None
+    if strategy:
+        df = df[df["strategy"].astype(str) == str(strategy)]
+    df = df.drop_duplicates(subset=["ticker", "entry_date"]).copy()
+    df["entry_date"] = pd.to_datetime(df["entry_date"], errors="coerce").dt.date
+    return int(len(df)), int(len(rc.in_sample(df.dropna(subset=["entry_date"]))))
+
+
+def entries_vs_grid_count(grid: dict, leg_all, leg_is) -> tuple[str, str]:
+    """M12 (S6-B3397; runbook 5.3 step 3, census line 1838): the graded
+    leg's cube entries equal the grid's largest trade count, or the grader
+    silently lost trades it could not diagnose (L454). MEASURED r183: 110 of
+    110 landed grids equal. `fires` is in-sample on the per-exit graders and
+    full-period on tighten_breaker_block (b2399: 437 = all 437, in-sample
+    307), so a `fires` count may match either population and the evidence
+    names which; the rows-list dialect states both and both must match.
+    No grid -> SKIP (step 2's own FAIL says why); a grid with no count, or
+    an uncountable cube -> FAIL closed (L642)."""
+    from grid_population import grid_trade_counts
+    if not grid:
+        return "SKIP", "no grid artifact - step 2 produced none (its own row says why)"
+    if leg_all is None or leg_is is None:
+        return "FAIL", ("the graded leg's cube entries could not be counted - "
+                        "fail closed (L642)")
+    c = grid_trade_counts(grid)
+    if not c:
+        return "FAIL", ("the grid's rows carry no trade count (fires / is_n / "
+                        "full_n_count_only) - diagnosis loss cannot be checked; "
+                        "fail closed (L642)")
+    if "fires" in c:
+        f = c["fires"]
+        if f == leg_is:
+            return "PASS", f"grid max fires {f} = the cube's {leg_is} in-sample entries"
+        if f == leg_all:
+            return "PASS", f"grid max fires {f} = the cube's {leg_all} full-period entries"
+        return "FAIL", (f"grid max fires {f} vs the cube's {leg_is} in-sample / "
+                        f"{leg_all} full-period entries - trades lost between the "
+                        "cube and the grid (L454)")
+    bad = []
+    if "is_n" in c and c["is_n"] != leg_is:
+        bad.append(f"is_n {c['is_n']} vs {leg_is} in-sample entries")
+    if "full_n_count_only" in c and c["full_n_count_only"] != leg_all:
+        bad.append(f"full_n_count_only {c['full_n_count_only']} vs {leg_all} full-period entries")
+    if bad:
+        return "FAIL", "; ".join(bad) + " - trades lost between the cube and the grid (L454)"
+    return "PASS", ("grid " + ", ".join(f"{k} {v}" for k, v in c.items())
+                    + f" = the cube's {leg_is} in-sample / {leg_all} full-period entries")
+
+
 def rc_live_gates() -> tuple:
     from roster_core import LIVE_GATES
     return LIVE_GATES
@@ -1336,7 +1477,7 @@ def _main_unguarded() -> int:
     step, step_basis = derive_step(manifest, step1_flag=a.step1_cube,
                                    step2_flag=a.step2_cube)
     try:
-        results = checks(cube_dir, step1=(step == 1))
+        results = checks(cube_dir, step1=(step == 1), graded_leg=a.grade_rider)
     except Exception as exc:
         # a cube whose schema breaks the checks is a FAILED cube, loudly -
         # never a traceback that reads as a tooling problem (L566 class)
@@ -1414,6 +1555,24 @@ def _main_unguarded() -> int:
         except (OSError, ValueError):
             grid = {}
 
+    # S6-B3397: the graded leg's population, read ONCE for R6 (step 4) and
+    # M12 (step 3); an unresolved leg counts as unknown and both fail closed.
+    leg_all, leg_is = (leg_entry_counts(cube_dir, fam_name) if fam_name
+                       else (None, None))
+    # R6 (runbook 2.1, census line 663) on the artifact step 4 wrote - only
+    # when step 4 itself succeeded, so a missing artifact keeps its own FAIL
+    _n4 = notes.get("4_three_leg_spot_check")
+    if spot_out is not None and spot_out.exists() and _n4 and _n4[0] == "DONE":
+        _r6_ok, _r6_why = spot_sampling_check(spot_out, leg_all)
+        results.append(("step4_sampling_contract", "PASS" if _r6_ok else "FAIL",
+                        _r6_why))
+        notes["4_three_leg_spot_check"] = (
+            (_n4[0], f"{_n4[1]}; {_r6_why}") if _r6_ok else
+            ("FAIL", f"R6 sampling contract broken: {_r6_why}"))
+    # M12 (runbook 5.3 step 3, census line 1838): entries == grid max fires
+    _m12 = entries_vs_grid_count(grid, leg_all, leg_is)
+    results.append(("M12_entries_vs_grid_fires",) + _m12)
+
     # step 5 lenses -> artifact
     try:
         lens_rows = lenses(cube_dir, step, grid, spot_out)
@@ -1448,14 +1607,15 @@ def _main_unguarded() -> int:
     # ---- assemble the nine steps ------------------------------------------
     by = {n: (st, ev) for n, st, ev in results}
     sanity_fails = [n for n, st, _ in results
-                    if st == "FAIL" and n not in _GRADER_CHECKS + _LEDGER_WIDE
+                    if st == "FAIL"
+                    and n not in _GRADER_CHECKS + _LEDGER_WIDE + _STEP3_ONLY
                     and n != "family_dispatch"]
     summary = "; ".join(f"{n}={st}({_evidence_cut(ev)})" for n, st, ev in results)
     steps: dict[str, tuple[str, str]] = {}
     steps["1_cube_sanity"] = ("FAIL" if sanity_fails else "DONE",
                               "run_postconfig: " + summary)
     m_core = ("M2_exits_per_entry_vs_registry", "M3_fill_date", "M4_holdout_touch",
-              "M5_pnl_integrity", "M7_degraded_exits")
+              "M5_pnl_integrity", "M7_degraded_exits", "M12_entries_vs_grid_fires")
     m_missing = [m for m in m_core if m not in by]
     m_fail = [m for m in m_core if by.get(m, ("", ""))[0] == "FAIL"]
     if m_missing:

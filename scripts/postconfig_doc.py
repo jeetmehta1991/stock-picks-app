@@ -93,6 +93,20 @@ CHECK_MEANING = {
         "closed trade-log fires that have an exit-cube row",
         "any missing = an entry the cube lost, which M2 cannot see "
         "(S6-B3267)"),
+    "one_strategy_or_declared_riders": (
+        "the graded strategy plus exactly the declared riders",
+        "an undeclared strategy = the strategy-subset filter leaked"),
+    "graded_strategy_present": (
+        "the graded strategy appears in the cube (S6-B3397)",
+        "absent = the cube does not hold the strategy it was run to grade"),
+    "M12_entries_vs_grid_fires": (
+        "cube entries equal the grid's largest trade count (S6-B3397)",
+        "a shortfall = the grader silently dropped trades it could not "
+        "diagnose (L454)"),
+    "step4_sampling_contract": (
+        "the spot check sampled min(50, entries) trades with seed 42 (R6)",
+        "another seed or size = the checker ignored the battery's flags"),
+
     "step7_engine_implemented": ("engine-side implementation check exit code",
                                  "non-zero = the wiring is absent"),
     "M9_universe_artifact": ("universe artifact verified",
@@ -109,15 +123,42 @@ CHECK_MEANING = {
 # Which risk question each check answers.
 GROUPS = [
     ("Is this the right data?",
-     ["cube_exists", "one_strategy", "megacaps_present", "M9_universe_artifact",
+     ["cube_exists", "one_strategy", "one_strategy_or_declared_riders",
+      "graded_strategy_present", "megacaps_present", "M9_universe_artifact",
       "M1_content_sha", "M4_window", "M2_exits_per_entry_vs_registry",
-      "M11_closed_fires_in_cube"]),
+      "M11_closed_fires_in_cube", "M12_entries_vs_grid_fires"]),
     ("Did anything leak from the future?",
      ["M4_holdout_touch", "M3_fill_date", "M10_gate_receipt"]),
     ("Does the arithmetic reproduce?",
      ["M5_pnl_integrity", "M7_degraded_exits", "ledger_status_matches_evidence",
-      "step2_grade_auto", "step4_spot_check_auto", "step7_engine_implemented"]),
+      "step2_grade_auto", "step4_spot_check_auto", "step4_sampling_contract",
+      "step7_engine_implemented"]),
 ]
+
+
+def render_check_groups(by_name: dict) -> list[str]:
+    """The named checks as tables, one per risk question, then an 'Other
+    checks' table for every parsed name no group lists (S6-B3397 ripple,
+    B3139q-r183). Step 1's own evidence row says 'tabulated below', so a
+    check outside GROUPS used to vanish from the LANDING REPORT -
+    one_strategy_or_declared_riders already had."""
+    out: list[str] = []
+    grouped = {n for _, names in GROUPS for n in names}
+    other = [n for n in by_name if n not in grouped]
+    for title, names in GROUPS + [("Other checks", other)]:
+        rows = [(n, by_name[n]) for n in names if n in by_name]
+        if not rows:
+            continue
+        out += [f"**{title}**", "",
+                "| check | measured | outcome | what would have been alarming |",
+                "|---|---|---|---|"]
+        for n, (outcome, val) in rows:
+            meaning, alarm = CHECK_MEANING.get(n, (n, "-"))
+            mark = "" if outcome == "PASS" else " **<-- NOT PASS**"
+            clean = val.replace("|", "/")
+            out.append(f"| {meaning} | {clean} | {outcome}{mark} | {alarm} |")
+        out.append("")
+    return out
 
 
 _CHECK_TOKEN = re.compile(r"(\w+)=(PASS|FAIL|WARN|SKIP)\(")
@@ -400,19 +441,7 @@ def config_section(cube: str, entry: dict, art: dict) -> list[str]:
         lines.append(f"| {s} | {st}{mark} | {ev or '-'} |")
     lines.append("")
 
-    for title, names in GROUPS:
-        rows = [(n, by_name[n]) for n in names if n in by_name]
-        if not rows:
-            continue
-        lines += [f"**{title}**", "",
-                  "| check | measured | outcome | what would have been alarming |",
-                  "|---|---|---|---|"]
-        for n, (outcome, val) in rows:
-            meaning, alarm = CHECK_MEANING.get(n, (n, "-"))
-            mark = "" if outcome == "PASS" else " **<-- NOT PASS**"
-            clean = val.replace("|", "/")
-            lines.append(f"| {meaning} | {clean} | {outcome}{mark} | {alarm} |")
-        lines.append("")
+    lines += render_check_groups(by_name)
 
     # S6-B3187: run_wave's own verification, appended to step 1 after ' | ',
     # renders as itself - never as the tail of the last check's value.
