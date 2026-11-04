@@ -5729,6 +5729,21 @@ DUAL_BROW_LEGS_GRANDFATHERED = {
 }
 
 
+# S6-B3393 (B3139q-r192, census 770 + 909): a registry free_band that departs
+# from its Table A threshold row (build_table_a.band_departures), with the
+# reason it departs. MEASURED at B3139q-r192: 6 comparable params across the 9
+# registered strategies with a Table A file (build_table_a.table_a_file) - 5
+# agree and 1 departs. test_b3393h holds this register equal to the live set
+# of departures in both directions; a new departure is registered with its
+# reason or the band is rebuilt from the file.
+TABLE_A_BAND_DEPARTURES = {
+    ("naked_poc_retest_long", "P5"): (
+        "no-bite: every surviving fire holds 6+ naked POCs, so the Table A "
+        "quantile floor is the identity; bracket floors 1 and 2 are the "
+        "offline band (the param's own status records it)"),
+}
+
+
 def _status_key(p: dict) -> tuple:
     """(param id, sha256[:16] of its status text) - the STATUS_GRANDFATHERED key."""
     import hashlib

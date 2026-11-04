@@ -599,6 +599,75 @@ def registered_sets():
                              for p in e["params"]))}
 
 
+# S6-B3393 (B3139q-r192, census 770 + 909 + 772): the SPECS entry is built FROM
+# the Table A file's bands, T2 never re-derives them by hand, and a stale file
+# is regenerated before a campaign reads it. table_a_file is the ONE lookup of
+# a strategy's file (step1_gates.require_current_table_a and test_b3393h both
+# read it); threshold_rows reads this generator's own threshold line (render's
+# `| key | ... | `op prod` | cov | TIGHTER ... | LOOSER ... |`); and
+# band_departures compares a registry param's free_band with that row.
+_LANE_SUBDIRS = (("tighten/both", "BOTH"), ("tighten", "TIGHTEN"))   # C18's order
+_THRESHOLD_ROW = re.compile(
+    r"^\| ([A-Za-z0-9_]+) \| [^|]* \| `([<>]=?) ([-0-9.eE]+)` \| [0-9.]+% \| (.*?) \| LOOSER")
+_TIGHTER_LEVEL = re.compile(r"(-?[0-9][0-9.eE+-]*) -> \d+ \(")
+
+
+def table_a_file(name: str):
+    """(kind, path) of a strategy's Table A file: ('lane:<subdir>', path) for
+    its charter file in a lane folder (tighten/both/ before tighten/, the
+    preflight C18 order), else ('render', path) for its newest single-strategy
+    render output_audit/b<N>_<name>_table_a.md (S6-B3232; newest = the highest
+    batch number), else None."""
+    for sub, _stream in _LANE_SUBDIRS:
+        p = OUT_DIR / sub / f"{name}.md"
+        if p.is_file():
+            return f"lane:{sub}", p
+    pat = re.compile(r"^b(\d+)[a-z]?(?:_r\d+[a-z]?)?_" + re.escape(name) + r"_table_a\.md$")
+    renders = sorted(((int(m.group(1)), p) for p in (ROOT / "output_audit").glob(f"*_{name}_table_a.md")
+                      for m in [pat.match(p.name)] if m), key=lambda t: (t[0], t[1].name))
+    return ("render", renders[-1][1]) if renders else None
+
+
+def threshold_rows(text: str) -> list[tuple]:
+    """(key, op, production, leg or None, [TIGHTER levels]) per threshold row."""
+    out = []
+    for ln in text.splitlines():
+        m = _THRESHOLD_ROW.match(ln)
+        if not m:
+            continue
+        key, op, prod, free = m.groups()
+        lm = re.match(r"\[(long|short) leg only\]", free)
+        out.append((key, op, float(prod), lm.group(1) if lm else None,
+                    sorted(float(x) for x in _TIGHTER_LEVEL.findall(free))))
+    return out
+
+
+def band_departures(spec: dict, text: str) -> dict:
+    """{param id: (key, registry levels, [Table A level lists])} for every
+    param of `spec` whose single signal key has a threshold row in `text`
+    (the leg's row where the param names one leg) and whose free_band levels
+    other than production match none of them."""
+    rows = threshold_rows(text)
+    out = {}
+    for p in spec.get("params", []):
+        ks, fb = p.get("signal_keys") or [], p.get("free_band") or []
+        if len(ks) != 1 or not fb:
+            continue
+        try:
+            prod = float(p.get("production"))
+            lv = sorted(float(x) for x in fb if abs(float(x) - prod) > 1e-12)
+        except (TypeError, ValueError):
+            continue
+        legs = p.get("legs") or []
+        cand = [r for r in rows if r[0] == ks[0]
+                and (r[3] is None or not legs or r[3] in legs)]
+        if len(legs) == 1:
+            cand = [r for r in cand if r[3] in (None, legs[0])]
+        if cand and not any(r[4] == lv for r in cand):
+            out[str(p["id"])] = (ks[0], lv, [r[4] for r in cand])
+    return out
+
+
 def _exit_cube_txt(row: dict) -> str:
     """S6-B3258 (b): the status row's exit-cube count; a row without the
     field (a planted fixture, or a status build older than S6-B3258) says

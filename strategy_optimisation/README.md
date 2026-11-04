@@ -28,7 +28,7 @@ A campaign on a NONE-lane strategy (a breadth candidate) has no lane folder; its
 
 Each file carries an L803/#309 build stamp (generator + cube + status build +
 commit + timestamp). A file whose stamp is stale against HEAD is regenerated
-before any campaign reads it (the runbook §0.5 freshness precondition).
+before any campaign reads it (the runbook §0.5 freshness precondition); an offline Step 1 refuses a file that differs from a fresh regeneration, the stamp line aside (step1_gates.require_current_table_a, S6-B3393).
 
 ## Division of labour (owner-ruled)
 

@@ -74155,3 +74155,178 @@ def test_b3393f_the_formula_carries_two_layers_and_a_breadth_layer():
         for s, ent in reg.items():
             assert hit(ent) == [], s
 
+
+def _b3393_gates():
+    pvt = _pvt_b3393a()
+    import build_table_a as bta
+    import step1_gates as g
+    return pvt, bta, g
+
+
+def test_b3393g_an_offline_step1_refuses_an_invalid_spec(monkeypatch, capsys):
+    """S6-B3393 (runbook R1, census 638 + 994): the band-ruling gate every
+    offline Step-1 instrument calls also runs R1's validity half. Every
+    registered name passes today because the failing ones are frozen message by
+    message; the frozen set equals the live failing set in both directions and
+    never grows past 46; a NEW defect refuses through require_valid_spec AND
+    through require_band_ruling's live path, on a clean name and on a frozen
+    one; an absent entry refuses; an injected registry skips the live checks."""
+    import copy as _copy
+    import hashlib as _h
+    pvt, bta, g = _b3393_gates()
+    names = sorted(set(pvt.SPECS) | set(pvt.SPECS_PHASE0))
+    live = set()
+    for n in names:
+        g.require_valid_spec(n)
+        for m in pvt.validate_spec(pvt.SPECS.get(n) or pvt.SPECS_PHASE0[n]):
+            live.add((n, _h.sha256(m.encode("utf-8")).hexdigest()[:16]))
+    assert live - g.STEP1_SPEC_GRANDFATHERED == set(), "a NEW validate_spec message on a registered name"
+    assert g.STEP1_SPEC_GRANDFATHERED - live == set(), "a frozen message no entry raises - remove it"
+    assert len(g.STEP1_SPEC_GRANDFATHERED) <= 46
+    frozen = {n for n, _d in g.STEP1_SPEC_GRANDFATHERED}
+    clean = next(n for n in names if n not in frozen and bta.table_a_file(n) is None)
+    old = next(n for n in sorted(frozen) if bta.table_a_file(n) is None)
+    for n in (clean, old):
+        reg = pvt.SPECS if n in pvt.SPECS else pvt.SPECS_PHASE0
+        e = _copy.deepcopy(reg[n])
+        e["params"].append({"id": "B98", "param": "zz_b3393g", "producer": None,
+                            "evidence": None, "status": "TESTED", "band": [],
+                            "production": "-"})
+        monkeypatch.setitem(reg, n, e)
+        with pytest.raises(SystemExit) as ex:
+            g.require_valid_spec(n)
+        assert "S6-B3393" in str(ex.value) and n in str(ex.value), str(ex.value)
+        with pytest.raises(SystemExit) as ex:
+            g.require_band_ruling("words", n)
+        assert "S6-B3393" in str(ex.value), str(ex.value)
+        monkeypatch.undo()
+        assert g.require_band_ruling("words", n) == "words"
+        assert "has no Table A file" in capsys.readouterr().out
+    with pytest.raises(SystemExit):
+        g.require_valid_spec("zz_no_such_strategy_b3393g")
+    assert g.require_band_ruling(" w ", "s1", registry={"s1"}) == "w"
+
+
+def test_b3393h_registry_bands_agree_with_their_table_a_rows():
+    """S6-B3393 (runbook T2 / section 3, census 770 + 909): a registry param
+    whose single signal key has a threshold row in the strategy's Table A file
+    (build_table_a.table_a_file) carries that row's TIGHTER levels as its
+    free_band (production aside, the leg's row for a one-leg param). Every
+    departure is registered with its reason in TABLE_A_BAND_DEPARTURES and
+    every registered departure still departs (#279, both directions). The
+    reader parses every threshold-shaped line of every Table A file. cmf_flip
+    P7 is the positive control: it agrees as registered and departs when one
+    level moves or when it is read against the other leg's row."""
+    import copy as _copy
+    import subprocess as _sp
+    from pathlib import Path as _P
+    pvt, bta, _g = _b3393_gates()
+    root = _P(__file__).resolve().parents[2]
+    seen, files = set(), 0
+    for n in sorted(set(pvt.SPECS) | set(pvt.SPECS_PHASE0)):
+        f = bta.table_a_file(n)
+        if f is None:
+            continue
+        files += 1
+        for pid in bta.band_departures(pvt.resolved_spec(n), f[1].read_text(encoding="utf-8")):
+            seen.add((n, pid))
+    assert files >= 1
+    assert seen == set(pvt.TABLE_A_BAND_DEPARTURES), sorted(seen ^ set(pvt.TABLE_A_BAND_DEPARTURES))
+    assert all(isinstance(r, str) and len(r.strip()) >= 40
+               for r in pvt.TABLE_A_BAND_DEPARTURES.values())
+    tracked = [p for p in _sp.run(["git", "ls-files", "strategy_optimisation", "output_audit/*_table_a.md"],
+                                  cwd=root, capture_output=True, text=True).stdout.split()
+               if p.endswith(".md") and not p.endswith("README.md")]
+    shaped = parsed = 0
+    for p in tracked:
+        t = (root / p).read_text(encoding="utf-8")
+        shaped += sum(1 for ln in t.splitlines() if ln.startswith("| ") and "LOOSER = " in ln)
+        parsed += len(bta.threshold_rows(t))
+    assert shaped >= 1 and parsed == shaped, (shaped, parsed)
+    text = bta.table_a_file("cmf_flip")[1].read_text(encoding="utf-8")
+    spec = _copy.deepcopy(pvt.resolved_spec("cmf_flip"))
+    q = next(x for x in spec["params"] if x["id"] == "P7")
+    assert q.get("legs") == ["long"] and q.get("signal_keys") == ["rsi_14"]
+    assert "P7" not in bta.band_departures(spec, text)
+    good = list(q["free_band"])
+    q["free_band"] = good[:-1] + [round(float(good[-1]) - 1.0, 4)]
+    assert "P7" in bta.band_departures(spec, text)
+    q["free_band"], q["legs"] = good, ["short"]
+    assert "P7" in bta.band_departures(spec, text)
+    q["legs"], q["signal_keys"] = ["long"], ["rsi_14", "adx"]
+    assert "P7" not in bta.band_departures(spec, text)
+
+
+def test_b3393i_a_stale_table_a_file_refuses_an_offline_step1(tmp_path, monkeypatch, capsys):
+    """S6-B3393 (runbook section 3 / T2, census 772): require_current_table_a
+    compares the strategy's Table A file with a fresh regeneration (the two
+    subprocess calls replaced by seams that return what a regeneration would
+    write): a lane file matching it is current, one line different refuses as
+    STALE, a regeneration that no longer writes the file refuses; the
+    build-stamp line is excluded from the comparison; a departed record of an
+    owner-closed row is reported and never regenerated; the newest render is
+    compared with a fresh render; no file is reported. require_band_ruling's
+    live path calls it and prints its line."""
+    import json as _json
+    pvt, bta, g = _b3393_gates()
+    rows = {r["strategy"]: r for r in _json.loads(g.STATUS_JSON.read_text(encoding="utf-8"))["rows"]}
+    names = sorted(set(pvt.SPECS) | set(pvt.SPECS_PHASE0))
+
+    def kind(n):
+        f = bta.table_a_file(n)
+        if f is None:
+            return None
+        if f[0] == "render":
+            return "render"
+        stream = dict(bta._LANE_SUBDIRS)[f[0][len("lane:"):]]
+        return "lane" if rows.get(n, {}).get("stream") == stream else "departed"
+    lane = next(n for n in names if kind(n) == "lane")
+    departed = next(n for n in names if kind(n) == "departed")
+    render = next(n for n in names if kind(n) == "render")
+    none = next(n for n in names if kind(n) is None)
+    sub = bta.table_a_file(lane)[0][len("lane:"):]
+    real = bta.table_a_file(lane)[1].read_text(encoding="utf-8")
+    calls = []
+
+    def regen_with(text):
+        def _regen(lane_args):
+            calls.append(lane_args)
+            d = tmp_path / f"r{len(calls)}"
+            if text is not None:
+                (d / sub).mkdir(parents=True)
+                (d / sub / f"{lane}.md").write_text(text, encoding="utf-8")
+            else:
+                d.mkdir(parents=True)
+            return d
+        return _regen
+    assert "is current" in g.require_current_table_a(lane, regenerate=regen_with(real))
+    import preflight as _pf
+    want = next(a for pre, a in _pf._C18_LANES if pre == f"strategy_optimisation/{sub}/")
+    assert calls[-1] == [want], calls[-1]
+    stamp_moved = "\n".join("**Build (L803/#309):** a different stamp" if ln.startswith("**Build (L803/#309):**")
+                            else ln for ln in real.splitlines()) + ("\n" if real.endswith("\n") else "")
+    assert "is current" in g.require_current_table_a(lane, regenerate=regen_with(stamp_moved))
+    with pytest.raises(SystemExit) as ex:
+        g.require_current_table_a(lane, regenerate=regen_with(real + "\n| a row the fresh build adds |\n"))
+    assert "STALE" in str(ex.value) and "census 772" in str(ex.value), str(ex.value)
+    with pytest.raises(SystemExit) as ex:
+        g.require_current_table_a(lane, regenerate=regen_with(None))
+    assert "no longer writes it" in str(ex.value)
+
+    def boom(*_a, **_k):
+        raise AssertionError("a departed record must not be regenerated")
+    assert "departed record" in g.require_current_table_a(departed, regenerate=boom, render=boom)
+    rtext = bta.table_a_file(render)[1].read_text(encoding="utf-8")
+    fresh = tmp_path / "render.md"
+    fresh.write_text(rtext, encoding="utf-8")
+    assert "is current" in g.require_current_table_a(render, render=lambda s: fresh, regenerate=boom)
+    fresh.write_text(rtext + "\nan extra line\n", encoding="utf-8")
+    with pytest.raises(SystemExit) as ex:
+        g.require_current_table_a(render, render=lambda s: fresh, regenerate=boom)
+    assert "STALE" in str(ex.value) and "--strategy" in str(ex.value)
+    assert "no Table A file" in g.require_current_table_a(none, regenerate=boom, render=boom)
+
+    seen = []
+    monkeypatch.setattr(g, "require_current_table_a", lambda s: seen.append(s) or f"line for {s}")
+    assert g.require_band_ruling("words", none) == "words"
+    assert seen == [none] and f"line for {none}" in capsys.readouterr().out
