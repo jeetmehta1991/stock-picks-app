@@ -5989,6 +5989,26 @@ def validate_spec(spec: dict) -> list[str]:
     if _where[1] is not None:
         from build_phase_1b_roster import is_dual as _is_dual   # one definition
         _dual = _is_dual(_where[1])
+    # census 994 (runbook 3.6): the formula is two-layer - a PRODUCER LAYER
+    # and a STRATEGY LAYER heading - plus, on an entry with B-rows, a BREADTH
+    # LAYER under which every B-axis is listed. MEASURED at B3139q-r191: all
+    # 24 entries with a formula carry both layers and all 6 with B-rows a
+    # breadth layer; an absent formula is refused above, not here.
+    _f = spec.get("formula") or ""
+    if _f:
+        for _h in ("PRODUCER LAYER", "STRATEGY LAYER"):
+            if _h not in _f:
+                errs.append(f"the formula has no {_h} heading - every Step-0 entry "
+                            "carries the two-layer formula (runbook 3.6, S6-B3393)")
+        _bids = sorted(str(q.get("id")) for q in spec["params"]
+                       if str(q.get("id", "")).startswith("B"))
+        if _bids:
+            _at = _f.find("BREADTH LAYER")
+            _listed = set(_re.findall(r"^(B\d+)\s", _f[_at:], _re.M)) if _at >= 0 else set()
+            _miss = [i for i in _bids if i not in _listed]
+            if _miss:
+                errs.append(f"B-rows {_miss} are not listed under a BREADTH LAYER "
+                            "heading in the formula (runbook 3.6, S6-B3393)")
     for _p in spec["params"]:
         _pid = str(_p.get("id", ""))
         _b = list(_p.get("band") or [])
@@ -6008,6 +6028,16 @@ def validate_spec(spec: dict) -> list[str]:
             errs.append(f"{_pid}: {_where[1]} is a DUAL strategy and this B-row carries "
                         "no `legs` field - name the legs whose screen chose it "
                         "(runbook 3.6 step 3, S6-B3304 / S6-B3393)")
+        if _pid.startswith("B"):
+            # census 993: a breadth axis's row names its producer and carries the
+            # screen's effect sizes as evidence - MEASURED 0 of 49 B-rows lacking
+            # either at B3139q-r191; absent, None, blank and '-' all lack
+            _lack = [k for k in ("producer", "evidence")
+                     if _p.get(k) is None or str(_p.get(k)).strip() in ("", "-")]
+            if _lack:
+                errs.append(f"{_pid}: a breadth B-row names its producer and its screen "
+                            f"evidence; this one lacks {' and '.join(_lack)} "
+                            "(runbook 3.6 step 3, S6-B3393)")
     b = spec.get("baseline")
     if not isinstance(b, dict):
         errs.append("SPEC has no `baseline` block - main() reads it for the "

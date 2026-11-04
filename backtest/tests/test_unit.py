@@ -74047,3 +74047,111 @@ def test_b3393c_a_dual_strategys_new_b_row_names_its_legs(monkeypatch):
     for reg in (pvt.SPECS, pvt.SPECS_PHASE0):
         for s, ent in reg.items():
             assert legs_errs(ent) == [], s
+
+def test_b3393d_a_breadth_b_row_names_its_producer_and_evidence():
+    """S6-B3393 (runbook 3.6 step 3, census 993): each breadth B-row names its
+    producer and carries the screen's effect sizes as evidence. validate_spec
+    refuses a B-row whose producer or evidence is absent, None, blank or '-',
+    and accepts it restored; MEASURED 0 of 49 B-rows lacking either at
+    B3139q-r191 and no registry entry may."""
+    import copy as _copy
+    pvt = _pvt_b3393a()
+
+    def hit(e):
+        return [m for m in pvt.validate_spec(e) if "a breadth B-row names its producer" in m]
+    name = next(n for n in sorted(set(pvt.SPECS) | set(pvt.SPECS_PHASE0))
+                if any(str(q["id"]).startswith("B")
+                       for q in (pvt.SPECS.get(n) or pvt.SPECS_PHASE0[n])["params"])
+                and pvt.validate_spec(_copy.deepcopy(pvt.SPECS.get(n) or pvt.SPECS_PHASE0[n])) == [])
+    base = _copy.deepcopy(pvt.SPECS.get(name) or pvt.SPECS_PHASE0[name])
+    assert hit(base) == []
+    for key in ("producer", "evidence"):
+        for bad in (None, "", "  ", "-", "drop"):
+            e = _copy.deepcopy(base)
+            b = next(q for q in e["params"] if str(q["id"]).startswith("B"))
+            if bad == "drop":
+                b.pop(key, None)
+            else:
+                b[key] = bad
+            errs = hit(e)
+            assert len(errs) == 1 and errs[0].startswith(f"{b['id']}:") and key in errs[0], \
+                (name, key, bad, errs)
+    for reg in (pvt.SPECS, pvt.SPECS_PHASE0):
+        for s, ent in reg.items():
+            assert hit(ent) == [], s
+
+
+def test_b3393e_the_runbook_r1_probe_exits_non_zero_on_errors():
+    """S6-B3393 (runbook R1 row, census 658): the documented R1 probe is read
+    out of the runbook and run both ways - on an entry that validates it prints
+    SPEC OK and exits 0; on an entry with errors it exits 1 with the error list
+    and no traceback (B2883b: the original printed SPEC OK unconditionally)."""
+    import re as _re
+    import subprocess as _sp
+    import sys as _sys
+    from pathlib import Path as _P
+    pvt = _pvt_b3393a()
+    root = _P(__file__).resolve().parents[2]
+    row = next(ln for ln in (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(
+        encoding="utf-8").splitlines() if ln.startswith("| R1 |"))
+    probes = _re.findall(r'`python -c "([^`"]*)"`', row)
+    assert len(probes) == 1, probes
+    code = probes[0]
+    assert "<strategy>" in code and "validate_spec" in code
+    clean = next(n for n in sorted(set(pvt.SPECS) | set(pvt.SPECS_PHASE0))
+                 if pvt.validate_spec(pvt.SPECS.get(n) or pvt.SPECS_PHASE0[n]) == [])
+    r = _sp.run([_sys.executable, "-c", code.replace("<strategy>", clean)],
+                cwd=root / "scripts", capture_output=True, text=True, timeout=600)
+    assert r.returncode == 0 and r.stdout.strip() == "SPEC OK", (clean, r.returncode, r.stderr[-400:])
+    broken = ("import producer_variant_table as _p\n"
+              "_p.SPECS_PHASE0['zz_b3393e'] = {'params': []}\n"
+              + code.replace("<strategy>", "zz_b3393e"))
+    r = _sp.run([_sys.executable, "-c", broken],
+                cwd=root / "scripts", capture_output=True, text=True, timeout=600)
+    assert r.returncode == 1 and "SPEC OK" not in r.stdout, (r.returncode, r.stdout[-200:])
+    last = (r.stderr.strip().splitlines() or [""])[-1]
+    assert "Traceback" not in r.stderr and last.startswith("[") and "formula" in last, \
+        r.stderr[-400:]
+
+
+def test_b3393f_the_formula_carries_two_layers_and_a_breadth_layer():
+    """S6-B3393 (runbook 3.6, census 994): a Step-0 entry's formula carries a
+    PRODUCER LAYER and a STRATEGY LAYER heading, and an entry with B-rows lists
+    every B-axis under a BREADTH LAYER heading. validate_spec refuses each
+    missing heading and a B-axis listed only above the breadth heading, needs
+    no breadth layer on an entry without B-rows, and raises none of these on
+    any registry entry (MEASURED B3139q-r191: 24 of 24 formulas two-layer, 6 of
+    6 B-row entries with a breadth layer)."""
+    import copy as _copy
+    pvt = _pvt_b3393a()
+
+    def hit(e):
+        return [m for m in pvt.validate_spec(e) if "LAYER" in m and "S6-B3393" in m]
+
+    def entry(n):
+        return pvt.SPECS.get(n) or pvt.SPECS_PHASE0[n]
+    names = sorted(set(pvt.SPECS) | set(pvt.SPECS_PHASE0))
+    with_b = next(n for n in names if entry(n).get("formula")
+                  and any(str(q["id"]).startswith("B") for q in entry(n)["params"])
+                  and pvt.validate_spec(_copy.deepcopy(entry(n))) == [])
+    base = _copy.deepcopy(entry(with_b))
+    assert hit(base) == []
+    for h in ("PRODUCER LAYER", "STRATEGY LAYER", "BREADTH LAYER"):
+        e = _copy.deepcopy(base)
+        e["formula"] = e["formula"].replace(h, "REMOVED HEADING")
+        errs = hit(e)
+        assert len(errs) == 1 and (h in errs[0] or "BREADTH" in errs[0]), (h, errs)
+    e = _copy.deepcopy(base)
+    e["formula"] = e["formula"].replace("BREADTH LAYER", "MOVED HEADING") + chr(10) + "BREADTH LAYER" + chr(10)
+    errs = hit(e)
+    bids = sorted(str(q["id"]) for q in e["params"] if str(q["id"]).startswith("B"))
+    assert len(errs) == 1 and all(i in errs[0] for i in bids), (bids, errs)
+    no_b = next(n for n in names if entry(n).get("formula")
+                and not any(str(q["id"]).startswith("B") for q in entry(n)["params"]))
+    e = _copy.deepcopy(entry(no_b))
+    e["formula"] = e["formula"].replace("BREADTH LAYER", "NOT A HEADING")
+    assert hit(e) == [], (no_b, hit(e))
+    for reg in (pvt.SPECS, pvt.SPECS_PHASE0):
+        for s, ent in reg.items():
+            assert hit(ent) == [], s
+
