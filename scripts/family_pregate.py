@@ -25,9 +25,11 @@ Usage:
 
 S6-B3395 Batch 7d (owner ruling 2026-11-03 'A approved'): member_stats reads
 each member's HOLDOUT sharpe, so the gate is a holdout read: main passes
-holdout_reads.campaign_door first - the owner's word, a new --out, and every
-member unread in the holdout-read ledger unless --rereads names a recorded
-read - and records one entry per member whose holdout it graded.
+holdout_reads.campaign_door first - the owner's word and a new --out - and
+records one entry per member whose holdout it graded. S6-B3413 (owner ruling
+2026-11-03, verbatim 'C'): those reads are COUNTED and EXEMPT from the re-read
+refusal in both directions - a pre-gate is not refused for a member's earlier
+reads, and a member's later read need not declare the pre-gate's.
 """
 from __future__ import annotations
 

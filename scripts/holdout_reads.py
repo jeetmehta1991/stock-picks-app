@@ -29,6 +29,9 @@ RUNBOOK RULES THIS MODULE MECHANIZES (census S6-B3344, cluster M-HOLD):
     readers that read holdouts before the ledger are doors too
     (campaign_door, campaign_record) and their past reads are backfilled;
     the R5-era programme scripts and the roster reports stay classed only.
+  * S6-B3413 (owner ruling 2026-11-03, verbatim 'C'): a family pre-gate's
+    reads are COUNTED - each is recorded - and EXEMPT from the re-read
+    refusal in both directions (REREAD_EXEMPT_DOORS, binding_reads).
 
 MEASURED before the change (B3139q-r177, scratchpad r177 prereg_all.py):
 18 tracked artifacts carry a preregistration_candidate; 6 are unread and
@@ -171,6 +174,13 @@ CAMPAIGN_DOORS = ("b2701_smc_lsr_step2", "composite_variant_test",
                   "family_pregate")
 DOORS = ("offline_holdout_read", "breadth_step2_read", "engine_step2",
          "declared_row_holdout_read") + CAMPAIGN_DOORS
+# S6-B3413 (owner ruling 2026-11-03, verbatim 'C'): a family pre-gate reads each
+# member's holdout before a campaign opens. Its reads are COUNTED - recorded like
+# every other - and EXEMPT from the re-read refusal in both directions: a later
+# read need not declare a pre-gate read, and a pre-gate is not refused for the
+# reads before it. binding_reads is the one definition every refusal path uses
+# (L593); a read's recorded history (prior_reads) still names the pre-gate reads.
+REREAD_EXEMPT_DOORS = ("family_pregate",)
 
 
 def ledger_path() -> Path:
@@ -242,24 +252,35 @@ def prior_reads(strategy, leg=None, *, config=None, path=None) -> list:
     return found
 
 
+def binding_reads(strategy, leg=None, *, config=None, path=None) -> list:
+    """The recorded reads the re-read refusal counts against this subject:
+    prior_reads less the reads of an exempt door (REREAD_EXEMPT_DOORS,
+    S6-B3413 (c)) - counted in the ledger, binding nothing."""
+    return [e for e in prior_reads(strategy, leg, config=config, path=path)
+            if e.get("door") not in REREAD_EXEMPT_DOORS]
+
+
 def reread_refusal(strategy, leg=None, *, declared=None, config=None, door,
                    path=None) -> str | None:
-    """None when this read may proceed: no prior read of the subject and no
-    declaration, or a DECLARED re-read naming one of the recorded reads.
+    """None when this read may proceed: no binding read of the subject and no
+    declaration, or a DECLARED re-read naming one of the binding reads.
     Otherwise the refusal. A read whose subject names no strategy refuses -
-    it could not be counted (L642)."""
+    it could not be counted (L642). Pre-gate reads bind nothing, and a
+    pre-gate (an exempt door) is never refused for the reads before it
+    (S6-B3413 (c))."""
     if not strategy:
         return (f"REFUSED ({door}, S6-B3395): the Step-1 artifact names no strategy, "
                 "so the read cannot be counted against the holdout-read ledger")
-    prior = prior_reads(strategy, leg, config=config, path=path)
+    prior = binding_reads(strategy, leg, config=config, path=path)
     ids = [e["read_id"] for e in prior]
     subj = f"{strategy} ({leg or 'both legs'}" + (f", config {config}" if config else "") + ")"
     if declared:
         if declared in ids:
             return None
         return (f"REFUSED ({door}, S6-B3395): the declared re-read {declared!r} is not a "
-                f"recorded read of {subj}; the ledger records {ids}")
-    if not prior:
+                f"recorded read of {subj} that binds - the ledger records {ids}; a "
+                "pre-gate read needs no declaration (S6-B3413)")
+    if not prior or door in REREAD_EXEMPT_DOORS:
         return None
     return (f"REFUSED ({door}, S6-B3395, runbook 0.3 / 4.4 item 6): the ledger records "
             f"{len(prior)} holdout read(s) of {subj}: {ids[:4]} - one Step-2 read, then "
@@ -440,6 +461,9 @@ def engine_grade(grid_path, grid, arm, *, strategy=None, owner_word=None,
 # one entry per strategy, read_id '<artifact>#<strategy>'; a declaration naming
 # an artifact names every per-strategy read of it. The R5-era programme
 # scripts and the roster reports stay classed only (the same ruling).
+# S6-B3413 (c): the family pre-gate keeps the word and the new --out, and its
+# reads are recorded, but it is never refused for earlier reads and its reads
+# never make a later read a re-read (binding_reads).
 # ---------------------------------------------------------------------------
 def campaign_read_id(artifact, strategy) -> str:
     return f"{repo_rel(artifact)}#{strategy}"
@@ -453,7 +477,9 @@ def campaign_door(door, strategies, *, out, ruling, ruling_ticket, rereads=(),
                   path=None) -> dict:
     """The gate a campaign reader passes BEFORE its holdout read. Raises
     SystemExit with the first refusal; returns {'word', 'prior'} - prior being
-    each strategy's recorded reads, the history its record carries."""
+    each strategy's recorded reads, the history its record carries, pre-gate
+    reads included. Only binding reads refuse, and an exempt door (the family
+    pre-gate) is not refused for any (S6-B3413 (c))."""
     import owner_word
     if door not in CAMPAIGN_DOORS:
         raise SystemExit(f"REFUSED (S6-B3395): {door!r} is not a campaign door")
@@ -477,7 +503,9 @@ def campaign_door(door, strategies, *, out, ruling, ruling_ticket, rereads=(),
     prior = {}
     for s in strategies:
         ids = [e["read_id"] for e in prior_reads(s, None, path=path)]
-        if ids and not any(_names(d, r) for d in rereads for r in ids):
+        bind = [e["read_id"] for e in binding_reads(s, None, path=path)]
+        if (door not in REREAD_EXEMPT_DOORS and bind
+                and not any(_names(d, r) for d in rereads for r in bind)):
             raise SystemExit(reread_refusal(s, None, door=door, path=path)
                              + " (declare it with --rereads)")
         prior[s] = ids
@@ -629,12 +657,14 @@ def census_rows(path=None) -> dict:
 # derivable history, and an entry keeps what was known when it was written
 # (test_b3395b requires its rereads to be a subset of what git derives now).
 # Batch 7d added the five campaign readers' shapes (_campaign_shape: 7 tracked
-# artifacts, 75 strategy reads, one entry per strategy). A later-recognised read
-# can also make a recorded FIRST read a re-read: the b2633 family pre-gate read
-# pead_with_smart_money_long's holdout before the b2651 Step-2 read did, so
-# b2651 derives declared False where the ledger recorded None - the one change
-# test_b3395b accepts beside a longer rereads list. Within one commit git
-# cannot order two reads; the read_id order decides, a stated tie-break.
+# artifacts, 75 strategy reads, one entry per strategy). A later-recognised
+# BINDING read can also make a recorded FIRST read an unlabelled re-read - the
+# one change test_b3395b accepts beside a longer rereads list. Since S6-B3413
+# (c) a pre-gate read sits in a read's history (rereads) but binds nothing:
+# b2651 follows only the b2633 pre-gate and derives declared None, as the
+# ledger recorded it, and a pre-gate read itself is never an undeclared
+# re-read. Within one commit git cannot order two reads; the read_id order
+# decides, a stated tie-break.
 # Each is dated by the commit that first added its artifact, so the order is
 # reproducible from git alone; a re-read is marked by whether its artifact
 # carried a re-read label (the depth read's rerun_of_spent_holdout, the
@@ -749,11 +779,13 @@ def backfill_candidates(root=None) -> list:
                       "declared": declared})
     found.sort(key=lambda e: (e["ts"], e["read_id"]))
     for i, e in enumerate(found):
-        e["rereads"] = [p["read_id"] for p in found[:i]
-                        if p["strategy"] == e["strategy"]
-                        and _legs_overlap(p["leg"], e["leg"])
-                        and (e["door"] != "engine_step2" or p.get("config") == e["config"])]
-        if not e["rereads"] and not e["declared"]:
+        earlier = [p for p in found[:i]
+                   if p["strategy"] == e["strategy"]
+                   and _legs_overlap(p["leg"], e["leg"])
+                   and (e["door"] != "engine_step2" or p.get("config") == e["config"])]
+        e["rereads"] = [p["read_id"] for p in earlier]
+        binds = [p for p in earlier if p["door"] not in REREAD_EXEMPT_DOORS]
+        if not e["declared"] and (e["door"] in REREAD_EXEMPT_DOORS or not binds):
             e["declared"] = None
     return found
 
@@ -783,8 +815,12 @@ def main(argv=None) -> int:
         by_door[c["door"]] = by_door.get(c["door"], 0) + 1
     print(f"recorded reads the tracked artifacts imply: {len(cands)} {by_door}; "
           f"already in the ledger: {len(cands) - len(new)}; to append: {len(new)}")
+    door_of = {c["read_id"]: c["door"] for c in cands}
     for c in cands:
-        mark = "re-read" if c["rereads"] else "first"
+        binds = [r for r in c["rereads"] if door_of.get(r) not in REREAD_EXEMPT_DOORS]
+        mark = ("pre-gate, exempt" if c["door"] in REREAD_EXEMPT_DOORS else
+                "re-read" if binds else
+                "first, after pre-gate reads" if c["rereads"] else "first")
         lab = "" if c["declared"] is None else (" DECLARED" if c["declared"] else
                                                 " UNDECLARED")
         print(f"  {c['ts']}  {c['door']:<22} {c['strategy']} ({c['leg'] or 'both'})"

@@ -228,15 +228,18 @@ def main() -> int:
         raise SystemExit(holdout_reads.reread_refusal(None, door="breadth_step2_read"))
     _subject = (strategy, art.get("leg") or "both")
     _prior = [e["read_id"] for e in holdout_reads.prior_reads(*_subject)]
-    _named = [i for i in _prior if i in prior or Path(i).name in prior]
-    if _prior and first_read:
+    # S6-B3413 (c): a family pre-gate's read is counted (it stays in _prior,
+    # the history this read records) but binds nothing
+    _bind = [e["read_id"] for e in holdout_reads.binding_reads(*_subject)]
+    _named = [i for i in _bind if i in prior or Path(i).name in prior]
+    if _bind and first_read:
         raise SystemExit(holdout_reads.reread_refusal(*_subject,
                                                       door="breadth_step2_read"))
-    if _prior and not _named:
+    if _bind and not _named:
         raise SystemExit(
             f"REFUSED (breadth_step2_read, S6-B3395): --prior-read {prior!r} names "
             f"none of the ledger's recorded reads of {_subject[0]} ({_subject[1]}): "
-            f"{_prior[:4]} - a re-read names the read it repeats")
+            f"{_bind[:4]} - a re-read names the read it repeats")
     depth = art["depth_base"]
     # S6-B3139ag: the read scores on the basis its Step-1 grid RECORDED -
     # never a second flag that could disagree with it. A grid built before

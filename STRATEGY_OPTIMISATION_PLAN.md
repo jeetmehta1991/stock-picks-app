@@ -155,10 +155,10 @@ approved'):** the five campaign readers that graded holdouts before the ledger -
 `b2701_smc_lsr_step2.py`, `composite_variant_test.py`, `grade_family_siblings.py`,
 `institutional_companion_grid.py` and `family_pregate.py` - are doors too: each needs the owner's
 word and refuses an undeclared re-read before it reads, then records one entry per strategy read
-(`holdout_reads.campaign_door` / `campaign_record`, pinned by test_b3395d). A family pre-gate reads
-each member's holdout, so a member's later offline Step-2 read declares it (S6-B3413 asks whether
-the pre-gate should read in-sample instead). The R5-era programme scripts and the roster reports
-stay classed only.
+(`holdout_reads.campaign_door` / `campaign_record`, pinned by test_b3395d). A family pre-gate's reads
+are counted but exempt from the re-read refusal both ways: a later read need not declare one, and a
+pre-gate is not refused for earlier reads (S6-B3413, owner 'C'; `binding_reads`, test_b3413). The
+R5-era programme scripts and the roster reports stay classed only.
 
 **Three more family-born rules promoted to the template (B2672, owner class-directive 2026-09-11:
 *"Class is to be rectified and not just the instance"*):**

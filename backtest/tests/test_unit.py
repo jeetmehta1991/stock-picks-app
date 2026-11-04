@@ -72174,16 +72174,18 @@ def test_b3395d_the_five_campaign_readers_are_doors(tmp_path, monkeypatch, capsy
     refuses unless --rereads names a recorded read, the artifact path naming
     every per-strategy read of it; a declaration naming another subject's read,
     or nothing recorded, refuses; a record whose artifact is not the door's
-    shape refuses.
+    shape refuses. The re-read arms run on a composite read: since S6-B3413
+    (owner 'C') a family pre-gate's reads bind nothing (test_b3413).
 
     (2) Every one of the five mains: --ruling-ticket is required, and an
     unrecorded word refuses BEFORE any data is loaded (each loader is stubbed
-    to fail loudly if reached); three of them also refuse an undeclared
-    re-read before loading.
+    to fail loudly if reached); two of them also refuse an undeclared
+    re-read before loading, and the pre-gate passes its door (S6-B3413).
 
     (3) End to end on two of them (fixture data): family_pregate and
-    grade_family_siblings record their reads and a re-run refuses until it is
-    declared; the other three record before they write (AST order).
+    grade_family_siblings record their reads; a pre-gate re-run passes
+    undeclared and is recorded, a declared one is recorded declared; the
+    other three record before they write (AST order).
 
     (4) The census retired CAMPAIGN_READER_PRE_LEDGER: the five are
     LEDGER_DOORs and a row in the retired class refuses."""
@@ -72229,19 +72231,31 @@ def test_b3395d_the_five_campaign_readers_are_doors(tmp_path, monkeypatch, capsy
     assert ids == [hr.campaign_read_id(o1, "fam_a")], "only the member it graded"
     e1 = hr.entries()[-1]
     assert (e1["door"], e1["strategy"], e1["declared"]) == ("family_pregate", "fam_a", None)
-    o2 = tmp_path / "pg2.json"
+    # the re-read arms on a composite read - fam_a's pre-gate read above is
+    # its history and binds nothing (S6-B3413 (c), test_b3413)
+    cv = {"variants": [], "v1_v2_identity": [], "rows": [{"strategy": "fam_a"}]}
+    c1 = tmp_path / "cv1.json"
+    gc = hr.campaign_door("composite_variant_test", ["fam_a"], out=c1, **W)
+    assert gc["prior"] == {"fam_a": ids}, "the pre-gate read is history, not a binding read"
+    cids = hr.campaign_record("composite_variant_test", cv, out=c1, word=gc["word"],
+                              prior=gc["prior"])
+    assert hr.entries()[-1]["declared"] is None
+    o2 = tmp_path / "cv2.json"
     with pytest.raises(SystemExit) as e:
-        hr.campaign_door("family_pregate", ["fam_a"], out=o2, **W)
-    assert "S6-B3395" in str(e.value) and ids[0] in str(e.value) and "--rereads" in str(e.value)
-    assert hr.campaign_door("family_pregate", ["fam_b"], out=o2, **W)["prior"] == {"fam_b": []}
-    g2 = hr.campaign_door("family_pregate", ["fam_a"], out=o2, rereads=[hr.repo_rel(o1)], **W)
-    hr.campaign_record("family_pregate", pre, out=o2, word=g2["word"], prior=g2["prior"],
-                       rereads=[hr.repo_rel(o1)])
-    assert hr.entries()[-1]["declared"] is True and hr.entries()[-1]["rereads"] == ids
+        hr.campaign_door("composite_variant_test", ["fam_a"], out=o2, **W)
+    assert "S6-B3395" in str(e.value) and cids[0] in str(e.value) and "--rereads" in str(e.value)
+    assert ids[0] not in str(e.value), "the refusal names binding reads only"
+    assert hr.campaign_door("composite_variant_test", ["fam_b"], out=o2,
+                            **W)["prior"] == {"fam_b": []}
+    g2 = hr.campaign_door("composite_variant_test", ["fam_a"], out=o2,
+                          rereads=[hr.repo_rel(c1)], **W)
+    hr.campaign_record("composite_variant_test", cv, out=o2, word=g2["word"], prior=g2["prior"],
+                       rereads=[hr.repo_rel(c1)])
+    assert hr.entries()[-1]["declared"] is True and hr.entries()[-1]["rereads"] == cids
     hr.record(read_id="other.json", strategy="zz", leg=None, door="offline_holdout_read",
               artifact="other.json", source="s")
     with pytest.raises(SystemExit) as e:
-        hr.campaign_door("family_pregate", ["fam_a"], out=tmp_path / "pg3.json",
+        hr.campaign_door("composite_variant_test", ["fam_a"], out=tmp_path / "cv3.json",
                          rereads=["other.json"], **W)
     assert "S6-B3395" in str(e.value), "a declaration naming another subject's read"
     with pytest.raises(SystemExit) as e:
@@ -72307,8 +72321,7 @@ def test_b3395d_the_five_campaign_readers_are_doors(tmp_path, monkeypatch, capsy
             mod.main()
         assert "S6-B3338" in str(e.value), (mod.__name__, e.value)
     for mod, argv, subject in ((m1, mains[0][1], "smc_liquidity_sweep_reversal"),
-                               (m4, mains[3][1], "institutional_x"),
-                               (m5, mains[4][1], "fam_x")):
+                               (m4, mains[3][1], "institutional_x")):
         hr.record(read_id=f"prior_{subject}.json", strategy=subject, leg=None,
                   door="offline_holdout_read", artifact="p", source="s")
         monkeypatch.setattr(_s, "argv", argv + ["--out", str(tmp_path / f"r_{subject}.json"),
@@ -72317,6 +72330,14 @@ def test_b3395d_the_five_campaign_readers_are_doors(tmp_path, monkeypatch, capsy
             mod.main()
         assert "S6-B3395" in str(e.value) and f"prior_{subject}.json" in str(e.value), (
             mod.__name__, e.value)
+    # S6-B3413 (c): the pre-gate is not refused for a member's earlier read -
+    # its door passes and it goes on to load (the stubbed loader fires)
+    hr.record(read_id="prior_fam_x.json", strategy="fam_x", leg=None,
+              door="offline_holdout_read", artifact="p", source="s")
+    monkeypatch.setattr(_s, "argv", mains[4][1] + ["--out", str(tmp_path / "r_fam_x.json"),
+                                                   "--ruling-ticket", "S6-B9397"])
+    with pytest.raises(AssertionError, match="data loaded before the door"):
+        m5.main()
 
     # (3) end to end: family_pregate and grade_family_siblings record their reads
     from datetime import date, timedelta
@@ -72342,11 +72363,14 @@ def test_b3395d_the_five_campaign_readers_are_doors(tmp_path, monkeypatch, capsy
     f2 = tmp_path / "fp_e2e_2.json"
     monkeypatch.setattr(_s, "argv", ["fp", "--strategies", "fam_c", "--out", str(f2),
                                      "--ruling", W["ruling"], "--ruling-ticket", "S6-B9397"])
-    with pytest.raises(SystemExit):
-        m5.main()
-    assert not f2.exists()
-    monkeypatch.setattr(_s, "argv", _s.argv + ["--rereads", hr.repo_rel(f1)])
-    assert m5.main() == 0 and hr.entries()[-1]["declared"] is True
+    assert m5.main() == 0, "a pre-gate re-run is exempt from the re-read refusal (S6-B3413)"
+    last = hr.entries()[-1]
+    assert last["read_id"] == hr.campaign_read_id(f2, "fam_c") and last["declared"] is None, last
+    f3 = tmp_path / "fp_e2e_3.json"
+    monkeypatch.setattr(_s, "argv", ["fp", "--strategies", "fam_c", "--out", str(f3),
+                                     "--ruling", W["ruling"], "--ruling-ticket", "S6-B9397",
+                                     "--rereads", hr.repo_rel(f1)])
+    assert m5.main() == 0 and hr.entries()[-1]["declared"] is True, "a declaration is recorded"
     prereg = tmp_path / "prereg.json"
     prereg.write_text(_j.dumps({"population": ["sib_x"], "reference_holdout_sharpe": 0.757}),
                       encoding="utf-8")
@@ -72420,6 +72444,128 @@ def test_b3395e_every_runbook_ticket_citation_has_an_address():
     assert dangling("see S6-B9999x here", "| **S6-B9999x** | `note` |") == [], \
         "a plain mention beside inline code still addresses"
     assert dangling(plan, queue) == [], dangling(plan, queue)
+
+
+def test_b3413_pregate_reads_are_counted_and_exempt(tmp_path, monkeypatch):
+    """S6-B3413 (B3139q-r182), owner ruling 2026-11-03, verbatim 'C': a family
+    pre-gate's holdout reads are COUNTED - recorded like every other read - and
+    EXEMPT from the re-read refusal in both directions.
+
+    (1) Counted: a pre-gate read records one entry per member it graded, and a
+    later read's history (prior_reads; a campaign door's prior) still names it.
+    (2) Exempt as an EARLIER read: binding_reads leaves it out, so the depth
+    and declared-row check (reread_refusal), a campaign door, and the breadth
+    reader through main (--prior-read none reaches the frame) pass a later read
+    undeclared. (3) Exempt as the READER: a pre-gate over a member with a
+    binding read passes undeclared and is recorded declared None. (4) Control:
+    a binding read still binds - each of those paths refuses the undeclared
+    re-read and names the binding read, not the pre-gate's, and declaring the
+    pre-gate's read does not stand in for it. (5) The repository: the backfill
+    keeps pre-gate reads in a read's history and derives declared None for the
+    3 reads (c) changes - b2651 (after only the b2633 pre-gate), the b2674
+    composite read of xs_low_beta_with_smart_money_long (after only a pre-gate)
+    and the b2667 pre-gate read of xs_momentum_top_decile; b2646's binding
+    history still derives False; the committed ledger agrees."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import holdout_reads as hr
+    import owner_word as ow
+    assert hr.ledger_path() != hr.LEDGER_PROD, "the conftest isolation is off"
+    assert hr.REREAD_EXEMPT_DOORS == ("family_pregate",)
+    q = tmp_path / "queue.md"
+    q.write_text("| **S6-B9413** | **OPEN** | P1 | **RULED: 'read the fixture holdout once' "
+                 "(fixture)** | _reason:_ OPEN |" + chr(10), encoding="utf-8")
+    monkeypatch.setattr(ow, "QUEUE", q)
+    W = dict(ruling="read the fixture holdout once", ruling_ticket="S6-B9413")
+
+    # (1) counted
+    pre = {"members": {"fx": {"holdout_gradable_exits": 2}, "fy": {"holdout_gradable_exits": 1}},
+           "overlap": {}, "cube": "x"}
+    p1 = tmp_path / "pg1.json"
+    g = hr.campaign_door("family_pregate", ["fx", "fy"], out=p1, **W)
+    pids = hr.campaign_record("family_pregate", pre, out=p1, word=g["word"], prior=g["prior"])
+    assert [e["read_id"] for e in hr.entries()] == pids == [hr.campaign_read_id(p1, "fx"),
+                                                            hr.campaign_read_id(p1, "fy")]
+    assert [e["read_id"] for e in hr.prior_reads("fx")] == [pids[0]], "counted"
+    assert hr.binding_reads("fx") == [], "and binding nothing"
+
+    # (2) exempt as an EARLIER read
+    assert hr.reread_refusal("fx", "long", door="offline_holdout_read") is None
+    assert hr.reread_refusal("fx", None, door="declared_row_holdout_read") is None
+    gc = hr.campaign_door("composite_variant_test", ["fx"], out=tmp_path / "cv0.json", **W)
+    assert gc["prior"] == {"fx": [pids[0]]}, "the history still names the pre-gate read"
+    import breadth_step2_read as b2
+
+    def _no_frame(*a, **k):
+        raise AssertionError("build_frame reached")
+    monkeypatch.setattr(b2, "build_frame", _no_frame)
+    monkeypatch.setattr(hr, "step1_uncommitted", lambda *a, **k: None)
+    s1b = tmp_path / "breadth_surface.json"
+    s1b.write_text(_j.dumps({"strategy": "fx", "leg": "long", "depth_base": None,
+                             "multiplicity": {"reconciles": True}, "rows": []}),
+                   encoding="utf-8")
+    bargs = ["b2", "--step1-artifact", str(s1b), "--breadth-disposition", "ran",
+             "--depth-leg", "ran", "--depth-evidence", "pin",
+             "--ruling", W["ruling"], "--ruling-ticket", W["ruling_ticket"],
+             "--prior-read", "none"]
+    monkeypatch.setattr(_s, "argv", bargs + ["--out", str(tmp_path / "b1.json")])
+    with pytest.raises(AssertionError, match="build_frame reached"):
+        b2.main()
+
+    # (3) exempt as the READER, over a member with a binding read
+    hr.record(read_id="real.json", strategy="fx", leg=None, door="offline_holdout_read",
+              artifact="real.json", source="s")
+    p2 = tmp_path / "pg2.json"
+    g2 = hr.campaign_door("family_pregate", ["fx"], out=p2, **W)
+    hr.campaign_record("family_pregate", {"members": {"fx": {"holdout_gradable_exits": 1}},
+                                          "overlap": {}, "cube": "x"},
+                       out=p2, word=g2["word"], prior=g2["prior"])
+    last = hr.entries()[-1]
+    assert (last["door"], last["strategy"], last["declared"]) == ("family_pregate", "fx", None)
+    assert hr.reread_refusal("fx", None, door="family_pregate") is None, (
+        "the shared check never refuses the exempt door")
+
+    # (4) control: the binding read binds on every path, the pre-gate's never
+    why = hr.reread_refusal("fx", "long", door="offline_holdout_read")
+    assert why and "real.json" in why and pids[0] not in why, why
+    assert hr.reread_refusal("fx", None, declared=pids[0], door="offline_holdout_read"), (
+        "declaring the pre-gate's read does not stand in for the binding read")
+    assert hr.reread_refusal("fx", None, declared="real.json",
+                             door="declared_row_holdout_read") is None
+    with pytest.raises(SystemExit) as e:
+        hr.campaign_door("composite_variant_test", ["fx"], out=tmp_path / "cv1.json", **W)
+    assert "real.json" in str(e.value) and pids[0] not in str(e.value), e.value
+    with pytest.raises(SystemExit):
+        hr.campaign_door("composite_variant_test", ["fx"], out=tmp_path / "cv1.json",
+                         rereads=[hr.repo_rel(p1)], **W)
+    monkeypatch.setattr(_s, "argv", bargs + ["--out", str(tmp_path / "b2.json")])
+    with pytest.raises(SystemExit) as e:
+        b2.main()
+    assert "one Step-2 read" in str(e.value) and "real.json" in str(e.value), e.value
+
+    # (5) the repository's backfill and committed ledger
+    cands = {c["read_id"]: c for c in hr.backfill_candidates()}
+    door_of = {r: c["door"] for r, c in cands.items()}
+    b2651 = cands["output_audit/b2651_peadsm_step2_holdout.json"]
+    assert b2651["declared"] is None and b2651["rereads"] == [
+        "output_audit/b2633_pead_pregate.json#pead_with_smart_money_long"], b2651
+    lb = cands["output_audit/b2674_composite_variant_test.json#xs_low_beta_with_smart_money_long"]
+    assert lb["declared"] is None and lb["rereads"] and all(
+        door_of[r] == "family_pregate" for r in lb["rereads"]), lb
+    xs = cands["output_audit/b2667_xs_family_pregate.json#xs_momentum_top_decile"]
+    assert xs["declared"] is None and any(door_of[r] != "family_pregate"
+                                          for r in xs["rereads"]), xs
+    assert cands["output_audit/b2646_pead_step2_postfix.json"]["declared"] is False
+    assert all(c["declared"] is not False for c in cands.values()
+               if c["door"] == "family_pregate"), "a pre-gate read is never an undeclared re-read"
+    committed = {x["read_id"]: x for x in hr.entries(hr.LEDGER_PROD)}
+    for rid in (b2651["read_id"], lb["read_id"], xs["read_id"]):
+        assert committed[rid]["declared"] is None, (rid, committed[rid]["declared"])
 
 
 def test_b3411_history_read_is_judged_at_segment_grain():
