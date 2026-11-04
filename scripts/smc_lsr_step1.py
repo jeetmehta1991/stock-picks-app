@@ -33,6 +33,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 import roster_core as rc  # noqa: E402
+from grid_population import contract_counts  # noqa: E402  (S6-B3397 R4)
 from episode_disclosure import month_concentration  # noqa: E402  (S6-B3318)
 from breadth_step1_grid import QUANTS, BARRED_EXIT, _parse  # noqa: E402
 
@@ -347,6 +348,9 @@ def main() -> int:
            # a low yield; this grader then graded 528 cells. Stamp the
            # generator so the next reader cannot make that comparison blind.
            "generator": "scripts/smc_lsr_step1.py",
+           # S6-B3397 (R4): the B2505 contract's cube / in-sample /
+           # holdout row counts of the graded frame
+           **contract_counts(m),
            "cube": str(_cube_dir) if _cube_dir else str(R5_DIR),
            "config": {"P1_swing_length": a.swing_length,
                       "P2_liquidity_range_pct": a.liquidity_range_pct,

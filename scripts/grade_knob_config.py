@@ -58,6 +58,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 import roster_core as rc  # noqa: E402
+from grid_population import contract_counts  # noqa: E402  (S6-B3397 R4)
 
 R5_DIR = ROOT / "output_r5_merged_1_7"
 
@@ -276,6 +277,9 @@ def main(argv=None) -> int:
     print(f"{len(graded)} graded cells of {len(rows)}")
     rec = {"strategy": strat,
            "generator": "scripts/grade_knob_config.py",
+           # S6-B3397 (R4): the B2505 contract's cube / in-sample /
+           # holdout row counts of the graded frame
+           **contract_counts(m),
            "cube": str(cube_dir) if cube_dir else str(R5_DIR),
            "config": {f"{pid}_{key}": flags[key] for pid, key, _e, _x in knobs},
            "manifest_check": check,

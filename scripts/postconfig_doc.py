@@ -103,6 +103,9 @@ CHECK_MEANING = {
         "cube entries equal the grid's largest trade count (S6-B3397)",
         "a shortfall = the grader silently dropped trades it could not "
         "diagnose (L454)"),
+    "step2_grid_contract": (
+        "the landed grid carries the B2505 contract (R4, S6-B3397)",
+        "a missing field = a reader of this grid cannot place its rows"),
     "step4_sampling_contract": (
         "the spot check sampled min(50, entries) trades with seed 42 (R6)",
         "another seed or size = the checker ignored the battery's flags"),
@@ -131,7 +134,8 @@ GROUPS = [
      ["M4_holdout_touch", "M3_fill_date", "M10_gate_receipt"]),
     ("Does the arithmetic reproduce?",
      ["M5_pnl_integrity", "M7_degraded_exits", "ledger_status_matches_evidence",
-      "step2_grade_auto", "step4_spot_check_auto", "step4_sampling_contract",
+      "step2_grade_auto", "step2_grid_contract", "step4_spot_check_auto",
+      "step4_sampling_contract",
       "step7_engine_implemented"]),
 ]
 

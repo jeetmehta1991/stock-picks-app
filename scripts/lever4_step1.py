@@ -54,6 +54,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 import roster_core as rc  # noqa: E402
+from grid_population import contract_counts  # noqa: E402  (S6-B3397 R4)
 from smc_family_step1 import grade_cells  # noqa: E402
 from smc_lsr_step1 import build as _build  # noqa: E402
 from grade_npoc_config import grade_step2 as _grade_step2  # noqa: E402
@@ -180,6 +181,9 @@ def main(argv=None) -> int:
 
     rec = {"strategy": strat,
            "generator": "scripts/lever4_step1.py",
+           # S6-B3397 (R4): the B2505 contract's cube / in-sample /
+           # holdout row counts of the graded frame
+           **contract_counts(m),
            "cube": str(cube_dir) if cube_dir else str(R5_DIR),
            "config": {"P1_gate_budget": budget},
            "reproduction": repro,

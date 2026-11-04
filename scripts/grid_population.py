@@ -108,6 +108,21 @@ def starved_count(rows: list, field: str) -> int:
         or (r.get("admit") or {}).get("verdict") == "BELOW_POWER_FLOOR"))
 
 
+def contract_counts(frame) -> dict:
+    """S6-B3397 (runbook 2.1 R4, census line 661): the B2505 grid contract's
+    row counts for the frame a grader graded - cube_rows, is_rows and
+    holdout_rows - through roster_core's own in_sample / holdout split (the
+    ONE definition; in-sample excludes the HO_START boundary day). Entry
+    dates are coerced, because some graders read them as text and
+    in_sample compares against date objects."""
+    import pandas as pd
+    import roster_core as rc
+    d = pd.DataFrame({"entry_date": pd.to_datetime(frame["entry_date"],
+                                                   errors="coerce").dt.date}).dropna()
+    return {"cube_rows": int(len(frame)), "is_rows": int(len(rc.in_sample(d))),
+            "holdout_rows": int(len(rc.holdout(d)))}
+
+
 def ranked_count(row: dict) -> str:
     """S6-B3292: a ranked row's trade count WITH THE KEY IT WAS COUNTED UNDER.
 

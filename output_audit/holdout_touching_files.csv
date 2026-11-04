@@ -26,6 +26,7 @@ scripts/grade_knob_config.py,call,ENGINE_GRADER,battery grade script (SPECS tool
 scripts/grade_npoc_config.py,bound;call,ENGINE_GRADER,battery grade script (SPECS tools.grade); its Step-2 grade reads the landed cube's holdout and run_postconfig records it
 scripts/grade_pairs_config.py,bound;call,ENGINE_GRADER,battery grade script (SPECS tools.grade); its Step-2 grade reads the landed cube's holdout and run_postconfig records it
 scripts/grade_r6_predictions.py,bound,R5_PROGRAMME,B1428: R5/R6-era programme analysis of the R5 cube's holdout - the R6 predictions graded out of sample
+scripts/grid_population.py,call,COUNT_ONLY,"S6-B3397 (R4): contract_counts counts the graded frame's in-sample and holdout cube rows for the B2505 grid contract; reads no outcome"
 scripts/holdout_reads.py,literal,LEDGER_DOOR,the ledger module itself; its one hit is the census's own date literal
 scripts/institutional_companion_grid.py,bound,LEDGER_DOOR,"B2662's companion and knob grid; a campaign door since S6-B3395 Batch 7d - the owner's word and the ledger, one entry per strategy processed"
 scripts/instrument_breaker_block.py,literal,IN_SAMPLE_ONLY,--end defaults to the IS end

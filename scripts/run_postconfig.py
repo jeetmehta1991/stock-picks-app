@@ -68,6 +68,7 @@ MEGA = ("NVDA", "MSFT", "GOOGL", "META", "TSLA", "AAPL")
 TERMINAL = ("DONE", "N/A")
 _GRADER_CHECKS = ("step2_grade_auto", "step2_free_levels", "step2_legs",
                   "step2_holdout_ledger",
+                  "step2_grid_contract",
                   "step4_spot_check_auto", "step4_sampling_contract",
                   "step7_engine_implemented")
 # S6-B3397: a check that compares the cube with the GRADER's output is a
@@ -828,8 +829,24 @@ def run_family(fam_name: str, cube_dir: Path, p: dict,
         results.append(("step2_free_levels", "PASS" if okf else "FAIL",
                         f"exit {fl.returncode}; reproduction-gated free levels "
                         f"-> {free_out.name}; {_verdict_line(fl)[:160]}"))
+    # S6-B3397 (runbook 2.1 R4, census 661): the landed grid carries the
+    # B2505 contract - its readers cannot place rows it does not declare
+    cerrs: list = []
+    if ok2:
+        try:
+            _cg = json.loads(grid_out.read_text(encoding="utf-8")) or {}
+        except (OSError, ValueError) as exc:
+            _cg, cerrs = {}, [f"grid unreadable: {exc!r}"]
+        if not cerrs:
+            cerrs = grid_contract_errors(_cg, fam_name)
+        results.append(("step2_grid_contract", "FAIL" if cerrs else "PASS",
+                        "; ".join(cerrs) if cerrs else
+                        "B2505 contract holds: config, strategy, instrument, "
+                        "cube / in-sample / holdout counts, population"))
     note2 = gb.get("note", "AUTO")
     notes["2_grade_with_config_params"] = (
+        ("FAIL", f"grid contract broken (R4, S6-B3397): {'; '.join(cerrs)[:200]}")
+        if ok2 and okf and cerrs else
         ("FAIL", f"Step-2 legs unproven (S6-B3367): {legs_errs[0][:200]}")
         if ok2 and okf and legs_errs else
         ("FAIL", f"Step-2 holdout read not admissible (S6-B3395): {ledger_why[:200]}")
@@ -1447,6 +1464,37 @@ def verdict_denominators(cube_dir: Path, manifest: dict, family, grid: dict) -> 
     part3 = (f"ci_lo of every PASS: {pass_ci}" if pass_ci else
              "no PASS row, so no PASS ci_lo")
     return f"{part1}; {part2}; {part3}"
+
+
+def grid_contract_errors(grid: dict, leg) -> list:
+    """S6-B3397 (runbook 2.1 R4, census line 661): what the landed grid lacks
+    of the B2505 contract - config, strategy (the graded leg), the grading
+    instrument, the cube-row / in-sample / holdout counts, and a population
+    list. Two dialects satisfy it: the B2505 graders write `grader` and an int
+    `rows`; the B2774-stamped graders write `generator`, and the rows-LIST
+    graders (lever4_step1, grade_knob_config, the smc step-1 graders) hold
+    their population under `rows`, so their cube-row count is `cube_rows`.
+    MEASURED at B3139q-r185 over 114 landed grids: 70 conform (5 graders);
+    44 predate it (tighten_breaker_block 33, lever4_step1 9,
+    grade_knob_config 2) - a re-grade regenerates them. [] when the contract
+    holds."""
+    def _int(v):
+        return isinstance(v, int) and not isinstance(v, bool)
+    errs = []
+    if not isinstance(grid.get("config"), dict):
+        errs.append("no `config` block")
+    if str(grid.get("strategy")) != str(leg):
+        errs.append(f"`strategy` {grid.get('strategy')!r} is not the graded leg {leg!r}")
+    if not (grid.get("grader") or grid.get("generator")):
+        errs.append("no grading-instrument stamp (`grader` / `generator`)")
+    if not (_int(grid.get("rows")) or _int(grid.get("cube_rows"))):
+        errs.append("no cube-row count (an int `rows`, or `cube_rows`)")
+    for k in ("is_rows", "holdout_rows"):
+        if not _int(grid.get(k)):
+            errs.append(f"no int `{k}`")
+    if not any(isinstance(grid.get(k), list) for k in ("results", "per_exit", "rows")):
+        errs.append("no population list (`results` / `per_exit` / `rows`)")
+    return errs
 
 
 def rc_live_gates() -> tuple:

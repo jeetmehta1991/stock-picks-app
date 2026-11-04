@@ -53,6 +53,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 import roster_core as rc  # noqa: E402
+from grid_population import contract_counts  # noqa: E402  (S6-B3397 R4)
 from episode_disclosure import month_concentration  # noqa: E402  (S6-B3318)
 from breadth_step1_grid import BARRED_EXIT  # noqa: E402
 from smc_lsr_step1 import build as _build, rank  # noqa: E402
@@ -227,6 +228,9 @@ def main() -> int:
            # B2774/#309: an artifact names its CUBE and its GENERATOR, because
            # two JSONs about one cube look comparable and are not.
            "generator": "scripts/smc_obb_step1.py",
+           # S6-B3397 (R4): the B2505 contract's cube / in-sample /
+           # holdout row counts of the graded frame
+           **contract_counts(m),
            "cube": str(cube_dir) if cube_dir else str(R5_DIR),
            "config": {"P1_swing_length": a.swing_length,
                       "P2_ob_close_mitigation": a.ob_close_mitigation},

@@ -28,6 +28,7 @@ from pathlib import Path
 import pandas as pd
 
 import roster_core as rc
+from grid_population import contract_counts  # noqa: E402  (S6-B3397 R4)
 
 with contextlib.redirect_stdout(io.StringIO()):
     from vendored.smartmoneyconcepts.smartmoneyconcepts import smc as _smc
@@ -521,6 +522,10 @@ def main() -> int:
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(
         {"strategy": STRATEGY, "r5_baseline_fires": len(fires),
+         # S6-B3397 (R4): the B2505 contract's cube / in-sample / holdout
+         # row counts of the graded frame (int `rows` would re-class this
+         # artifact for band_coverage_gate, so the count is `cube_rows`)
+         **contract_counts(g),
          # B2774: stamp the generating instrument - see smc_lsr_step1.py.
          # This artifact also named no cube, so two files about one cube
          # carried nothing that could tell them apart.

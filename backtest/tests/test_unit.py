@@ -31430,7 +31430,10 @@ def test_b2569_battery_runs_free_levels_on_every_institutional_landing(
         calls.append(cmd)
         for i, c in enumerate(cmd):
             if c == "--out":
-                Path(cmd[i + 1]).write_text("{}", encoding="utf-8")
+                # S6-B3397 (R4): a real grade script writes the B2505 contract
+                body = ('{"config": {}, "strategy": "institutional_committed_growth_long", "grader": "scripts/grade_institutional_config.py", "rows": 48, "is_rows": 48, "holdout_rows": 0, "results": [], "per_exit": []}'
+                        if "grade_institutional_config" in " ".join(cmd) else "{}")
+                Path(cmd[i + 1]).write_text(body, encoding="utf-8")
         return types.SimpleNamespace(returncode=0, stdout="ok", stderr="")
 
     monkeypatch.setattr(rp, "_run", fake_run)
@@ -34107,6 +34110,14 @@ def test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritte
             for i, c in enumerate(cmd):
                 if c == "--out":
                     doc = {}
+                    # S6-B3397 (R4): a real grade script writes the B2505 contract
+                    if "grade_institutional_config" in " ".join(cmd):
+                        doc = json.loads('{"config": {}, "strategy": "institutional_committed_growth_long", "grader": "scripts/grade_institutional_config.py", "rows": 48, "is_rows": 48, "holdout_rows": 0, "results": [], "per_exit": []}')
+                    if "tighten_breaker_block" in " ".join(cmd):
+                        doc = {"config": {}, "strategy": "smc_breaker_block_long",
+                               "generator": "scripts/tighten_breaker_block.py",
+                               "cube_rows": 48, "is_rows": 48, "holdout_rows": 0,
+                               "results": []}
                     if "spot_check_institutional" in " ".join(cmd) and precompute_name:
                         doc = {"precompute_dir": "data_prefetch/derived/" + precompute_name}
                     Path(cmd[i + 1]).write_text(json.dumps(doc), encoding="utf-8")
@@ -35062,7 +35073,11 @@ def test_b2612_step2_cube_without_gate_verdicts_fails_closed(tmp_path, monkeypat
 
     # (c) a step2 block with the six gates -> PASS, and step 8 names the verdict
     seen.clear()
-    grid = {"per_exit": [{"exit": "alpha", "rank": 1, "is_ci_lo": 0.1, "is_sharpe": 0.4,
+    # S6-B3397 (R4): the B2505 contract a real grade script writes
+    grid = {"config": {}, "strategy": "institutional_committed_growth_long",
+            "grader": "scripts/grade_institutional_config.py", "rows": 48,
+            "is_rows": 36, "holdout_rows": 12,
+            "per_exit": [{"exit": "alpha", "rank": 1, "is_ci_lo": 0.1, "is_sharpe": 0.4,
                           "fires": 100, "admit": {"verdict": "RANKED"}}],
             "step2": {"holdout_read": True, "selected_exit": "alpha", "gates": dict(six),
                       "verdict": "FAIL", "holdout_n": 30, "full_period_n": 90,
@@ -73261,3 +73276,128 @@ def test_b3397b_step8_carries_the_denominators_or_stays_open(tmp_path, monkeypat
     assert st == "DONE" and "producers varied" in line, line
     st, line = step8("zz_unregistered_alpha", "c_unknown")
     assert st == "OPEN" and "cannot state its denominators" in line, line
+
+def test_b3397c_contract_counts_split_text_and_date_entries():
+    """S6-B3397 (runbook 2.1 R4, census 661): contract_counts gives the B2505
+    contract's cube / in-sample / holdout row counts through roster_core's own
+    split - in-sample excludes the HO_START boundary day - for entry dates
+    held as text (smc_lsr_step1 reads its cube raw) or as dates."""
+    import datetime as dt
+    import sys
+    from pathlib import Path
+    import pandas as pd
+    root = Path(__file__).resolve().parents[2]
+    sys.path.insert(0, str(root / "scripts"))
+    from grid_population import contract_counts
+    import roster_core as rc
+    ho = rc.HO_START.isoformat()
+    text = pd.DataFrame({"entry_date": ["2023-01-03", "2024-06-03", ho, "2025-09-01"]})
+    assert contract_counts(text) == {"cube_rows": 4, "is_rows": 2, "holdout_rows": 2}
+    dates = pd.DataFrame({"entry_date": [dt.date(2023, 1, 3), rc.HO_START]})
+    assert contract_counts(dates) == {"cube_rows": 2, "is_rows": 1, "holdout_rows": 1}
+
+
+def test_b3397c_grid_contract_holds_in_both_dialects():
+    """S6-B3397: the B2505 dialect (grader, int rows) and the rows-LIST dialect
+    (generator, cube_rows, population under rows) both satisfy the contract;
+    each missing field is named, and a grid about another strategy is
+    refused. MEASURED at B3139q-r185: 70 of 114 landed grids conform; the 44
+    that predate it are tighten_breaker_block 33, lever4_step1 9 and
+    grade_knob_config 2."""
+    rp = _rp_b3397a()
+    b2505 = {"config": {}, "strategy": "s", "grader": "scripts/g.py", "rows": 48,
+             "is_rows": 24, "holdout_rows": 24, "results": [], "per_exit": []}
+    rows_list = {"config": {}, "strategy": "s", "generator": "scripts/h.py",
+                 "cube_rows": 48, "is_rows": 24, "holdout_rows": 24, "rows": [{"cell": "x"}]}
+    assert rp.grid_contract_errors(b2505, "s") == []
+    assert rp.grid_contract_errors(rows_list, "s") == []
+    for key, word in (("config", "config"), ("grader", "instrument"),
+                      ("rows", "cube-row"), ("is_rows", "is_rows"),
+                      ("holdout_rows", "holdout_rows")):
+        g = dict(b2505)
+        g.pop(key)
+        errs = rp.grid_contract_errors(g, "s")
+        assert len(errs) == 1 and word in errs[0], (key, errs)
+    g = dict(rows_list)
+    g.pop("rows")
+    assert any("population" in e for e in rp.grid_contract_errors(g, "s"))
+    assert any("graded leg" in e for e in rp.grid_contract_errors(b2505, "other"))
+    assert rp.grid_contract_errors({**b2505, "rows": True}, "s"), "a bool is not a count"
+
+
+def test_b3397c_battery_fails_step2_on_a_grid_without_the_contract(tmp_path, monkeypatch):
+    """S6-B3397 (L654 - the wiring): run_family checks the landed grid and
+    FAILs step 2 when the contract does not hold; a conforming grid passes."""
+    import json
+    import types
+    from pathlib import Path
+    rp = _rp_b3397a()
+    monkeypatch.setattr(rp, "ROOT", tmp_path)
+    monkeypatch.setattr(rp, "knob_is_read", lambda env, root: True)
+    monkeypatch.setattr(rp, "knob_consumers", lambda env: ())
+    monkeypatch.setattr(rp, "declared_consumers", lambda spec, env: ())
+    (tmp_path / "output_audit").mkdir()
+    fam = "institutional_committed_growth_long"
+    contract = {"config": {}, "strategy": fam, "grader": "scripts/grade_institutional_config.py",
+                "rows": 48, "is_rows": 24, "holdout_rows": 24, "results": [], "per_exit": []}
+
+    def make_run(grid):
+        def fake_run(cmd, env_extra=None):
+            cmd = [str(c) for c in cmd]
+            body = (json.dumps(grid) if "grade_institutional_config" in cmd[1] else "{}")
+            for i, c in enumerate(cmd):
+                if c == "--out":
+                    Path(cmd[i + 1]).write_text(body, encoding="utf-8")
+            return types.SimpleNamespace(returncode=0, stdout="", stderr="")
+        return fake_run
+
+    p = {"min_consecutive_quarters": 4, "growth_lookback_quarters": 4,
+         "growth_multiple": 1.1, "ema_span": 200}
+    cube = tmp_path / "output_icg_c"
+    cube.mkdir()
+    monkeypatch.setattr(rp, "_run", make_run(contract))
+    res, notes, _, _ = rp.run_family(fam, cube, p, {"window": {}}, step=1)
+    by = {n: (s, e) for n, s, e in res}
+    assert by["step2_grid_contract"][0] == "PASS", by["step2_grid_contract"]
+    assert notes["2_grade_with_config_params"][0] == "DONE", notes
+    broken = dict(contract)
+    broken.pop("is_rows")
+    monkeypatch.setattr(rp, "_run", make_run(broken))
+    res, notes, _, _ = rp.run_family(fam, cube, p, {"window": {}}, step=1)
+    by = {n: (s, e) for n, s, e in res}
+    assert by["step2_grid_contract"][0] == "FAIL" and "is_rows" in by["step2_grid_contract"][1]
+    assert notes["2_grade_with_config_params"][0] == "FAIL", notes
+    assert "step2_grid_contract" in rp._GRADER_CHECKS     # never a step-1 FAIL
+
+
+def test_b3397c_every_family_grader_stamps_the_contract():
+    """S6-B3397 (census 661's 'a contract pin over each battery grader'):
+    every FAMILIES grade script's output dict - the dict literal carrying the
+    `strategy` key - names config, an instrument (grader / generator), the
+    counts (literal keys or a **contract_counts(...) unpack) and a population.
+    Structural (AST), so a comment naming a key cannot satisfy it (L748)."""
+    import ast
+    from pathlib import Path
+    rp = _rp_b3397a()
+    root = Path(__file__).resolve().parents[2]
+    scripts = sorted({rp.SPECS[f]["tools"]["grade"]["script"] for f in rp.FAMILIES})
+    assert len(scripts) >= 9, scripts
+    for s in scripts:
+        tree = ast.parse((root / "scripts" / s).read_text(encoding="utf-8"))
+        ok = False
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Dict):
+                continue
+            keys = {k.value for k in node.keys if isinstance(k, ast.Constant)}
+            if "strategy" not in keys:
+                continue
+            unpack = any(k is None and isinstance(v, ast.Call)
+                         and getattr(v.func, "id", None) == "contract_counts"
+                         for k, v in zip(node.keys, node.values))
+            counts = unpack or {"is_rows", "holdout_rows"} <= keys and (
+                "rows" in keys or "cube_rows" in keys)
+            if ("config" in keys and ("grader" in keys or "generator" in keys)
+                    and counts and keys & {"results", "per_exit", "rows"}):
+                ok = True
+                break
+        assert ok, f"{s}: no output dict carries the B2505 contract"
