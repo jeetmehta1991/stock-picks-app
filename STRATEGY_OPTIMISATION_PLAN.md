@@ -1055,11 +1055,11 @@ meaning. ENFORCED by validate_spec: a formula carries the PRODUCER LAYER and STR
 1. **FAMILY COMPANION SCREEN** - `scripts/institutional_companion_screen.py --family <prefix>` (named
    for its first family; generic by argument), IS-only window, run at TWO exits (`time_stop_10d` +
    `breakeven_plus_trail`), one BH-FDR pass per run; keep only signals whose effect sign is CONSISTENT
-   under both exits (the `_consistent` intersect artifact). A SCREEN, never a gate. **Per strategy:
-   `--strategy <s>` selects by exact name (S6-B3291); the intersect and the clustering below are
+   under both exits (the `_consistent` intersect artifact; companions_consistent refuses screens at any other pair of exits, test_b3394b; S6-B3394). A SCREEN, never a gate. **Per strategy:
+   `--strategy <s>` selects by exact name (S6-B3291; companions_consistent refuses a screen whose selection is not exactly the strategy, test_b3394b); the intersect and the clustering below are
    `scripts/companions_consistent.py --a <screen at exit 1> --b <screen at exit 2> --strategy <s>`
    (S6-B3291b) - a peeked screen is refused, and keys the producer index cannot place are reported
-   as an `unindexed` bucket, a mixed bag that is never a cluster.** **Per leg, on the surviving fires:
+   as an `unindexed` bucket, a mixed bag that is never a cluster (cluster() leaves it out and the artifact lists it with no representative, test_b3394a; S6-B3394).** **Per leg, on the surviving fires:
    `--direction long|short` screens one leg of a dual (S6-B3247), and `--survival` keeps the fires the
    CURRENT gate keeps - the depth sweep's T1 definition (S6-B3320). The screen refuses a subject whose
    gate changed since R5 without it, and the consistent set refuses two populations or two legs.** **On the basis its grid grades: `--basis` is REQUIRED, as on the grids (S6-B3314, S6-B3139ag) - `net` scores the effects through `roster_core.net_pnl` (winsorized at +/-300, the round-trip cost charged), and `gross` is the raw cube pnl every screen before it scored by omission; one bogus print can set a companion's sign on gross. A run directory's own fires take `--cube-dir` (S6-B3335), and the consistent set refuses two bases or two sources (S6-B3382).**

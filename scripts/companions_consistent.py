@@ -28,6 +28,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
+# runbook 3.6 step 1: the two exits the family companion screen runs at
+RUNBOOK_EXITS = ("time_stop_10d", "breakeven_plus_trail")
 
 
 def _effect(r: dict) -> float:
@@ -62,14 +64,23 @@ def module_of(key: str, idx) -> str | None:
     return None if a.startswith("(") else a.split(" ")[0]
 
 
+# S6-B3394 (runbook 3.6 step 1, census 1003): keys the producer index cannot
+# place are reported as an 'unindexed' BUCKET - a mixed bag that is never a
+# cluster, so it gets no representative; main() writes it beside the clusters.
+UNINDEXED = "unindexed"
+
+
 def cluster(rows: list[dict], module_of) -> dict:
-    """key -> producer module (build_table_a._module_index); unknown keys go
-    to their own 'unindexed' cluster so nothing is silently dropped."""
+    """key -> producer module (build_table_a._module_index), one
+    representative per module. A key no module places is tagged UNINDEXED and
+    left OUT of the clusters (S6-B3394) - unindexed_bucket reports it, so
+    nothing is silently dropped and nothing unplaced becomes a cluster."""
     clusters: dict[str, list] = {}
     for r in rows:
-        mod = module_of(r["key"]) or "unindexed"
+        mod = module_of(r["key"]) or UNINDEXED
         r["module"] = mod
-        clusters.setdefault(mod, []).append(r)
+        if mod != UNINDEXED:
+            clusters.setdefault(mod, []).append(r)
     out = {}
     for mod, members in clusters.items():
         members.sort(key=lambda r: -r["joint"])
@@ -77,6 +88,14 @@ def cluster(rows: list[dict], module_of) -> dict:
                     "criterion": "max joint effect min(|a|, |b|) (#165)",
                     "members": [m["key"] for m in members], "rows": members}
     return out
+
+
+def unindexed_bucket(rows: list[dict]) -> dict:
+    """The rows cluster() tagged UNINDEXED: members only, no representative."""
+    keys = [r["key"] for r in rows if r.get("module") == UNINDEXED]
+    return {"members": keys, "n": len(keys),
+            "note": "keys the producer index cannot place - a mixed bag, never a "
+                    "cluster, so no representative (runbook 3.6, S6-B3394)"}
 
 
 def main() -> int:
@@ -93,8 +112,18 @@ def main() -> int:
             raise SystemExit(f"REFUSED: screen {name} read the holdout (peeked) - the consistent "
                              "set is an in-sample screen")
         want = [args.strategy]
-        if art.get("selection") == "exact" and sorted(art.get("strategies") or []) != want:
-            raise SystemExit(f"REFUSED: screen {name} selected {art.get('strategies')}, not {want}")
+        # S6-B3394 (census 1001): per strategy the screen selects by EXACT name -
+        # a screen of a family prefix, or one recording no selection, refuses
+        if art.get("selection") != "exact" or sorted(art.get("strategies") or []) != want:
+            raise SystemExit(f"REFUSED (S6-B3394): screen {name} selection "
+                             f"{art.get('selection')!r} of {art.get('strategies')} - a "
+                             f"consistent set takes screens of exactly {want} (runbook 3.6)")
+    # S6-B3394 (census 998): the screen runs at the TWO runbook exits, and the
+    # sign-consistent intersect is across them - any other pair refuses
+    if {a.get("exit"), b.get("exit")} != set(RUNBOOK_EXITS):
+        raise SystemExit(f"REFUSED (S6-B3394): screens at {a.get('exit')!r} and "
+                         f"{b.get('exit')!r} - the consistent set is the intersect "
+                         f"of the screens at {RUNBOOK_EXITS} (runbook 3.6 step 1)")
     # S6-B3247 (B3139q-r117): both screens must read the SAME leg - an
     # intersect of a long screen and a pooled one would mix populations
     if a.get("direction") != b.get("direction"):
@@ -129,7 +158,8 @@ def main() -> int:
            "exit_a": a["exit"], "exit_b": b["exit"],
            "screens": {"a": str(args.a), "b": str(args.b)},
            "survivors_a": a.get("survivors"), "survivors_b": b.get("survivors"),
-           "n_consistent": len(rows), "clusters": cl}
+           "n_consistent": len(rows), "clusters": cl,
+           "unindexed": unindexed_bucket(rows)}                        # S6-B3394
     Path(args.out).write_text(json.dumps(rec, indent=2), encoding="utf-8")
     print(f"{args.strategy}: {a.get('survivors')} + {b.get('survivors')} survivors -> "
           f"{len(rows)} consistent in {len(cl)} clusters -> {args.out}")

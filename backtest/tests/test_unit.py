@@ -74502,3 +74502,68 @@ def test_b3393l_every_executable_r_probe_in_the_runbook_prints_its_expected_line
         assert r.returncode == 0 and got == want, (m.group(1), want, got, r.stderr[-300:])
         ran.append(m.group(1))
     assert ran == ["R1", "R2", "R3", "R8"], ran
+
+def _cc_b3394():
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import companions_consistent as cc
+    return root, cc
+
+
+def test_b3394a_an_unindexed_key_is_a_bucket_never_a_cluster():
+    """S6-B3394 (runbook 3.6 step 1, census 1003): keys the producer index
+    cannot place are reported as an 'unindexed' bucket that is never a
+    cluster - cluster() leaves them out (so no representative is chosen from
+    them) and unindexed_bucket() lists them, so nothing is dropped."""
+    _root, cc = _cc_b3394()
+    rows = [{"key": "k1", "kind": "bool", "joint": 0.4},
+            {"key": "k5", "kind": "bool", "joint": 0.9},
+            {"key": "u1", "kind": "numeric", "joint": 5.0},
+            {"key": "u2", "kind": "bool", "joint": 0.1}]
+    cl = cc.cluster(rows, lambda k: "m1" if k.startswith("k") else None)
+    assert set(cl) == {"m1"} and cc.UNINDEXED not in cl, cl
+    assert cl["m1"]["representative"] == "k5"
+    b = cc.unindexed_bucket(rows)
+    assert b["members"] == ["u1", "u2"] and b["n"] == 2 and "representative" not in b
+    assert cc.unindexed_bucket([dict(r, module="m1") for r in rows[:2]])["n"] == 0
+
+
+def test_b3394b_the_consistent_set_takes_two_exact_screens_at_the_runbook_exits(tmp_path):
+    """S6-B3394 (runbook 3.6 step 1, census 998 + 1001): companions_consistent
+    refuses screens that are not at the two runbook exits (the same exit twice,
+    or another exit) and a screen that did not select the strategy by exact
+    name (a family selection, or one recording no selection); two exact
+    screens at time_stop_10d and breakeven_plus_trail write the set, with the
+    unindexed bucket beside the clusters."""
+    import json as _j
+    import subprocess as _sp
+    import sys as _sys
+    root, cc = _cc_b3394()
+    assert cc.RUNBOOK_EXITS == ("time_stop_10d", "breakeven_plus_trail")
+    base = {"selection": "exact", "strategies": ["sq"], "results": [], "survivors": 0}
+
+    def run(a, b):
+        pa, pb, po = tmp_path / "a.json", tmp_path / "b.json", tmp_path / "o.json"
+        pa.write_text(_j.dumps(a), encoding="utf-8")
+        pb.write_text(_j.dumps(b), encoding="utf-8")
+        r = _sp.run([_sys.executable, str(root / "scripts" / "companions_consistent.py"),
+                     "--a", str(pa), "--b", str(pb), "--strategy", "sq", "--out", str(po)],
+                    capture_output=True, text=True, timeout=600)
+        return r, po
+    ts, be = dict(base, exit="time_stop_10d"), dict(base, exit="breakeven_plus_trail")
+    for a, b in ((ts, ts), (ts, dict(base, exit="atr_trail_1x"))):
+        r, _po = run(a, b)
+        assert r.returncode != 0 and "S6-B3394" in r.stderr and "runbook 3.6" in r.stderr, r.stderr[-300:]
+    for bad in (dict(be, selection="prefix"), {k: v for k, v in be.items() if k != "selection"},
+                dict(be, strategies=["sq", "other"])):
+        r, _po = run(ts, bad)
+        assert r.returncode != 0 and "selection" in r.stderr, r.stderr[-300:]
+    r, po = run(ts, be)
+    assert r.returncode == 0, r.stderr[-300:]
+    rec = _j.loads(po.read_text(encoding="utf-8"))
+    assert rec["unindexed"]["n"] == 0 and rec["clusters"] == {}
+    r, po = run(be, ts)
+    assert r.returncode == 0, r.stderr[-300:]
