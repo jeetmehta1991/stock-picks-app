@@ -856,6 +856,29 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
                      f"per-strategy override on the owner's word | "
                      f"BANDABLE-OWNER-GATED |")
             continue
+        if h == "_has_smart_money_buy":
+            # S6-B3428 (B3139q-r205b): the first lane charter to carry this
+            # shared helper is rsi_oversold_with_smart_money_long, which moved
+            # NONE -> BOTH when its RSI level was restored. Its underlying
+            # condition is a union of five PERSISTED flags - three EVENT
+            # (insider_cluster_active, cfo_buy, large_dollar_buy) and two 13F
+            # STATE (institutional_strong_buy, institutional_buy) - so a narrower
+            # union keeps a subset of the recorded fires and is offline; the
+            # helper is shared by the smart-money sleeves, so any band is a
+            # per-strategy override on the owner's word, as for the borrow guard.
+            axes.append(_axis(f"P{pid}", "smart-money union (5 flags)", 1, False,
+                              False, None, (1, 0, 0)))
+            L.append(f"| P{pid} | STRATEGY-HELPER | {h}(s) - underlying "
+                     f"condition: insider_cluster_active OR cfo_buy OR "
+                     f"large_dollar_buy OR institutional_strong_buy OR "
+                     f"institutional_buy | requires one smart-money buy flag "
+                     f"on the fire bar | any of 5 | - (no band ruled) | "
+                     f"{_offline_cell([(1, 1, 0, 0)], 'tighter = a NARROWER union of the persisted flags (an EVENT-only subset, say) - OFFLINE subset', ' (no band ruled)')} "
+                     f"| a wider union admits fires the engine never recorded - "
+                     f"RESIM; a helper shared by the smart-money sleeves, so "
+                     f"any band is a per-strategy override on the owner's "
+                     f"word | BANDABLE-OWNER-GATED |")
+            continue
         L.append(f"| P{pid} | STRATEGY-HELPER | {h}(s) - a helper gate; its "
                  f"internals are outside the source pattern (lower bound) | "
                  f"see the helper's own source | required | - | - | "

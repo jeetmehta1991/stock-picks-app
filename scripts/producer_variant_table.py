@@ -9926,6 +9926,198 @@ SPECS_PHASE0.update({'stochrsi_oversold': {'formula': '\n'
                               'legs': ['short']}]}})
 
 
+# S6-B3249 (B3139q-r205) - R1 PRE-REGISTRATION of rsi_oversold_with_smart_money_long (runbook
+# 2.7 step 1, B2855), the seventh shortlist member, after S6-B3428 (a) restored its rsi_14 < 35:
+# written from its lane charter before the owner's T3 words.
+SPECS_PHASE0.update({'rsi_oversold_with_smart_money_long': {'formula': '\n'
+                                                   'ID SEMANTICS (owner ruling 2026-09-12): P<n> = '
+                                                   'a numbered COMPUTATION STEP in\n'
+                                                   'the producer->gate derivation; the lane '
+                                                   'charter\n'
+                                                   '(strategy_optimisation/tighten/both/rsi_oversold_with_smart_money_long.md) '
+                                                   'numbers its band\n'
+                                                   'rows P<n>.x - integer ids here. R1 '
+                                                   'PRE-REGISTRATION (runbook 2.7 step 1, B2855) '
+                                                   'written\n'
+                                                   'S6-B3249 B3139q-r205 after S6-B3428 (a) '
+                                                   "restored the gate's rsi_14 < 35, BEFORE the "
+                                                   "owner's\n"
+                                                   'T3 words: no level below is approved, and '
+                                                   "B-rows join on the owner's word (S6-B3304 "
+                                                   'precedent).\n'
+                                                   '\n'
+                                                   '=============================== PRODUCER LAYER '
+                                                   '==============================\n'
+                                                   '\n'
+                                                   'P1  price_above_ema_200  (technical.py '
+                                                   'compute_ema_sma: close > EMA(200), an '
+                                                   'EMA_PAIRS slow span)\n'
+                                                   'P2  EMA span 200  (the 200 in '
+                                                   'price_above_ema_200; the gate reads the '
+                                                   'LITERAL key)\n'
+                                                   'P3  RSI period 14  (technical.py compute_rsi: '
+                                                   'Wilder RSI; the value is persisted as rsi_14)\n'
+                                                   '\n'
+                                                   '============================== STRATEGY LAYER '
+                                                   '==============================\n'
+                                                   '\n'
+                                                   'P4  rsi_14 < 35   [EXISTING-THRESHOLD; tighter '
+                                                   'ceilings OFFLINE on the persisted rsi_14]\n'
+                                                   'P5  _has_smart_money_buy(s)  (screener.py: '
+                                                   'insider_cluster_active OR cfo_buy OR\n'
+                                                   '       large_dollar_buy OR '
+                                                   'institutional_strong_buy OR '
+                                                   'institutional_buy)\n'
+                                                   '\n'
+                                                   'long_fires = P1 AND P4 AND P5   (screener.py '
+                                                   'strat_rsi_oversold_with_smart_money_long)\n'
+                                                   'Swept by offline_level_sweep.py --survival: '
+                                                   'rsi_14:lt:35,34.246,33.514,32.428,30.574\n',
+                                        'baseline': {'artifact': 'output_r5_merged_1_7',
+                                                     'fires': 2753,
+                                                     'tickers': 497,
+                                                     'holdout_n': 618,
+                                                     'window': '2022-05-05..2026-05-05',
+                                                     'fires_by_side': {'long': 2753},
+                                                     'surviving_fires_t1': 143},
+                                        'gate': 'rsi_14 < 35 AND price_above_ema_200 AND '
+                                                '_has_smart_money_buy (screener '
+                                                'strat_rsi_oversold_with_smart_money_long)',
+                                        'tools': {},
+                                        'params': [{'id': 'P1',
+                                                    'producer': 'technical.py compute_ema_sma',
+                                                    'param': 'price_above_ema_200 identity',
+                                                    'production': 'close > EMA(200)',
+                                                    'band': ['close > EMA(200)'],
+                                                    'free_band': None,
+                                                    'resim_band': None,
+                                                    'env': None,
+                                                    'consumers': ['backtest/signals/screener.py'],
+                                                    'sweep_levels': None,
+                                                    'subset_safe': None,
+                                                    'status': 'UNTESTED',
+                                                    'type': 'identity',
+                                                    'engine_implemented': True,
+                                                    'evidence': 'backtest/signals/technical.py '
+                                                                'compute_ema_sma '
+                                                                '(price_above_ema_{slow}); '
+                                                                'backtest/signals/screener.py '
+                                                                'strat_rsi_oversold_with_smart_money_long',
+                                                    'derivation': 'the boolean itself - its knob '
+                                                                  'is P2; held at production'},
+                                                   {'id': 'P2',
+                                                    'producer': 'technical.py compute_ema_sma',
+                                                    'param': 'EMA span (the 200 in '
+                                                             'price_above_ema_200)',
+                                                    'production': 200,
+                                                    'band': [200],
+                                                    'free_band': None,
+                                                    'resim_band': None,
+                                                    'env': None,
+                                                    'consumers': ['backtest/signals/screener.py'],
+                                                    'sweep_levels': None,
+                                                    'subset_safe': False,
+                                                    'status': 'UNTESTED',
+                                                    'type': 'int',
+                                                    'engine_implemented': False,
+                                                    'evidence': 'backtest/signals/technical.py '
+                                                                'compute_ema_sma (its loop over '
+                                                                'config EMA_PAIRS)',
+                                                    'derivation': 'held at production - no env '
+                                                                  'knob exists, so any other level '
+                                                                  'is an engine run with no '
+                                                                  'actuator (S6-B2569a); charter '
+                                                                  'P1.1 planned [9, 20, 21, 50, '
+                                                                  '100, 150, 200, 250] - all but '
+                                                                  '200 resim; STRAT_EMA_SPAN does '
+                                                                  'not reach this gate, which '
+                                                                  'reads the literal key '
+                                                                  '(S6-B3253)'},
+                                                   {'id': 'P3',
+                                                    'producer': 'technical.py compute_rsi',
+                                                    'param': 'RSI period',
+                                                    'production': 14,
+                                                    'band': [14],
+                                                    'free_band': None,
+                                                    'resim_band': None,
+                                                    'env': None,
+                                                    'consumers': ['backtest/signals/screener.py'],
+                                                    'sweep_levels': None,
+                                                    'subset_safe': False,
+                                                    'status': 'UNTESTED',
+                                                    'type': 'int',
+                                                    'engine_implemented': False,
+                                                    'evidence': 'backtest/signals/technical.py '
+                                                                'compute_rsi (rsi_{p})',
+                                                    'derivation': 'held at production - no env '
+                                                                  "knob reaches the gate's literal "
+                                                                  'rsi_14 key; charter P2.1 '
+                                                                  'planned [9, 14, 21], '
+                                                                  'DEFINED-NO-ACTUATOR - values at '
+                                                                  'other periods are not the '
+                                                                  "gate's input"},
+                                                   {'id': 'P4',
+                                                    'producer': 'technical.py compute_rsi',
+                                                    'param': 'rsi_14 ceiling',
+                                                    'production': 35,
+                                                    'band': [35, 34.246, 33.514, 32.428, 30.574],
+                                                    'free_band': [35,
+                                                                  34.246,
+                                                                  33.514,
+                                                                  32.428,
+                                                                  30.574],
+                                                    'resim_band': [],
+                                                    'env': None,
+                                                    'consumers': ['backtest/signals/screener.py'],
+                                                    'sweep_levels': None,
+                                                    'subset_safe': True,
+                                                    'status': 'UNTESTED',
+                                                    'type': 'float',
+                                                    'engine_implemented': True,
+                                                    'evidence': 'backtest/signals/technical.py '
+                                                                'compute_rsi (rsi_{p}); '
+                                                                'backtest/signals/screener.py '
+                                                                'strat_rsi_oversold_with_smart_money_long '
+                                                                '(rsi_14 < 35, S6-B3428 (a))',
+                                                    'derivation': 'TIGHTER = a LOWER ceiling on '
+                                                                  'the persisted rsi_14 - the '
+                                                                  "charter's measured levels "
+                                                                  '34.246 / 33.514 / 32.428 / '
+                                                                  '30.574 keep 114 / 86 / 57 / 29 '
+                                                                  'of the 143 surviving fires; a '
+                                                                  'looser ceiling admits bars the '
+                                                                  'cube holds under the old inert '
+                                                                  'gate only, so it is not offline',
+                                                    'signal_keys': ['rsi_14']},
+                                                   {'id': 'P5',
+                                                    'producer': '_has_smart_money_buy (shared '
+                                                                'screener helper)',
+                                                    'param': 'smart-money union (5 flags)',
+                                                    'production': 'any of 5',
+                                                    'band': ['any of 5'],
+                                                    'free_band': None,
+                                                    'resim_band': None,
+                                                    'env': None,
+                                                    'consumers': ['backtest/signals/screener.py'],
+                                                    'sweep_levels': None,
+                                                    'subset_safe': None,
+                                                    'status': 'UNTESTED',
+                                                    'type': 'identity',
+                                                    'engine_implemented': True,
+                                                    'evidence': 'backtest/signals/screener.py '
+                                                                '_has_smart_money_buy; '
+                                                                'backtest/signals/screener.py '
+                                                                'strat_rsi_oversold_with_smart_money_long',
+                                                    'derivation': 'a union of five persisted '
+                                                                  'flags; held at production - '
+                                                                  'narrowing the union (an '
+                                                                  'EVENT-only subset, for example) '
+                                                                  'is a subset of the recorded '
+                                                                  'fires, an option for the '
+                                                                  "owner's band review, not "
+                                                                  'registered here'}]}})
+
+
 # B3119 - THE FAMILY ADAPTER (S6-B2883): bollinger_lower PROMOTED into SPECS
 # for the owner-approved span campaign (verbatim 2026-09-27: "Q2 approved one
 # line change fix. I want to test various spans"). The SPECS entry is DERIVED

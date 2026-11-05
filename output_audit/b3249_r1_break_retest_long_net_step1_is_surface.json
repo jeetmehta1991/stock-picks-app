@@ -1,0 +1,180 @@
+{
+  "strategy": "r1_break_retest",
+  "axes": [
+    {
+      "key": "vol_ratio_20d",
+      "op": "le",
+      "levels": [
+        1.0,
+        0.8,
+        0.6
+      ],
+      "group": null
+    }
+  ],
+  "direction": "long",
+  "basis": "net",
+  "production_levels": [
+    1.0
+  ],
+  "evidence": {
+    "landed_fires": 1727,
+    "coverage": 1.0,
+    "cube_rows": 44902,
+    "unmatched_join_rows": 0,
+    "max_fires_per_day": 54,
+    "candidate_cap": 30,
+    "cap_bypassed_evidence": true,
+    "direction": "long",
+    "basis": "net",
+    "survival_filter": {
+      "applied": false,
+      "fires_after": 1727,
+      "fires_dropped": 0
+    }
+  },
+  "reproduction": 1.0,
+  "cells_total": 3,
+  "cells_graded": 3,
+  "trials_searched": 75,
+  "window": {
+    "is": [
+      "2022-05-05",
+      "2025-05-05"
+    ]
+  },
+  "ranked": [
+    {
+      "levels": [
+        0.6
+      ],
+      "is_trades": 190,
+      "is_cube_rows": 4940,
+      "best_exit": "ma_exit_ema9",
+      "is_sharpe": 1.014,
+      "exits_evaluated": 25,
+      "npt_excluded": true,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.158,
+        "months": 35,
+        "n": 190,
+        "n_without_top_month": 160,
+        "is_sharpe_without_top_month": 0.482
+      }
+    },
+    {
+      "levels": [
+        0.8
+      ],
+      "is_trades": 745,
+      "is_cube_rows": 19370,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 0.71,
+      "exits_evaluated": 25,
+      "npt_excluded": true,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.132,
+        "months": 37,
+        "n": 745,
+        "n_without_top_month": 647,
+        "is_sharpe_without_top_month": 0.436
+      }
+    },
+    {
+      "levels": [
+        1.0
+      ],
+      "is_trades": 1389,
+      "is_cube_rows": 36114,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.506,
+      "exits_evaluated": 25,
+      "npt_excluded": true,
+      "episode": {
+        "top_month": "2022-07",
+        "top_month_share": 0.127,
+        "months": 37,
+        "n": 1389,
+        "n_without_top_month": 1212,
+        "is_sharpe_without_top_month": 0.492
+      }
+    }
+  ],
+  "preregistration_candidate": {
+    "levels": [
+      0.6
+    ],
+    "is_trades": 190,
+    "is_cube_rows": 4940,
+    "best_exit": "ma_exit_ema9",
+    "is_sharpe": 1.014,
+    "exits_evaluated": 25,
+    "npt_excluded": true,
+    "episode": {
+      "top_month": "2025-04",
+      "top_month_share": 0.158,
+      "months": 35,
+      "n": 190,
+      "n_without_top_month": 160,
+      "is_sharpe_without_top_month": 0.482
+    }
+  },
+  "holdout_read": "NOT FIRED - owner-gated, one shot, against the preregistration_candidate named above",
+  "derive": null,
+  "permutation_null": {
+    "provenance": "SYNTHETIC - rng permutations of the magnitude block across fires; prices the search, never performance",
+    "n_perms": 100,
+    "seed": 13,
+    "null_none_count": 0,
+    "null_max_is_sharpe_quantiles": {
+      "0.5": 0.649,
+      "0.9": 0.961,
+      "0.95": 1.056,
+      "0.99": 1.135
+    },
+    "observed_best_is_sharpe": 1.014,
+    "p_value_best": 0.0693
+  },
+  "preregistration_refusal": "",
+  "multiplicity": {
+    "method": "benjamini-hochberg",
+    "q": 0.1,
+    "searched": 3,
+    "graded": 0,
+    "unpriceable": 0,
+    "no_candidate": 0,
+    "scored_unpriced": 3,
+    "unclassified": 0,
+    "rejected": 0,
+    "threshold": null,
+    "smallest_p": null,
+    "uncorrected_p05": 0,
+    "expected_best_under_null_se": null,
+    "expected_best_if_all_searched_counted_se": 0.6,
+    "report_only": true,
+    "note": "complete partition: graded + unpriceable + no_candidate + unclassified == searched. no_candidate rows produced no candidate to rank and are non-observations; unpriceable rows selected a candidate that could not be scored; scored_unpriced rows WERE graded and carry no p - their significance is established elsewhere, see significance_basis",
+    "reconciles": true,
+    "permutation_null": {
+      "provenance": "SYNTHETIC - rng permutations of the magnitude block across fires; prices the search, never performance",
+      "n_perms": 100,
+      "seed": 13,
+      "null_none_count": 0,
+      "null_max_is_sharpe_quantiles": {
+        "0.5": 0.649,
+        "0.9": 0.961,
+        "0.95": 1.056,
+        "0.99": 1.135
+      },
+      "observed_best_is_sharpe": 1.014,
+      "p_value_best": 0.0693
+    },
+    "significance_basis": "permutation_null",
+    "trials_searched": 75
+  },
+  "generator": "scripts/offline_level_sweep.py",
+  "cube": "output_r5_merged_1_7/trade_exit_detail.csv",
+  "band_ruling_verbatim": "T3-APPROVED 2026-11-05 (owner verbatim '1-5 approve all recs fable mode', sent 2026-11-05T12:24:51Z, on the B3139q-r203d close's item 2: the six registered strategies' settings plus the 34 long-leg B-rows; S6-B3249). P19's '< c' is read as '<= c' on the 2-dp persisted vol_ratio_20d: '< 1.0' reproduced 0.9896 / 0.9897 of the fires, every miss stored at exactly 1.00, and '<= 1.0' reproduces 1.0",
+  "status_stamp_at_run": "55a39e45e"
+}

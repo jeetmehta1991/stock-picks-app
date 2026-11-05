@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "ff10274b7",
-    "generated_at": "2026-10-30 10:50:25"
+    "source_commit": "55a39e45e",
+    "generated_at": "2026-11-05 09:56:56"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -525,7 +525,11 @@
         "S6-B3247",
         "S6-B3249",
         "S6-B3373",
-        "S6-B3374"
+        "S6-B3374",
+        "S6-B3375",
+        "S6-B3382",
+        "S6-B3402",
+        "S6-B3423"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -646,7 +650,9 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B3254"
+        "S6-B3248",
+        "S6-B3254",
+        "S6-B3389"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -744,7 +750,14 @@
         "S6-B3338",
         "S6-B3339",
         "S6-B3349",
-        "S6-B3353"
+        "S6-B3353",
+        "S6-B3385",
+        "S6-B3393",
+        "S6-B3396",
+        "S6-B3397",
+        "S6-B3415",
+        "S6-B3427",
+        "S6-B3429"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -784,7 +797,8 @@
         "S6-B3139bi",
         "S6-B3139c",
         "S6-B3221",
-        "S6-B3237"
+        "S6-B3237",
+        "S6-B3429"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -1023,7 +1037,16 @@
         "S6-B3326",
         "S6-B3335",
         "S6-B3339",
-        "S6-B3349"
+        "S6-B3349",
+        "S6-B3375",
+        "S6-B3385",
+        "S6-B3393",
+        "S6-B3397",
+        "S6-B3398",
+        "S6-B3402",
+        "S6-B3415",
+        "S6-B3423",
+        "S6-B3427"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -1157,7 +1180,9 @@
         "S6-B3314",
         "S6-B3325",
         "S6-B3349",
-        "S6-B3372"
+        "S6-B3372",
+        "S6-B3375",
+        "S6-B3402"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -2367,7 +2392,8 @@
         "S6-B3223",
         "S6-B3227",
         "S6-B3232",
-        "S6-B3253"
+        "S6-B3253",
+        "S6-B3429"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -2580,7 +2606,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3429"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -2617,7 +2645,8 @@
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B3196",
-        "S6-B3253"
+        "S6-B3253",
+        "S6-B3429"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -2654,6 +2683,7 @@
         "S6-B3122",
         "S6-B3221",
         "S6-B3227",
+        "S6-B3249",
         "S6-B3298"
       ],
       "admitted": true,
@@ -2780,7 +2810,10 @@
         "S6-B3180",
         "S6-B3253",
         "S6-B3288",
-        "S6-B3298"
+        "S6-B3298",
+        "S6-B3385",
+        "S6-B3397",
+        "S6-B3429"
       ],
       "admitted": true,
       "roster_roles": [
@@ -2892,7 +2925,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B2806"
+        "S6-B2806",
+        "S6-B3428"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -2933,8 +2967,10 @@
         "S6-B3116b",
         "S6-B3122",
         "S6-B3135",
+        "S6-B3249",
         "S6-B3288",
-        "S6-B3298"
+        "S6-B3298",
+        "S6-B3428"
       ],
       "admitted": true,
       "roster_roles": [
@@ -2974,7 +3010,9 @@
       "mention_tickets": [
         "S6-B2874",
         "S6-B3122",
-        "S6-B3298"
+        "S6-B3298",
+        "S6-B3400",
+        "S6-B3423"
       ],
       "admitted": true,
       "roster_roles": [
@@ -3084,7 +3122,8 @@
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B3122",
-        "S6-B3298"
+        "S6-B3298",
+        "S6-B3400"
       ],
       "admitted": true,
       "roster_roles": [
@@ -3382,7 +3421,9 @@
       },
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3429"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "CLOSED-NEGATIVE"
@@ -3584,7 +3625,8 @@
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B3305",
-        "S6-B3308"
+        "S6-B3308",
+        "S6-B3423"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -3655,7 +3697,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B3249"
+        "S6-B3249",
+        "S6-B3397"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -3688,7 +3731,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3397"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "DISABLED"
@@ -3725,7 +3770,8 @@
       "mention_tickets": [
         "S6-B2418",
         "S6-B3237",
-        "S6-B3249"
+        "S6-B3249",
+        "S6-B3423"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -3761,7 +3807,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B1248-STALE-NAME-SWEEP"
+        "S6-B1248-STALE-NAME-SWEEP",
+        "S6-B3397"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -3905,7 +3952,8 @@
       "mention_tickets": [
         "S6-B1248-LEVER3-STATE-EVENT-SWEEP",
         "S6-B2810b",
-        "S6-B3249"
+        "S6-B3249",
+        "S6-B3423"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -4019,7 +4067,10 @@
         "S6-B3223",
         "S6-B3227",
         "S6-B3232",
-        "S6-B3242"
+        "S6-B3242",
+        "S6-B3248",
+        "S6-B3389",
+        "S6-B3423"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -4077,7 +4128,10 @@
         "S6-B3258",
         "S6-B3321",
         "S6-B3338",
-        "S6-B3353"
+        "S6-B3353",
+        "S6-B3385",
+        "S6-B3393",
+        "S6-B3397"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -4126,7 +4180,15 @@
         "S6-B3240",
         "S6-B3258",
         "S6-B3280",
-        "S6-B3306"
+        "S6-B3306",
+        "S6-B3397",
+        "S6-B3398",
+        "S6-B3409",
+        "S6-B3415",
+        "S6-B3422",
+        "S6-B3423",
+        "S6-B3427",
+        "S6-B3430"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -4383,7 +4445,10 @@
       "mention_tickets": [
         "S6-B1248-LEVER4-GATE-BUDGET",
         "S6-B3240",
-        "S6-B3306"
+        "S6-B3306",
+        "S6-B3397",
+        "S6-B3415",
+        "S6-B3427"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -4462,7 +4527,9 @@
         "S6-B3154",
         "S6-B3154a",
         "S6-B3204",
-        "S6-B3321"
+        "S6-B3321",
+        "S6-B3385",
+        "S6-B3397"
       ],
       "admitted": true,
       "roster_roles": [
@@ -4662,7 +4729,8 @@
         "S6-B3122",
         "S6-B3139am",
         "S6-B3210",
-        "S6-B3298"
+        "S6-B3298",
+        "S6-B3395"
       ],
       "admitted": true,
       "roster_roles": [
@@ -4824,7 +4892,9 @@
         "S6-B2654",
         "S6-B3122",
         "S6-B3136",
-        "S6-B3139x"
+        "S6-B3139x",
+        "S6-B3395",
+        "S6-B3413"
       ],
       "admitted": true,
       "roster_roles": [
@@ -4912,7 +4982,11 @@
         "S6-B3331",
         "S6-B3332",
         "S6-B3335",
-        "S6-B3336"
+        "S6-B3336",
+        "S6-B3397",
+        "S6-B3415",
+        "S6-B3423",
+        "S6-B3427"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -5560,7 +5634,8 @@
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B3237",
-        "S6-B3242"
+        "S6-B3242",
+        "S6-B3428"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -5668,7 +5743,9 @@
         "S6-B2418",
         "S6-B3227",
         "S6-B3235",
-        "S6-B3249"
+        "S6-B3249",
+        "S6-B3373",
+        "S6-B3423"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -5903,7 +5980,9 @@
         "S6-B2421",
         "S6-B2422",
         "S6-B2649",
-        "S6-B3221"
+        "S6-B3221",
+        "S6-B3423",
+        "S6-B3429"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -5913,10 +5992,10 @@
       "strategy": "rsi_oversold_with_smart_money_long",
       "family": "smart_money_sleeve",
       "r5_fires": 2753,
-      "changed_since_r5": false,
-      "survives_pct": 1.0,
+      "changed_since_r5": true,
+      "survives_pct": 0.0519,
       "survives_pct_by_side": {
-        "long": 1.0
+        "long": 0.0519
       },
       "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
@@ -5929,18 +6008,22 @@
         "kind": "complete"
       },
       "projected_step1_fires": 253.0,
-      "projected_current_gate": 253.0,
+      "projected_current_gate": 13.1,
       "isolated_step1_check": null,
       "reopen_candidate": false,
-      "stream": "NONE",
-      "tightenable_keys": {},
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "rsi_14": 1.0
+      },
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2418",
         "S6-B2645b",
         "S6-B2649",
-        "S6-B3249"
+        "S6-B3249",
+        "S6-B3423",
+        "S6-B3428"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -5978,7 +6061,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B3253"
+        "S6-B3253",
+        "S6-B3423"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -6147,7 +6231,13 @@
         "S6-B3213",
         "S6-B3240",
         "S6-B3306",
-        "S6-B3322"
+        "S6-B3322",
+        "S6-B3397",
+        "S6-B3409",
+        "S6-B3415",
+        "S6-B3423",
+        "S6-B3427",
+        "S6-B3430"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -6308,7 +6398,10 @@
         "S6-B3204",
         "S6-B3239",
         "S6-B3298",
-        "S6-B3332"
+        "S6-B3322",
+        "S6-B3332",
+        "S6-B3393",
+        "S6-B3397"
       ],
       "admitted": true,
       "roster_roles": [
@@ -6552,7 +6645,9 @@
         "S6-B2943",
         "S6-B3194",
         "S6-B3257",
-        "S6-B3333"
+        "S6-B3333",
+        "S6-B3397",
+        "S6-B3423"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -6673,7 +6768,11 @@
         "S6-B3244",
         "S6-B3257",
         "S6-B3322",
-        "S6-B3333"
+        "S6-B3333",
+        "S6-B3397",
+        "S6-B3415",
+        "S6-B3423",
+        "S6-B3427"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -6739,8 +6838,14 @@
         "S6-B3194",
         "S6-B3224",
         "S6-B3257",
+        "S6-B3322",
         "S6-B3333",
-        "S6-B3339"
+        "S6-B3339",
+        "S6-B3393",
+        "S6-B3397",
+        "S6-B3415",
+        "S6-B3423",
+        "S6-B3427"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -6895,7 +7000,13 @@
         "S6-B3224",
         "S6-B3239",
         "S6-B3257",
-        "S6-B3333"
+        "S6-B3322",
+        "S6-B3333",
+        "S6-B3385",
+        "S6-B3397",
+        "S6-B3415",
+        "S6-B3423",
+        "S6-B3427"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -7068,7 +7179,15 @@
         "S6-B3339",
         "S6-B3347",
         "S6-B3349",
-        "S6-B3351"
+        "S6-B3351",
+        "S6-B3375",
+        "S6-B3385",
+        "S6-B3389",
+        "S6-B3393",
+        "S6-B3397",
+        "S6-B3398",
+        "S6-B3402",
+        "S6-B3423"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -7107,7 +7226,9 @@
         "S6-B3248",
         "S6-B3252",
         "S6-B3254",
-        "S6-B3291"
+        "S6-B3291",
+        "S6-B3389",
+        "S6-B3397"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -7131,7 +7252,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3429"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -7244,7 +7367,8 @@
         "S6-B3194",
         "S6-B3223",
         "S6-B3253",
-        "S6-B3374"
+        "S6-B3374",
+        "S6-B3423"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -7387,7 +7511,8 @@
       "mention_tickets": [
         "S6-B3237",
         "S6-B3305",
-        "S6-B3308"
+        "S6-B3308",
+        "S6-B3423"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -7454,7 +7579,11 @@
         "S6-B3258",
         "S6-B3339",
         "S6-B3349",
-        "S6-B3353"
+        "S6-B3353",
+        "S6-B3385",
+        "S6-B3397",
+        "S6-B3415",
+        "S6-B3427"
       ],
       "admitted": false,
       "roster_roles": [
@@ -7546,7 +7675,10 @@
         "S6-B3248",
         "S6-B3291b",
         "S6-B3314",
-        "S6-B3321"
+        "S6-B3321",
+        "S6-B3385",
+        "S6-B3397",
+        "S6-B3422"
       ],
       "admitted": true,
       "roster_roles": [
@@ -7857,7 +7989,8 @@
         "S6-B3235",
         "S6-B3237",
         "S6-B3271",
-        "S6-B3272"
+        "S6-B3272",
+        "S6-B3429"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -8243,7 +8376,10 @@
         "S6-B3335",
         "S6-B3339",
         "S6-B3349",
-        "S6-B3373"
+        "S6-B3373",
+        "S6-B3375",
+        "S6-B3402",
+        "S6-B3429"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -8430,7 +8566,8 @@
       "mention_tickets": [
         "S6-B2674a",
         "S6-B3122",
-        "S6-B3298"
+        "S6-B3298",
+        "S6-B3413"
       ],
       "admitted": true,
       "roster_roles": [
@@ -8558,7 +8695,9 @@
         "S6-B3215",
         "S6-B3252",
         "S6-B3258",
-        "S6-B3298"
+        "S6-B3298",
+        "S6-B3395",
+        "S6-B3413"
       ],
       "admitted": true,
       "roster_roles": [

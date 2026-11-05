@@ -1,6 +1,6 @@
 # Table A - macd_bullish_with_smart_money_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build ff10274b7 | commit 352770ae3 at 2026-11-05 02:39:47 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 55a39e45e | commit 55a39e45e at 2026-11-05 11:55:00 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** NONE | **family:** smart_money_sleeve | **status:** NOT-STARTED | **R5 fires:** 1162 (closed fires in the exit cube: 1162 of 1162, S6-B3258) | **surviving fires (T1):** 1162 (unchanged since R5 - filter is identity)
 
@@ -43,7 +43,7 @@ leg runs.
 | P1.1 | BAND | span triple (mirror of the bearish entry) - backtest/signals/technical.py:634-648 | MEASURED availability (both persisted) | (12,26,9) | [(8,21,5), (12,26,9)] both computed; others new | offline 0 of 2 levels - none - the (8,21,5) swap changes which bars fire; the persisted keys re-grade only fires the (12,26,9) cube holds (mirror of the bearish row) | any third triple; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P2 | PRODUCER | price_above_ema_200 - emitted by backtest/signals/technical.py (f-string template) +1; the boolean's UNDERLYING condition is bandable through its producer's internals | close vs the named SMA/EMA span (compute_ema_sma family) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs in the SPECS entry | SPECS-REGISTERED |
 | P2.1 | BAND | ema span (the 200 in above/below_ema_200) - producer_variant_table.SPECS['bollinger_lower'] P3/P4; backtest/signals/technical.py compute_ema_sma | SPECS bollinger_lower P3/P4 (T3/Q2-APPROVED 2026-09-27): production 200 + resim spans [9, 20, 21, 50, 100, 150, 250] | 200 | 9, 20, 21, 50, 100, 150, 200, 250 | offline 0 of 8 levels - canon-span FLAGS (above/below ema 9/20/21/50/200) ARE persisted - measured 200-of-200 bollinger fires, S6-B3117b; offline as ADD-A-CONDITION legs only. The SWAP of the gate span, and non-canon spans, are RESIM | the whole band except production (resim_band [9, 20, 21, 50, 100, 150, 250]); env STRAT_EMA_SPAN does not reach this gate - it reads the literal key - DEFINED-NO-ACTUATOR here (S6-B3253) | T3 review before any grid |
-| P3 | STRATEGY-HELPER | _has_smart_money_buy(s) - a helper gate; its internals are outside the source pattern (lower bound) | see the helper's own source | required | - | - | inspect before any engine leg | BANDS-TO-DEFINE |
+| P3 | STRATEGY-HELPER | _has_smart_money_buy(s) - underlying condition: insider_cluster_active OR cfo_buy OR large_dollar_buy OR institutional_strong_buy OR institutional_buy | requires one smart-money buy flag on the fire bar | any of 5 | - (no band ruled) | offline 0 of 1 levels (no band ruled) - tighter = a NARROWER union of the persisted flags (an EVENT-only subset, say) - OFFLINE subset | a wider union admits fires the engine never recorded - RESIM; a helper shared by the smart-money sleeves, so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
 | B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (runbook section 3.6; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
 ### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]
@@ -750,9 +750,10 @@ breadth producers are an engine-side design act, never an offline sweep.
 |---|---|---|---|---|---|---|---|
 | P1.1 | span triple (mirror of the bearish entry | 2 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 1 |
 | P2.1 | ema span (the 200 in above/below_ema_200 | 8 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 7 |
+| P3 | smart-money union (5 flags) | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 0 |
 
 ```
-FULL FACTORIAL     2 x 8 = 16
+FULL FACTORIAL     2 x 8 x 1 = 16
 offline gradings   0 level-combinations x 24 exits = 0 (graded from the engine runs' cubes, never run themselves)
 ENGINE RUNS        1 (per axis: the production level plus any actuated non-production level)
 PENDING ACTUATION  15 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)

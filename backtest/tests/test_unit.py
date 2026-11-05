@@ -61666,8 +61666,10 @@ def test_b3258_exit_cube_count_rides_beside_the_trade_log_count(tmp_path):
         carried += 1
     # r111: 34 + the six S6-B3305 lane newcomers = 40; r115: minus cmf_flip,
     # which left the TIGHTEN lane as CLOSED-NO-READ (S6-B3303) - a departed record;
-    # r151: minus williams_r_oversold, DONE-OWNER-CLOSED (S6-B3247), departed the same way
-    assert carried == 38, carried
+    # r151: minus williams_r_oversold, DONE-OWNER-CLOSED (S6-B3247), departed the same way;
+    # r205b: plus rsi_oversold_with_smart_money_long, NONE -> BOTH once S6-B3428 (a)
+    # restored its RSI level
+    assert carried == 39, carried
 
 
 def test_b3237a_regime_entries_are_ruled_at_admission(tmp_path):

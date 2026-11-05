@@ -5,7 +5,7 @@
 
 **Why this file exists (L802).** Answering *has strategy X been optimised, and what stream is it in* previously required joining four sources by hand - the strategy roster (no per-strategy status), the Phase-1B roster (only what PASSED), the admissions JSON, and the queue (keyed by TICKET, so it cannot be asked about a STRATEGY). A ranking built without that join recommended a family that was already finished.
 
-**Build:** commit ff10274b7 at 2026-10-30 10:50:25 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
+**Build:** commit 55a39e45e at 2026-11-05 09:56:56 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
 
 **Cube:** R5 (output_r5_merged_1_7) | **R5-era screener:** fee970996 | **Step-1 shape:** 200 tickers x 1y | **grid floor:** 100 fires
 
@@ -35,9 +35,9 @@
 | stream | meaning | count |
 |---|---|---|
 | TIGHTEN | a persisted magnitude can be tightened - OFFLINE, zero engine hours | 9 |
-| BOTH | tightenable AND fire-starved | 28 |
+| BOTH | tightenable AND fire-starved | 29 |
 | LOOSEN | fire-starved at the current condition - needs a looser producer band, ENGINE | 113 |
-| NONE | no numeric knob and not starved - a BREADTH candidate | 22 |
+| NONE | no numeric knob and not starved - a BREADTH candidate | 21 |
 
 ## Tightening candidates by family - largest families first
 
@@ -55,6 +55,7 @@
 | chart_pattern | 1 |
 | event_driven | 1 |
 | sec_edgar_sleeve | 1 |
+| smart_money_sleeve | 1 |
 | cross_asset | 1 |
 | ict | 1 |
 | multi_timeframe | 1 |
@@ -87,7 +88,7 @@
 | smc_liquidity_sweep_reversal | smc | 2933 | 13.9 | YES | 5.1% | LOOSEN | STALLED-CAMPAIGN | 2933 of 2933 |
 | macd_crossover | momentum | 2910 | 267.5 |  | 100.0% | NONE | NOT-STARTED | 2910 of 2910 |
 | macd_ichimoku | confluence | 2907 | 267.2 |  | 100.0% | - | DISABLED | 2907 of 2907 |
-| rsi_oversold_with_smart_money_long | smart_money_sleeve | 2753 | 253.0 |  | 100.0% | NONE | NOT-STARTED | 2753 of 2753 |
+| rsi_oversold_with_smart_money_long | smart_money_sleeve | 2753 | 13.1 | YES | 5.2% | BOTH | NOT-STARTED | 2753 of 2753 |
 | institutional_insider_combo_long | smart_money_combo | 2751 | 2.0 | YES | 0.8% | - | PRUNED-DUPLICATE | 2751 of 2751 |
 | institutional_buy_momentum_long | - | 2644 | 243.0 |  | 100.0% | - | PRUNED-DUPLICATE | 2644 of 2644 |
 | po3_bearish | - | 2624 | 241.2 |  | 100.0% | NONE | NOT-STARTED | 2624 of 2624 |
