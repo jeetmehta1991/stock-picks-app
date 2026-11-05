@@ -1392,6 +1392,459 @@ for _lever4_name in _LEVER4:
     SPECS[_lever4_name] = _lever4_spec(_lever4_name)
 del _lever4_name
 
+# S6-B3335 (B3139q-r205): the LEVER4 pivot_r1_breakout arm's breadth INVENTORY - a PHASE0
+# entry beside the generated SPECS one (tools {}; SPECS keeps its engine-facing P1 only, the
+# camarilla_r4_breakout shape), registered on the owner's word 2026-11-05T12:24:51Z,
+# verbatim '1-5 approve all recs fable mode' (item 4 of the r203d close).
+SPECS_PHASE0.update({'pivot_r1_breakout': {'formula': '\n'
+                                  'ID SEMANTICS (owner ruling 2026-09-12): B<n> = a breadth axis. '
+                                  'This PHASE0 entry is the\n'
+                                  "LEVER4 arm's breadth inventory only: its k-of-4 gate budget is "
+                                  "the SPECS entry's row, and\n"
+                                  'resolved_spec merges the two per param (the '
+                                  'camarilla_r4_breakout shape, whose B-rows\n'
+                                  'also live only in PHASE0). The rows are the 14 long-leg '
+                                  "representatives of the arm's NET\n"
+                                  'companion screen on its own run directory\n'
+                                  '(output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45; '
+                                  'S6-B3335 step 2),\n'
+                                  "registered on the owner's word 2026-11-05 ('1-5 approve all "
+                                  "recs fable mode', sent 12:24:51Z,\n"
+                                  'item 4 of the r203d close).\n'
+                                  '\n'
+                                  '=============================== PRODUCER LAYER '
+                                  '==============================\n'
+                                  '\n'
+                                  '(no producer knob - every leg is a persisted signal at its '
+                                  'production setting)\n'
+                                  '\n'
+                                  '=============================== BREADTH LAYER '
+                                  '===============================\n'
+                                  '\n'
+                                  'B1  atr_pct  LONG >= q  (technical.py cluster)\n'
+                                  'B2  atr  LONG >= q  (screener.py cluster)\n'
+                                  'B3  vix_term_backwardation  LONG require TRUE  (cross_asset.py '
+                                  'cluster)\n'
+                                  'B4  cot_dxy_mmoney_pctile_3y  LONG >= q  (cot_positioning.py '
+                                  'cluster)\n'
+                                  'B5  within_pead_window  LONG require FALSE  '
+                                  '(earnings_surprise_yoy.py cluster)\n'
+                                  'B6  days_to_cover  LONG <= q  (short_interest.py cluster)\n'
+                                  'B7  monthly_bias_bull  LONG require FALSE  (multi_timeframe.py '
+                                  'cluster)\n'
+                                  'B8  is_monday  LONG require FALSE  (calendar_effects.py '
+                                  'cluster)\n'
+                                  'B9  po3_accum_range_pct  LONG >= q  (ict_producers.py cluster)\n'
+                                  'B10  news_uses_polygon_score  LONG require TRUE  '
+                                  '(news_sentiment.py cluster)\n'
+                                  'B11  otc_volume_recent  LONG >= q  (congressional_alt_data.py '
+                                  'cluster)\n'
+                                  'B12  smc_ob_bullish_active  LONG require FALSE  (smc_ict.py '
+                                  'cluster)\n'
+                                  'B13  vp_close_above_poc  LONG require FALSE  (volume_profile.py '
+                                  'cluster)\n'
+                                  'B14  xs_max_anomaly  LONG >= q  (cross_sectional.py cluster)\n'
+                                  '\n'
+                                  '=============================== STRATEGY LAYER '
+                                  '==============================\n'
+                                  '\n'
+                                  'long = k-of-4 over (above_r1, vol_spike_15x, '
+                                  'macd_12_26_9_bullish, above_avwap_50low),\n'
+                                  "       above_r1 mandatory - the arm's R2 budget (the SPECS "
+                                  "entry's gate_budget row)\n"
+                                  'Breadth on the long leg by breadth_step1_grid.py --leg long '
+                                  "--basis net --cube-dir <the arm's run dir>:\n"
+                                  'long --axes '
+                                  'atr_pct:ge,atr:ge,vix_term_backwardation:eq_true,cot_dxy_mmoney_pctile_3y:ge,within_pead_window:eq_false,days_to_cover:le,monthly_bias_bull:eq_false,is_monday:eq_false,po3_accum_range_pct:ge,news_uses_polygon_score:eq_true,otc_volume_recent:ge,smc_ob_bullish_active:eq_false,vp_close_above_poc:eq_false,xs_max_anomaly:ge\n',
+                       'baseline': {'artifact': 'output_r5_merged_1_7',
+                                    'fires': 860,
+                                    'tickers': 544,
+                                    'holdout_n': 194,
+                                    'window': '2022-05-05..2026-05-04',
+                                    'cube_fires': 860},
+                       'gate': 'long: k-of-4 of above_r1 AND vol_spike_15x AND '
+                               'macd_12_26_9_bullish AND above_avwap_50low (production k = 4) | '
+                               'short: unchanged, every leg',
+                       'tools': {},
+                       'params': [{'id': 'B1',
+                                   'producer': 'backtest/signals/technical.py',
+                                   'param': 'atr_pct',
+                                   'production': 'not gated',
+                                   'band': ['q20', 'q40', 'q60', 'q80'],
+                                   'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                   'resim_band': [],
+                                   'env': None,
+                                   'consumers': [],
+                                   'sweep_levels': None,
+                                   'subset_safe': True,
+                                   'legs': ['long'],
+                                   'status': 'UNTESTED',
+                                   'type': 'float>=q',
+                                   'engine_implemented': False,
+                                   'evidence': 'long: '
+                                               'b3335_pivot_r1_breakout_lv4_companions_long_net.json '
+                                               '(ts10 +2.405 / bept +11.035, joint 2.405, cluster '
+                                               'of 31)',
+                                   'derivation': 'BREADTH (runbook 3.6): the technical.py '
+                                                 "cluster's representative on the long leg, op ge "
+                                                 '(max joint effect, #165); levels = retention '
+                                                 "quantiles on the leg's own fires at grid time; "
+                                                 "registered on the owner's word "
+                                                 "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                 "recs fable mode' (item 4 of the B3139q-r203d "
+                                                 'close; S6-B3335)'},
+                                  {'id': 'B2',
+                                   'producer': 'backtest/signals/screener.py',
+                                   'param': 'atr',
+                                   'production': 'not gated',
+                                   'band': ['q20', 'q40', 'q60', 'q80'],
+                                   'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                   'resim_band': [],
+                                   'env': None,
+                                   'consumers': [],
+                                   'sweep_levels': None,
+                                   'subset_safe': True,
+                                   'legs': ['long'],
+                                   'status': 'UNTESTED',
+                                   'type': 'float>=q',
+                                   'engine_implemented': False,
+                                   'evidence': 'long: '
+                                               'b3335_pivot_r1_breakout_lv4_companions_long_net.json '
+                                               '(ts10 +0.823 / bept +3.753, joint 0.823, cluster '
+                                               'of 2)',
+                                   'derivation': "BREADTH (runbook 3.6): the screener.py cluster's "
+                                                 'representative on the long leg, op ge (max joint '
+                                                 'effect, #165); levels = retention quantiles on '
+                                                 "the leg's own fires at grid time; registered on "
+                                                 "the owner's word 2026-11-05T12:24:51Z, verbatim "
+                                                 "'1-5 approve all recs fable mode' (item 4 of the "
+                                                 'B3139q-r203d close; S6-B3335)'},
+                                  {'id': 'B3',
+                                   'producer': 'backtest/signals/cross_asset.py',
+                                   'param': 'vix_term_backwardation',
+                                   'production': 'not gated',
+                                   'band': ['require_true'],
+                                   'free_band': ['require_true'],
+                                   'resim_band': [],
+                                   'env': None,
+                                   'consumers': [],
+                                   'sweep_levels': None,
+                                   'subset_safe': True,
+                                   'legs': ['long'],
+                                   'status': 'UNTESTED',
+                                   'type': 'bool',
+                                   'engine_implemented': False,
+                                   'evidence': 'long: '
+                                               'b3335_pivot_r1_breakout_lv4_companions_long_net.json '
+                                               '(ts10 +2.686 / bept +13.679, joint 2.686, cluster '
+                                               'of 14)',
+                                   'derivation': 'BREADTH (runbook 3.6): the cross_asset.py '
+                                                 "cluster's representative on the long leg, op "
+                                                 'eq_true (max joint effect, #165); levels = '
+                                                 "retention quantiles on the leg's own fires at "
+                                                 "grid time; registered on the owner's word "
+                                                 "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                 "recs fable mode' (item 4 of the B3139q-r203d "
+                                                 'close; S6-B3335)'},
+                                  {'id': 'B4',
+                                   'producer': 'backtest/signals/cot_positioning.py',
+                                   'param': 'cot_dxy_mmoney_pctile_3y',
+                                   'production': 'not gated',
+                                   'band': ['q20', 'q40', 'q60', 'q80'],
+                                   'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                   'resim_band': [],
+                                   'env': None,
+                                   'consumers': [],
+                                   'sweep_levels': None,
+                                   'subset_safe': True,
+                                   'legs': ['long'],
+                                   'status': 'UNTESTED',
+                                   'type': 'float>=q',
+                                   'engine_implemented': False,
+                                   'evidence': 'long: '
+                                               'b3335_pivot_r1_breakout_lv4_companions_long_net.json '
+                                               '(ts10 +3.098 / bept +7.089, joint 3.098, cluster '
+                                               'of 5)',
+                                   'derivation': 'BREADTH (runbook 3.6): the cot_positioning.py '
+                                                 "cluster's representative on the long leg, op ge "
+                                                 '(max joint effect, #165); levels = retention '
+                                                 "quantiles on the leg's own fires at grid time; "
+                                                 "registered on the owner's word "
+                                                 "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                 "recs fable mode' (item 4 of the B3139q-r203d "
+                                                 'close; S6-B3335)'},
+                                  {'id': 'B5',
+                                   'producer': 'backtest/signals/earnings_surprise_yoy.py',
+                                   'param': 'within_pead_window',
+                                   'production': 'not gated',
+                                   'band': ['require_false'],
+                                   'free_band': ['require_false'],
+                                   'resim_band': [],
+                                   'env': None,
+                                   'consumers': [],
+                                   'sweep_levels': None,
+                                   'subset_safe': True,
+                                   'legs': ['long'],
+                                   'status': 'UNTESTED',
+                                   'type': 'bool',
+                                   'engine_implemented': False,
+                                   'evidence': 'long: '
+                                               'b3335_pivot_r1_breakout_lv4_companions_long_net.json '
+                                               '(ts10 -1.139 / bept -2.950, joint 1.139, cluster '
+                                               'of 2)',
+                                   'derivation': 'BREADTH (runbook 3.6): the '
+                                                 "earnings_surprise_yoy.py cluster's "
+                                                 'representative on the long leg, op eq_false (max '
+                                                 'joint effect, #165); levels = retention '
+                                                 "quantiles on the leg's own fires at grid time; "
+                                                 "registered on the owner's word "
+                                                 "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                 "recs fable mode' (item 4 of the B3139q-r203d "
+                                                 'close; S6-B3335)'},
+                                  {'id': 'B6',
+                                   'producer': 'backtest/signals/short_interest.py',
+                                   'param': 'days_to_cover',
+                                   'production': 'not gated',
+                                   'band': ['q20', 'q40', 'q60', 'q80'],
+                                   'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                   'resim_band': [],
+                                   'env': None,
+                                   'consumers': [],
+                                   'sweep_levels': None,
+                                   'subset_safe': True,
+                                   'legs': ['long'],
+                                   'status': 'UNTESTED',
+                                   'type': 'float<=q',
+                                   'engine_implemented': False,
+                                   'evidence': 'long: '
+                                               'b3335_pivot_r1_breakout_lv4_companions_long_net.json '
+                                               '(ts10 -1.231 / bept -2.608, joint 1.231, cluster '
+                                               'of 2)',
+                                   'derivation': 'BREADTH (runbook 3.6): the short_interest.py '
+                                                 "cluster's representative on the long leg, op le "
+                                                 '(max joint effect, #165); levels = retention '
+                                                 "quantiles on the leg's own fires at grid time; "
+                                                 "registered on the owner's word "
+                                                 "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                 "recs fable mode' (item 4 of the B3139q-r203d "
+                                                 'close; S6-B3335)'},
+                                  {'id': 'B7',
+                                   'producer': 'backtest/signals/multi_timeframe.py',
+                                   'param': 'monthly_bias_bull',
+                                   'production': 'not gated',
+                                   'band': ['require_false'],
+                                   'free_band': ['require_false'],
+                                   'resim_band': [],
+                                   'env': None,
+                                   'consumers': [],
+                                   'sweep_levels': None,
+                                   'subset_safe': True,
+                                   'legs': ['long'],
+                                   'status': 'UNTESTED',
+                                   'type': 'bool',
+                                   'engine_implemented': False,
+                                   'evidence': 'long: '
+                                               'b3335_pivot_r1_breakout_lv4_companions_long_net.json '
+                                               '(ts10 -0.731 / bept -3.253, joint 0.731, cluster '
+                                               'of 5)',
+                                   'derivation': 'BREADTH (runbook 3.6): the multi_timeframe.py '
+                                                 "cluster's representative on the long leg, op "
+                                                 'eq_false (max joint effect, #165); levels = '
+                                                 "retention quantiles on the leg's own fires at "
+                                                 "grid time; registered on the owner's word "
+                                                 "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                 "recs fable mode' (item 4 of the B3139q-r203d "
+                                                 'close; S6-B3335)'},
+                                  {'id': 'B8',
+                                   'producer': 'backtest/signals/calendar_effects.py',
+                                   'param': 'is_monday',
+                                   'production': 'not gated',
+                                   'band': ['require_false'],
+                                   'free_band': ['require_false'],
+                                   'resim_band': [],
+                                   'env': None,
+                                   'consumers': [],
+                                   'sweep_levels': None,
+                                   'subset_safe': True,
+                                   'legs': ['long'],
+                                   'status': 'UNTESTED',
+                                   'type': 'bool',
+                                   'engine_implemented': False,
+                                   'evidence': 'long: '
+                                               'b3335_pivot_r1_breakout_lv4_companions_long_net.json '
+                                               '(ts10 -1.300 / bept -3.139, joint 1.300, cluster '
+                                               'of 7)',
+                                   'derivation': 'BREADTH (runbook 3.6): the calendar_effects.py '
+                                                 "cluster's representative on the long leg, op "
+                                                 'eq_false (max joint effect, #165); levels = '
+                                                 "retention quantiles on the leg's own fires at "
+                                                 "grid time; registered on the owner's word "
+                                                 "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                 "recs fable mode' (item 4 of the B3139q-r203d "
+                                                 'close; S6-B3335)'},
+                                  {'id': 'B9',
+                                   'producer': 'backtest/signals/ict_producers.py',
+                                   'param': 'po3_accum_range_pct',
+                                   'production': 'not gated',
+                                   'band': ['q20', 'q40', 'q60', 'q80'],
+                                   'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                   'resim_band': [],
+                                   'env': None,
+                                   'consumers': [],
+                                   'sweep_levels': None,
+                                   'subset_safe': True,
+                                   'legs': ['long'],
+                                   'status': 'UNTESTED',
+                                   'type': 'float>=q',
+                                   'engine_implemented': False,
+                                   'evidence': 'long: '
+                                               'b3335_pivot_r1_breakout_lv4_companions_long_net.json '
+                                               '(ts10 +2.310 / bept +8.524, joint 2.310, cluster '
+                                               'of 4)',
+                                   'derivation': 'BREADTH (runbook 3.6): the ict_producers.py '
+                                                 "cluster's representative on the long leg, op ge "
+                                                 '(max joint effect, #165); levels = retention '
+                                                 "quantiles on the leg's own fires at grid time; "
+                                                 "registered on the owner's word "
+                                                 "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                 "recs fable mode' (item 4 of the B3139q-r203d "
+                                                 'close; S6-B3335)'},
+                                  {'id': 'B10',
+                                   'producer': 'backtest/signals/news_sentiment.py',
+                                   'param': 'news_uses_polygon_score',
+                                   'production': 'not gated',
+                                   'band': ['require_true'],
+                                   'free_band': ['require_true'],
+                                   'resim_band': [],
+                                   'env': None,
+                                   'consumers': [],
+                                   'sweep_levels': None,
+                                   'subset_safe': True,
+                                   'legs': ['long'],
+                                   'status': 'UNTESTED',
+                                   'type': 'bool',
+                                   'engine_implemented': False,
+                                   'evidence': 'long: '
+                                               'b3335_pivot_r1_breakout_lv4_companions_long_net.json '
+                                               '(ts10 +0.828 / bept +5.790, joint 0.828, cluster '
+                                               'of 2)',
+                                   'derivation': 'BREADTH (runbook 3.6): the news_sentiment.py '
+                                                 "cluster's representative on the long leg, op "
+                                                 'eq_true (max joint effect, #165); levels = '
+                                                 "retention quantiles on the leg's own fires at "
+                                                 "grid time; registered on the owner's word "
+                                                 "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                 "recs fable mode' (item 4 of the B3139q-r203d "
+                                                 'close; S6-B3335)'},
+                                  {'id': 'B11',
+                                   'producer': 'backtest/signals/congressional_alt_data.py',
+                                   'param': 'otc_volume_recent',
+                                   'production': 'not gated',
+                                   'band': ['q20', 'q40', 'q60', 'q80'],
+                                   'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                   'resim_band': [],
+                                   'env': None,
+                                   'consumers': [],
+                                   'sweep_levels': None,
+                                   'subset_safe': True,
+                                   'legs': ['long'],
+                                   'status': 'UNTESTED',
+                                   'type': 'float>=q',
+                                   'engine_implemented': False,
+                                   'evidence': 'long: '
+                                               'b3335_pivot_r1_breakout_lv4_companions_long_net.json '
+                                               '(ts10 +1.086 / bept +5.416, joint 1.086, cluster '
+                                               'of 1)',
+                                   'derivation': 'BREADTH (runbook 3.6): the '
+                                                 "congressional_alt_data.py cluster's "
+                                                 'representative on the long leg, op ge (max joint '
+                                                 'effect, #165); levels = retention quantiles on '
+                                                 "the leg's own fires at grid time; registered on "
+                                                 "the owner's word 2026-11-05T12:24:51Z, verbatim "
+                                                 "'1-5 approve all recs fable mode' (item 4 of the "
+                                                 'B3139q-r203d close; S6-B3335)'},
+                                  {'id': 'B12',
+                                   'producer': 'backtest/signals/smc_ict.py',
+                                   'param': 'smc_ob_bullish_active',
+                                   'production': 'not gated',
+                                   'band': ['require_false'],
+                                   'free_band': ['require_false'],
+                                   'resim_band': [],
+                                   'env': None,
+                                   'consumers': [],
+                                   'sweep_levels': None,
+                                   'subset_safe': True,
+                                   'legs': ['long'],
+                                   'status': 'UNTESTED',
+                                   'type': 'bool',
+                                   'engine_implemented': False,
+                                   'evidence': 'long: '
+                                               'b3335_pivot_r1_breakout_lv4_companions_long_net.json '
+                                               '(ts10 -1.354 / bept -3.930, joint 1.354, cluster '
+                                               'of 2)',
+                                   'derivation': "BREADTH (runbook 3.6): the smc_ict.py cluster's "
+                                                 'representative on the long leg, op eq_false (max '
+                                                 'joint effect, #165); levels = retention '
+                                                 "quantiles on the leg's own fires at grid time; "
+                                                 "registered on the owner's word "
+                                                 "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                 "recs fable mode' (item 4 of the B3139q-r203d "
+                                                 'close; S6-B3335)'},
+                                  {'id': 'B13',
+                                   'producer': 'backtest/signals/volume_profile.py',
+                                   'param': 'vp_close_above_poc',
+                                   'production': 'not gated',
+                                   'band': ['require_false'],
+                                   'free_band': ['require_false'],
+                                   'resim_band': [],
+                                   'env': None,
+                                   'consumers': [],
+                                   'sweep_levels': None,
+                                   'subset_safe': True,
+                                   'legs': ['long'],
+                                   'status': 'UNTESTED',
+                                   'type': 'bool',
+                                   'engine_implemented': False,
+                                   'evidence': 'long: '
+                                               'b3335_pivot_r1_breakout_lv4_companions_long_net.json '
+                                               '(ts10 -0.600 / bept -3.565, joint 0.600, cluster '
+                                               'of 3)',
+                                   'derivation': 'BREADTH (runbook 3.6): the volume_profile.py '
+                                                 "cluster's representative on the long leg, op "
+                                                 'eq_false (max joint effect, #165); levels = '
+                                                 "retention quantiles on the leg's own fires at "
+                                                 "grid time; registered on the owner's word "
+                                                 "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                 "recs fable mode' (item 4 of the B3139q-r203d "
+                                                 'close; S6-B3335)'},
+                                  {'id': 'B14',
+                                   'producer': 'backtest/signals/cross_sectional.py',
+                                   'param': 'xs_max_anomaly',
+                                   'production': 'not gated',
+                                   'band': ['q20', 'q40', 'q60', 'q80'],
+                                   'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                   'resim_band': [],
+                                   'env': None,
+                                   'consumers': [],
+                                   'sweep_levels': None,
+                                   'subset_safe': True,
+                                   'legs': ['long'],
+                                   'status': 'UNTESTED',
+                                   'type': 'float>=q',
+                                   'engine_implemented': False,
+                                   'evidence': 'long: '
+                                               'b3335_pivot_r1_breakout_lv4_companions_long_net.json '
+                                               '(ts10 +3.221 / bept +12.088, joint 3.221, cluster '
+                                               'of 6)',
+                                   'derivation': 'BREADTH (runbook 3.6): the cross_sectional.py '
+                                                 "cluster's representative on the long leg, op ge "
+                                                 '(max joint effect, #165); levels = retention '
+                                                 "quantiles on the leg's own fires at grid time; "
+                                                 "registered on the owner's word "
+                                                 "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                 "recs fable mode' (item 4 of the B3139q-r203d "
+                                                 'close; S6-B3335)'}]}})
+
 # B2816 (S6-B2703, owner-ruled schedule-later 2026-09-15): Table-A depth
 # inventories for the 9 admitted strategies whose depth was never searched
 # (8 institutional + xs_low_beta; top_decile is depth-done via its own
@@ -4733,9 +5186,12 @@ SPECS_PHASE0.update({'macd_fast_crossover': {'formula': '\n'
                                     'numbers its band rows P<n>.x - integer ids here. R1 '
                                     'PRE-REGISTRATION (runbook 2.7\n'
                                     'step 1, B2855) written S6-B3249 B3139q-r203, BEFORE the '
-                                    "owner's T3 words: no\n"
-                                    "level below is approved, and B-rows join on the owner's word "
-                                    '(S6-B3304 precedent).\n'
+                                    "owner's T3 words: those words came 2026-11-05\n"
+                                    "('1-5 approve all recs fable mode', sent 12:24:51Z, item 2 of "
+                                    'the r203d close, S6-B3249): the levels below and B1-B6\n'
+                                    '(BREADTH LAYER) are approved - the consistent NET companion '
+                                    "screens' cluster\n"
+                                    'representatives (runbook 3.6; the S6-B3304 shape).\n'
                                     '\n'
                                     '=============================== PRODUCER LAYER '
                                     '===============================\n'
@@ -4749,6 +5205,20 @@ SPECS_PHASE0.update({'macd_fast_crossover': {'formula': '\n'
                                     'P3  MACD span triple 8/21/5  (technical.py compute_macd - '
                                     'fast/slow/signal EMA spans)\n'
                                     '\n'
+                                    '=============================== BREADTH LAYER '
+                                    '===============================\n'
+                                    '\n'
+                                    'B1  atr_pct  LONG >= q  (technical.py cluster)\n'
+                                    'B2  dxy_20d_pct_change  LONG <= q  (cross_asset.py cluster)\n'
+                                    'B3  po3_accum_range_pct  LONG >= q  (ict_producers.py '
+                                    'cluster)\n'
+                                    'B4  rsi_2_extreme_ob  LONG require FALSE  (polars_panel.py '
+                                    'cluster)\n'
+                                    'B5  smc_fvg_bullish_active  LONG require FALSE  (smc_ict.py '
+                                    'cluster)\n'
+                                    'B6  xs_max_anomaly_decile  LONG >= q  (cross_sectional.py '
+                                    'cluster)\n'
+                                    '\n'
                                     '=============================== STRATEGY LAYER '
                                     '===============================\n'
                                     '\n'
@@ -4759,7 +5229,10 @@ SPECS_PHASE0.update({'macd_fast_crossover': {'formula': '\n'
                                     'long_fires  = P1                (screener.py '
                                     'strat_macd_fast_crossover)\n'
                                     'short_fires = P2 AND NOT P4     (screener.py '
-                                    'strat_macd_fast_crossover)\n',
+                                    'strat_macd_fast_crossover)\n'
+                                    'Breadth per leg by breadth_step1_grid.py --leg --basis net:\n'
+                                    'long --axes '
+                                    'atr_pct:ge,dxy_20d_pct_change:le,po3_accum_range_pct:ge,rsi_2_extreme_ob:eq_false,smc_fvg_bullish_active:eq_false,xs_max_anomaly_decile:ge\n',
                          'baseline': {'artifact': 'output_r5_merged_1_7',
                                       'fires': 4070,
                                       'tickers': 540,
@@ -4860,7 +5333,169 @@ SPECS_PHASE0.update({'macd_fast_crossover': {'formula': '\n'
                                                    'on the persisted days_to_cover, a band only on '
                                                    "the owner's word (bollinger_lower P10 "
                                                    'precedent); the LONG campaign never reads it',
-                                     'legs': ['short']}]},
+                                     'legs': ['short']},
+                                    {'id': 'B1',
+                                     'producer': 'backtest/signals/technical.py',
+                                     'param': 'atr_pct',
+                                     'production': 'not gated',
+                                     'band': ['q20', 'q40', 'q60', 'q80'],
+                                     'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                     'resim_band': [],
+                                     'env': None,
+                                     'consumers': [],
+                                     'sweep_levels': None,
+                                     'subset_safe': True,
+                                     'legs': ['long'],
+                                     'status': 'UNTESTED',
+                                     'type': 'float>=q',
+                                     'engine_implemented': False,
+                                     'evidence': 'long: '
+                                                 'b3249_macd_fast_crossover_companions_long_net.json '
+                                                 '(ts10 +3.991 / bept +12.246, joint 3.991, '
+                                                 'cluster of 5)',
+                                     'derivation': 'BREADTH (runbook 3.6): the technical.py '
+                                                   "cluster's representative on the long leg, op "
+                                                   'ge (max joint effect, #165); levels = '
+                                                   "retention quantiles on the leg's own fires at "
+                                                   "grid time; registered on the owner's word "
+                                                   "2026-11-05T12:24:51Z, verbatim '1-5 approve "
+                                                   "all recs fable mode' (item 2 of the "
+                                                   'B3139q-r203d close; S6-B3249)'},
+                                    {'id': 'B2',
+                                     'producer': 'backtest/signals/cross_asset.py',
+                                     'param': 'dxy_20d_pct_change',
+                                     'production': 'not gated',
+                                     'band': ['q20', 'q40', 'q60', 'q80'],
+                                     'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                     'resim_band': [],
+                                     'env': None,
+                                     'consumers': [],
+                                     'sweep_levels': None,
+                                     'subset_safe': True,
+                                     'legs': ['long'],
+                                     'status': 'UNTESTED',
+                                     'type': 'float<=q',
+                                     'engine_implemented': False,
+                                     'evidence': 'long: '
+                                                 'b3249_macd_fast_crossover_companions_long_net.json '
+                                                 '(ts10 -4.222 / bept -7.332, joint 4.222, cluster '
+                                                 'of 5)',
+                                     'derivation': 'BREADTH (runbook 3.6): the cross_asset.py '
+                                                   "cluster's representative on the long leg, op "
+                                                   'le (max joint effect, #165); levels = '
+                                                   "retention quantiles on the leg's own fires at "
+                                                   "grid time; registered on the owner's word "
+                                                   "2026-11-05T12:24:51Z, verbatim '1-5 approve "
+                                                   "all recs fable mode' (item 2 of the "
+                                                   'B3139q-r203d close; S6-B3249)'},
+                                    {'id': 'B3',
+                                     'producer': 'backtest/signals/ict_producers.py',
+                                     'param': 'po3_accum_range_pct',
+                                     'production': 'not gated',
+                                     'band': ['q20', 'q40', 'q60', 'q80'],
+                                     'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                     'resim_band': [],
+                                     'env': None,
+                                     'consumers': [],
+                                     'sweep_levels': None,
+                                     'subset_safe': True,
+                                     'legs': ['long'],
+                                     'status': 'UNTESTED',
+                                     'type': 'float>=q',
+                                     'engine_implemented': False,
+                                     'evidence': 'long: '
+                                                 'b3249_macd_fast_crossover_companions_long_net.json '
+                                                 '(ts10 +4.360 / bept +12.121, joint 4.360, '
+                                                 'cluster of 1)',
+                                     'derivation': 'BREADTH (runbook 3.6): the ict_producers.py '
+                                                   "cluster's representative on the long leg, op "
+                                                   'ge (max joint effect, #165); levels = '
+                                                   "retention quantiles on the leg's own fires at "
+                                                   "grid time; registered on the owner's word "
+                                                   "2026-11-05T12:24:51Z, verbatim '1-5 approve "
+                                                   "all recs fable mode' (item 2 of the "
+                                                   'B3139q-r203d close; S6-B3249)'},
+                                    {'id': 'B4',
+                                     'producer': 'backtest/signals/polars_panel.py',
+                                     'param': 'rsi_2_extreme_ob',
+                                     'production': 'not gated',
+                                     'band': ['require_false'],
+                                     'free_band': ['require_false'],
+                                     'resim_band': [],
+                                     'env': None,
+                                     'consumers': [],
+                                     'sweep_levels': None,
+                                     'subset_safe': True,
+                                     'legs': ['long'],
+                                     'status': 'UNTESTED',
+                                     'type': 'bool',
+                                     'engine_implemented': False,
+                                     'evidence': 'long: '
+                                                 'b3249_macd_fast_crossover_companions_long_net.json '
+                                                 '(ts10 -2.364 / bept -3.217, joint 2.364, cluster '
+                                                 'of 2)',
+                                     'derivation': 'BREADTH (runbook 3.6): the polars_panel.py '
+                                                   "cluster's representative on the long leg, op "
+                                                   'eq_false (max joint effect, #165); levels = '
+                                                   "retention quantiles on the leg's own fires at "
+                                                   "grid time; registered on the owner's word "
+                                                   "2026-11-05T12:24:51Z, verbatim '1-5 approve "
+                                                   "all recs fable mode' (item 2 of the "
+                                                   'B3139q-r203d close; S6-B3249)'},
+                                    {'id': 'B5',
+                                     'producer': 'backtest/signals/smc_ict.py',
+                                     'param': 'smc_fvg_bullish_active',
+                                     'production': 'not gated',
+                                     'band': ['require_false'],
+                                     'free_band': ['require_false'],
+                                     'resim_band': [],
+                                     'env': None,
+                                     'consumers': [],
+                                     'sweep_levels': None,
+                                     'subset_safe': True,
+                                     'legs': ['long'],
+                                     'status': 'UNTESTED',
+                                     'type': 'bool',
+                                     'engine_implemented': False,
+                                     'evidence': 'long: '
+                                                 'b3249_macd_fast_crossover_companions_long_net.json '
+                                                 '(ts10 -2.351 / bept -3.724, joint 2.351, cluster '
+                                                 'of 1)',
+                                     'derivation': 'BREADTH (runbook 3.6): the smc_ict.py '
+                                                   "cluster's representative on the long leg, op "
+                                                   'eq_false (max joint effect, #165); levels = '
+                                                   "retention quantiles on the leg's own fires at "
+                                                   "grid time; registered on the owner's word "
+                                                   "2026-11-05T12:24:51Z, verbatim '1-5 approve "
+                                                   "all recs fable mode' (item 2 of the "
+                                                   'B3139q-r203d close; S6-B3249)'},
+                                    {'id': 'B6',
+                                     'producer': 'backtest/signals/cross_sectional.py',
+                                     'param': 'xs_max_anomaly_decile',
+                                     'production': 'not gated',
+                                     'band': ['q20', 'q40', 'q60', 'q80'],
+                                     'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                     'resim_band': [],
+                                     'env': None,
+                                     'consumers': [],
+                                     'sweep_levels': None,
+                                     'subset_safe': True,
+                                     'legs': ['long'],
+                                     'status': 'UNTESTED',
+                                     'type': 'float>=q',
+                                     'engine_implemented': False,
+                                     'evidence': 'long: '
+                                                 'b3249_macd_fast_crossover_companions_long_net.json '
+                                                 '(ts10 +4.635 / bept +10.890, joint 4.635, '
+                                                 'cluster of 2)',
+                                     'derivation': 'BREADTH (runbook 3.6): the cross_sectional.py '
+                                                   "cluster's representative on the long leg, op "
+                                                   'ge (max joint effect, #165); levels = '
+                                                   "retention quantiles on the leg's own fires at "
+                                                   "grid time; registered on the owner's word "
+                                                   "2026-11-05T12:24:51Z, verbatim '1-5 approve "
+                                                   "all recs fable mode' (item 2 of the "
+                                                   'B3139q-r203d close; S6-B3249)'}]},
  'macd_crossover': {'formula': '\n'
                                'ID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered '
                                'COMPUTATION STEP in\n'
@@ -4869,9 +5504,12 @@ SPECS_PHASE0.update({'macd_fast_crossover': {'formula': '\n'
                                'numbers its band rows P<n>.x - integer ids here. R1 '
                                'PRE-REGISTRATION (runbook 2.7\n'
                                "step 1, B2855) written S6-B3249 B3139q-r203, BEFORE the owner's T3 "
-                               'words: no\n'
-                               "level below is approved, and B-rows join on the owner's word "
-                               '(S6-B3304 precedent).\n'
+                               'words: those words came 2026-11-05\n'
+                               "('1-5 approve all recs fable mode', sent 12:24:51Z, item 2 of the "
+                               'r203d close, S6-B3249): the levels below and B1-B6\n'
+                               '(BREADTH LAYER) are approved - the consistent NET companion '
+                               "screens' cluster\n"
+                               'representatives (runbook 3.6; the S6-B3304 shape).\n'
                                '\n'
                                '=============================== PRODUCER LAYER '
                                '===============================\n'
@@ -4885,6 +5523,18 @@ SPECS_PHASE0.update({'macd_fast_crossover': {'formula': '\n'
                                'P3  MACD span triple 12/26/9  (technical.py compute_macd - '
                                'fast/slow/signal EMA spans)\n'
                                '\n'
+                               '=============================== BREADTH LAYER '
+                               '===============================\n'
+                               '\n'
+                               'B1  bb_10_20_pctb  LONG <= q  (technical.py cluster)\n'
+                               'B2  gold_silver_20d_pct_change  LONG >= q  (cross_asset.py '
+                               'cluster)\n'
+                               'B3  days_to_cover  LONG <= q  (short_interest.py cluster)\n'
+                               'B4  rsi_2  LONG <= q  (polars_panel.py cluster)\n'
+                               'B5  trading_day_of_month  LONG <= q  (calendar_effects.py '
+                               'cluster)\n'
+                               'B6  xs_max_anomaly  LONG >= q  (cross_sectional.py cluster)\n'
+                               '\n'
                                '=============================== STRATEGY LAYER '
                                '===============================\n'
                                '\n'
@@ -4895,7 +5545,10 @@ SPECS_PHASE0.update({'macd_fast_crossover': {'formula': '\n'
                                'long_fires  = P1                (screener.py '
                                'strat_macd_crossover)\n'
                                'short_fires = P2 AND NOT P4     (screener.py '
-                               'strat_macd_crossover)\n',
+                               'strat_macd_crossover)\n'
+                               'Breadth per leg by breadth_step1_grid.py --leg --basis net:\n'
+                               'long --axes '
+                               'bb_10_20_pctb:le,gold_silver_20d_pct_change:ge,days_to_cover:le,rsi_2:le,trading_day_of_month:le,xs_max_anomaly:ge\n',
                     'baseline': {'artifact': 'output_r5_merged_1_7',
                                  'fires': 2910,
                                  'tickers': 532,
@@ -4992,7 +5645,161 @@ SPECS_PHASE0.update({'macd_fast_crossover': {'formula': '\n'
                                               "days_to_cover, a band only on the owner's word "
                                               '(bollinger_lower P10 precedent); the LONG campaign '
                                               'never reads it',
-                                'legs': ['short']}]},
+                                'legs': ['short']},
+                               {'id': 'B1',
+                                'producer': 'backtest/signals/technical.py',
+                                'param': 'bb_10_20_pctb',
+                                'production': 'not gated',
+                                'band': ['q20', 'q40', 'q60', 'q80'],
+                                'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                'resim_band': [],
+                                'env': None,
+                                'consumers': [],
+                                'sweep_levels': None,
+                                'subset_safe': True,
+                                'legs': ['long'],
+                                'status': 'UNTESTED',
+                                'type': 'float<=q',
+                                'engine_implemented': False,
+                                'evidence': 'long: b3249_macd_crossover_companions_long_net.json '
+                                            '(ts10 -2.367 / bept -4.451, joint 2.367, cluster of '
+                                            '3)',
+                                'derivation': "BREADTH (runbook 3.6): the technical.py cluster's "
+                                              'representative on the long leg, op le (max joint '
+                                              'effect, #165); levels = retention quantiles on the '
+                                              "leg's own fires at grid time; registered on the "
+                                              "owner's word 2026-11-05T12:24:51Z, verbatim '1-5 "
+                                              "approve all recs fable mode' (item 2 of the "
+                                              'B3139q-r203d close; S6-B3249)'},
+                               {'id': 'B2',
+                                'producer': 'backtest/signals/cross_asset.py',
+                                'param': 'gold_silver_20d_pct_change',
+                                'production': 'not gated',
+                                'band': ['q20', 'q40', 'q60', 'q80'],
+                                'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                'resim_band': [],
+                                'env': None,
+                                'consumers': [],
+                                'sweep_levels': None,
+                                'subset_safe': True,
+                                'legs': ['long'],
+                                'status': 'UNTESTED',
+                                'type': 'float>=q',
+                                'engine_implemented': False,
+                                'evidence': 'long: b3249_macd_crossover_companions_long_net.json '
+                                            '(ts10 +3.157 / bept +9.955, joint 3.157, cluster of '
+                                            '6)',
+                                'derivation': "BREADTH (runbook 3.6): the cross_asset.py cluster's "
+                                              'representative on the long leg, op ge (max joint '
+                                              'effect, #165); levels = retention quantiles on the '
+                                              "leg's own fires at grid time; registered on the "
+                                              "owner's word 2026-11-05T12:24:51Z, verbatim '1-5 "
+                                              "approve all recs fable mode' (item 2 of the "
+                                              'B3139q-r203d close; S6-B3249)'},
+                               {'id': 'B3',
+                                'producer': 'backtest/signals/short_interest.py',
+                                'param': 'days_to_cover',
+                                'production': 'not gated',
+                                'band': ['q20', 'q40', 'q60', 'q80'],
+                                'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                'resim_band': [],
+                                'env': None,
+                                'consumers': [],
+                                'sweep_levels': None,
+                                'subset_safe': True,
+                                'legs': ['long'],
+                                'status': 'UNTESTED',
+                                'type': 'float<=q',
+                                'engine_implemented': False,
+                                'evidence': 'long: b3249_macd_crossover_companions_long_net.json '
+                                            '(ts10 -2.393 / bept -7.119, joint 2.393, cluster of '
+                                            '1)',
+                                'derivation': 'BREADTH (runbook 3.6): the short_interest.py '
+                                              "cluster's representative on the long leg, op le "
+                                              '(max joint effect, #165); levels = retention '
+                                              "quantiles on the leg's own fires at grid time; "
+                                              "registered on the owner's word "
+                                              "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                              "recs fable mode' (item 2 of the B3139q-r203d close; "
+                                              'S6-B3249)'},
+                               {'id': 'B4',
+                                'producer': 'backtest/signals/polars_panel.py',
+                                'param': 'rsi_2',
+                                'production': 'not gated',
+                                'band': ['q20', 'q40', 'q60', 'q80'],
+                                'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                'resim_band': [],
+                                'env': None,
+                                'consumers': [],
+                                'sweep_levels': None,
+                                'subset_safe': True,
+                                'legs': ['long'],
+                                'status': 'UNTESTED',
+                                'type': 'float<=q',
+                                'engine_implemented': False,
+                                'evidence': 'long: b3249_macd_crossover_companions_long_net.json '
+                                            '(ts10 -3.028 / bept -7.279, joint 3.028, cluster of '
+                                            '3)',
+                                'derivation': 'BREADTH (runbook 3.6): the polars_panel.py '
+                                              "cluster's representative on the long leg, op le "
+                                              '(max joint effect, #165); levels = retention '
+                                              "quantiles on the leg's own fires at grid time; "
+                                              "registered on the owner's word "
+                                              "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                              "recs fable mode' (item 2 of the B3139q-r203d close; "
+                                              'S6-B3249)'},
+                               {'id': 'B5',
+                                'producer': 'backtest/signals/calendar_effects.py',
+                                'param': 'trading_day_of_month',
+                                'production': 'not gated',
+                                'band': ['q20', 'q40', 'q60', 'q80'],
+                                'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                'resim_band': [],
+                                'env': None,
+                                'consumers': [],
+                                'sweep_levels': None,
+                                'subset_safe': True,
+                                'legs': ['long'],
+                                'status': 'UNTESTED',
+                                'type': 'float<=q',
+                                'engine_implemented': False,
+                                'evidence': 'long: b3249_macd_crossover_companions_long_net.json '
+                                            '(ts10 -2.349 / bept -3.772, joint 2.349, cluster of '
+                                            '2)',
+                                'derivation': 'BREADTH (runbook 3.6): the calendar_effects.py '
+                                              "cluster's representative on the long leg, op le "
+                                              '(max joint effect, #165); levels = retention '
+                                              "quantiles on the leg's own fires at grid time; "
+                                              "registered on the owner's word "
+                                              "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                              "recs fable mode' (item 2 of the B3139q-r203d close; "
+                                              'S6-B3249)'},
+                               {'id': 'B6',
+                                'producer': 'backtest/signals/cross_sectional.py',
+                                'param': 'xs_max_anomaly',
+                                'production': 'not gated',
+                                'band': ['q20', 'q40', 'q60', 'q80'],
+                                'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                'resim_band': [],
+                                'env': None,
+                                'consumers': [],
+                                'sweep_levels': None,
+                                'subset_safe': True,
+                                'legs': ['long'],
+                                'status': 'UNTESTED',
+                                'type': 'float>=q',
+                                'engine_implemented': False,
+                                'evidence': 'long: b3249_macd_crossover_companions_long_net.json '
+                                            '(ts10 +1.308 / bept +11.022, joint 1.308, cluster of '
+                                            '1)',
+                                'derivation': 'BREADTH (runbook 3.6): the cross_sectional.py '
+                                              "cluster's representative on the long leg, op ge "
+                                              '(max joint effect, #165); levels = retention '
+                                              "quantiles on the leg's own fires at grid time; "
+                                              "registered on the owner's word "
+                                              "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                              "recs fable mode' (item 2 of the B3139q-r203d close; "
+                                              'S6-B3249)'}]},
  'force_index_breakout': {'formula': '\n'
                                      'ID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered '
                                      'COMPUTATION STEP in\n'
@@ -5001,9 +5808,12 @@ SPECS_PHASE0.update({'macd_fast_crossover': {'formula': '\n'
                                      'numbers its band rows P<n>.x - integer ids here. R1 '
                                      'PRE-REGISTRATION (runbook 2.7\n'
                                      'step 1, B2855) written S6-B3249 B3139q-r203, BEFORE the '
-                                     "owner's T3 words: no\n"
-                                     "level below is approved, and B-rows join on the owner's word "
-                                     '(S6-B3304 precedent).\n'
+                                     "owner's T3 words: those words came 2026-11-05\n"
+                                     "('1-5 approve all recs fable mode', sent 12:24:51Z, item 2 "
+                                     'of the r203d close, S6-B3249): the levels below and B1-B6\n'
+                                     '(BREADTH LAYER) are approved - the consistent NET companion '
+                                     "screens' cluster\n"
+                                     'representatives (runbook 3.6; the S6-B3304 shape).\n'
                                      '\n'
                                      '=============================== PRODUCER LAYER '
                                      '===============================\n'
@@ -5028,6 +5838,21 @@ SPECS_PHASE0.update({'macd_fast_crossover': {'formula': '\n'
                                      'P10 minimum body (close below open, SHORT leg)  (Table A '
                                      'P3.1 - production 0.0)\n'
                                      '\n'
+                                     '=============================== BREADTH LAYER '
+                                     '===============================\n'
+                                     '\n'
+                                     'B1  pct_from_avwap_20high  LONG >= q  (technical.py '
+                                     'cluster)\n'
+                                     'B2  cot_sp500_commercials_pctile_3y  LONG <= q  '
+                                     '(cot_positioning.py cluster)\n'
+                                     'B3  gold_silver_20d_pct_change  LONG >= q  (cross_asset.py '
+                                     'cluster)\n'
+                                     'B4  po3_accum_range_pct  LONG >= q  (ict_producers.py '
+                                     'cluster)\n'
+                                     'B5  weekly_momentum_4w  LONG >= q  (multi_timeframe.py '
+                                     'cluster)\n'
+                                     'B6  xs_max_anomaly  LONG >= q  (cross_sectional.py cluster)\n'
+                                     '\n'
                                      '=============================== STRATEGY LAYER '
                                      '===============================\n'
                                      '\n'
@@ -5038,7 +5863,10 @@ SPECS_PHASE0.update({'macd_fast_crossover': {'formula': '\n'
                                      'long_fires  = P1 AND P4 AND P7              (screener.py '
                                      'strat_force_index_breakout, fl)\n'
                                      'short_fires = P2 AND P5 AND P9 AND NOT P11  (screener.py '
-                                     'strat_force_index_breakout, fs)\n',
+                                     'strat_force_index_breakout, fs)\n'
+                                     'Breadth per leg by breadth_step1_grid.py --leg --basis net:\n'
+                                     'long --axes '
+                                     'pct_from_avwap_20high:ge,cot_sp500_commercials_pctile_3y:le,gold_silver_20d_pct_change:ge,po3_accum_range_pct:ge,weekly_momentum_4w:ge,xs_max_anomaly:ge\n',
                           'baseline': {'artifact': 'output_r5_merged_1_7',
                                        'fires': 3013,
                                        'tickers': 532,
@@ -5287,7 +6115,169 @@ SPECS_PHASE0.update({'macd_fast_crossover': {'formula': '\n'
                                                     'on the persisted days_to_cover, a band only '
                                                     "on the owner's word (bollinger_lower P10 "
                                                     'precedent); the LONG campaign never reads it',
-                                      'legs': ['short']}]},
+                                      'legs': ['short']},
+                                     {'id': 'B1',
+                                      'producer': 'backtest/signals/technical.py',
+                                      'param': 'pct_from_avwap_20high',
+                                      'production': 'not gated',
+                                      'band': ['q20', 'q40', 'q60', 'q80'],
+                                      'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                      'resim_band': [],
+                                      'env': None,
+                                      'consumers': [],
+                                      'sweep_levels': None,
+                                      'subset_safe': True,
+                                      'legs': ['long'],
+                                      'status': 'UNTESTED',
+                                      'type': 'float>=q',
+                                      'engine_implemented': False,
+                                      'evidence': 'long: '
+                                                  'b3249_force_index_breakout_companions_long_net.json '
+                                                  '(ts10 +4.005 / bept +9.401, joint 4.005, '
+                                                  'cluster of 14)',
+                                      'derivation': 'BREADTH (runbook 3.6): the technical.py '
+                                                    "cluster's representative on the long leg, op "
+                                                    'ge (max joint effect, #165); levels = '
+                                                    "retention quantiles on the leg's own fires at "
+                                                    "grid time; registered on the owner's word "
+                                                    "2026-11-05T12:24:51Z, verbatim '1-5 approve "
+                                                    "all recs fable mode' (item 2 of the "
+                                                    'B3139q-r203d close; S6-B3249)'},
+                                     {'id': 'B2',
+                                      'producer': 'backtest/signals/cot_positioning.py',
+                                      'param': 'cot_sp500_commercials_pctile_3y',
+                                      'production': 'not gated',
+                                      'band': ['q20', 'q40', 'q60', 'q80'],
+                                      'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                      'resim_band': [],
+                                      'env': None,
+                                      'consumers': [],
+                                      'sweep_levels': None,
+                                      'subset_safe': True,
+                                      'legs': ['long'],
+                                      'status': 'UNTESTED',
+                                      'type': 'float<=q',
+                                      'engine_implemented': False,
+                                      'evidence': 'long: '
+                                                  'b3249_force_index_breakout_companions_long_net.json '
+                                                  '(ts10 -3.800 / bept -9.493, joint 3.800, '
+                                                  'cluster of 3)',
+                                      'derivation': 'BREADTH (runbook 3.6): the cot_positioning.py '
+                                                    "cluster's representative on the long leg, op "
+                                                    'le (max joint effect, #165); levels = '
+                                                    "retention quantiles on the leg's own fires at "
+                                                    "grid time; registered on the owner's word "
+                                                    "2026-11-05T12:24:51Z, verbatim '1-5 approve "
+                                                    "all recs fable mode' (item 2 of the "
+                                                    'B3139q-r203d close; S6-B3249)'},
+                                     {'id': 'B3',
+                                      'producer': 'backtest/signals/cross_asset.py',
+                                      'param': 'gold_silver_20d_pct_change',
+                                      'production': 'not gated',
+                                      'band': ['q20', 'q40', 'q60', 'q80'],
+                                      'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                      'resim_band': [],
+                                      'env': None,
+                                      'consumers': [],
+                                      'sweep_levels': None,
+                                      'subset_safe': True,
+                                      'legs': ['long'],
+                                      'status': 'UNTESTED',
+                                      'type': 'float>=q',
+                                      'engine_implemented': False,
+                                      'evidence': 'long: '
+                                                  'b3249_force_index_breakout_companions_long_net.json '
+                                                  '(ts10 +3.601 / bept +9.639, joint 3.601, '
+                                                  'cluster of 7)',
+                                      'derivation': 'BREADTH (runbook 3.6): the cross_asset.py '
+                                                    "cluster's representative on the long leg, op "
+                                                    'ge (max joint effect, #165); levels = '
+                                                    "retention quantiles on the leg's own fires at "
+                                                    "grid time; registered on the owner's word "
+                                                    "2026-11-05T12:24:51Z, verbatim '1-5 approve "
+                                                    "all recs fable mode' (item 2 of the "
+                                                    'B3139q-r203d close; S6-B3249)'},
+                                     {'id': 'B4',
+                                      'producer': 'backtest/signals/ict_producers.py',
+                                      'param': 'po3_accum_range_pct',
+                                      'production': 'not gated',
+                                      'band': ['q20', 'q40', 'q60', 'q80'],
+                                      'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                      'resim_band': [],
+                                      'env': None,
+                                      'consumers': [],
+                                      'sweep_levels': None,
+                                      'subset_safe': True,
+                                      'legs': ['long'],
+                                      'status': 'UNTESTED',
+                                      'type': 'float>=q',
+                                      'engine_implemented': False,
+                                      'evidence': 'long: '
+                                                  'b3249_force_index_breakout_companions_long_net.json '
+                                                  '(ts10 +4.159 / bept +9.343, joint 4.159, '
+                                                  'cluster of 1)',
+                                      'derivation': 'BREADTH (runbook 3.6): the ict_producers.py '
+                                                    "cluster's representative on the long leg, op "
+                                                    'ge (max joint effect, #165); levels = '
+                                                    "retention quantiles on the leg's own fires at "
+                                                    "grid time; registered on the owner's word "
+                                                    "2026-11-05T12:24:51Z, verbatim '1-5 approve "
+                                                    "all recs fable mode' (item 2 of the "
+                                                    'B3139q-r203d close; S6-B3249)'},
+                                     {'id': 'B5',
+                                      'producer': 'backtest/signals/multi_timeframe.py',
+                                      'param': 'weekly_momentum_4w',
+                                      'production': 'not gated',
+                                      'band': ['q20', 'q40', 'q60', 'q80'],
+                                      'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                      'resim_band': [],
+                                      'env': None,
+                                      'consumers': [],
+                                      'sweep_levels': None,
+                                      'subset_safe': True,
+                                      'legs': ['long'],
+                                      'status': 'UNTESTED',
+                                      'type': 'float>=q',
+                                      'engine_implemented': False,
+                                      'evidence': 'long: '
+                                                  'b3249_force_index_breakout_companions_long_net.json '
+                                                  '(ts10 +3.797 / bept +2.245, joint 2.245, '
+                                                  'cluster of 1)',
+                                      'derivation': 'BREADTH (runbook 3.6): the multi_timeframe.py '
+                                                    "cluster's representative on the long leg, op "
+                                                    'ge (max joint effect, #165); levels = '
+                                                    "retention quantiles on the leg's own fires at "
+                                                    "grid time; registered on the owner's word "
+                                                    "2026-11-05T12:24:51Z, verbatim '1-5 approve "
+                                                    "all recs fable mode' (item 2 of the "
+                                                    'B3139q-r203d close; S6-B3249)'},
+                                     {'id': 'B6',
+                                      'producer': 'backtest/signals/cross_sectional.py',
+                                      'param': 'xs_max_anomaly',
+                                      'production': 'not gated',
+                                      'band': ['q20', 'q40', 'q60', 'q80'],
+                                      'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                      'resim_band': [],
+                                      'env': None,
+                                      'consumers': [],
+                                      'sweep_levels': None,
+                                      'subset_safe': True,
+                                      'legs': ['long'],
+                                      'status': 'UNTESTED',
+                                      'type': 'float>=q',
+                                      'engine_implemented': False,
+                                      'evidence': 'long: '
+                                                  'b3249_force_index_breakout_companions_long_net.json '
+                                                  '(ts10 +3.443 / bept +9.490, joint 3.443, '
+                                                  'cluster of 1)',
+                                      'derivation': 'BREADTH (runbook 3.6): the cross_sectional.py '
+                                                    "cluster's representative on the long leg, op "
+                                                    'ge (max joint effect, #165); levels = '
+                                                    "retention quantiles on the leg's own fires at "
+                                                    "grid time; registered on the owner's word "
+                                                    "2026-11-05T12:24:51Z, verbatim '1-5 approve "
+                                                    "all recs fable mode' (item 2 of the "
+                                                    'B3139q-r203d close; S6-B3249)'}]},
  'macd_bullish_with_smart_money_long': {'formula': '\n'
                                                    'ID SEMANTICS (owner ruling 2026-09-12): P<n> = '
                                                    'a numbered COMPUTATION STEP in\n'
@@ -5296,9 +6286,15 @@ SPECS_PHASE0.update({'macd_fast_crossover': {'formula': '\n'
                                                    'numbers its band rows P<n>.x - integer ids '
                                                    'here. R1 PRE-REGISTRATION (runbook 2.7\n'
                                                    'step 1, B2855) written S6-B3249 B3139q-r203, '
-                                                   "BEFORE the owner's T3 words: no\n"
-                                                   'level below is approved, and B-rows join on '
-                                                   "the owner's word (S6-B3304 precedent).\n"
+                                                   "BEFORE the owner's T3 words: those words came "
+                                                   '2026-11-05\n'
+                                                   "('1-5 approve all recs fable mode', sent "
+                                                   '12:24:51Z, item 2 of the r203d close, '
+                                                   'S6-B3249): the levels below and B1-B2\n'
+                                                   '(BREADTH LAYER) are approved - the consistent '
+                                                   "NET companion screens' cluster\n"
+                                                   'representatives (runbook 3.6; the S6-B3304 '
+                                                   'shape).\n'
                                                    '\n'
                                                    '=============================== PRODUCER LAYER '
                                                    '===============================\n'
@@ -5316,6 +6312,14 @@ SPECS_PHASE0.update({'macd_fast_crossover': {'formula': '\n'
                                                    'price_above_ema_200; the gate reads the '
                                                    'LITERAL key)\n'
                                                    '\n'
+                                                   '=============================== BREADTH LAYER '
+                                                   '===============================\n'
+                                                   '\n'
+                                                   'B1  cot_copper_commercials_pctile_3y  LONG >= '
+                                                   'q  (cot_positioning.py cluster)\n'
+                                                   'B2  sector_weakest_rs  LONG <= q  '
+                                                   '(cross_asset.py cluster)\n'
+                                                   '\n'
                                                    '=============================== STRATEGY LAYER '
                                                    '===============================\n'
                                                    '\n'
@@ -5326,7 +6330,11 @@ SPECS_PHASE0.update({'macd_fast_crossover': {'formula': '\n'
                                                    'institutional_buy)\n'
                                                    '\n'
                                                    'long_fires = P1 AND P3 AND P5   (screener.py '
-                                                   'strat_macd_bullish_with_smart_money_long)\n',
+                                                   'strat_macd_bullish_with_smart_money_long)\n'
+                                                   'Breadth per leg by breadth_step1_grid.py --leg '
+                                                   '--basis net:\n'
+                                                   'long --axes '
+                                                   'cot_copper_commercials_pctile_3y:ge,sector_weakest_rs:le\n',
                                         'baseline': {'artifact': 'output_r5_merged_1_7',
                                                      'fires': 1162,
                                                      'tickers': 447,
@@ -5463,7 +6471,68 @@ SPECS_PHASE0.update({'macd_fast_crossover': {'formula': '\n'
                                                                   'is a subset of the recorded '
                                                                   'fires, an option for the '
                                                                   "owner's band review, not "
-                                                                  'registered here'}]},
+                                                                  'registered here'},
+                                                   {'id': 'B1',
+                                                    'producer': 'backtest/signals/cot_positioning.py',
+                                                    'param': 'cot_copper_commercials_pctile_3y',
+                                                    'production': 'not gated',
+                                                    'band': ['q20', 'q40', 'q60', 'q80'],
+                                                    'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                                    'resim_band': [],
+                                                    'env': None,
+                                                    'consumers': [],
+                                                    'sweep_levels': None,
+                                                    'subset_safe': True,
+                                                    'legs': ['long'],
+                                                    'status': 'UNTESTED',
+                                                    'type': 'float>=q',
+                                                    'engine_implemented': False,
+                                                    'evidence': 'long: '
+                                                                'b3249_macd_bullish_with_smart_money_long_companions_long_net.json '
+                                                                '(ts10 +2.673 / bept +7.110, joint '
+                                                                '2.673, cluster of 5)',
+                                                    'derivation': 'BREADTH (runbook 3.6): the '
+                                                                  "cot_positioning.py cluster's "
+                                                                  'representative on the long leg, '
+                                                                  'op ge (max joint effect, #165); '
+                                                                  'levels = retention quantiles on '
+                                                                  "the leg's own fires at grid "
+                                                                  "time; registered on the owner's "
+                                                                  'word 2026-11-05T12:24:51Z, '
+                                                                  "verbatim '1-5 approve all recs "
+                                                                  "fable mode' (item 2 of the "
+                                                                  'B3139q-r203d close; S6-B3249)'},
+                                                   {'id': 'B2',
+                                                    'producer': 'backtest/signals/cross_asset.py',
+                                                    'param': 'sector_weakest_rs',
+                                                    'production': 'not gated',
+                                                    'band': ['q20', 'q40', 'q60', 'q80'],
+                                                    'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                                    'resim_band': [],
+                                                    'env': None,
+                                                    'consumers': [],
+                                                    'sweep_levels': None,
+                                                    'subset_safe': True,
+                                                    'legs': ['long'],
+                                                    'status': 'UNTESTED',
+                                                    'type': 'float<=q',
+                                                    'engine_implemented': False,
+                                                    'evidence': 'long: '
+                                                                'b3249_macd_bullish_with_smart_money_long_companions_long_net.json '
+                                                                '(ts10 -2.726 / bept -5.639, joint '
+                                                                '2.726, cluster of 1)',
+                                                    'derivation': 'BREADTH (runbook 3.6): the '
+                                                                  "cross_asset.py cluster's "
+                                                                  'representative on the long leg, '
+                                                                  'op le (max joint effect, #165); '
+                                                                  'levels = retention quantiles on '
+                                                                  "the leg's own fires at grid "
+                                                                  "time; registered on the owner's "
+                                                                  'word 2026-11-05T12:24:51Z, '
+                                                                  "verbatim '1-5 approve all recs "
+                                                                  "fable mode' (item 2 of the "
+                                                                  'B3139q-r203d close; '
+                                                                  'S6-B3249)'}]},
  'mmbm_long': {'formula': '\n'
                           'ID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered COMPUTATION '
                           'STEP in\n'
@@ -5472,9 +6541,12 @@ SPECS_PHASE0.update({'macd_fast_crossover': {'formula': '\n'
                           'numbers its band rows P<n>.x - integer ids here. R1 PRE-REGISTRATION '
                           '(runbook 2.7\n'
                           "step 1, B2855) written S6-B3249 B3139q-r203, BEFORE the owner's T3 "
-                          'words: no\n'
-                          "level below is approved, and B-rows join on the owner's word (S6-B3304 "
-                          'precedent).\n'
+                          'words: those words came 2026-11-05\n'
+                          "('1-5 approve all recs fable mode', sent 12:24:51Z, item 2 of the r203d "
+                          'close, S6-B3249): the levels below and B1-B4\n'
+                          "(BREADTH LAYER) are approved - the consistent NET companion screens' "
+                          'cluster\n'
+                          'representatives (runbook 3.6; the S6-B3304 shape).\n'
                           '\n'
                           '=============================== PRODUCER LAYER '
                           '===============================\n'
@@ -5491,11 +6563,22 @@ SPECS_PHASE0.update({'macd_fast_crossover': {'formula': '\n'
                           'ratio is\n'
                           '       persisted on every fire as po3_accum_range_pct, 4 dp)\n'
                           '\n'
+                          '=============================== BREADTH LAYER '
+                          '===============================\n'
+                          '\n'
+                          'B1  sector_weakest_rs  LONG <= q  (cross_asset.py cluster)\n'
+                          'B2  cot_ndx_mmoney_pctile_3y  LONG >= q  (cot_positioning.py cluster)\n'
+                          'B3  ppo_hist  LONG >= q  (technical.py cluster)\n'
+                          'B4  stochrsi_oversold  LONG require FALSE  (screener.py cluster)\n'
+                          '\n'
                           '=============================== STRATEGY LAYER '
                           '===============================\n'
                           '\n'
                           'long_fires = P1   (screener.py strat_mmbm_long; P2 and P3 bind inside '
-                          'P1)\n',
+                          'P1)\n'
+                          'Breadth per leg by breadth_step1_grid.py --leg --basis net:\n'
+                          'long --axes '
+                          'sector_weakest_rs:le,cot_ndx_mmoney_pctile_3y:ge,ppo_hist:ge,stochrsi_oversold:eq_false\n',
                'baseline': {'artifact': 'output_r5_merged_1_7',
                             'fires': 1337,
                             'tickers': 452,
@@ -5568,7 +6651,103 @@ SPECS_PHASE0.update({'macd_fast_crossover': {'formula': '\n'
                                          'the key on the R5 fires; a looser ceiling admits bars '
                                          'the cube never recorded and has no knob, so it stays out '
                                          'of the band',
-                           'signal_keys': ['po3_accum_range_pct']}]}})
+                           'signal_keys': ['po3_accum_range_pct']},
+                          {'id': 'B1',
+                           'producer': 'backtest/signals/cross_asset.py',
+                           'param': 'sector_weakest_rs',
+                           'production': 'not gated',
+                           'band': ['q20', 'q40', 'q60', 'q80'],
+                           'free_band': ['q20', 'q40', 'q60', 'q80'],
+                           'resim_band': [],
+                           'env': None,
+                           'consumers': [],
+                           'sweep_levels': None,
+                           'subset_safe': True,
+                           'legs': ['long'],
+                           'status': 'UNTESTED',
+                           'type': 'float<=q',
+                           'engine_implemented': False,
+                           'evidence': 'long: b3249_mmbm_long_companions_long_net.json (ts10 '
+                                       '-5.473 / bept -4.113, joint 4.113, cluster of 3)',
+                           'derivation': "BREADTH (runbook 3.6): the cross_asset.py cluster's "
+                                         'representative on the long leg, op le (max joint effect, '
+                                         "#165); levels = retention quantiles on the leg's own "
+                                         "fires at grid time; registered on the owner's word "
+                                         "2026-11-05T12:24:51Z, verbatim '1-5 approve all recs "
+                                         "fable mode' (item 2 of the B3139q-r203d close; "
+                                         'S6-B3249)'},
+                          {'id': 'B2',
+                           'producer': 'backtest/signals/cot_positioning.py',
+                           'param': 'cot_ndx_mmoney_pctile_3y',
+                           'production': 'not gated',
+                           'band': ['q20', 'q40', 'q60', 'q80'],
+                           'free_band': ['q20', 'q40', 'q60', 'q80'],
+                           'resim_band': [],
+                           'env': None,
+                           'consumers': [],
+                           'sweep_levels': None,
+                           'subset_safe': True,
+                           'legs': ['long'],
+                           'status': 'UNTESTED',
+                           'type': 'float>=q',
+                           'engine_implemented': False,
+                           'evidence': 'long: b3249_mmbm_long_companions_long_net.json (ts10 '
+                                       '+4.262 / bept +5.905, joint 4.262, cluster of 5)',
+                           'derivation': "BREADTH (runbook 3.6): the cot_positioning.py cluster's "
+                                         'representative on the long leg, op ge (max joint effect, '
+                                         "#165); levels = retention quantiles on the leg's own "
+                                         "fires at grid time; registered on the owner's word "
+                                         "2026-11-05T12:24:51Z, verbatim '1-5 approve all recs "
+                                         "fable mode' (item 2 of the B3139q-r203d close; "
+                                         'S6-B3249)'},
+                          {'id': 'B3',
+                           'producer': 'backtest/signals/technical.py',
+                           'param': 'ppo_hist',
+                           'production': 'not gated',
+                           'band': ['q20', 'q40', 'q60', 'q80'],
+                           'free_band': ['q20', 'q40', 'q60', 'q80'],
+                           'resim_band': [],
+                           'env': None,
+                           'consumers': [],
+                           'sweep_levels': None,
+                           'subset_safe': True,
+                           'legs': ['long'],
+                           'status': 'UNTESTED',
+                           'type': 'float>=q',
+                           'engine_implemented': False,
+                           'evidence': 'long: b3249_mmbm_long_companions_long_net.json (ts10 '
+                                       '+2.728 / bept +4.361, joint 2.728, cluster of 2)',
+                           'derivation': "BREADTH (runbook 3.6): the technical.py cluster's "
+                                         'representative on the long leg, op ge (max joint effect, '
+                                         "#165); levels = retention quantiles on the leg's own "
+                                         "fires at grid time; registered on the owner's word "
+                                         "2026-11-05T12:24:51Z, verbatim '1-5 approve all recs "
+                                         "fable mode' (item 2 of the B3139q-r203d close; "
+                                         'S6-B3249)'},
+                          {'id': 'B4',
+                           'producer': 'backtest/signals/screener.py',
+                           'param': 'stochrsi_oversold',
+                           'production': 'not gated',
+                           'band': ['require_false'],
+                           'free_band': ['require_false'],
+                           'resim_band': [],
+                           'env': None,
+                           'consumers': [],
+                           'sweep_levels': None,
+                           'subset_safe': True,
+                           'legs': ['long'],
+                           'status': 'UNTESTED',
+                           'type': 'bool',
+                           'engine_implemented': False,
+                           'evidence': 'long: b3249_mmbm_long_companions_long_net.json (ts10 '
+                                       '-1.838 / bept -2.339, joint 1.838, cluster of 1)',
+                           'derivation': "BREADTH (runbook 3.6): the screener.py cluster's "
+                                         'representative on the long leg, op eq_false (max joint '
+                                         "effect, #165); levels = retention quantiles on the leg's "
+                                         "own fires at grid time; registered on the owner's word "
+                                         "2026-11-05T12:24:51Z, verbatim '1-5 approve all recs "
+                                         "fable mode' (item 2 of the B3139q-r203d close; "
+                                         'S6-B3249)'}]}})
 
 
 # S6-B3373 / S6-B3249 - R1 PRE-REGISTRATION (B3139q-r203c; runbook 2.7 step 1, B2855):
@@ -5584,9 +6763,12 @@ SPECS_PHASE0.update({'avwap_252_breakout': {'formula': '\n'
                                    'numbers its band rows P<n>.x - integer ids here. R1 '
                                    'PRE-REGISTRATION (runbook 2.7\n'
                                    'step 1, B2855) written S6-B3373 B3139q-r203, BEFORE the '
-                                   "owner's T3 words: no\n"
-                                   "level below is approved, and B-rows join on the owner's word "
-                                   '(S6-B3304 precedent).\n'
+                                   "owner's T3 words: those words came 2026-11-05\n"
+                                   "('1-5 approve all recs fable mode', sent 12:24:51Z, item 3 of "
+                                   'the r203d close, S6-B3373): the levels below and B1-B29\n'
+                                   '(BREADTH LAYER) are approved - the consistent NET companion '
+                                   "screens' cluster\n"
+                                   'representatives (runbook 3.6; the S6-B3304 shape).\n'
                                    '\n'
                                    '=============================== PRODUCER LAYER '
                                    '===============================\n'
@@ -5610,6 +6792,60 @@ SPECS_PHASE0.update({'avwap_252_breakout': {'formula': '\n'
                                    'P7  volume ratio floor 1.0  (compute_volume; the ratio is '
                                    'persisted as vol_ratio_20d, 2 dp)\n'
                                    '\n'
+                                   '=============================== BREADTH LAYER '
+                                   '===============================\n'
+                                   '\n'
+                                   'B1  pct_from_avwap_50low  LONG >= q  (technical.py cluster)\n'
+                                   'B2  atr  LONG <= q  (screener.py cluster)\n'
+                                   'B3  avg_position_age_quarters  LONG <= q  '
+                                   '(institutional_persistence_consumer.py cluster)\n'
+                                   'B4  dxy_20d_pct_change  LONG <= q  (cross_asset.py cluster)\n'
+                                   'B5  cot_dxy_mmoney_pctile_3y  LONG >= q  (cot_positioning.py '
+                                   'cluster)\n'
+                                   'B6  head_shoulders_top_detected  LONG require FALSE  '
+                                   '(chart_patterns.py cluster)\n'
+                                   'B7  is_halloween_period  LONG require TRUE  '
+                                   '(calendar_effects.py cluster)\n'
+                                   'B8  po3_accum_range_pct  LONG >= q / SHORT <= q  '
+                                   '(ict_producers.py cluster)\n'
+                                   'B9  po3_sweep_above_prior_high  LONG require TRUE  '
+                                   '(multi_timeframe.py cluster)\n'
+                                   'B10  rsi_9_oversold  LONG require FALSE  (polars_panel.py '
+                                   'cluster)\n'
+                                   'B11  short_interest_observations  LONG >= q  '
+                                   '(short_interest.py cluster)\n'
+                                   'B12  smc_fvg_bullish_active  LONG require FALSE  (smc_ict.py '
+                                   'cluster)\n'
+                                   'B13  vp_in_value_area  LONG require FALSE  (volume_profile.py '
+                                   'cluster)\n'
+                                   'B14  within_pead_window  LONG require FALSE  '
+                                   '(earnings_surprise_yoy.py cluster)\n'
+                                   'B15  xs_max_anomaly  LONG >= q / SHORT <= q  '
+                                   '(cross_sectional.py cluster)\n'
+                                   'B16  vix_value  SHORT <= q  (technical.py cluster)\n'
+                                   'B17  naked_poc_nearest_distance_pct  SHORT <= q  (screener.py '
+                                   'cluster)\n'
+                                   'B18  total_active_holders  SHORT <= q  '
+                                   '(institutional_persistence_consumer.py cluster)\n'
+                                   'B19  vix_today  SHORT <= q  (cross_asset.py cluster)\n'
+                                   'B20  cot_ndx_commercials_net_pct  SHORT <= q  '
+                                   '(cot_positioning.py cluster)\n'
+                                   'B21  cup_handle_detected  SHORT require TRUE  '
+                                   '(chart_patterns.py cluster)\n'
+                                   'B22  days_until_fomc  SHORT <= q  (macro_events.py cluster)\n'
+                                   'B23  monthly_momentum_6m  SHORT >= q  (multi_timeframe.py '
+                                   'cluster)\n'
+                                   'B24  trading_days_left_in_month  SHORT <= q  '
+                                   '(calendar_effects.py cluster)\n'
+                                   'B25  news_sentiment_30d  SHORT <= q  (news_sentiment.py '
+                                   'cluster)\n'
+                                   'B26  otc_volume_recent  SHORT <= q  (congressional_alt_data.py '
+                                   'cluster)\n'
+                                   'B27  rsi_2  SHORT <= q  (polars_panel.py cluster)\n'
+                                   'B28  smc_retracement_pct  SHORT <= q  (smc_ict.py cluster)\n'
+                                   'B29  vp_close_near_poc_pct  SHORT <= q  (volume_profile.py '
+                                   'cluster)\n'
+                                   '\n'
                                    '=============================== STRATEGY LAYER '
                                    '===============================\n'
                                    '\n'
@@ -5620,7 +6856,12 @@ SPECS_PHASE0.update({'avwap_252_breakout': {'formula': '\n'
                                    'long_fires  = P1 AND P6           (screener.py '
                                    'strat_avwap_252_breakout, fl)\n'
                                    'short_fires = P2 AND P6 AND NOT P8 (screener.py '
-                                   'strat_avwap_252_breakout, fs)\n',
+                                   'strat_avwap_252_breakout, fs)\n'
+                                   'Breadth per leg by breadth_step1_grid.py --leg --basis net:\n'
+                                   'long --axes '
+                                   'pct_from_avwap_50low:ge,atr:le,avg_position_age_quarters:le,dxy_20d_pct_change:le,cot_dxy_mmoney_pctile_3y:ge,head_shoulders_top_detected:eq_false,is_halloween_period:eq_true,po3_accum_range_pct:ge,po3_sweep_above_prior_high:eq_true,rsi_9_oversold:eq_false,short_interest_observations:ge,smc_fvg_bullish_active:eq_false,vp_in_value_area:eq_false,within_pead_window:eq_false,xs_max_anomaly:ge\n'
+                                   'short --axes '
+                                   'po3_accum_range_pct:le,xs_max_anomaly:le,vix_value:le,naked_poc_nearest_distance_pct:le,total_active_holders:le,vix_today:le,cot_ndx_commercials_net_pct:le,cup_handle_detected:eq_true,days_until_fomc:le,monthly_momentum_6m:ge,trading_days_left_in_month:le,news_sentiment_30d:le,otc_volume_recent:le,rsi_2:le,smc_retracement_pct:le,vp_close_near_poc_pct:le\n',
                         'baseline': {'artifact': 'output_r5_merged_1_7',
                                      'fires': 2294,
                                      'tickers': 506,
@@ -5808,7 +7049,800 @@ SPECS_PHASE0.update({'avwap_252_breakout': {'formula': '\n'
                                                   'on the persisted days_to_cover, a band only on '
                                                   "the owner's word (bollinger_lower P10 "
                                                   'precedent); the LONG campaign never reads it',
-                                    'legs': ['short']}]},
+                                    'legs': ['short']},
+                                   {'id': 'B1',
+                                    'producer': 'backtest/signals/technical.py',
+                                    'param': 'pct_from_avwap_50low',
+                                    'production': 'not gated',
+                                    'band': ['q20', 'q40', 'q60', 'q80'],
+                                    'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['long'],
+                                    'status': 'UNTESTED',
+                                    'type': 'float>=q',
+                                    'engine_implemented': False,
+                                    'evidence': 'long: '
+                                                'b3373_avwap_252_breakout_companions_long_net.json '
+                                                '(ts10 +12.248 / bept +21.823, joint 12.248, '
+                                                'cluster of 61)',
+                                    'derivation': 'BREADTH (runbook 3.6): the technical.py '
+                                                  "cluster's representative on the long leg, op ge "
+                                                  '(max joint effect, #165); levels = retention '
+                                                  "quantiles on the leg's own fires at grid time; "
+                                                  "registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B2',
+                                    'producer': 'backtest/signals/screener.py',
+                                    'param': 'atr',
+                                    'production': 'not gated',
+                                    'band': ['q20', 'q40', 'q60', 'q80'],
+                                    'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['long'],
+                                    'status': 'UNTESTED',
+                                    'type': 'float<=q',
+                                    'engine_implemented': False,
+                                    'evidence': 'long: '
+                                                'b3373_avwap_252_breakout_companions_long_net.json '
+                                                '(ts10 -6.822 / bept -4.596, joint 4.596, cluster '
+                                                'of 4)',
+                                    'derivation': 'BREADTH (runbook 3.6): the screener.py '
+                                                  "cluster's representative on the long leg, op le "
+                                                  '(max joint effect, #165); levels = retention '
+                                                  "quantiles on the leg's own fires at grid time; "
+                                                  "registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B3',
+                                    'producer': 'backtest/signals/institutional_persistence_consumer.py',
+                                    'param': 'avg_position_age_quarters',
+                                    'production': 'not gated',
+                                    'band': ['q20', 'q40', 'q60', 'q80'],
+                                    'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['long'],
+                                    'status': 'UNTESTED',
+                                    'type': 'float<=q',
+                                    'engine_implemented': False,
+                                    'evidence': 'long: '
+                                                'b3373_avwap_252_breakout_companions_long_net.json '
+                                                '(ts10 -1.146 / bept -3.070, joint 1.146, cluster '
+                                                'of 1)',
+                                    'derivation': 'BREADTH (runbook 3.6): the '
+                                                  "institutional_persistence_consumer.py cluster's "
+                                                  'representative on the long leg, op le (max '
+                                                  'joint effect, #165); levels = retention '
+                                                  "quantiles on the leg's own fires at grid time; "
+                                                  "registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B4',
+                                    'producer': 'backtest/signals/cross_asset.py',
+                                    'param': 'dxy_20d_pct_change',
+                                    'production': 'not gated',
+                                    'band': ['q20', 'q40', 'q60', 'q80'],
+                                    'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['long'],
+                                    'status': 'UNTESTED',
+                                    'type': 'float<=q',
+                                    'engine_implemented': False,
+                                    'evidence': 'long: '
+                                                'b3373_avwap_252_breakout_companions_long_net.json '
+                                                '(ts10 -6.873 / bept -7.406, joint 6.873, cluster '
+                                                'of 9)',
+                                    'derivation': 'BREADTH (runbook 3.6): the cross_asset.py '
+                                                  "cluster's representative on the long leg, op le "
+                                                  '(max joint effect, #165); levels = retention '
+                                                  "quantiles on the leg's own fires at grid time; "
+                                                  "registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B5',
+                                    'producer': 'backtest/signals/cot_positioning.py',
+                                    'param': 'cot_dxy_mmoney_pctile_3y',
+                                    'production': 'not gated',
+                                    'band': ['q20', 'q40', 'q60', 'q80'],
+                                    'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['long'],
+                                    'status': 'UNTESTED',
+                                    'type': 'float>=q',
+                                    'engine_implemented': False,
+                                    'evidence': 'long: '
+                                                'b3373_avwap_252_breakout_companions_long_net.json '
+                                                '(ts10 +14.921 / bept +13.681, joint 13.681, '
+                                                'cluster of 7)',
+                                    'derivation': 'BREADTH (runbook 3.6): the cot_positioning.py '
+                                                  "cluster's representative on the long leg, op ge "
+                                                  '(max joint effect, #165); levels = retention '
+                                                  "quantiles on the leg's own fires at grid time; "
+                                                  "registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B6',
+                                    'producer': 'backtest/signals/chart_patterns.py',
+                                    'param': 'head_shoulders_top_detected',
+                                    'production': 'not gated',
+                                    'band': ['require_false'],
+                                    'free_band': ['require_false'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['long'],
+                                    'status': 'UNTESTED',
+                                    'type': 'bool',
+                                    'engine_implemented': False,
+                                    'evidence': 'long: '
+                                                'b3373_avwap_252_breakout_companions_long_net.json '
+                                                '(ts10 -3.023 / bept -6.300, joint 3.023, cluster '
+                                                'of 2)',
+                                    'derivation': 'BREADTH (runbook 3.6): the chart_patterns.py '
+                                                  "cluster's representative on the long leg, op "
+                                                  'eq_false (max joint effect, #165); levels = '
+                                                  "retention quantiles on the leg's own fires at "
+                                                  "grid time; registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B7',
+                                    'producer': 'backtest/signals/calendar_effects.py',
+                                    'param': 'is_halloween_period',
+                                    'production': 'not gated',
+                                    'band': ['require_true'],
+                                    'free_band': ['require_true'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['long'],
+                                    'status': 'UNTESTED',
+                                    'type': 'bool',
+                                    'engine_implemented': False,
+                                    'evidence': 'long: '
+                                                'b3373_avwap_252_breakout_companions_long_net.json '
+                                                '(ts10 +4.521 / bept +7.075, joint 4.521, cluster '
+                                                'of 5)',
+                                    'derivation': 'BREADTH (runbook 3.6): the calendar_effects.py '
+                                                  "cluster's representative on the long leg, op "
+                                                  'eq_true (max joint effect, #165); levels = '
+                                                  "retention quantiles on the leg's own fires at "
+                                                  "grid time; registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B8',
+                                    'producer': 'backtest/signals/ict_producers.py',
+                                    'param': 'po3_accum_range_pct',
+                                    'production': 'not gated',
+                                    'band': ['q20', 'q40', 'q60', 'q80'],
+                                    'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['long', 'short'],
+                                    'status': 'UNTESTED',
+                                    'type': 'float>=q',
+                                    'engine_implemented': False,
+                                    'evidence': 'long: '
+                                                'b3373_avwap_252_breakout_companions_long_net.json '
+                                                '(ts10 +12.023 / bept +25.046, joint 12.023, '
+                                                'cluster of 3); short: '
+                                                'b3373_avwap_252_breakout_companions_short_net.json '
+                                                '(ts10 -6.854 / bept -8.693, joint 6.854, cluster '
+                                                'of 2)',
+                                    'derivation': 'BREADTH (runbook 3.6): the ict_producers.py '
+                                                  "cluster's representative on the long leg, op ge "
+                                                  'and on the short leg, op le (max joint effect, '
+                                                  '#165); levels = retention quantiles on the '
+                                                  "leg's own fires at grid time; registered on the "
+                                                  "owner's word 2026-11-05T12:24:51Z, verbatim "
+                                                  "'1-5 approve all recs fable mode' (item 3 of "
+                                                  'the B3139q-r203d close; S6-B3373)'},
+                                   {'id': 'B9',
+                                    'producer': 'backtest/signals/multi_timeframe.py',
+                                    'param': 'po3_sweep_above_prior_high',
+                                    'production': 'not gated',
+                                    'band': ['require_true'],
+                                    'free_band': ['require_true'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['long'],
+                                    'status': 'UNTESTED',
+                                    'type': 'bool',
+                                    'engine_implemented': False,
+                                    'evidence': 'long: '
+                                                'b3373_avwap_252_breakout_companions_long_net.json '
+                                                '(ts10 +3.048 / bept +5.580, joint 3.048, cluster '
+                                                'of 1)',
+                                    'derivation': 'BREADTH (runbook 3.6): the multi_timeframe.py '
+                                                  "cluster's representative on the long leg, op "
+                                                  'eq_true (max joint effect, #165); levels = '
+                                                  "retention quantiles on the leg's own fires at "
+                                                  "grid time; registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B10',
+                                    'producer': 'backtest/signals/polars_panel.py',
+                                    'param': 'rsi_9_oversold',
+                                    'production': 'not gated',
+                                    'band': ['require_false'],
+                                    'free_band': ['require_false'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['long'],
+                                    'status': 'UNTESTED',
+                                    'type': 'bool',
+                                    'engine_implemented': False,
+                                    'evidence': 'long: '
+                                                'b3373_avwap_252_breakout_companions_long_net.json '
+                                                '(ts10 -4.171 / bept -9.550, joint 4.171, cluster '
+                                                'of 2)',
+                                    'derivation': 'BREADTH (runbook 3.6): the polars_panel.py '
+                                                  "cluster's representative on the long leg, op "
+                                                  'eq_false (max joint effect, #165); levels = '
+                                                  "retention quantiles on the leg's own fires at "
+                                                  "grid time; registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B11',
+                                    'producer': 'backtest/signals/short_interest.py',
+                                    'param': 'short_interest_observations',
+                                    'production': 'not gated',
+                                    'band': ['q20', 'q40', 'q60', 'q80'],
+                                    'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['long'],
+                                    'status': 'UNTESTED',
+                                    'type': 'float>=q',
+                                    'engine_implemented': False,
+                                    'evidence': 'long: '
+                                                'b3373_avwap_252_breakout_companions_long_net.json '
+                                                '(ts10 +4.295 / bept +18.262, joint 4.295, cluster '
+                                                'of 1)',
+                                    'derivation': 'BREADTH (runbook 3.6): the short_interest.py '
+                                                  "cluster's representative on the long leg, op ge "
+                                                  '(max joint effect, #165); levels = retention '
+                                                  "quantiles on the leg's own fires at grid time; "
+                                                  "registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B12',
+                                    'producer': 'backtest/signals/smc_ict.py',
+                                    'param': 'smc_fvg_bullish_active',
+                                    'production': 'not gated',
+                                    'band': ['require_false'],
+                                    'free_band': ['require_false'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['long'],
+                                    'status': 'UNTESTED',
+                                    'type': 'bool',
+                                    'engine_implemented': False,
+                                    'evidence': 'long: '
+                                                'b3373_avwap_252_breakout_companions_long_net.json '
+                                                '(ts10 -3.998 / bept -7.508, joint 3.998, cluster '
+                                                'of 2)',
+                                    'derivation': "BREADTH (runbook 3.6): the smc_ict.py cluster's "
+                                                  'representative on the long leg, op eq_false '
+                                                  '(max joint effect, #165); levels = retention '
+                                                  "quantiles on the leg's own fires at grid time; "
+                                                  "registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B13',
+                                    'producer': 'backtest/signals/volume_profile.py',
+                                    'param': 'vp_in_value_area',
+                                    'production': 'not gated',
+                                    'band': ['require_false'],
+                                    'free_band': ['require_false'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['long'],
+                                    'status': 'UNTESTED',
+                                    'type': 'bool',
+                                    'engine_implemented': False,
+                                    'evidence': 'long: '
+                                                'b3373_avwap_252_breakout_companions_long_net.json '
+                                                '(ts10 -4.389 / bept -6.242, joint 4.389, cluster '
+                                                'of 1)',
+                                    'derivation': 'BREADTH (runbook 3.6): the volume_profile.py '
+                                                  "cluster's representative on the long leg, op "
+                                                  'eq_false (max joint effect, #165); levels = '
+                                                  "retention quantiles on the leg's own fires at "
+                                                  "grid time; registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B14',
+                                    'producer': 'backtest/signals/earnings_surprise_yoy.py',
+                                    'param': 'within_pead_window',
+                                    'production': 'not gated',
+                                    'band': ['require_false'],
+                                    'free_band': ['require_false'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['long'],
+                                    'status': 'UNTESTED',
+                                    'type': 'bool',
+                                    'engine_implemented': False,
+                                    'evidence': 'long: '
+                                                'b3373_avwap_252_breakout_companions_long_net.json '
+                                                '(ts10 -1.251 / bept -3.574, joint 1.251, cluster '
+                                                'of 1)',
+                                    'derivation': 'BREADTH (runbook 3.6): the '
+                                                  "earnings_surprise_yoy.py cluster's "
+                                                  'representative on the long leg, op eq_false '
+                                                  '(max joint effect, #165); levels = retention '
+                                                  "quantiles on the leg's own fires at grid time; "
+                                                  "registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B15',
+                                    'producer': 'backtest/signals/cross_sectional.py',
+                                    'param': 'xs_max_anomaly',
+                                    'production': 'not gated',
+                                    'band': ['q20', 'q40', 'q60', 'q80'],
+                                    'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['long', 'short'],
+                                    'status': 'UNTESTED',
+                                    'type': 'float>=q',
+                                    'engine_implemented': False,
+                                    'evidence': 'long: '
+                                                'b3373_avwap_252_breakout_companions_long_net.json '
+                                                '(ts10 +12.227 / bept +24.567, joint 12.227, '
+                                                'cluster of 8); short: '
+                                                'b3373_avwap_252_breakout_companions_short_net.json '
+                                                '(ts10 -7.351 / bept -7.946, joint 7.351, cluster '
+                                                'of 6)',
+                                    'derivation': 'BREADTH (runbook 3.6): the cross_sectional.py '
+                                                  "cluster's representative on the long leg, op ge "
+                                                  'and on the short leg, op le (max joint effect, '
+                                                  '#165); levels = retention quantiles on the '
+                                                  "leg's own fires at grid time; registered on the "
+                                                  "owner's word 2026-11-05T12:24:51Z, verbatim "
+                                                  "'1-5 approve all recs fable mode' (item 3 of "
+                                                  'the B3139q-r203d close; S6-B3373)'},
+                                   {'id': 'B16',
+                                    'producer': 'backtest/signals/technical.py',
+                                    'param': 'vix_value',
+                                    'production': 'not gated',
+                                    'band': ['q20', 'q40', 'q60', 'q80'],
+                                    'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['short'],
+                                    'status': 'UNTESTED',
+                                    'type': 'float<=q',
+                                    'engine_implemented': False,
+                                    'evidence': 'short: '
+                                                'b3373_avwap_252_breakout_companions_short_net.json '
+                                                '(ts10 -8.183 / bept -10.184, joint 8.183, cluster '
+                                                'of 61)',
+                                    'derivation': 'BREADTH (runbook 3.6): the technical.py '
+                                                  "cluster's representative on the short leg, op "
+                                                  'le (max joint effect, #165); levels = retention '
+                                                  "quantiles on the leg's own fires at grid time; "
+                                                  "registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B17',
+                                    'producer': 'backtest/signals/screener.py',
+                                    'param': 'naked_poc_nearest_distance_pct',
+                                    'production': 'not gated',
+                                    'band': ['q20', 'q40', 'q60', 'q80'],
+                                    'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['short'],
+                                    'status': 'UNTESTED',
+                                    'type': 'float<=q',
+                                    'engine_implemented': False,
+                                    'evidence': 'short: '
+                                                'b3373_avwap_252_breakout_companions_short_net.json '
+                                                '(ts10 -4.683 / bept -5.891, joint 4.683, cluster '
+                                                'of 4)',
+                                    'derivation': 'BREADTH (runbook 3.6): the screener.py '
+                                                  "cluster's representative on the short leg, op "
+                                                  'le (max joint effect, #165); levels = retention '
+                                                  "quantiles on the leg's own fires at grid time; "
+                                                  "registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B18',
+                                    'producer': 'backtest/signals/institutional_persistence_consumer.py',
+                                    'param': 'total_active_holders',
+                                    'production': 'not gated',
+                                    'band': ['q20', 'q40', 'q60', 'q80'],
+                                    'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['short'],
+                                    'status': 'UNTESTED',
+                                    'type': 'float<=q',
+                                    'engine_implemented': False,
+                                    'evidence': 'short: '
+                                                'b3373_avwap_252_breakout_companions_short_net.json '
+                                                '(ts10 -3.393 / bept -3.061, joint 3.061, cluster '
+                                                'of 3)',
+                                    'derivation': 'BREADTH (runbook 3.6): the '
+                                                  "institutional_persistence_consumer.py cluster's "
+                                                  'representative on the short leg, op le (max '
+                                                  'joint effect, #165); levels = retention '
+                                                  "quantiles on the leg's own fires at grid time; "
+                                                  "registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B19',
+                                    'producer': 'backtest/signals/cross_asset.py',
+                                    'param': 'vix_today',
+                                    'production': 'not gated',
+                                    'band': ['q20', 'q40', 'q60', 'q80'],
+                                    'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['short'],
+                                    'status': 'UNTESTED',
+                                    'type': 'float<=q',
+                                    'engine_implemented': False,
+                                    'evidence': 'short: '
+                                                'b3373_avwap_252_breakout_companions_short_net.json '
+                                                '(ts10 -8.183 / bept -10.184, joint 8.183, cluster '
+                                                'of 16)',
+                                    'derivation': 'BREADTH (runbook 3.6): the cross_asset.py '
+                                                  "cluster's representative on the short leg, op "
+                                                  'le (max joint effect, #165); levels = retention '
+                                                  "quantiles on the leg's own fires at grid time; "
+                                                  "registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B20',
+                                    'producer': 'backtest/signals/cot_positioning.py',
+                                    'param': 'cot_ndx_commercials_net_pct',
+                                    'production': 'not gated',
+                                    'band': ['q20', 'q40', 'q60', 'q80'],
+                                    'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['short'],
+                                    'status': 'UNTESTED',
+                                    'type': 'float<=q',
+                                    'engine_implemented': False,
+                                    'evidence': 'short: '
+                                                'b3373_avwap_252_breakout_companions_short_net.json '
+                                                '(ts10 -7.230 / bept -10.320, joint 7.230, cluster '
+                                                'of 11)',
+                                    'derivation': 'BREADTH (runbook 3.6): the cot_positioning.py '
+                                                  "cluster's representative on the short leg, op "
+                                                  'le (max joint effect, #165); levels = retention '
+                                                  "quantiles on the leg's own fires at grid time; "
+                                                  "registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B21',
+                                    'producer': 'backtest/signals/chart_patterns.py',
+                                    'param': 'cup_handle_detected',
+                                    'production': 'not gated',
+                                    'band': ['require_true'],
+                                    'free_band': ['require_true'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['short'],
+                                    'status': 'UNTESTED',
+                                    'type': 'bool',
+                                    'engine_implemented': False,
+                                    'evidence': 'short: '
+                                                'b3373_avwap_252_breakout_companions_short_net.json '
+                                                '(ts10 +2.430 / bept +3.316, joint 2.430, cluster '
+                                                'of 1)',
+                                    'derivation': 'BREADTH (runbook 3.6): the chart_patterns.py '
+                                                  "cluster's representative on the short leg, op "
+                                                  'eq_true (max joint effect, #165); levels = '
+                                                  "retention quantiles on the leg's own fires at "
+                                                  "grid time; registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B22',
+                                    'producer': 'backtest/signals/macro_events.py',
+                                    'param': 'days_until_fomc',
+                                    'production': 'not gated',
+                                    'band': ['q20', 'q40', 'q60', 'q80'],
+                                    'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['short'],
+                                    'status': 'UNTESTED',
+                                    'type': 'float<=q',
+                                    'engine_implemented': False,
+                                    'evidence': 'short: '
+                                                'b3373_avwap_252_breakout_companions_short_net.json '
+                                                '(ts10 -1.511 / bept -0.370, joint 0.370, cluster '
+                                                'of 1)',
+                                    'derivation': 'BREADTH (runbook 3.6): the macro_events.py '
+                                                  "cluster's representative on the short leg, op "
+                                                  'le (max joint effect, #165); levels = retention '
+                                                  "quantiles on the leg's own fires at grid time; "
+                                                  "registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B23',
+                                    'producer': 'backtest/signals/multi_timeframe.py',
+                                    'param': 'monthly_momentum_6m',
+                                    'production': 'not gated',
+                                    'band': ['q20', 'q40', 'q60', 'q80'],
+                                    'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['short'],
+                                    'status': 'UNTESTED',
+                                    'type': 'float>=q',
+                                    'engine_implemented': False,
+                                    'evidence': 'short: '
+                                                'b3373_avwap_252_breakout_companions_short_net.json '
+                                                '(ts10 +3.821 / bept +4.248, joint 3.821, cluster '
+                                                'of 4)',
+                                    'derivation': 'BREADTH (runbook 3.6): the multi_timeframe.py '
+                                                  "cluster's representative on the short leg, op "
+                                                  'ge (max joint effect, #165); levels = retention '
+                                                  "quantiles on the leg's own fires at grid time; "
+                                                  "registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B24',
+                                    'producer': 'backtest/signals/calendar_effects.py',
+                                    'param': 'trading_days_left_in_month',
+                                    'production': 'not gated',
+                                    'band': ['q20', 'q40', 'q60', 'q80'],
+                                    'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['short'],
+                                    'status': 'UNTESTED',
+                                    'type': 'float<=q',
+                                    'engine_implemented': False,
+                                    'evidence': 'short: '
+                                                'b3373_avwap_252_breakout_companions_short_net.json '
+                                                '(ts10 -2.331 / bept -3.014, joint 2.331, cluster '
+                                                'of 6)',
+                                    'derivation': 'BREADTH (runbook 3.6): the calendar_effects.py '
+                                                  "cluster's representative on the short leg, op "
+                                                  'le (max joint effect, #165); levels = retention '
+                                                  "quantiles on the leg's own fires at grid time; "
+                                                  "registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B25',
+                                    'producer': 'backtest/signals/news_sentiment.py',
+                                    'param': 'news_sentiment_30d',
+                                    'production': 'not gated',
+                                    'band': ['q20', 'q40', 'q60', 'q80'],
+                                    'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['short'],
+                                    'status': 'UNTESTED',
+                                    'type': 'float<=q',
+                                    'engine_implemented': False,
+                                    'evidence': 'short: '
+                                                'b3373_avwap_252_breakout_companions_short_net.json '
+                                                '(ts10 -3.037 / bept -2.565, joint 2.565, cluster '
+                                                'of 1)',
+                                    'derivation': 'BREADTH (runbook 3.6): the news_sentiment.py '
+                                                  "cluster's representative on the short leg, op "
+                                                  'le (max joint effect, #165); levels = retention '
+                                                  "quantiles on the leg's own fires at grid time; "
+                                                  "registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B26',
+                                    'producer': 'backtest/signals/congressional_alt_data.py',
+                                    'param': 'otc_volume_recent',
+                                    'production': 'not gated',
+                                    'band': ['q20', 'q40', 'q60', 'q80'],
+                                    'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['short'],
+                                    'status': 'UNTESTED',
+                                    'type': 'float<=q',
+                                    'engine_implemented': False,
+                                    'evidence': 'short: '
+                                                'b3373_avwap_252_breakout_companions_short_net.json '
+                                                '(ts10 -1.268 / bept -1.887, joint 1.268, cluster '
+                                                'of 1)',
+                                    'derivation': 'BREADTH (runbook 3.6): the '
+                                                  "congressional_alt_data.py cluster's "
+                                                  'representative on the short leg, op le (max '
+                                                  'joint effect, #165); levels = retention '
+                                                  "quantiles on the leg's own fires at grid time; "
+                                                  "registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B27',
+                                    'producer': 'backtest/signals/polars_panel.py',
+                                    'param': 'rsi_2',
+                                    'production': 'not gated',
+                                    'band': ['q20', 'q40', 'q60', 'q80'],
+                                    'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['short'],
+                                    'status': 'UNTESTED',
+                                    'type': 'float<=q',
+                                    'engine_implemented': False,
+                                    'evidence': 'short: '
+                                                'b3373_avwap_252_breakout_companions_short_net.json '
+                                                '(ts10 -3.146 / bept -5.833, joint 3.146, cluster '
+                                                'of 6)',
+                                    'derivation': 'BREADTH (runbook 3.6): the polars_panel.py '
+                                                  "cluster's representative on the short leg, op "
+                                                  'le (max joint effect, #165); levels = retention '
+                                                  "quantiles on the leg's own fires at grid time; "
+                                                  "registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B28',
+                                    'producer': 'backtest/signals/smc_ict.py',
+                                    'param': 'smc_retracement_pct',
+                                    'production': 'not gated',
+                                    'band': ['q20', 'q40', 'q60', 'q80'],
+                                    'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['short'],
+                                    'status': 'UNTESTED',
+                                    'type': 'float<=q',
+                                    'engine_implemented': False,
+                                    'evidence': 'short: '
+                                                'b3373_avwap_252_breakout_companions_short_net.json '
+                                                '(ts10 -4.168 / bept -4.809, joint 4.168, cluster '
+                                                'of 4)',
+                                    'derivation': "BREADTH (runbook 3.6): the smc_ict.py cluster's "
+                                                  'representative on the short leg, op le (max '
+                                                  'joint effect, #165); levels = retention '
+                                                  "quantiles on the leg's own fires at grid time; "
+                                                  "registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'},
+                                   {'id': 'B29',
+                                    'producer': 'backtest/signals/volume_profile.py',
+                                    'param': 'vp_close_near_poc_pct',
+                                    'production': 'not gated',
+                                    'band': ['q20', 'q40', 'q60', 'q80'],
+                                    'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': [],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'legs': ['short'],
+                                    'status': 'UNTESTED',
+                                    'type': 'float<=q',
+                                    'engine_implemented': False,
+                                    'evidence': 'short: '
+                                                'b3373_avwap_252_breakout_companions_short_net.json '
+                                                '(ts10 -4.837 / bept -6.069, joint 4.837, cluster '
+                                                'of 1)',
+                                    'derivation': 'BREADTH (runbook 3.6): the volume_profile.py '
+                                                  "cluster's representative on the short leg, op "
+                                                  'le (max joint effect, #165); levels = retention '
+                                                  "quantiles on the leg's own fires at grid time; "
+                                                  "registered on the owner's word "
+                                                  "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                                  "recs fable mode' (item 3 of the B3139q-r203d "
+                                                  'close; S6-B3373)'}]},
  'r1_break_retest': {'formula': '\n'
                                 'ID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered '
                                 'COMPUTATION STEP in\n'
@@ -5817,9 +7851,12 @@ SPECS_PHASE0.update({'avwap_252_breakout': {'formula': '\n'
                                 'numbers its band rows P<n>.x - integer ids here. R1 '
                                 'PRE-REGISTRATION (runbook 2.7\n'
                                 "step 1, B2855) written S6-B3249 B3139q-r203, BEFORE the owner's "
-                                'T3 words: no\n'
-                                "level below is approved, and B-rows join on the owner's word "
-                                '(S6-B3304 precedent).\n'
+                                'T3 words: those words came 2026-11-05\n'
+                                "('1-5 approve all recs fable mode', sent 12:24:51Z, item 2 of the "
+                                'r203d close, S6-B3249): the levels below and B1-B10\n'
+                                '(BREADTH LAYER) are approved - the consistent NET companion '
+                                "screens' cluster\n"
+                                'representatives (runbook 3.6; the S6-B3304 shape).\n'
                                 '\n'
                                 '=============================== PRODUCER LAYER '
                                 '===============================\n'
@@ -5847,6 +7884,24 @@ SPECS_PHASE0.update({'avwap_252_breakout': {'formula': '\n'
                                 'P21 below_avwap_20high identity (SHORT)\n'
                                 'P22 AVWAP buffer pct (SHORT)\n'
                                 '\n'
+                                '=============================== BREADTH LAYER '
+                                '===============================\n'
+                                '\n'
+                                'B1  atr_pct  LONG >= q  (technical.py cluster)\n'
+                                'B2  cot_dxy_mmoney_pctile_3y  LONG >= q  (cot_positioning.py '
+                                'cluster)\n'
+                                'B3  days_until_fomc  LONG <= q  (macro_events.py cluster)\n'
+                                'B4  earnings_announcement_return  LONG >= q  (pead.py cluster)\n'
+                                'B5  gold_silver_20d_pct_change  LONG >= q  (cross_asset.py '
+                                'cluster)\n'
+                                'B6  monthly_momentum_6m  LONG <= q  (multi_timeframe.py cluster)\n'
+                                'B7  rsi_2  LONG <= q  (polars_panel.py cluster)\n'
+                                'B8  trading_day_of_month  LONG <= q  (calendar_effects.py '
+                                'cluster)\n'
+                                'B9  within_pead_window  LONG require FALSE  '
+                                '(earnings_surprise_yoy.py cluster)\n'
+                                'B10  xs_max_anomaly  LONG >= q  (cross_sectional.py cluster)\n'
+                                '\n'
                                 '============================== STRATEGY LAYER '
                                 '==============================\n'
                                 '\n'
@@ -5855,7 +7910,10 @@ SPECS_PHASE0.update({'avwap_252_breakout': {'formula': '\n'
                                 'long_fires  = P1 AND P5 AND P7 AND P10 AND P14 AND P18 AND P20   '
                                 '(screener.py strat_r1_break_retest, fl)\n'
                                 'short_fires = P2 AND P6 AND P8 AND P12 AND P16 AND P18 AND P21 '
-                                'AND NOT P23   (screener.py strat_r1_break_retest, fs)\n',
+                                'AND NOT P23   (screener.py strat_r1_break_retest, fs)\n'
+                                'Breadth per leg by breadth_step1_grid.py --leg --basis net:\n'
+                                'long --axes '
+                                'atr_pct:ge,cot_dxy_mmoney_pctile_3y:ge,days_until_fomc:le,earnings_announcement_return:ge,gold_silver_20d_pct_change:ge,monthly_momentum_6m:le,rsi_2:le,trading_day_of_month:le,within_pead_window:eq_false,xs_max_anomaly:ge\n',
                      'baseline': {'artifact': 'output_r5_merged_1_7',
                                   'fires': 3371,
                                   'tickers': 530,
@@ -6342,7 +8400,265 @@ SPECS_PHASE0.update({'avwap_252_breakout': {'formula': '\n'
                                                "days_to_cover, a band only on the owner's word "
                                                '(bollinger_lower P10 precedent); the LONG campaign '
                                                'never reads it',
-                                 'legs': ['short']}]}})
+                                 'legs': ['short']},
+                                {'id': 'B1',
+                                 'producer': 'backtest/signals/technical.py',
+                                 'param': 'atr_pct',
+                                 'production': 'not gated',
+                                 'band': ['q20', 'q40', 'q60', 'q80'],
+                                 'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                 'resim_band': [],
+                                 'env': None,
+                                 'consumers': [],
+                                 'sweep_levels': None,
+                                 'subset_safe': True,
+                                 'legs': ['long'],
+                                 'status': 'UNTESTED',
+                                 'type': 'float>=q',
+                                 'engine_implemented': False,
+                                 'evidence': 'long: b3249_r1_break_retest_companions_long_net.json '
+                                             '(ts10 +1.847 / bept +11.475, joint 1.847, cluster of '
+                                             '5)',
+                                 'derivation': "BREADTH (runbook 3.6): the technical.py cluster's "
+                                               'representative on the long leg, op ge (max joint '
+                                               'effect, #165); levels = retention quantiles on the '
+                                               "leg's own fires at grid time; registered on the "
+                                               "owner's word 2026-11-05T12:24:51Z, verbatim '1-5 "
+                                               "approve all recs fable mode' (item 2 of the "
+                                               'B3139q-r203d close; S6-B3249)'},
+                                {'id': 'B2',
+                                 'producer': 'backtest/signals/cot_positioning.py',
+                                 'param': 'cot_dxy_mmoney_pctile_3y',
+                                 'production': 'not gated',
+                                 'band': ['q20', 'q40', 'q60', 'q80'],
+                                 'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                 'resim_band': [],
+                                 'env': None,
+                                 'consumers': [],
+                                 'sweep_levels': None,
+                                 'subset_safe': True,
+                                 'legs': ['long'],
+                                 'status': 'UNTESTED',
+                                 'type': 'float>=q',
+                                 'engine_implemented': False,
+                                 'evidence': 'long: b3249_r1_break_retest_companions_long_net.json '
+                                             '(ts10 +4.698 / bept +11.335, joint 4.698, cluster of '
+                                             '4)',
+                                 'derivation': 'BREADTH (runbook 3.6): the cot_positioning.py '
+                                               "cluster's representative on the long leg, op ge "
+                                               '(max joint effect, #165); levels = retention '
+                                               "quantiles on the leg's own fires at grid time; "
+                                               "registered on the owner's word "
+                                               "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                               "recs fable mode' (item 2 of the B3139q-r203d "
+                                               'close; S6-B3249)'},
+                                {'id': 'B3',
+                                 'producer': 'backtest/signals/macro_events.py',
+                                 'param': 'days_until_fomc',
+                                 'production': 'not gated',
+                                 'band': ['q20', 'q40', 'q60', 'q80'],
+                                 'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                 'resim_band': [],
+                                 'env': None,
+                                 'consumers': [],
+                                 'sweep_levels': None,
+                                 'subset_safe': True,
+                                 'legs': ['long'],
+                                 'status': 'UNTESTED',
+                                 'type': 'float<=q',
+                                 'engine_implemented': False,
+                                 'evidence': 'long: b3249_r1_break_retest_companions_long_net.json '
+                                             '(ts10 -2.923 / bept -1.567, joint 1.567, cluster of '
+                                             '1)',
+                                 'derivation': 'BREADTH (runbook 3.6): the macro_events.py '
+                                               "cluster's representative on the long leg, op le "
+                                               '(max joint effect, #165); levels = retention '
+                                               "quantiles on the leg's own fires at grid time; "
+                                               "registered on the owner's word "
+                                               "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                               "recs fable mode' (item 2 of the B3139q-r203d "
+                                               'close; S6-B3249)'},
+                                {'id': 'B4',
+                                 'producer': 'backtest/signals/pead.py',
+                                 'param': 'earnings_announcement_return',
+                                 'production': 'not gated',
+                                 'band': ['q20', 'q40', 'q60', 'q80'],
+                                 'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                 'resim_band': [],
+                                 'env': None,
+                                 'consumers': [],
+                                 'sweep_levels': None,
+                                 'subset_safe': True,
+                                 'legs': ['long'],
+                                 'status': 'UNTESTED',
+                                 'type': 'float>=q',
+                                 'engine_implemented': False,
+                                 'evidence': 'long: b3249_r1_break_retest_companions_long_net.json '
+                                             '(ts10 +1.479 / bept +3.855, joint 1.479, cluster of '
+                                             '2)',
+                                 'derivation': "BREADTH (runbook 3.6): the pead.py cluster's "
+                                               'representative on the long leg, op ge (max joint '
+                                               'effect, #165); levels = retention quantiles on the '
+                                               "leg's own fires at grid time; registered on the "
+                                               "owner's word 2026-11-05T12:24:51Z, verbatim '1-5 "
+                                               "approve all recs fable mode' (item 2 of the "
+                                               'B3139q-r203d close; S6-B3249)'},
+                                {'id': 'B5',
+                                 'producer': 'backtest/signals/cross_asset.py',
+                                 'param': 'gold_silver_20d_pct_change',
+                                 'production': 'not gated',
+                                 'band': ['q20', 'q40', 'q60', 'q80'],
+                                 'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                 'resim_band': [],
+                                 'env': None,
+                                 'consumers': [],
+                                 'sweep_levels': None,
+                                 'subset_safe': True,
+                                 'legs': ['long'],
+                                 'status': 'UNTESTED',
+                                 'type': 'float>=q',
+                                 'engine_implemented': False,
+                                 'evidence': 'long: b3249_r1_break_retest_companions_long_net.json '
+                                             '(ts10 +3.315 / bept +9.231, joint 3.315, cluster of '
+                                             '9)',
+                                 'derivation': 'BREADTH (runbook 3.6): the cross_asset.py '
+                                               "cluster's representative on the long leg, op ge "
+                                               '(max joint effect, #165); levels = retention '
+                                               "quantiles on the leg's own fires at grid time; "
+                                               "registered on the owner's word "
+                                               "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                               "recs fable mode' (item 2 of the B3139q-r203d "
+                                               'close; S6-B3249)'},
+                                {'id': 'B6',
+                                 'producer': 'backtest/signals/multi_timeframe.py',
+                                 'param': 'monthly_momentum_6m',
+                                 'production': 'not gated',
+                                 'band': ['q20', 'q40', 'q60', 'q80'],
+                                 'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                 'resim_band': [],
+                                 'env': None,
+                                 'consumers': [],
+                                 'sweep_levels': None,
+                                 'subset_safe': True,
+                                 'legs': ['long'],
+                                 'status': 'UNTESTED',
+                                 'type': 'float<=q',
+                                 'engine_implemented': False,
+                                 'evidence': 'long: b3249_r1_break_retest_companions_long_net.json '
+                                             '(ts10 -1.957 / bept -4.644, joint 1.957, cluster of '
+                                             '4)',
+                                 'derivation': 'BREADTH (runbook 3.6): the multi_timeframe.py '
+                                               "cluster's representative on the long leg, op le "
+                                               '(max joint effect, #165); levels = retention '
+                                               "quantiles on the leg's own fires at grid time; "
+                                               "registered on the owner's word "
+                                               "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                               "recs fable mode' (item 2 of the B3139q-r203d "
+                                               'close; S6-B3249)'},
+                                {'id': 'B7',
+                                 'producer': 'backtest/signals/polars_panel.py',
+                                 'param': 'rsi_2',
+                                 'production': 'not gated',
+                                 'band': ['q20', 'q40', 'q60', 'q80'],
+                                 'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                 'resim_band': [],
+                                 'env': None,
+                                 'consumers': [],
+                                 'sweep_levels': None,
+                                 'subset_safe': True,
+                                 'legs': ['long'],
+                                 'status': 'UNTESTED',
+                                 'type': 'float<=q',
+                                 'engine_implemented': False,
+                                 'evidence': 'long: b3249_r1_break_retest_companions_long_net.json '
+                                             '(ts10 -1.927 / bept -3.758, joint 1.927, cluster of '
+                                             '2)',
+                                 'derivation': 'BREADTH (runbook 3.6): the polars_panel.py '
+                                               "cluster's representative on the long leg, op le "
+                                               '(max joint effect, #165); levels = retention '
+                                               "quantiles on the leg's own fires at grid time; "
+                                               "registered on the owner's word "
+                                               "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                               "recs fable mode' (item 2 of the B3139q-r203d "
+                                               'close; S6-B3249)'},
+                                {'id': 'B8',
+                                 'producer': 'backtest/signals/calendar_effects.py',
+                                 'param': 'trading_day_of_month',
+                                 'production': 'not gated',
+                                 'band': ['q20', 'q40', 'q60', 'q80'],
+                                 'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                 'resim_band': [],
+                                 'env': None,
+                                 'consumers': [],
+                                 'sweep_levels': None,
+                                 'subset_safe': True,
+                                 'legs': ['long'],
+                                 'status': 'UNTESTED',
+                                 'type': 'float<=q',
+                                 'engine_implemented': False,
+                                 'evidence': 'long: b3249_r1_break_retest_companions_long_net.json '
+                                             '(ts10 -1.887 / bept -4.499, joint 1.887, cluster of '
+                                             '1)',
+                                 'derivation': 'BREADTH (runbook 3.6): the calendar_effects.py '
+                                               "cluster's representative on the long leg, op le "
+                                               '(max joint effect, #165); levels = retention '
+                                               "quantiles on the leg's own fires at grid time; "
+                                               "registered on the owner's word "
+                                               "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                               "recs fable mode' (item 2 of the B3139q-r203d "
+                                               'close; S6-B3249)'},
+                                {'id': 'B9',
+                                 'producer': 'backtest/signals/earnings_surprise_yoy.py',
+                                 'param': 'within_pead_window',
+                                 'production': 'not gated',
+                                 'band': ['require_false'],
+                                 'free_band': ['require_false'],
+                                 'resim_band': [],
+                                 'env': None,
+                                 'consumers': [],
+                                 'sweep_levels': None,
+                                 'subset_safe': True,
+                                 'legs': ['long'],
+                                 'status': 'UNTESTED',
+                                 'type': 'bool',
+                                 'engine_implemented': False,
+                                 'evidence': 'long: b3249_r1_break_retest_companions_long_net.json '
+                                             '(ts10 -1.596 / bept -2.155, joint 1.596, cluster of '
+                                             '1)',
+                                 'derivation': 'BREADTH (runbook 3.6): the '
+                                               "earnings_surprise_yoy.py cluster's representative "
+                                               'on the long leg, op eq_false (max joint effect, '
+                                               "#165); levels = retention quantiles on the leg's "
+                                               "own fires at grid time; registered on the owner's "
+                                               "word 2026-11-05T12:24:51Z, verbatim '1-5 approve "
+                                               "all recs fable mode' (item 2 of the B3139q-r203d "
+                                               'close; S6-B3249)'},
+                                {'id': 'B10',
+                                 'producer': 'backtest/signals/cross_sectional.py',
+                                 'param': 'xs_max_anomaly',
+                                 'production': 'not gated',
+                                 'band': ['q20', 'q40', 'q60', 'q80'],
+                                 'free_band': ['q20', 'q40', 'q60', 'q80'],
+                                 'resim_band': [],
+                                 'env': None,
+                                 'consumers': [],
+                                 'sweep_levels': None,
+                                 'subset_safe': True,
+                                 'legs': ['long'],
+                                 'status': 'UNTESTED',
+                                 'type': 'float>=q',
+                                 'engine_implemented': False,
+                                 'evidence': 'long: b3249_r1_break_retest_companions_long_net.json '
+                                             '(ts10 +2.588 / bept +12.182, joint 2.588, cluster of '
+                                             '1)',
+                                 'derivation': 'BREADTH (runbook 3.6): the cross_sectional.py '
+                                               "cluster's representative on the long leg, op ge "
+                                               '(max joint effect, #165); levels = retention '
+                                               "quantiles on the leg's own fires at grid time; "
+                                               "registered on the owner's word "
+                                               "2026-11-05T12:24:51Z, verbatim '1-5 approve all "
+                                               "recs fable mode' (item 2 of the B3139q-r203d "
+                                               'close; S6-B3249)'}]}})
 
 
 # S6-B3423 batch 2 - R1 PRE-REGISTRATION (B3139q-r203d; runbook 2.7 step 1, B2855):

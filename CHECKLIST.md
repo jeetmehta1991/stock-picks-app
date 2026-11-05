@@ -6817,7 +6817,8 @@ a number carries the comparison with it; a value coalesce before a comparison
 MECHANISM: scripts/truthy_numeric_reads.py joins every truth-consumed s.get
 read in backtest/signals/screener.py to the key's persisted kind
 (output_audit/b3428_signal_key_types.json, measured on the R5 trade log),
-pinned by test_b3428_no_strategy_gate_reads_a_number_for_truth - the one known
-instance is frozen both ways until the owner rules S6-B3428. A key the type
+pinned by test_b3428_no_strategy_gate_reads_a_number_for_truth - its frozen set
+held the one known instance; S6-B3428 (a), ruled 2026-11-05, fixed it at
+B3139q-r205, so the set is empty and binds both ways. A key the type
 map has not measured is not judged; re-measure with --write-types when the
 producer set grows.

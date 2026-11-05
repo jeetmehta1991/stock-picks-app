@@ -13422,7 +13422,10 @@ _KNOWN_NEAR_IDENTICAL = {
     ("macd_crossover|short", "macd_crossover_short|short"):
         "S6-B1455a - dual short branch duplicates a standalone short (B874 class)",
     ("institutional_insider_combo_long|long", "rsi_oversold_with_smart_money_long|long"):
-        "S6-B1463a - different names, same trades; one of the two gates is inert",
+        "S6-B1463a - different names, same trades; one of the two gates is inert. "
+        "S6-B3428 (a) RESOLVED B3139q-r205 - the inert gate was rsi_oversold_with_smart_"
+        "money_long's RSI read, now rsi_14 < 35. Entry retained because the R5 cube "
+        "predates the fix; drop it when the cube is regenerated",
     ("macd_crossover|long", "macd_ichimoku|long"):
         "S6-B1463a - ichimoku gate is a near-no-op on the long side",
     ("macd_crossover|short", "macd_ichimoku|short"):
@@ -75315,11 +75318,12 @@ def test_b3428_no_strategy_gate_reads_a_number_for_truth():
     tests no RSI level. scripts/truthy_numeric_reads.py lists every s.get read
     consumed for its truth in screener.py and joins it to the key's persisted
     kind (output_audit/b3428_signal_key_types.json, measured on the R5 trade
-    log). The frozen set is the one known instance, pending the owner's
-    ruling on S6-B3428, and binds both ways: a new numeric-for-truth read
-    fails, and so does a fixed one left in the set. MEASURED B3139q-r203: 701
-    truthy reads over 269 keys, 1 numeric; the 4 days_to_cover /
-    short_interest_pct reads are value coalesces before a comparison."""
+    log). The frozen set held the one known instance until the owner ruled
+    S6-B3428 (a) and B3139q-r205 restored rsi_14 < 35; it is empty now and
+    binds both ways: a new numeric-for-truth read fails, and so does a
+    fixed one left in the set. MEASURED B3139q-r203: 701 truthy reads over
+    269 keys, 1 numeric; the 4 days_to_cover / short_interest_pct reads are
+    value coalesces before a comparison."""
     import json
     import sys as _sys
     from pathlib import Path
@@ -75333,7 +75337,7 @@ def test_b3428_no_strategy_gate_reads_a_number_for_truth():
                              .read_text(encoding="utf-8"))
     assert len(types) >= 800 and len(reads) >= 500, (len(types), len(reads))
     hits = {(f, k) for f, k, _ in tnr.numeric_truthy(reads, types)}
-    known = {("strat_rsi_oversold_with_smart_money_long", "rsi_14")}
+    known = set()   # S6-B3428 (a), B3139q-r205: the one instance fixed
     assert hits == known, ("numeric-for-truth reads changed: new "
                            f"{sorted(hits - known)}, gone {sorted(known - hits)}")
     # the detector fires on a number read for truth and stays quiet on a

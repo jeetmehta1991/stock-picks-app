@@ -8027,8 +8027,12 @@ def strat_mfi_oversold_with_smart_money_long(s):
 def strat_rsi_oversold_with_smart_money_long(s):
     """RSI oversold + smart-money buy. Classic mean-reversion entry with
     institutional / insider corroboration."""
+    # S6-B3428 (a), owner 2026-11-05: the reviewed B1145 level. B1145's
+    # loosening executor had written s.get("rsi_14", False), true for any
+    # non-zero RSI, so the gate tested no RSI level (L1012); a missing RSI
+    # reads 50 and never fires.
     base_fires = (
-        s.get("rsi_14", False)
+        s.get("rsi_14", 50) < 35
         and s.get("price_above_ema_200", False)
     )
     fires = base_fires and _has_smart_money_buy(s)

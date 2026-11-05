@@ -25,8 +25,9 @@ The type map is a MEASUREMENT of the R5 trade log (signals_at_entry on its
 first 20,000 rows: key -> the value kinds seen). A key absent from it is not
 judged (its kind is unmeasured, and the 15 such keys read for truth at
 B3139q-r203 are all event flags by name); regenerate with --write-types when
-the producer set grows. Pinned by test_b3428, whose frozen set is the one
-known instance, shrink-only, until the owner rules S6-B3428.
+the producer set grows. Pinned by test_b3428, whose frozen set held the one
+known instance; S6-B3428 (a), ruled 2026-11-05, fixed it at B3139q-r205, so the
+set is empty and binds both ways.
 
 Usage:
   python scripts/truthy_numeric_reads.py                # list numeric-for-truth reads
