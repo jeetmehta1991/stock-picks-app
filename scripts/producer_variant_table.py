@@ -5571,6 +5571,780 @@ SPECS_PHASE0.update({'macd_fast_crossover': {'formula': '\n'
                            'signal_keys': ['po3_accum_range_pct']}]}})
 
 
+# S6-B3373 / S6-B3249 - R1 PRE-REGISTRATION (B3139q-r203c; runbook 2.7 step 1, B2855):
+# avwap_252_breakout (offline margin and volume-floor levels) and r1_break_retest
+# (offline volume-ratio ceiling), written from their Table A renders BEFORE the owner's
+# T3 words - no level approved, engine-only bands held at production, B-rows join on
+# the owner's word (S6-B3304 precedent).
+SPECS_PHASE0.update({'avwap_252_breakout': {'formula': '\n'
+                                   'ID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered '
+                                   'COMPUTATION STEP in\n'
+                                   'the producer->gate derivation; the Table A render '
+                                   '(output_audit/b3249_<name>_table_a.md)\n'
+                                   'numbers its band rows P<n>.x - integer ids here. R1 '
+                                   'PRE-REGISTRATION (runbook 2.7\n'
+                                   'step 1, B2855) written S6-B3373 B3139q-r203, BEFORE the '
+                                   "owner's T3 words: no\n"
+                                   "level below is approved, and B-rows join on the owner's word "
+                                   '(S6-B3304 precedent).\n'
+                                   '\n'
+                                   '=============================== PRODUCER LAYER '
+                                   '===============================\n'
+                                   '\n'
+                                   'P1  avwap_252low_reclaim_recent_3d  (technical.py '
+                                   "compute_vwap: today's close above the\n"
+                                   '       AVWAP anchored at the 252-bar low, and a close below it '
+                                   'within the prior 3 bars)\n'
+                                   'P2  avwap_252low_loss_recent_3d  (technical.py compute_vwap: '
+                                   'the mirror)\n'
+                                   "P3  anchor lookback 252  (compute_vwap's 252-bar swing-low "
+                                   'anchor)\n'
+                                   'P4  event window 3  (compute_vwap n_lookback, shared by the '
+                                   'four anchors)\n'
+                                   'P5  margin past the AVWAP  (both legs; production 0.0 - the '
+                                   "producer's close > AVWAP /\n"
+                                   '       close < AVWAP; the distance is persisted as '
+                                   'pct_from_avwap_252low, 3 dp)\n'
+                                   'P6  vol_above_avg  (technical.py compute_volume: vol / 20-day '
+                                   'average >= 1.0)\n'
+                                   'P7  volume ratio floor 1.0  (compute_volume; the ratio is '
+                                   'persisted as vol_ratio_20d, 2 dp)\n'
+                                   '\n'
+                                   '=============================== STRATEGY LAYER '
+                                   '===============================\n'
+                                   '\n'
+                                   'P8  _short_borrow_trap_active(s)  (screener.py; days_to_cover '
+                                   '> 5.0 blocks the\n'
+                                   '       SHORT fire - B718a)\n'
+                                   '\n'
+                                   'long_fires  = P1 AND P6           (screener.py '
+                                   'strat_avwap_252_breakout, fl)\n'
+                                   'short_fires = P2 AND P6 AND NOT P8 (screener.py '
+                                   'strat_avwap_252_breakout, fs)\n',
+                        'baseline': {'artifact': 'output_r5_merged_1_7',
+                                     'fires': 2294,
+                                     'tickers': 506,
+                                     'holdout_n': 468,
+                                     'window': '2022-05-05..2026-05-05',
+                                     'fires_by_side': {'long': 1523, 'short': 771}},
+                        'gate': '(avwap_252low_reclaim_recent_3d AND vol_above_avg) | short '
+                                '(avwap_252low_loss_recent_3d AND vol_above_avg AND NOT borrow) '
+                                '(screener strat_avwap_252_breakout)',
+                        'tools': {},
+                        'params': [{'id': 'P1',
+                                    'producer': 'technical.py compute_vwap',
+                                    'param': 'avwap_252low_reclaim_recent_3d identity (LONG)',
+                                    'production': 'reclaim within 3 bars',
+                                    'band': ['reclaim within 3 bars'],
+                                    'free_band': None,
+                                    'resim_band': None,
+                                    'env': None,
+                                    'consumers': ['backtest/signals/screener.py'],
+                                    'sweep_levels': None,
+                                    'subset_safe': None,
+                                    'status': 'UNTESTED',
+                                    'type': 'identity',
+                                    'engine_implemented': True,
+                                    'evidence': 'backtest/signals/technical.py compute_vwap '
+                                                '(avwap_{key}_reclaim_recent_3d); '
+                                                'backtest/signals/screener.py '
+                                                'strat_avwap_252_breakout (fl)',
+                                    'derivation': 'the boolean itself - its knobs are P3, P4 and '
+                                                  'P5; held at production',
+                                    'legs': ['long']},
+                                   {'id': 'P2',
+                                    'producer': 'technical.py compute_vwap',
+                                    'param': 'avwap_252low_loss_recent_3d identity (SHORT)',
+                                    'production': 'loss within 3 bars',
+                                    'band': ['loss within 3 bars'],
+                                    'free_band': None,
+                                    'resim_band': None,
+                                    'env': None,
+                                    'consumers': ['backtest/signals/screener.py'],
+                                    'sweep_levels': None,
+                                    'subset_safe': None,
+                                    'status': 'UNTESTED',
+                                    'type': 'identity',
+                                    'engine_implemented': True,
+                                    'evidence': 'backtest/signals/technical.py compute_vwap '
+                                                '(avwap_{key}_loss_recent_3d); '
+                                                'backtest/signals/screener.py '
+                                                'strat_avwap_252_breakout (fs)',
+                                    'derivation': 'the mirror boolean - its knobs are P3, P4 and '
+                                                  'P5; held at production',
+                                    'legs': ['short']},
+                                   {'id': 'P3',
+                                    'producer': 'technical.py compute_vwap',
+                                    'param': 'anchor lookback (bars, both legs)',
+                                    'production': 252,
+                                    'band': [252],
+                                    'free_band': None,
+                                    'resim_band': None,
+                                    'env': None,
+                                    'consumers': ['backtest/signals/screener.py'],
+                                    'sweep_levels': None,
+                                    'subset_safe': False,
+                                    'status': 'UNTESTED',
+                                    'type': 'int',
+                                    'engine_implemented': False,
+                                    'evidence': 'backtest/signals/technical.py compute_vwap (the '
+                                                '252-bar swing-low anchor)',
+                                    'derivation': 'held at production - no env knob exists, so any '
+                                                  'other level is an engine run with no actuator '
+                                                  '(S6-B2569a); Table A P1.1 / P2.1 planned [189, '
+                                                  '252, 378]; the AVWAP at another anchor is not '
+                                                  'persisted',
+                                    'legs': ['long', 'short']},
+                                   {'id': 'P4',
+                                    'producer': 'technical.py compute_vwap',
+                                    'param': 'event window (bars, both legs)',
+                                    'production': 3,
+                                    'band': [3],
+                                    'free_band': None,
+                                    'resim_band': None,
+                                    'env': None,
+                                    'consumers': ['backtest/signals/screener.py'],
+                                    'sweep_levels': None,
+                                    'subset_safe': False,
+                                    'status': 'UNTESTED',
+                                    'type': 'int',
+                                    'engine_implemented': False,
+                                    'evidence': 'backtest/signals/technical.py compute_vwap '
+                                                '(n_lookback = 3)',
+                                    'derivation': 'held at production - no env knob exists, so any '
+                                                  'other level is an engine run with no actuator '
+                                                  '(S6-B2569a); Table A P1.2 / P2.2 planned [1, 3, '
+                                                  '5]; n_lookback is shared by the four anchors, '
+                                                  'so an actuator would be scoped to 252low; prior '
+                                                  "bars' close-versus-AVWAP is not persisted",
+                                    'legs': ['long', 'short']},
+                                   {'id': 'P5',
+                                    'producer': 'technical.py compute_vwap',
+                                    'param': 'margin past the AVWAP (pct, both legs)',
+                                    'production': 0.0,
+                                    'band': [0.0, 0.25, 0.5],
+                                    'free_band': [0.0, 0.25, 0.5],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': ['backtest/signals/screener.py'],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'status': 'UNTESTED',
+                                    'type': 'float',
+                                    'engine_implemented': True,
+                                    'evidence': 'backtest/signals/technical.py compute_vwap '
+                                                '(pct_from_avwap_{key} and today_above / '
+                                                'today_below)',
+                                    'derivation': 'TIGHTER = a larger margin on the persisted '
+                                                  'pct_from_avwap_252low - long pct >= m, short '
+                                                  'pct <= -m - a subset of the recorded fires '
+                                                  "(offline); production 0.0 is the producer's "
+                                                  'strict close > AVWAP (close < AVWAP short); '
+                                                  'Table A P1.3 / P2.3',
+                                    'legs': ['long', 'short'],
+                                    'signal_keys': ['pct_from_avwap_252low']},
+                                   {'id': 'P6',
+                                    'producer': 'technical.py compute_volume',
+                                    'param': 'vol_above_avg identity (both legs)',
+                                    'production': 'ratio >= 1.0',
+                                    'band': ['ratio >= 1.0'],
+                                    'free_band': None,
+                                    'resim_band': None,
+                                    'env': None,
+                                    'consumers': ['backtest/signals/screener.py'],
+                                    'sweep_levels': None,
+                                    'subset_safe': None,
+                                    'status': 'UNTESTED',
+                                    'type': 'identity',
+                                    'engine_implemented': True,
+                                    'evidence': 'backtest/signals/technical.py compute_volume '
+                                                '(vol_above_avg); backtest/signals/screener.py '
+                                                'strat_avwap_252_breakout',
+                                    'derivation': 'the boolean itself - its knob is P7; held at '
+                                                  'production',
+                                    'legs': ['long', 'short']},
+                                   {'id': 'P7',
+                                    'producer': 'technical.py compute_volume',
+                                    'param': 'volume ratio floor (both legs)',
+                                    'production': 1.0,
+                                    'band': [1.0, 1.2, 1.5, 2.0],
+                                    'free_band': [1.0, 1.2, 1.5, 2.0],
+                                    'resim_band': [],
+                                    'env': None,
+                                    'consumers': ['backtest/signals/screener.py'],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'status': 'UNTESTED',
+                                    'type': 'float',
+                                    'engine_implemented': True,
+                                    'evidence': 'backtest/signals/technical.py compute_volume '
+                                                '(vol_ratio_20d, 2 dp; vol_above_avg)',
+                                    'derivation': 'TIGHTER = a higher floor: vol_ratio_20d >= f on '
+                                                  'the recorded fires (offline); Table A P3.1 - 3 '
+                                                  'of 4 levels tighter; the 2 dp rounding is the '
+                                                  'camarilla P6 precedent',
+                                    'legs': ['long', 'short'],
+                                    'signal_keys': ['vol_ratio_20d']},
+                                   {'id': 'P8',
+                                    'producer': '_short_borrow_trap_active (shared screener '
+                                                'helper)',
+                                    'param': 'days_to_cover cap (borrow guard, SHORT leg)',
+                                    'production': '5.0',
+                                    'band': ['5.0'],
+                                    'free_band': None,
+                                    'resim_band': None,
+                                    'env': None,
+                                    'consumers': ['backtest/signals/screener.py'],
+                                    'sweep_levels': None,
+                                    'subset_safe': True,
+                                    'status': 'UNTESTED',
+                                    'type': 'float',
+                                    'engine_implemented': True,
+                                    'evidence': 'backtest/signals/screener.py '
+                                                '_short_borrow_trap_active (dtc > 5.0)',
+                                    'derivation': 'the shared short-side borrow guard: '
+                                                  'days_to_cover > 5.0 blocks the SHORT fire '
+                                                  '(B718a owner-ruled); a tighter cap is offline '
+                                                  'on the persisted days_to_cover, a band only on '
+                                                  "the owner's word (bollinger_lower P10 "
+                                                  'precedent); the LONG campaign never reads it',
+                                    'legs': ['short']}]},
+ 'r1_break_retest': {'formula': '\n'
+                                'ID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered '
+                                'COMPUTATION STEP in\n'
+                                'the producer->gate derivation; the Table A render '
+                                '(output_audit/b3249_<name>_table_a.md)\n'
+                                'numbers its band rows P<n>.x - integer ids here. R1 '
+                                'PRE-REGISTRATION (runbook 2.7\n'
+                                "step 1, B2855) written S6-B3249 B3139q-r203, BEFORE the owner's "
+                                'T3 words: no\n'
+                                "level below is approved, and B-rows join on the owner's word "
+                                '(S6-B3304 precedent).\n'
+                                '\n'
+                                '=============================== PRODUCER LAYER '
+                                '===============================\n'
+                                '\n'
+                                'P1  r1_break_retest_long identity (LONG)\n'
+                                'P2  s1_break_retest_short identity (SHORT)\n'
+                                'P3  retest tolerance (x ATR14, both legs)\n'
+                                'P4  break window (bars back, both legs)\n'
+                                'P5  above_r1 identity (LONG)\n'
+                                'P6  below_s1 identity (SHORT)\n'
+                                'P7  macd_12_26_9_bullish identity (LONG)\n'
+                                'P8  macd_12_26_9_bearish identity (SHORT)\n'
+                                'P9  MACD span triple (both legs)\n'
+                                'P10 close_above_open identity (LONG)\n'
+                                'P11 minimum body pct (LONG)\n'
+                                'P12 close_below_open identity (SHORT)\n'
+                                'P13 minimum body pct (SHORT)\n'
+                                'P14 close_in_top_40pct_of_range identity (LONG)\n'
+                                'P15 range-position cutoff (LONG)\n'
+                                'P16 close_in_bottom_40pct_of_range identity (SHORT)\n'
+                                'P17 range-position cutoff (SHORT)\n'
+                                'P18 vol_below_avg identity (both legs)\n'
+                                'P19 volume ratio ceiling (both legs)\n'
+                                'P20 above_avwap_20low identity (LONG)\n'
+                                'P21 below_avwap_20high identity (SHORT)\n'
+                                'P22 AVWAP buffer pct (SHORT)\n'
+                                '\n'
+                                '============================== STRATEGY LAYER '
+                                '==============================\n'
+                                '\n'
+                                'P23 days_to_cover cap (borrow guard, SHORT leg)\n'
+                                '\n'
+                                'long_fires  = P1 AND P5 AND P7 AND P10 AND P14 AND P18 AND P20   '
+                                '(screener.py strat_r1_break_retest, fl)\n'
+                                'short_fires = P2 AND P6 AND P8 AND P12 AND P16 AND P18 AND P21 '
+                                'AND NOT P23   (screener.py strat_r1_break_retest, fs)\n',
+                     'baseline': {'artifact': 'output_r5_merged_1_7',
+                                  'fires': 3371,
+                                  'tickers': 530,
+                                  'holdout_n': 736,
+                                  'window': '2022-05-05..2026-05-05',
+                                  'fires_by_side': {'long': 1727, 'short': 1644}},
+                     'gate': '(r1_break_retest_long AND above_r1 AND macd_12_26_9_bullish AND '
+                             'close_above_open AND close_in_top_40pct_of_range AND vol_below_avg '
+                             'AND above_avwap_20low) | short mirror AND NOT borrow (screener '
+                             'strat_r1_break_retest)',
+                     'tools': {},
+                     'params': [{'id': 'P1',
+                                 'producer': 'technical.py compute_pivot_break_retest_signals',
+                                 'param': 'r1_break_retest_long identity (LONG)',
+                                 'production': 'R1 broken 2-8 bars ago, retested within 1.5 ATR',
+                                 'band': ['R1 broken 2-8 bars ago, retested within 1.5 ATR'],
+                                 'free_band': None,
+                                 'resim_band': None,
+                                 'env': None,
+                                 'consumers': ['backtest/signals/screener.py'],
+                                 'sweep_levels': None,
+                                 'subset_safe': None,
+                                 'status': 'UNTESTED',
+                                 'type': 'identity',
+                                 'engine_implemented': True,
+                                 'evidence': 'backtest/signals/technical.py '
+                                             'compute_pivot_break_retest_signals '
+                                             '(r1_break_retest_long); backtest/signals/screener.py '
+                                             'strat_r1_break_retest (fl)',
+                                 'derivation': 'the boolean itself - its knobs are the retest '
+                                               'tolerance and break window rows; held at '
+                                               'production',
+                                 'legs': ['long']},
+                                {'id': 'P2',
+                                 'producer': 'technical.py compute_pivot_break_retest_signals',
+                                 'param': 's1_break_retest_short identity (SHORT)',
+                                 'production': 'S1 broken 2-8 bars ago, retested within 1.5 ATR',
+                                 'band': ['S1 broken 2-8 bars ago, retested within 1.5 ATR'],
+                                 'free_band': None,
+                                 'resim_band': None,
+                                 'env': None,
+                                 'consumers': ['backtest/signals/screener.py'],
+                                 'sweep_levels': None,
+                                 'subset_safe': None,
+                                 'status': 'UNTESTED',
+                                 'type': 'identity',
+                                 'engine_implemented': True,
+                                 'evidence': 'backtest/signals/technical.py '
+                                             'compute_pivot_break_retest_signals '
+                                             '(s1_break_retest_short); '
+                                             'backtest/signals/screener.py strat_r1_break_retest '
+                                             '(fs)',
+                                 'derivation': 'the mirror boolean; held at production',
+                                 'legs': ['short']},
+                                {'id': 'P3',
+                                 'producer': 'technical.py compute_pivot_break_retest_signals',
+                                 'param': 'retest tolerance (x ATR14, both legs)',
+                                 'production': 1.5,
+                                 'band': [1.5],
+                                 'free_band': None,
+                                 'resim_band': None,
+                                 'env': None,
+                                 'consumers': ['backtest/signals/screener.py'],
+                                 'sweep_levels': None,
+                                 'subset_safe': False,
+                                 'status': 'UNTESTED',
+                                 'type': 'float',
+                                 'engine_implemented': False,
+                                 'evidence': 'backtest/signals/technical.py '
+                                             'compute_pivot_break_retest_signals (tolerance = 1.5 '
+                                             '* atr)',
+                                 'derivation': 'held at production - no env knob exists, so any '
+                                               'other level is an engine run with no actuator '
+                                               '(S6-B2569a); Table A P11 / P12 BANDS-TO-DEFINE; '
+                                               'the retest distance is not persisted',
+                                 'legs': ['long', 'short']},
+                                {'id': 'P4',
+                                 'producer': 'technical.py compute_pivot_break_retest_signals',
+                                 'param': 'break window (bars back, both legs)',
+                                 'production': '2-8',
+                                 'band': ['2-8'],
+                                 'free_band': None,
+                                 'resim_band': None,
+                                 'env': None,
+                                 'consumers': ['backtest/signals/screener.py'],
+                                 'sweep_levels': None,
+                                 'subset_safe': False,
+                                 'status': 'UNTESTED',
+                                 'type': 'identity',
+                                 'engine_implemented': False,
+                                 'evidence': 'backtest/signals/technical.py '
+                                             'compute_pivot_break_retest_signals (its lag loop '
+                                             'over 2..8)',
+                                 'derivation': 'held at production - no env knob exists, so any '
+                                               'other level is an engine run with no actuator '
+                                               '(S6-B2569a); Table A P11 / P12 BANDS-TO-DEFINE; '
+                                               'the break bar is not persisted',
+                                 'legs': ['long', 'short']},
+                                {'id': 'P5',
+                                 'producer': 'technical.py compute_pivots',
+                                 'param': 'above_r1 identity (LONG)',
+                                 'production': 'close > R1',
+                                 'band': ['close > R1'],
+                                 'free_band': None,
+                                 'resim_band': None,
+                                 'env': None,
+                                 'consumers': ['backtest/signals/screener.py'],
+                                 'sweep_levels': None,
+                                 'subset_safe': None,
+                                 'status': 'UNTESTED',
+                                 'type': 'identity',
+                                 'engine_implemented': True,
+                                 'evidence': 'backtest/signals/technical.py compute_pivots '
+                                             '(above_r1); backtest/signals/screener.py '
+                                             'strat_r1_break_retest (fl)',
+                                 'derivation': 'a same-day position filter; Table A P2 '
+                                               'BANDS-TO-DEFINE; held at production',
+                                 'legs': ['long']},
+                                {'id': 'P6',
+                                 'producer': 'technical.py compute_pivots',
+                                 'param': 'below_s1 identity (SHORT)',
+                                 'production': 'close < S1',
+                                 'band': ['close < S1'],
+                                 'free_band': None,
+                                 'resim_band': None,
+                                 'env': None,
+                                 'consumers': ['backtest/signals/screener.py'],
+                                 'sweep_levels': None,
+                                 'subset_safe': None,
+                                 'status': 'UNTESTED',
+                                 'type': 'identity',
+                                 'engine_implemented': True,
+                                 'evidence': 'backtest/signals/technical.py compute_pivots '
+                                             '(below_s1); backtest/signals/screener.py '
+                                             'strat_r1_break_retest (fs)',
+                                 'derivation': 'the mirror filter; Table A P4 BANDS-TO-DEFINE; '
+                                               'held at production',
+                                 'legs': ['short']},
+                                {'id': 'P7',
+                                 'producer': 'technical.py compute_macd',
+                                 'param': 'macd_12_26_9_bullish identity (LONG)',
+                                 'production': 'hist > 0 (12/26/9)',
+                                 'band': ['hist > 0 (12/26/9)'],
+                                 'free_band': None,
+                                 'resim_band': None,
+                                 'env': None,
+                                 'consumers': ['backtest/signals/screener.py'],
+                                 'sweep_levels': None,
+                                 'subset_safe': None,
+                                 'status': 'UNTESTED',
+                                 'type': 'identity',
+                                 'engine_implemented': True,
+                                 'evidence': 'backtest/signals/technical.py compute_macd '
+                                             '({key}_bullish); backtest/signals/screener.py '
+                                             'strat_r1_break_retest (fl)',
+                                 'derivation': 'the boolean itself - its knob is the triple row; '
+                                               'held at production',
+                                 'legs': ['long']},
+                                {'id': 'P8',
+                                 'producer': 'technical.py compute_macd',
+                                 'param': 'macd_12_26_9_bearish identity (SHORT)',
+                                 'production': 'hist < 0 (12/26/9)',
+                                 'band': ['hist < 0 (12/26/9)'],
+                                 'free_band': None,
+                                 'resim_band': None,
+                                 'env': None,
+                                 'consumers': ['backtest/signals/screener.py'],
+                                 'sweep_levels': None,
+                                 'subset_safe': None,
+                                 'status': 'UNTESTED',
+                                 'type': 'identity',
+                                 'engine_implemented': True,
+                                 'evidence': 'backtest/signals/technical.py compute_macd '
+                                             '({key}_bearish); backtest/signals/screener.py '
+                                             'strat_r1_break_retest (fs)',
+                                 'derivation': 'the mirror boolean; held at production',
+                                 'legs': ['short']},
+                                {'id': 'P9',
+                                 'producer': 'technical.py compute_macd',
+                                 'param': 'MACD span triple (both legs)',
+                                 'production': '12/26/9',
+                                 'band': ['12/26/9'],
+                                 'free_band': None,
+                                 'resim_band': None,
+                                 'env': None,
+                                 'consumers': ['backtest/signals/screener.py'],
+                                 'sweep_levels': None,
+                                 'subset_safe': False,
+                                 'status': 'UNTESTED',
+                                 'type': 'identity',
+                                 'engine_implemented': False,
+                                 'evidence': 'backtest/signals/technical.py compute_macd (its '
+                                             'triple loop)',
+                                 'derivation': 'held at production - no env knob exists, so any '
+                                               'other level is an engine run with no actuator '
+                                               '(S6-B2569a); Table A P9.1 / P10.1: (8,21,5) is the '
+                                               'only other computed triple and swapping it changes '
+                                               'which bars fire',
+                                 'legs': ['long', 'short']},
+                                {'id': 'P10',
+                                 'producer': 'technical.py compute_pivots',
+                                 'param': 'close_above_open identity (LONG)',
+                                 'production': 'close > open',
+                                 'band': ['close > open'],
+                                 'free_band': None,
+                                 'resim_band': None,
+                                 'env': None,
+                                 'consumers': ['backtest/signals/screener.py'],
+                                 'sweep_levels': None,
+                                 'subset_safe': None,
+                                 'status': 'UNTESTED',
+                                 'type': 'identity',
+                                 'engine_implemented': True,
+                                 'evidence': 'backtest/signals/technical.py compute_pivots '
+                                             '(close_above_open); backtest/signals/screener.py '
+                                             'strat_r1_break_retest (fl)',
+                                 'derivation': 'the boolean itself; held at production',
+                                 'legs': ['long']},
+                                {'id': 'P11',
+                                 'producer': 'technical.py compute_pivots',
+                                 'param': 'minimum body pct (LONG)',
+                                 'production': 0.0,
+                                 'band': [0.0],
+                                 'free_band': None,
+                                 'resim_band': None,
+                                 'env': None,
+                                 'consumers': ['backtest/signals/screener.py'],
+                                 'sweep_levels': None,
+                                 'subset_safe': False,
+                                 'status': 'UNTESTED',
+                                 'type': 'float',
+                                 'engine_implemented': False,
+                                 'evidence': 'backtest/signals/technical.py compute_pivots '
+                                             '(close_above_open)',
+                                 'derivation': 'held at production - no env knob exists, so any '
+                                               'other level is an engine run with no actuator '
+                                               '(S6-B2569a); Table A P5.1 planned [0, 0.2, 0.5] '
+                                               'pct - bar OHLC is not persisted',
+                                 'legs': ['long']},
+                                {'id': 'P12',
+                                 'producer': 'technical.py compute_pivots',
+                                 'param': 'close_below_open identity (SHORT)',
+                                 'production': 'close < open',
+                                 'band': ['close < open'],
+                                 'free_band': None,
+                                 'resim_band': None,
+                                 'env': None,
+                                 'consumers': ['backtest/signals/screener.py'],
+                                 'sweep_levels': None,
+                                 'subset_safe': None,
+                                 'status': 'UNTESTED',
+                                 'type': 'identity',
+                                 'engine_implemented': True,
+                                 'evidence': 'backtest/signals/technical.py compute_pivots '
+                                             '(close_below_open); backtest/signals/screener.py '
+                                             'strat_r1_break_retest (fs)',
+                                 'derivation': 'the mirror boolean; held at production',
+                                 'legs': ['short']},
+                                {'id': 'P13',
+                                 'producer': 'technical.py compute_pivots',
+                                 'param': 'minimum body pct (SHORT)',
+                                 'production': 0.0,
+                                 'band': [0.0],
+                                 'free_band': None,
+                                 'resim_band': None,
+                                 'env': None,
+                                 'consumers': ['backtest/signals/screener.py'],
+                                 'sweep_levels': None,
+                                 'subset_safe': False,
+                                 'status': 'UNTESTED',
+                                 'type': 'float',
+                                 'engine_implemented': False,
+                                 'evidence': 'backtest/signals/technical.py compute_pivots '
+                                             '(close_below_open)',
+                                 'derivation': 'held at production - no env knob exists, so any '
+                                               'other level is an engine run with no actuator '
+                                               '(S6-B2569a); Table A P6.1 planned [0, 0.2, 0.5] '
+                                               'pct - the mirror',
+                                 'legs': ['short']},
+                                {'id': 'P14',
+                                 'producer': 'technical.py compute_volume',
+                                 'param': 'close_in_top_40pct_of_range identity (LONG)',
+                                 'production': '(high - close) / range <= 0.40',
+                                 'band': ['(high - close) / range <= 0.40'],
+                                 'free_band': None,
+                                 'resim_band': None,
+                                 'env': None,
+                                 'consumers': ['backtest/signals/screener.py'],
+                                 'sweep_levels': None,
+                                 'subset_safe': None,
+                                 'status': 'UNTESTED',
+                                 'type': 'identity',
+                                 'engine_implemented': True,
+                                 'evidence': 'backtest/signals/technical.py compute_volume '
+                                             '(close_in_top_40pct_of_range); '
+                                             'backtest/signals/screener.py strat_r1_break_retest '
+                                             '(fl)',
+                                 'derivation': 'the boolean itself; held at production',
+                                 'legs': ['long']},
+                                {'id': 'P15',
+                                 'producer': 'technical.py compute_volume',
+                                 'param': 'range-position cutoff (LONG)',
+                                 'production': 0.4,
+                                 'band': [0.4],
+                                 'free_band': None,
+                                 'resim_band': None,
+                                 'env': None,
+                                 'consumers': ['backtest/signals/screener.py'],
+                                 'sweep_levels': None,
+                                 'subset_safe': False,
+                                 'status': 'UNTESTED',
+                                 'type': 'float',
+                                 'engine_implemented': False,
+                                 'evidence': 'backtest/signals/technical.py compute_volume '
+                                             '(close_in_top_40pct_of_range <= 0.40)',
+                                 'derivation': 'held at production - no env knob exists, so any '
+                                               'other level is an engine run with no actuator '
+                                               '(S6-B2569a); Table A P8.1 planned [0.25, 0.40, '
+                                               '0.50] - bar OHLC is not persisted',
+                                 'legs': ['long']},
+                                {'id': 'P16',
+                                 'producer': 'technical.py compute_volume',
+                                 'param': 'close_in_bottom_40pct_of_range identity (SHORT)',
+                                 'production': '(close - low) / range <= 0.40',
+                                 'band': ['(close - low) / range <= 0.40'],
+                                 'free_band': None,
+                                 'resim_band': None,
+                                 'env': None,
+                                 'consumers': ['backtest/signals/screener.py'],
+                                 'sweep_levels': None,
+                                 'subset_safe': None,
+                                 'status': 'UNTESTED',
+                                 'type': 'identity',
+                                 'engine_implemented': True,
+                                 'evidence': 'backtest/signals/technical.py compute_volume '
+                                             '(close_in_bottom_40pct_of_range); '
+                                             'backtest/signals/screener.py strat_r1_break_retest '
+                                             '(fs)',
+                                 'derivation': 'the mirror boolean; held at production',
+                                 'legs': ['short']},
+                                {'id': 'P17',
+                                 'producer': 'technical.py compute_volume',
+                                 'param': 'range-position cutoff (SHORT)',
+                                 'production': 0.4,
+                                 'band': [0.4],
+                                 'free_band': None,
+                                 'resim_band': None,
+                                 'env': None,
+                                 'consumers': ['backtest/signals/screener.py'],
+                                 'sweep_levels': None,
+                                 'subset_safe': False,
+                                 'status': 'UNTESTED',
+                                 'type': 'float',
+                                 'engine_implemented': False,
+                                 'evidence': 'backtest/signals/technical.py compute_volume '
+                                             '(close_in_bottom_40pct_of_range <= 0.40)',
+                                 'derivation': 'held at production - no env knob exists, so any '
+                                               'other level is an engine run with no actuator '
+                                               '(S6-B2569a); Table A P7.1 planned [0.25, 0.40, '
+                                               '0.50] - the mirror',
+                                 'legs': ['short']},
+                                {'id': 'P18',
+                                 'producer': 'technical.py compute_volume',
+                                 'param': 'vol_below_avg identity (both legs)',
+                                 'production': 'ratio < 1.0',
+                                 'band': ['ratio < 1.0'],
+                                 'free_band': None,
+                                 'resim_band': None,
+                                 'env': None,
+                                 'consumers': ['backtest/signals/screener.py'],
+                                 'sweep_levels': None,
+                                 'subset_safe': None,
+                                 'status': 'UNTESTED',
+                                 'type': 'identity',
+                                 'engine_implemented': True,
+                                 'evidence': 'backtest/signals/technical.py compute_volume '
+                                             '(vol_below_avg); backtest/signals/screener.py '
+                                             'strat_r1_break_retest',
+                                 'derivation': 'the boolean itself - its knob is the ceiling row; '
+                                               'held at production',
+                                 'legs': ['long', 'short']},
+                                {'id': 'P19',
+                                 'producer': 'technical.py compute_volume',
+                                 'param': 'volume ratio ceiling (both legs)',
+                                 'production': 1.0,
+                                 'band': [1.0, 0.8, 0.6],
+                                 'free_band': [1.0, 0.8, 0.6],
+                                 'resim_band': [],
+                                 'env': None,
+                                 'consumers': ['backtest/signals/screener.py'],
+                                 'sweep_levels': None,
+                                 'subset_safe': True,
+                                 'status': 'UNTESTED',
+                                 'type': 'float',
+                                 'engine_implemented': True,
+                                 'evidence': 'backtest/signals/technical.py compute_volume '
+                                             '(vol_ratio_20d, 2 dp; vol_below_avg = ratio < 1.0)',
+                                 'derivation': 'TIGHTER = a LOWER ceiling: vol_ratio_20d < c on '
+                                               'the recorded fires (offline); Table A P13.1 - 2 of '
+                                               '3 levels tighter; a looser ceiling admits bars the '
+                                               'cube never recorded',
+                                 'legs': ['long', 'short'],
+                                 'signal_keys': ['vol_ratio_20d']},
+                                {'id': 'P20',
+                                 'producer': 'technical.py compute_vwap',
+                                 'param': 'above_avwap_20low identity (LONG)',
+                                 'production': 'close > AVWAP(20-bar low)',
+                                 'band': ['close > AVWAP(20-bar low)'],
+                                 'free_band': None,
+                                 'resim_band': None,
+                                 'env': None,
+                                 'consumers': ['backtest/signals/screener.py'],
+                                 'sweep_levels': None,
+                                 'subset_safe': None,
+                                 'status': 'UNTESTED',
+                                 'type': 'identity',
+                                 'engine_implemented': True,
+                                 'evidence': 'backtest/signals/technical.py compute_vwap '
+                                             '(above_avwap_{key}); backtest/signals/screener.py '
+                                             'strat_r1_break_retest (fl)',
+                                 'derivation': 'Table A P1 BANDS-TO-DEFINE; held at production',
+                                 'legs': ['long']},
+                                {'id': 'P21',
+                                 'producer': 'technical.py compute_vwap',
+                                 'param': 'below_avwap_20high identity (SHORT)',
+                                 'production': 'close < AVWAP(20-bar high)',
+                                 'band': ['close < AVWAP(20-bar high)'],
+                                 'free_band': None,
+                                 'resim_band': None,
+                                 'env': None,
+                                 'consumers': ['backtest/signals/screener.py'],
+                                 'sweep_levels': None,
+                                 'subset_safe': None,
+                                 'status': 'UNTESTED',
+                                 'type': 'identity',
+                                 'engine_implemented': True,
+                                 'evidence': 'backtest/signals/technical.py compute_vwap '
+                                             '(below_avwap_{key}); backtest/signals/screener.py '
+                                             'strat_r1_break_retest (fs)',
+                                 'derivation': 'the boolean itself; held at production',
+                                 'legs': ['short']},
+                                {'id': 'P22',
+                                 'producer': 'technical.py compute_vwap',
+                                 'param': 'AVWAP buffer pct (SHORT)',
+                                 'production': 0.0,
+                                 'band': [0.0],
+                                 'free_band': None,
+                                 'resim_band': None,
+                                 'env': None,
+                                 'consumers': ['backtest/signals/screener.py'],
+                                 'sweep_levels': None,
+                                 'subset_safe': False,
+                                 'status': 'UNTESTED',
+                                 'type': 'float',
+                                 'engine_implemented': False,
+                                 'evidence': 'backtest/signals/technical.py compute_vwap '
+                                             '(below_avwap_{key})',
+                                 'derivation': 'held at production - no env knob exists, so any '
+                                               'other level is an engine run with no actuator '
+                                               '(S6-B2569a); Table A P3.1 planned [0, 0.25, 0.5] '
+                                               'with an anchor choice - offline 0 of 3 in its '
+                                               'render, so held here until the T3 review re-reads '
+                                               'it',
+                                 'legs': ['short']},
+                                {'id': 'P23',
+                                 'producer': '_short_borrow_trap_active (shared screener helper)',
+                                 'param': 'days_to_cover cap (borrow guard, SHORT leg)',
+                                 'production': '5.0',
+                                 'band': ['5.0'],
+                                 'free_band': None,
+                                 'resim_band': None,
+                                 'env': None,
+                                 'consumers': ['backtest/signals/screener.py'],
+                                 'sweep_levels': None,
+                                 'subset_safe': True,
+                                 'status': 'UNTESTED',
+                                 'type': 'float',
+                                 'engine_implemented': True,
+                                 'evidence': 'backtest/signals/screener.py '
+                                             '_short_borrow_trap_active (dtc > 5.0)',
+                                 'derivation': 'the shared short-side borrow guard: days_to_cover '
+                                               '> 5.0 blocks the SHORT fire (B718a owner-ruled); a '
+                                               'tighter cap is offline on the persisted '
+                                               "days_to_cover, a band only on the owner's word "
+                                               '(bollinger_lower P10 precedent); the LONG campaign '
+                                               'never reads it',
+                                 'legs': ['short']}]}})
+
+
 # B3119 - THE FAMILY ADAPTER (S6-B2883): bollinger_lower PROMOTED into SPECS
 # for the owner-approved span campaign (verbatim 2026-09-27: "Q2 approved one
 # line change fix. I want to test various spans"). The SPECS entry is DERIVED

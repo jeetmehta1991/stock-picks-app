@@ -68480,7 +68480,9 @@ def test_b3373_avwap_252_breakout_campaign_opened_on_the_freed_slot():
     assert "**Lane:** NONE" in t
     rows = [ln for ln in t.splitlines() if ln.startswith("| P")]
     assert [ln.split(" | ")[0] for ln in rows][:11] == ["| P1", "| P1.1", "| P1.2", "| P1.3", "| P2", "| P2.1", "| P2.2", "| P2.3", "| P3", "| P3.1", "| P4"], rows[:11]
-    assert all(rows[i].endswith("| BANDS-DEFINED |") for i in (0, 4)) and "BANDS-TO-DEFINE" not in t and "rsi_14" not in "\n".join(rows)
+    # S6-B3373 B3139q-r203c: the R1 spec registration moves P1 / P2 from
+    # BANDS-DEFINED (r157) to SPECS-REGISTERED - the bands stay defined
+    assert all(rows[i].endswith("| SPECS-REGISTERED |") for i in (0, 4)) and "BANDS-TO-DEFINE" not in t and "rsi_14" not in "\n".join(rows)
     log = (root / "STRATEGY_CAMPAIGN_LOG.md").read_text(encoding="utf-8")
     assert "## P. VWAP FAMILY (avwap_252_breakout - IN CAMPAIGN)" in log
 
