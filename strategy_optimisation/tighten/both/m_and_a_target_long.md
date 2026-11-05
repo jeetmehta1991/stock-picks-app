@@ -1,10 +1,10 @@
 # Table A - m_and_a_target_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build adafdd452 | commit adafdd452 at 2026-10-25 20:59:24 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build ff10274b7 | commit 663067408 at 2026-11-05 07:01:20 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** sec_edgar_sleeve | **status:** NOT-STARTED | **R5 fires:** 1023 (closed fires in the exit cube: 1023 of 1023, S6-B3258) | **surviving fires (T1):** 751 (survives_pct 0.7341)
 
-**SPECS entry:** NONE - build at R1 before any engine leg (W-T T0)
+**SPECS entry:** registered in producer_variant_table
 
 ## Formula (Section 1 of the SS6/#183 locked artifact)
 
@@ -36,7 +36,7 @@ leg runs.
 
 | id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|---|---|
-| P1 | PRODUCER | 8k_item_1_01_filed_within_30d - emitted by backtest/signals/sec_edgar_extractor.py (f-string template); the boolean's UNDERLYING condition is bandable through its producer's internals | an 8-K carrying Item 1.01 (material definitive agreement) filed in the last 30 days (sec_edgar_extractor.py eight_k_item_filed_within_days) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
+| P1 | PRODUCER | 8k_item_1_01_filed_within_30d - emitted by backtest/signals/sec_edgar_extractor.py (f-string template); the boolean's UNDERLYING condition is bandable through its producer's internals | an 8-K carrying Item 1.01 (material definitive agreement) filed in the last 30 days (sec_edgar_extractor.py eight_k_item_filed_within_days) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs in the SPECS entry | SPECS-REGISTERED |
 | P1.1 | BAND | filing window - an Item 1.01 8-K filed within the last N days - backtest/signals/sec_edgar_extractor.py eight_k_item_filed_within_days | BRACKET production | 30 | 7, 14, 30, 60 | offline 0 of 4 levels - none - no filing date is persisted on the fire, only the 30-day boolean (the 7-day key on the fires is item 5.02's) | the whole band - 7 and 14 are tighter and 60 looser, and every one needs the producer re-run; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P2 | STRATEGY | po3_accum_range_pct `>= 0.0556` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `>= 0.0556` | production + 4 tighter measured levels | offline 4 of 5 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (runbook section 3.6; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
@@ -50,7 +50,7 @@ STRICTLY tighter than production enter the free band.
 
 | key | source (module writing the key) | gate | coverage | OFFLINE free_band: level -> retained (n, %) | RESIM side |
 |---|---|---|---|---|---|
-| po3_accum_range_pct | backtest/signals/ict_producers.py | `>= 0.0556` | 100.0% | TIGHTER = RAISE the floor: 0.0679 -> 603 (80%); 0.0844 -> 451 (60%); 0.1112 -> 301 (40%); 0.1559 -> 151 (20%) | LOOSER = LOWER the threshold: RESIM - band from the SPECS entry (to be built) |
+| po3_accum_range_pct | backtest/signals/ict_producers.py | `>= 0.0556` | 100.0% | TIGHTER = RAISE the floor: 0.0679 -> 603 (80%); 0.0844 -> 451 (60%); 0.1112 -> 301 (40%); 0.1559 -> 151 (20%) | LOOSER = LOWER the threshold: RESIM - band from the SPECS entry |
 
 ### B-row candidate census - companion producers persisted on the fires [NEW-GATE]
 

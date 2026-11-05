@@ -1,0 +1,132 @@
+{
+  "_doc": "runbook 3.6 steps 1-2: consistent-sign BH-FDR survivors under BOTH exits, clustered by the producer module that writes the key (build_table_a module index); representative = max joint effect min(|a|, |b|) (#165). A SCREEN, never a gate - B-row registration happens at the T3 owner band review.",
+  "strategy": "tema_dema",
+  "direction": "long",
+  "survival_applied": true,
+  "basis": "net",
+  "cube_dir": "output_r5_merged_1_7 (default)",
+  "exit_a": "time_stop_10d",
+  "exit_b": "breakeven_plus_trail",
+  "screens": {
+    "a": "output_audit/b3423_tema_dema_screen_long_ts10_net.json",
+    "b": "output_audit/b3423_tema_dema_screen_long_bept_net.json"
+  },
+  "survivors_a": 12,
+  "survivors_b": 19,
+  "n_consistent": 7,
+  "clusters": {
+    "backtest/signals/cross_asset.py": {
+      "representative": "gold_silver_20d_pct_change",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "gold_silver_20d_pct_change",
+        "usd_weakening",
+        "gold_silver_ratio",
+        "vix_today",
+        "sector_weakest_rs"
+      ],
+      "rows": [
+        {
+          "key": "gold_silver_20d_pct_change",
+          "kind": "numeric",
+          "effect_a": 3.0248311237373744,
+          "effect_b": 11.476531716200464,
+          "joint": 3.0248311237373744,
+          "p_a": 1.5084322253453365e-10,
+          "p_b": 9.59463550705964e-12,
+          "sign": "+",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "usd_weakening",
+          "kind": "bool",
+          "effect_a": 2.125700792540793,
+          "effect_b": 7.389335365190364,
+          "joint": 2.125700792540793,
+          "p_a": 0.000848367002350283,
+          "p_b": 0.0002903374334115838,
+          "sign": "+",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "gold_silver_ratio",
+          "kind": "numeric",
+          "effect_a": 1.404520138888889,
+          "effect_b": 9.118993055555555,
+          "joint": 1.404520138888889,
+          "p_a": 3.656132215578944e-05,
+          "p_b": 8.205202981876499e-09,
+          "sign": "+",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "vix_today",
+          "kind": "numeric",
+          "effect_a": 1.2244227976190476,
+          "effect_b": 2.372426587301587,
+          "joint": 1.2244227976190476,
+          "p_a": 0.0011672875325273067,
+          "p_b": 9.26202455472707e-05,
+          "sign": "+",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "sector_weakest_rs",
+          "kind": "numeric",
+          "effect_a": -3.7013973512809377,
+          "effect_b": -0.881341265016645,
+          "joint": 0.881341265016645,
+          "p_a": 7.109093779568455e-06,
+          "p_b": 0.00014988265226714017,
+          "sign": "-",
+          "module": "backtest/signals/cross_asset.py"
+        }
+      ]
+    },
+    "backtest/signals/technical.py": {
+      "representative": "vix_value",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "vix_value"
+      ],
+      "rows": [
+        {
+          "key": "vix_value",
+          "kind": "numeric",
+          "effect_a": 1.2244227976190476,
+          "effect_b": 2.372426587301587,
+          "joint": 1.2244227976190476,
+          "p_a": 0.0011672875325273067,
+          "p_b": 9.26202455472707e-05,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        }
+      ]
+    },
+    "backtest/signals/cross_sectional.py": {
+      "representative": "xs_max_anomaly",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "xs_max_anomaly"
+      ],
+      "rows": [
+        {
+          "key": "xs_max_anomaly",
+          "kind": "numeric",
+          "effect_a": 2.553155633802817,
+          "effect_b": 8.563695774647888,
+          "joint": 2.553155633802817,
+          "p_a": 0.00040576223968165755,
+          "p_b": 2.0563230552933775e-06,
+          "sign": "+",
+          "module": "backtest/signals/cross_sectional.py"
+        }
+      ]
+    }
+  },
+  "unindexed": {
+    "members": [],
+    "n": 0,
+    "note": "keys the producer index cannot place - a mixed bag, never a cluster, so no representative (runbook 3.6, S6-B3394)"
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "_doc": "runbook 3.6 steps 1-2: consistent-sign BH-FDR survivors under BOTH exits, clustered by the producer module that writes the key (build_table_a module index); representative = max joint effect min(|a|, |b|) (#165). A SCREEN, never a gate - B-row registration happens at the T3 owner band review.",
+  "strategy": "rsi_oversold",
+  "direction": "long",
+  "survival_applied": true,
+  "basis": "net",
+  "cube_dir": "output_r5_merged_1_7 (default)",
+  "exit_a": "time_stop_10d",
+  "exit_b": "breakeven_plus_trail",
+  "screens": {
+    "a": "output_audit/b3423_rsi_oversold_screen_long_ts10_net.json",
+    "b": "output_audit/b3423_rsi_oversold_screen_long_bept_net.json"
+  },
+  "survivors_a": 10,
+  "survivors_b": 30,
+  "n_consistent": 8,
+  "clusters": {
+    "backtest/signals/cot_positioning.py": {
+      "representative": "cot_ndx_mmoney_pctile_3y",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "cot_ndx_mmoney_pctile_3y",
+        "cot_rut_commercials_net_pct",
+        "cot_dow_commercials_pctile_3y",
+        "cot_dow_commercials_net_pct",
+        "cot_ndx_commercials_net_pct"
+      ],
+      "rows": [
+        {
+          "key": "cot_ndx_mmoney_pctile_3y",
+          "kind": "numeric",
+          "effect_a": 4.3014467812329515,
+          "effect_b": 4.4441428041462085,
+          "joint": 4.3014467812329515,
+          "p_a": 1.4352480495316093e-05,
+          "p_b": 3.768448932182239e-07,
+          "sign": "+",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_rut_commercials_net_pct",
+          "kind": "numeric",
+          "effect_a": -4.098975697399527,
+          "effect_b": -5.22458682427108,
+          "joint": 4.098975697399527,
+          "p_a": 3.1466669101905096e-09,
+          "p_b": 8.857937664529843e-10,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_dow_commercials_pctile_3y",
+          "kind": "numeric",
+          "effect_a": -2.964719614253024,
+          "effect_b": -4.067564919091206,
+          "joint": 2.964719614253024,
+          "p_a": 1.7433248835931564e-07,
+          "p_b": 8.105109512753595e-09,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_dow_commercials_net_pct",
+          "kind": "numeric",
+          "effect_a": -2.5932707536139454,
+          "effect_b": -3.7675047831632655,
+          "joint": 2.5932707536139454,
+          "p_a": 1.7026498975106282e-06,
+          "p_b": 4.641143818747164e-08,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_ndx_commercials_net_pct",
+          "kind": "numeric",
+          "effect_a": -2.5587747746329175,
+          "effect_b": -3.8912381490375147,
+          "joint": 2.5587747746329175,
+          "p_a": 0.0007920888755731515,
+          "p_b": 0.00011684716655363892,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        }
+      ]
+    },
+    "backtest/signals/calendar_effects.py": {
+      "representative": "is_january",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "is_january",
+        "is_january_extended"
+      ],
+      "rows": [
+        {
+          "key": "is_january",
+          "kind": "bool",
+          "effect_a": 2.06247574693616,
+          "effect_b": 4.66996586922276,
+          "joint": 2.06247574693616,
+          "p_a": 0.0002206082673236351,
+          "p_b": 0.0019673597769274977,
+          "sign": "+",
+          "module": "backtest/signals/calendar_effects.py"
+        },
+        {
+          "key": "is_january_extended",
+          "kind": "bool",
+          "effect_a": 2.0313048489053345,
+          "effect_b": 4.291311995066296,
+          "joint": 2.0313048489053345,
+          "p_a": 0.00016347496369506774,
+          "p_b": 0.0030174184517836127,
+          "sign": "+",
+          "module": "backtest/signals/calendar_effects.py"
+        }
+      ]
+    },
+    "backtest/signals/cross_asset.py": {
+      "representative": "sector_strongest_rs",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "sector_strongest_rs"
+      ],
+      "rows": [
+        {
+          "key": "sector_strongest_rs",
+          "kind": "numeric",
+          "effect_a": -1.7785740596094552,
+          "effect_b": -4.682675678314491,
+          "joint": 1.7785740596094552,
+          "p_a": 0.00040837997718703415,
+          "p_b": 2.597032533343176e-07,
+          "sign": "-",
+          "module": "backtest/signals/cross_asset.py"
+        }
+      ]
+    }
+  },
+  "unindexed": {
+    "members": [],
+    "n": 0,
+    "note": "keys the producer index cannot place - a mixed bag, never a cluster, so no representative (runbook 3.6, S6-B3394)"
+  }
+}

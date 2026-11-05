@@ -1,10 +1,10 @@
 # Table A - morning_star
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build adafdd452 | commit adafdd452 at 2026-10-25 20:59:24 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build ff10274b7 | commit 663067408 at 2026-11-05 07:01:20 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** candle | **status:** NOT-STARTED | **R5 fires:** 2280 (closed fires in the exit cube: 2280 of 2280, S6-B3258) | **surviving fires (T1):** 1053 (survives_pct 0.4618)
 
-**SPECS entry:** NONE - build at R1 before any engine leg (W-T T0)
+**SPECS entry:** registered in producer_variant_table
 
 ## Formula (Section 1 of the SS6/#183 locked artifact)
 
@@ -44,9 +44,9 @@ leg runs.
 
 | id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|---|---|
-| P1 | PRODUCER | evening_star - emitted by backtest/signals/technical.py; the boolean's UNDERLYING condition is bandable through its producer's internals | mirror of morning_star (technical.py:2095-2100) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
+| P1 | PRODUCER | evening_star - emitted by backtest/signals/technical.py; the boolean's UNDERLYING condition is bandable through its producer's internals | mirror of morning_star (technical.py:2095-2100) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs in the SPECS entry | SPECS-REGISTERED |
 | P1.1 | BAND | mirror of morning_star's two knobs - backtest/signals/technical.py:2095-2100 | mirror | 0.3 / midpoint | as morning_star, mirrored | counted on the mirrored leg - none | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
-| P2 | PRODUCER | morning_star - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | 3-bar reversal: bar-3 bearish, mid body < 0.3x its range, bar-1 bullish closing above bar-3's midpoint (technical.py:2085-2094) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
+| P2 | PRODUCER | morning_star - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | 3-bar reversal: bar-3 bearish, mid body < 0.3x its range, bar-1 bullish closing above bar-3's midpoint (technical.py:2085-2094) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs in the SPECS entry | SPECS-REGISTERED |
 | P2.1 | BAND | mid-candle small-body ratio (body < X * range) - backtest/signals/technical.py:2088 | BRACKET production (the one EXPLICIT candle knob) | 0.3 | [0.2, 0.3, 0.4] | offline 0 of 3 levels - none - the mid bar's body/range unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P2.2 | BAND | recovery rule (close above midpoint of bar-3) - technical.py:2093 | BRACKET the midpoint rule | structural | midpoint vs [0.382, 0.5, 0.618] retrace | offline 0 of 4 levels - none | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P3 | STRATEGY | rsi_14 `< 45` [EXISTING-THRESHOLD] | Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540) | `< 45` | production + 4 tighter measured levels [long leg only] | offline 4 of 5 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
@@ -66,9 +66,9 @@ STRICTLY tighter than production enter the free band.
 
 | key | source (module writing the key) | gate | coverage | OFFLINE free_band: level -> retained (n, %) | RESIM side |
 |---|---|---|---|---|---|
-| rsi_14 | backtest/signals/polars_panel.py (f-string template) +2 | `< 45` | 100.0% | [long leg only] TIGHTER = LOWER the ceiling: 34.71 -> 206 (20%); 38.242 -> 411 (40%); 40.556 -> 616 (60%); 42.77 -> 822 (80%) | LOOSER = RAISE the threshold: RESIM - band from the SPECS entry (to be built) |
-| rsi_14 | backtest/signals/polars_panel.py (f-string template) +2 | `> 55` | 100.0% | [short leg only] TIGHTER = RAISE the floor: 55.44 -> 21 (81%); 55.66 -> 16 (62%); 56.09 -> 11 (42%); 56.93 -> 6 (23%) | LOOSER = LOWER the threshold: RESIM - band from the SPECS entry (to be built) |
-| squeeze_momentum | backtest/signals/technical.py | `<= 0.0096` | 100.0% | TIGHTER = LOWER the ceiling: -7.707 -> 211 (20%); -4.0938 -> 421 (40%); -2.3375 -> 632 (60%); -1.0855 -> 842 (80%) | LOOSER = RAISE the threshold: RESIM - band from the SPECS entry (to be built) |
+| rsi_14 | backtest/signals/polars_panel.py (f-string template) +2 | `< 45` | 100.0% | [long leg only] TIGHTER = LOWER the ceiling: 34.71 -> 206 (20%); 38.242 -> 411 (40%); 40.556 -> 616 (60%); 42.77 -> 822 (80%) | LOOSER = RAISE the threshold: RESIM - band from the SPECS entry |
+| rsi_14 | backtest/signals/polars_panel.py (f-string template) +2 | `> 55` | 100.0% | [short leg only] TIGHTER = RAISE the floor: 55.44 -> 21 (81%); 55.66 -> 16 (62%); 56.09 -> 11 (42%); 56.93 -> 6 (23%) | LOOSER = LOWER the threshold: RESIM - band from the SPECS entry |
+| squeeze_momentum | backtest/signals/technical.py | `<= 0.0096` | 100.0% | TIGHTER = LOWER the ceiling: -7.707 -> 211 (20%); -4.0938 -> 421 (40%); -2.3375 -> 632 (60%); -1.0855 -> 842 (80%) | LOOSER = RAISE the threshold: RESIM - band from the SPECS entry |
 
 ### B-row candidate census - companion producers persisted on the fires [NEW-GATE]
 

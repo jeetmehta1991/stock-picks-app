@@ -1,0 +1,164 @@
+{
+  "_doc": "runbook 3.6 steps 1-2: consistent-sign BH-FDR survivors under BOTH exits, clustered by the producer module that writes the key (build_table_a module index); representative = max joint effect min(|a|, |b|) (#165). A SCREEN, never a gate - B-row registration happens at the T3 owner band review.",
+  "strategy": "morning_star",
+  "direction": "long",
+  "survival_applied": true,
+  "basis": "net",
+  "cube_dir": "output_r5_merged_1_7 (default)",
+  "exit_a": "time_stop_10d",
+  "exit_b": "breakeven_plus_trail",
+  "screens": {
+    "a": "output_audit/b3423_morning_star_screen_long_ts10_net.json",
+    "b": "output_audit/b3423_morning_star_screen_long_bept_net.json"
+  },
+  "survivors_a": 12,
+  "survivors_b": 116,
+  "n_consistent": 9,
+  "clusters": {
+    "backtest/signals/technical.py": {
+      "representative": "atr_pct",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "atr_pct",
+        "ppo",
+        "ppo_signal",
+        "vix_value"
+      ],
+      "rows": [
+        {
+          "key": "atr_pct",
+          "kind": "numeric",
+          "effect_a": 2.80969263803681,
+          "effect_b": 10.22683190184049,
+          "joint": 2.80969263803681,
+          "p_a": 2.0799382286173253e-05,
+          "p_b": 8.497661760174686e-08,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "ppo",
+          "kind": "numeric",
+          "effect_a": -1.8794907975460122,
+          "effect_b": -8.786219018404909,
+          "joint": 1.8794907975460122,
+          "p_a": 0.0004200536115883814,
+          "p_b": 4.185784534843469e-06,
+          "sign": "-",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "ppo_signal",
+          "kind": "numeric",
+          "effect_a": -1.4582435582822084,
+          "effect_b": -6.828739263803679,
+          "joint": 1.4582435582822084,
+          "p_a": 0.0007902553758791134,
+          "p_b": 5.3816925495297384e-05,
+          "sign": "-",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "vix_value",
+          "kind": "numeric",
+          "effect_a": 1.3698736271135714,
+          "effect_b": 4.177224506209784,
+          "joint": 1.3698736271135714,
+          "p_a": 0.0002896177249156325,
+          "p_b": 1.0768953526999819e-09,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        }
+      ]
+    },
+    "backtest/signals/cross_asset.py": {
+      "representative": "sector_weakest_rs",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "sector_weakest_rs",
+        "vix_today",
+        "bond_equity_20d_pct_change"
+      ],
+      "rows": [
+        {
+          "key": "sector_weakest_rs",
+          "kind": "numeric",
+          "effect_a": -3.431776609035137,
+          "effect_b": -3.1964622011526296,
+          "joint": 3.1964622011526296,
+          "p_a": 6.1064813481980075e-09,
+          "p_b": 0.00044072189242616973,
+          "sign": "-",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "vix_today",
+          "kind": "numeric",
+          "effect_a": 1.3698736271135714,
+          "effect_b": 4.177224506209784,
+          "joint": 1.3698736271135714,
+          "p_a": 0.0002896177249156325,
+          "p_b": 1.0768953526999819e-09,
+          "sign": "+",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "bond_equity_20d_pct_change",
+          "kind": "numeric",
+          "effect_a": 2.320814452011404,
+          "effect_b": 0.24616746911624876,
+          "joint": 0.24616746911624876,
+          "p_a": 2.7135849816979003e-06,
+          "p_b": 0.001991857605896875,
+          "sign": "+",
+          "module": "backtest/signals/cross_asset.py"
+        }
+      ]
+    },
+    "backtest/signals/ict_producers.py": {
+      "representative": "po3_accum_range_pct",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "po3_accum_range_pct"
+      ],
+      "rows": [
+        {
+          "key": "po3_accum_range_pct",
+          "kind": "numeric",
+          "effect_a": 2.044712883435583,
+          "effect_b": 7.960360736196318,
+          "joint": 2.044712883435583,
+          "p_a": 0.0010099495505975157,
+          "p_b": 2.791758811238832e-05,
+          "sign": "+",
+          "module": "backtest/signals/ict_producers.py"
+        }
+      ]
+    },
+    "backtest/signals/cross_sectional.py": {
+      "representative": "xs_max_anomaly",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "xs_max_anomaly"
+      ],
+      "rows": [
+        {
+          "key": "xs_max_anomaly",
+          "kind": "numeric",
+          "effect_a": 3.1434465915190555,
+          "effect_b": 11.616402883214475,
+          "joint": 3.1434465915190555,
+          "p_a": 9.366366827068915e-05,
+          "p_b": 2.159748039107991e-07,
+          "sign": "+",
+          "module": "backtest/signals/cross_sectional.py"
+        }
+      ]
+    }
+  },
+  "unindexed": {
+    "members": [],
+    "n": 0,
+    "note": "keys the producer index cannot place - a mixed bag, never a cluster, so no representative (runbook 3.6, S6-B3394)"
+  }
+}

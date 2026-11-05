@@ -1,0 +1,108 @@
+{
+  "_doc": "runbook 3.6 steps 1-2: consistent-sign BH-FDR survivors under BOTH exits, clustered by the producer module that writes the key (build_table_a module index); representative = max joint effect min(|a|, |b|) (#165). A SCREEN, never a gate - B-row registration happens at the T3 owner band review.",
+  "strategy": "stochrsi_oversold",
+  "direction": "long",
+  "survival_applied": true,
+  "basis": "net",
+  "cube_dir": "output_r5_merged_1_7 (default)",
+  "exit_a": "time_stop_10d",
+  "exit_b": "breakeven_plus_trail",
+  "screens": {
+    "a": "output_audit/b3423_stochrsi_oversold_screen_long_ts10_net.json",
+    "b": "output_audit/b3423_stochrsi_oversold_screen_long_bept_net.json"
+  },
+  "survivors_a": 9,
+  "survivors_b": 11,
+  "n_consistent": 5,
+  "clusters": {
+    "backtest/signals/cot_positioning.py": {
+      "representative": "cot_rut_commercials_net_pct",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "cot_rut_commercials_net_pct",
+        "cot_copper_commercials_pctile_3y",
+        "cot_copper_commercials_net_pct"
+      ],
+      "rows": [
+        {
+          "key": "cot_rut_commercials_net_pct",
+          "kind": "numeric",
+          "effect_a": -4.563406183619281,
+          "effect_b": -6.0125184997957515,
+          "joint": 4.563406183619281,
+          "p_a": 1.8833757610189735e-09,
+          "p_b": 4.298196475914252e-08,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_copper_commercials_pctile_3y",
+          "kind": "numeric",
+          "effect_a": 3.197480579335595,
+          "effect_b": 3.296841791848381,
+          "joint": 3.197480579335595,
+          "p_a": 4.8786335298975505e-05,
+          "p_b": 0.0001919623228277006,
+          "sign": "+",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_copper_commercials_net_pct",
+          "kind": "numeric",
+          "effect_a": 2.8864526220214364,
+          "effect_b": 2.879912140136416,
+          "joint": 2.879912140136416,
+          "p_a": 4.7376805621616765e-07,
+          "p_b": 8.16480746551422e-06,
+          "sign": "+",
+          "module": "backtest/signals/cot_positioning.py"
+        }
+      ]
+    },
+    "backtest/signals/multi_timeframe.py": {
+      "representative": "monthly_bias_bull",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "monthly_bias_bull"
+      ],
+      "rows": [
+        {
+          "key": "monthly_bias_bull",
+          "kind": "bool",
+          "effect_a": -2.0885839165458835,
+          "effect_b": -3.4555761183581315,
+          "joint": 2.0885839165458835,
+          "p_a": 0.0007136889226522611,
+          "p_b": 0.0011987512634966785,
+          "sign": "-",
+          "module": "backtest/signals/multi_timeframe.py"
+        }
+      ]
+    },
+    "backtest/signals/technical.py": {
+      "representative": "vix_percentile",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "vix_percentile"
+      ],
+      "rows": [
+        {
+          "key": "vix_percentile",
+          "kind": "numeric",
+          "effect_a": 2.2948490317616383,
+          "effect_b": 3.152060984055059,
+          "joint": 2.2948490317616383,
+          "p_a": 0.00021011672022920282,
+          "p_b": 0.0006009411088329394,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        }
+      ]
+    }
+  },
+  "unindexed": {
+    "members": [],
+    "n": 0,
+    "note": "keys the producer index cannot place - a mixed bag, never a cluster, so no representative (runbook 3.6, S6-B3394)"
+  }
+}

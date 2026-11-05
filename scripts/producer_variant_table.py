@@ -6345,6 +6345,1271 @@ SPECS_PHASE0.update({'avwap_252_breakout': {'formula': '\n'
                                  'legs': ['short']}]}})
 
 
+# S6-B3423 batch 2 - R1 PRE-REGISTRATION (B3139q-r203d; runbook 2.7 step 1, B2855):
+# stochrsi_oversold and tema_dema (TIGHTEN), morning_star and m_and_a_target_long (BOTH),
+# written from their lane charters, and rsi_oversold (NONE) from its render - before the
+# owner's T3 words: no level approved, engine-only knobs held at production, B-rows join
+# on the owner's word (S6-B3304 precedent).
+SPECS_PHASE0.update({'stochrsi_oversold': {'formula': '\n'
+                                  'ID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered '
+                                  'COMPUTATION STEP in\n'
+                                  'the producer->gate derivation; the Table A render '
+                                  '(output_audit/b3249_<name>_table_a.md)\n'
+                                  'numbers its band rows P<n>.x - integer ids here. R1 '
+                                  'PRE-REGISTRATION (runbook 2.7\n'
+                                  'step 1, B2855) written S6-B3423 B3139q-r203d, BEFORE the '
+                                  "owner's T3 words: no\n"
+                                  "level below is approved, and B-rows join on the owner's word "
+                                  '(S6-B3304 precedent).\n'
+                                  '\n'
+                                  '=============================== PRODUCER LAYER '
+                                  '===============================\n'
+                                  '\n'
+                                  'P1  stochrsi_oversold identity (LONG)\n'
+                                  'P2  oversold threshold on k (LONG)\n'
+                                  'P3  stochrsi_cross_up identity (LONG)\n'
+                                  'P4  cross-up guard on k (LONG)\n'
+                                  'P5  stochrsi_overbought identity (SHORT)\n'
+                                  'P6  overbought threshold on k (SHORT)\n'
+                                  'P7  stochrsi_cross_dn identity (SHORT)\n'
+                                  'P8  stoch-RSI period (both legs)\n'
+                                  'P9  rsi_14 ceiling (LONG)\n'
+                                  'P10 rsi_14 floor (SHORT)\n'
+                                  'P11 rsi span (both legs)\n'
+                                  'P12 price_above_ema_200 identity (LONG)\n'
+                                  'P13 below_ema_200 identity (SHORT)\n'
+                                  'P14 EMA span (the 200 in the EMA flags, both legs)\n'
+                                  '\n'
+                                  '============================== STRATEGY LAYER '
+                                  '==============================\n'
+                                  '\n'
+                                  'P15 days_to_cover cap (borrow guard, SHORT leg)\n'
+                                  '\n'
+                                  'long_fires  = P1 AND P3 AND P9 AND P12   (screener.py '
+                                  'strat_stochrsi_oversold, fl)\n'
+                                  'short_fires = P5 AND P7 AND P10 AND P13 AND NOT P15   '
+                                  '(screener.py strat_stochrsi_oversold, fs)\n',
+                       'baseline': {'artifact': 'output_r5_merged_1_7',
+                                    'window': '2022-05-05..2026-05-05',
+                                    'fires': 2433,
+                                    'tickers': 521,
+                                    'holdout_n': 615,
+                                    'fires_by_side': {'short': 1383, 'long': 1050}},
+                       'gate': '(stochrsi_oversold AND stochrsi_cross_up AND rsi_14 < 55 AND '
+                               'price_above_ema_200) | short (stochrsi_overbought AND '
+                               'stochrsi_cross_dn AND rsi_14 > 45 AND below_ema_200 AND NOT '
+                               'borrow) (screener strat_stochrsi_oversold)',
+                       'tools': {},
+                       'params': [{'id': 'P1',
+                                   'producer': 'technical.py compute_stochrsi',
+                                   'param': 'stochrsi_oversold identity (LONG)',
+                                   'production': 'k < 20',
+                                   'band': ['k < 20'],
+                                   'free_band': None,
+                                   'resim_band': None,
+                                   'env': None,
+                                   'consumers': ['backtest/signals/screener.py'],
+                                   'sweep_levels': None,
+                                   'subset_safe': None,
+                                   'status': 'UNTESTED',
+                                   'type': 'identity',
+                                   'engine_implemented': True,
+                                   'evidence': 'backtest/signals/technical.py compute_stochrsi '
+                                               '(stochrsi_oversold); backtest/signals/screener.py '
+                                               'strat_stochrsi_oversold (fl)',
+                                   'derivation': 'the boolean itself - its knobs are the '
+                                                 'k-threshold and period rows; held at production',
+                                   'legs': ['long']},
+                                  {'id': 'P2',
+                                   'producer': 'technical.py compute_stochrsi',
+                                   'param': 'oversold threshold on k (LONG)',
+                                   'production': 20,
+                                   'band': [20, 15, 10],
+                                   'free_band': [20, 15, 10],
+                                   'resim_band': [],
+                                   'env': None,
+                                   'consumers': ['backtest/signals/screener.py'],
+                                   'sweep_levels': None,
+                                   'subset_safe': True,
+                                   'status': 'UNTESTED',
+                                   'type': 'float',
+                                   'engine_implemented': True,
+                                   'evidence': 'backtest/signals/technical.py compute_stochrsi '
+                                               '(stochrsi_k, 2 dp; stochrsi_oversold = k < 20)',
+                                   'derivation': 'TIGHTER = a LOWER ceiling on the persisted '
+                                                 'stochrsi_k - k < 15, k < 10 - a subset of the '
+                                                 "recorded fires (offline); the charter's 25 is "
+                                                 'looser, engine-only with no knob, so it stays '
+                                                 'out of the band (charter P6.2)',
+                                   'legs': ['long'],
+                                   'signal_keys': ['stochrsi_k']},
+                                  {'id': 'P3',
+                                   'producer': 'technical.py compute_stochrsi',
+                                   'param': 'stochrsi_cross_up identity (LONG)',
+                                   'production': 'k > d and k < 80',
+                                   'band': ['k > d and k < 80'],
+                                   'free_band': None,
+                                   'resim_band': None,
+                                   'env': None,
+                                   'consumers': ['backtest/signals/screener.py'],
+                                   'sweep_levels': None,
+                                   'subset_safe': None,
+                                   'status': 'UNTESTED',
+                                   'type': 'identity',
+                                   'engine_implemented': True,
+                                   'evidence': 'backtest/signals/technical.py compute_stochrsi '
+                                               '(stochrsi_cross_up); backtest/signals/screener.py '
+                                               'strat_stochrsi_oversold (fl)',
+                                   'derivation': 'the boolean itself; held at production',
+                                   'legs': ['long']},
+                                  {'id': 'P4',
+                                   'producer': 'technical.py compute_stochrsi',
+                                   'param': 'cross-up guard on k (LONG)',
+                                   'production': 80,
+                                   'band': [80],
+                                   'free_band': None,
+                                   'resim_band': None,
+                                   'env': None,
+                                   'consumers': ['backtest/signals/screener.py'],
+                                   'sweep_levels': None,
+                                   'subset_safe': False,
+                                   'status': 'UNTESTED',
+                                   'type': 'float',
+                                   'engine_implemented': False,
+                                   'evidence': 'backtest/signals/technical.py compute_stochrsi '
+                                               "(stochrsi_cross_up's k < 80)",
+                                   'derivation': 'held at production - no env knob exists, so any '
+                                                 'other level is an engine run with no actuator '
+                                                 "(S6-B2569a); the charter's P4.1 offers k < 70 "
+                                                 'offline, but on the long leg k < 20 (the '
+                                                 'oversold row) already binds, so a tighter guard '
+                                                 'removes no long fire - held, not an axis',
+                                   'legs': ['long']},
+                                  {'id': 'P5',
+                                   'producer': 'technical.py compute_stochrsi',
+                                   'param': 'stochrsi_overbought identity (SHORT)',
+                                   'production': 'k > 80',
+                                   'band': ['k > 80'],
+                                   'free_band': None,
+                                   'resim_band': None,
+                                   'env': None,
+                                   'consumers': ['backtest/signals/screener.py'],
+                                   'sweep_levels': None,
+                                   'subset_safe': None,
+                                   'status': 'UNTESTED',
+                                   'type': 'identity',
+                                   'engine_implemented': True,
+                                   'evidence': 'backtest/signals/technical.py compute_stochrsi '
+                                               '(stochrsi_overbought); '
+                                               'backtest/signals/screener.py '
+                                               'strat_stochrsi_oversold (fs)',
+                                   'derivation': 'the mirror boolean; held at production',
+                                   'legs': ['short']},
+                                  {'id': 'P6',
+                                   'producer': 'technical.py compute_stochrsi',
+                                   'param': 'overbought threshold on k (SHORT)',
+                                   'production': 80,
+                                   'band': [80],
+                                   'free_band': None,
+                                   'resim_band': None,
+                                   'env': None,
+                                   'consumers': ['backtest/signals/screener.py'],
+                                   'sweep_levels': None,
+                                   'subset_safe': False,
+                                   'status': 'UNTESTED',
+                                   'type': 'float',
+                                   'engine_implemented': False,
+                                   'evidence': 'backtest/signals/technical.py compute_stochrsi '
+                                               '(stochrsi_overbought = k > 80)',
+                                   'derivation': 'held at production - no env knob exists, so any '
+                                                 'other level is an engine run with no actuator '
+                                                 "(S6-B2569a); the charter's P5.1 plans [75, 80, "
+                                                 '85, 90] - 85 and 90 are offline on stochrsi_k '
+                                                 "for a short-leg campaign; the key's one row is "
+                                                 "the long threshold's",
+                                   'legs': ['short']},
+                                  {'id': 'P7',
+                                   'producer': 'technical.py compute_stochrsi',
+                                   'param': 'stochrsi_cross_dn identity (SHORT)',
+                                   'production': 'k < d and k > 20',
+                                   'band': ['k < d and k > 20'],
+                                   'free_band': None,
+                                   'resim_band': None,
+                                   'env': None,
+                                   'consumers': ['backtest/signals/screener.py'],
+                                   'sweep_levels': None,
+                                   'subset_safe': None,
+                                   'status': 'UNTESTED',
+                                   'type': 'identity',
+                                   'engine_implemented': True,
+                                   'evidence': 'backtest/signals/technical.py compute_stochrsi '
+                                               '(stochrsi_cross_dn); backtest/signals/screener.py '
+                                               'strat_stochrsi_oversold (fs)',
+                                   'derivation': 'the mirror boolean; held at production',
+                                   'legs': ['short']},
+                                  {'id': 'P8',
+                                   'producer': 'technical.py compute_stochrsi',
+                                   'param': 'stoch-RSI period (both legs)',
+                                   'production': 14,
+                                   'band': [14],
+                                   'free_band': None,
+                                   'resim_band': None,
+                                   'env': None,
+                                   'consumers': ['backtest/signals/screener.py'],
+                                   'sweep_levels': None,
+                                   'subset_safe': False,
+                                   'status': 'UNTESTED',
+                                   'type': 'int',
+                                   'engine_implemented': False,
+                                   'evidence': 'backtest/signals/technical.py compute_stochrsi '
+                                               '(period = 14)',
+                                   'derivation': 'held at production - no env knob exists, so any '
+                                                 'other level is an engine run with no actuator '
+                                                 "(S6-B2569a); the charter's P5.2 / P6.1 plan [10, "
+                                                 '14, 21]; k and d at other periods are not '
+                                                 'persisted',
+                                   'legs': ['long', 'short']},
+                                  {'id': 'P9',
+                                   'producer': 'technical.py compute_rsi',
+                                   'param': 'rsi_14 ceiling (LONG)',
+                                   'production': 55,
+                                   'band': [55, 51.786, 48.374, 44.56, 39.598],
+                                   'free_band': [55, 51.786, 48.374, 44.56, 39.598],
+                                   'resim_band': [],
+                                   'env': None,
+                                   'consumers': ['backtest/signals/screener.py'],
+                                   'sweep_levels': None,
+                                   'subset_safe': True,
+                                   'status': 'UNTESTED',
+                                   'type': 'float',
+                                   'engine_implemented': True,
+                                   'evidence': 'backtest/signals/technical.py compute_rsi '
+                                               '(rsi_{p}); backtest/signals/screener.py '
+                                               'strat_stochrsi_oversold (fl: rsi_14 < 55)',
+                                   'derivation': 'TIGHTER = a LOWER ceiling on the persisted '
+                                                 "rsi_14 - the charter's measured long-leg levels "
+                                                 '51.786 / 48.374 / 44.56 / 39.598 keep 840 / 630 '
+                                                 '/ 421 / 210 fires (charter P7)',
+                                   'legs': ['long'],
+                                   'signal_keys': ['rsi_14']},
+                                  {'id': 'P10',
+                                   'producer': 'technical.py compute_rsi',
+                                   'param': 'rsi_14 floor (SHORT)',
+                                   'production': 45,
+                                   'band': [45],
+                                   'free_band': None,
+                                   'resim_band': None,
+                                   'env': None,
+                                   'consumers': ['backtest/signals/screener.py'],
+                                   'sweep_levels': None,
+                                   'subset_safe': False,
+                                   'status': 'UNTESTED',
+                                   'type': 'float',
+                                   'engine_implemented': False,
+                                   'evidence': 'backtest/signals/technical.py compute_rsi '
+                                               '(rsi_{p}); backtest/signals/screener.py '
+                                               'strat_stochrsi_oversold (fs: rsi_14 > 45)',
+                                   'derivation': 'held at production - no env knob exists, so any '
+                                                 'other level is an engine run with no actuator '
+                                                 "(S6-B2569a); the charter's short-leg levels "
+                                                 '48.234 / 51.078 / 54.622 / 59.74 (P8) are '
+                                                 'offline on rsi_14 for a short-leg campaign; the '
+                                                 "key's one row is the long ceiling's",
+                                   'legs': ['short']},
+                                  {'id': 'P11',
+                                   'producer': 'technical.py compute_rsi',
+                                   'param': 'rsi span (both legs)',
+                                   'production': 14,
+                                   'band': [14],
+                                   'free_band': None,
+                                   'resim_band': None,
+                                   'env': None,
+                                   'consumers': ['backtest/signals/screener.py'],
+                                   'sweep_levels': None,
+                                   'subset_safe': False,
+                                   'status': 'UNTESTED',
+                                   'type': 'int',
+                                   'engine_implemented': False,
+                                   'evidence': 'backtest/signals/technical.py compute_rsi (its '
+                                               'period loop)',
+                                   'derivation': 'held at production - no env knob exists, so any '
+                                                 'other level is an engine run with no actuator '
+                                                 "(S6-B2569a); the charter's P7.1 / P8.1 plan [9, "
+                                                 '14, 21]; values at other spans are not persisted',
+                                   'legs': ['long', 'short']},
+                                  {'id': 'P12',
+                                   'producer': 'technical.py compute_ema_sma',
+                                   'param': 'price_above_ema_200 identity (LONG)',
+                                   'production': 'close > EMA(200)',
+                                   'band': ['close > EMA(200)'],
+                                   'free_band': None,
+                                   'resim_band': None,
+                                   'env': None,
+                                   'consumers': ['backtest/signals/screener.py'],
+                                   'sweep_levels': None,
+                                   'subset_safe': None,
+                                   'status': 'UNTESTED',
+                                   'type': 'identity',
+                                   'engine_implemented': True,
+                                   'evidence': 'backtest/signals/technical.py compute_ema_sma '
+                                               '(price_above_ema_{slow}); '
+                                               'backtest/signals/screener.py '
+                                               'strat_stochrsi_oversold (fl)',
+                                   'derivation': 'the boolean itself - its knob is the span row; '
+                                                 'held at production',
+                                   'legs': ['long']},
+                                  {'id': 'P13',
+                                   'producer': 'technical.py compute_ema_sma',
+                                   'param': 'below_ema_200 identity (SHORT)',
+                                   'production': 'close < EMA(200)',
+                                   'band': ['close < EMA(200)'],
+                                   'free_band': None,
+                                   'resim_band': None,
+                                   'env': None,
+                                   'consumers': ['backtest/signals/screener.py'],
+                                   'sweep_levels': None,
+                                   'subset_safe': None,
+                                   'status': 'UNTESTED',
+                                   'type': 'identity',
+                                   'engine_implemented': True,
+                                   'evidence': 'backtest/signals/technical.py compute_ema_sma '
+                                               '(below_ema_{slow}); backtest/signals/screener.py '
+                                               'strat_stochrsi_oversold (fs)',
+                                   'derivation': 'the mirror boolean; held at production',
+                                   'legs': ['short']},
+                                  {'id': 'P14',
+                                   'producer': 'technical.py compute_ema_sma',
+                                   'param': 'EMA span (the 200 in the EMA flags, both legs)',
+                                   'production': 200,
+                                   'band': [200],
+                                   'free_band': None,
+                                   'resim_band': None,
+                                   'env': None,
+                                   'consumers': ['backtest/signals/screener.py'],
+                                   'sweep_levels': None,
+                                   'subset_safe': False,
+                                   'status': 'UNTESTED',
+                                   'type': 'int',
+                                   'engine_implemented': False,
+                                   'evidence': 'backtest/signals/technical.py compute_ema_sma (its '
+                                               'loop over config EMA_PAIRS)',
+                                   'derivation': 'held at production - no env knob exists, so any '
+                                                 'other level is an engine run with no actuator '
+                                                 "(S6-B2569a); the charter's planned spans [9, 20, "
+                                                 '21, 50, 100, 150, 200, 250] are resim; '
+                                                 'STRAT_EMA_SPAN does not reach a gate that reads '
+                                                 'the literal key (S6-B3253)',
+                                   'legs': ['long', 'short']},
+                                  {'id': 'P15',
+                                   'producer': '_short_borrow_trap_active (shared screener helper)',
+                                   'param': 'days_to_cover cap (borrow guard, SHORT leg)',
+                                   'production': '5.0',
+                                   'band': ['5.0'],
+                                   'free_band': None,
+                                   'resim_band': None,
+                                   'env': None,
+                                   'consumers': ['backtest/signals/screener.py'],
+                                   'sweep_levels': None,
+                                   'subset_safe': True,
+                                   'status': 'UNTESTED',
+                                   'type': 'float',
+                                   'engine_implemented': True,
+                                   'evidence': 'backtest/signals/screener.py '
+                                               '_short_borrow_trap_active (dtc > 5.0)',
+                                   'derivation': 'the shared short-side borrow guard: '
+                                                 'days_to_cover > 5.0 blocks the SHORT fire (B718a '
+                                                 'owner-ruled); a tighter cap is offline on the '
+                                                 'persisted days_to_cover, a band only on the '
+                                                 "owner's word (bollinger_lower P10 precedent); "
+                                                 'the LONG campaign never reads it',
+                                   'legs': ['short']}]},
+ 'tema_dema': {'formula': '\n'
+                          'ID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered COMPUTATION '
+                          'STEP in\n'
+                          'the producer->gate derivation; the Table A render '
+                          '(output_audit/b3249_<name>_table_a.md)\n'
+                          'numbers its band rows P<n>.x - integer ids here. R1 PRE-REGISTRATION '
+                          '(runbook 2.7\n'
+                          "step 1, B2855) written S6-B3423 B3139q-r203d, BEFORE the owner's T3 "
+                          'words: no\n'
+                          "level below is approved, and B-rows join on the owner's word (S6-B3304 "
+                          'precedent).\n'
+                          '\n'
+                          '=============================== PRODUCER LAYER '
+                          '===============================\n'
+                          '\n'
+                          'P1  tema_cross_up identity (LONG)\n'
+                          'P2  tema_cross_dn identity (SHORT)\n'
+                          'P3  TEMA / DEMA period (both legs)\n'
+                          'P4  price_above_tema identity (LONG)\n'
+                          'P5  buffer above TEMA (LONG)\n'
+                          'P6  price_below_tema identity (SHORT)\n'
+                          'P7  buffer below TEMA (SHORT)\n'
+                          'P8  ao ceiling (both legs)\n'
+                          '\n'
+                          '============================== STRATEGY LAYER '
+                          '==============================\n'
+                          '\n'
+                          'P9  days_to_cover cap (borrow guard, SHORT leg)\n'
+                          '\n'
+                          'long_fires  = P1 AND P4 AND P8   (screener.py strat_tema_dema, fl)\n'
+                          'short_fires = P2 AND P6 AND NOT P9 AND P8   (screener.py '
+                          'strat_tema_dema, fs)\n'
+                          'T1 SURVIVAL: the current gate keeps 0.7201 of the R5 fires (status view '
+                          'build ff10274b7; the ao ceiling post-dates R5) - every grid runs with '
+                          '--survival\n',
+               'baseline': {'artifact': 'output_r5_merged_1_7',
+                            'window': '2022-05-05..2026-05-05',
+                            'fires': 1876,
+                            'tickers': 516,
+                            'holdout_n': 454,
+                            'fires_by_side': {'short': 961, 'long': 915}},
+               'gate': '(tema_cross_up AND price_above_tema AND ao <= 2.866) | short '
+                       '(tema_cross_dn AND price_below_tema AND NOT borrow AND ao <= 2.866) '
+                       '(screener strat_tema_dema)',
+               'tools': {},
+               'params': [{'id': 'P1',
+                           'producer': 'technical.py compute_dema_tema',
+                           'param': 'tema_cross_up identity (LONG)',
+                           'production': 'TEMA crosses above DEMA',
+                           'band': ['TEMA crosses above DEMA'],
+                           'free_band': None,
+                           'resim_band': None,
+                           'env': None,
+                           'consumers': ['backtest/signals/screener.py'],
+                           'sweep_levels': None,
+                           'subset_safe': None,
+                           'status': 'UNTESTED',
+                           'type': 'identity',
+                           'engine_implemented': True,
+                           'evidence': 'backtest/signals/technical.py compute_dema_tema '
+                                       '(tema_cross_up); backtest/signals/screener.py '
+                                       'strat_tema_dema (fl)',
+                           'derivation': 'the boolean itself - its knob is the period row; held at '
+                                         'production',
+                           'legs': ['long']},
+                          {'id': 'P2',
+                           'producer': 'technical.py compute_dema_tema',
+                           'param': 'tema_cross_dn identity (SHORT)',
+                           'production': 'TEMA crosses below DEMA',
+                           'band': ['TEMA crosses below DEMA'],
+                           'free_band': None,
+                           'resim_band': None,
+                           'env': None,
+                           'consumers': ['backtest/signals/screener.py'],
+                           'sweep_levels': None,
+                           'subset_safe': None,
+                           'status': 'UNTESTED',
+                           'type': 'identity',
+                           'engine_implemented': True,
+                           'evidence': 'backtest/signals/technical.py compute_dema_tema '
+                                       '(tema_cross_dn); backtest/signals/screener.py '
+                                       'strat_tema_dema (fs)',
+                           'derivation': 'the mirror boolean; held at production',
+                           'legs': ['short']},
+                          {'id': 'P3',
+                           'producer': 'technical.py compute_dema_tema',
+                           'param': 'TEMA / DEMA period (both legs)',
+                           'production': 20,
+                           'band': [20],
+                           'free_band': None,
+                           'resim_band': None,
+                           'env': None,
+                           'consumers': ['backtest/signals/screener.py'],
+                           'sweep_levels': None,
+                           'subset_safe': False,
+                           'status': 'UNTESTED',
+                           'type': 'int',
+                           'engine_implemented': False,
+                           'evidence': 'backtest/signals/technical.py compute_dema_tema (one '
+                                       'period drives both averages)',
+                           'derivation': 'held at production - no env knob exists, so any other '
+                                         'level is an engine run with no actuator (S6-B2569a); the '
+                                         "charter's P4.1 plans [10, 20, 30]; the averages at other "
+                                         'periods are not persisted',
+                           'legs': ['long', 'short']},
+                          {'id': 'P4',
+                           'producer': 'technical.py compute_dema_tema',
+                           'param': 'price_above_tema identity (LONG)',
+                           'production': 'close > TEMA',
+                           'band': ['close > TEMA'],
+                           'free_band': None,
+                           'resim_band': None,
+                           'env': None,
+                           'consumers': ['backtest/signals/screener.py'],
+                           'sweep_levels': None,
+                           'subset_safe': None,
+                           'status': 'UNTESTED',
+                           'type': 'identity',
+                           'engine_implemented': True,
+                           'evidence': 'backtest/signals/technical.py compute_dema_tema '
+                                       '(price_above_tema); backtest/signals/screener.py '
+                                       'strat_tema_dema (fl)',
+                           'derivation': 'the boolean itself - its knob is the buffer row; held at '
+                                         'production',
+                           'legs': ['long']},
+                          {'id': 'P5',
+                           'producer': 'technical.py compute_dema_tema',
+                           'param': 'buffer above TEMA (LONG)',
+                           'production': 0.0,
+                           'band': [0.0, 0.01, 0.02, 0.03],
+                           'free_band': [0.0, 0.01, 0.02, 0.03],
+                           'resim_band': [],
+                           'env': None,
+                           'consumers': ['backtest/signals/screener.py'],
+                           'sweep_levels': None,
+                           'subset_safe': True,
+                           'status': 'UNTESTED',
+                           'type': 'float',
+                           'engine_implemented': True,
+                           'evidence': 'backtest/signals/technical.py compute_dema_tema (tema, 4 '
+                                       'dp) and compute_vwap (vwap, pct_from_vwap)',
+                           'derivation': 'TIGHTER = close > tema x (1 + b) - a subset of the '
+                                         'recorded fires, DERIVED offline: the close is recovered '
+                                         'as vwap x (1 + pct_from_vwap / 100) against the '
+                                         'persisted tema, which the charter reproduces on 1876 of '
+                                         '1876 R5 fires (charter P1.1); a derive function (the '
+                                         'camarilla_derived precedent) is owed before its depth '
+                                         'sweep',
+                           'legs': ['long']},
+                          {'id': 'P6',
+                           'producer': 'technical.py compute_dema_tema',
+                           'param': 'price_below_tema identity (SHORT)',
+                           'production': 'close < TEMA',
+                           'band': ['close < TEMA'],
+                           'free_band': None,
+                           'resim_band': None,
+                           'env': None,
+                           'consumers': ['backtest/signals/screener.py'],
+                           'sweep_levels': None,
+                           'subset_safe': None,
+                           'status': 'UNTESTED',
+                           'type': 'identity',
+                           'engine_implemented': True,
+                           'evidence': 'backtest/signals/technical.py compute_dema_tema '
+                                       '(price_below_tema); backtest/signals/screener.py '
+                                       'strat_tema_dema (fs)',
+                           'derivation': 'the mirror boolean; held at production',
+                           'legs': ['short']},
+                          {'id': 'P7',
+                           'producer': 'technical.py compute_dema_tema',
+                           'param': 'buffer below TEMA (SHORT)',
+                           'production': 0.0,
+                           'band': [0.0],
+                           'free_band': None,
+                           'resim_band': None,
+                           'env': None,
+                           'consumers': ['backtest/signals/screener.py'],
+                           'sweep_levels': None,
+                           'subset_safe': False,
+                           'status': 'UNTESTED',
+                           'type': 'float',
+                           'engine_implemented': False,
+                           'evidence': 'backtest/signals/technical.py compute_dema_tema '
+                                       '(price_below_tema)',
+                           'derivation': 'held at production - no env knob exists, so any other '
+                                         'level is an engine run with no actuator (S6-B2569a); the '
+                                         "charter's P2.1 mirrors the long buffer; offline the same "
+                                         'way for a short-leg campaign',
+                           'legs': ['short']},
+                          {'id': 'P8',
+                           'producer': 'technical.py compute_awesome_oscillator',
+                           'param': 'ao ceiling (both legs)',
+                           'production': 2.866,
+                           'band': [2.866, 0.7541, -1.1582, -3.0256, -6.71],
+                           'free_band': [2.866, 0.7541, -1.1582, -3.0256, -6.71],
+                           'resim_band': [],
+                           'env': None,
+                           'consumers': ['backtest/signals/screener.py'],
+                           'sweep_levels': None,
+                           'subset_safe': True,
+                           'status': 'UNTESTED',
+                           'type': 'float',
+                           'engine_implemented': True,
+                           'evidence': 'backtest/signals/technical.py compute_awesome_oscillator '
+                                       '(ao); backtest/signals/screener.py strat_tema_dema (ao <= '
+                                       '2.866 on both legs)',
+                           'derivation': 'TIGHTER = a LOWER ceiling on the persisted ao - the '
+                                         "charter's measured levels 0.7541 / -1.1582 / -3.0256 / "
+                                         '-6.71 keep 1081 / 811 / 541 / 271 fires over both legs '
+                                         '(charter P5); per-leg retention is recomputed at grid '
+                                         'time',
+                           'legs': ['long', 'short'],
+                           'signal_keys': ['ao']},
+                          {'id': 'P9',
+                           'producer': '_short_borrow_trap_active (shared screener helper)',
+                           'param': 'days_to_cover cap (borrow guard, SHORT leg)',
+                           'production': '5.0',
+                           'band': ['5.0'],
+                           'free_band': None,
+                           'resim_band': None,
+                           'env': None,
+                           'consumers': ['backtest/signals/screener.py'],
+                           'sweep_levels': None,
+                           'subset_safe': True,
+                           'status': 'UNTESTED',
+                           'type': 'float',
+                           'engine_implemented': True,
+                           'evidence': 'backtest/signals/screener.py _short_borrow_trap_active '
+                                       '(dtc > 5.0)',
+                           'derivation': 'the shared short-side borrow guard: days_to_cover > 5.0 '
+                                         'blocks the SHORT fire (B718a owner-ruled); a tighter cap '
+                                         'is offline on the persisted days_to_cover, a band only '
+                                         "on the owner's word (bollinger_lower P10 precedent); the "
+                                         'LONG campaign never reads it',
+                           'legs': ['short']}]},
+ 'morning_star': {'formula': '\n'
+                             'ID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered '
+                             'COMPUTATION STEP in\n'
+                             'the producer->gate derivation; the Table A render '
+                             '(output_audit/b3249_<name>_table_a.md)\n'
+                             'numbers its band rows P<n>.x - integer ids here. R1 PRE-REGISTRATION '
+                             '(runbook 2.7\n'
+                             "step 1, B2855) written S6-B3423 B3139q-r203d, BEFORE the owner's T3 "
+                             'words: no\n'
+                             "level below is approved, and B-rows join on the owner's word "
+                             '(S6-B3304 precedent).\n'
+                             '\n'
+                             '=============================== PRODUCER LAYER '
+                             '===============================\n'
+                             '\n'
+                             'P1  morning_star identity (LONG)\n'
+                             'P2  mid-candle small-body ratio (LONG)\n'
+                             'P3  recovery rule (LONG)\n'
+                             'P4  evening_star identity (SHORT)\n'
+                             'P5  evening-star knobs (SHORT)\n'
+                             'P6  rsi_14 ceiling (LONG)\n'
+                             'P7  rsi_14 floor (SHORT)\n'
+                             'P8  rsi span (both legs)\n'
+                             'P9  squeeze_momentum ceiling (both legs)\n'
+                             '\n'
+                             '============================== STRATEGY LAYER '
+                             '==============================\n'
+                             '\n'
+                             'P10 days_to_cover cap (borrow guard, SHORT leg)\n'
+                             '\n'
+                             'long_fires  = P1 AND P6 AND P9   (screener.py strat_morning_star, '
+                             'fl)\n'
+                             'short_fires = P4 AND P7 AND NOT P10 AND P9   (screener.py '
+                             'strat_morning_star, fs)\n'
+                             'T1 SURVIVAL: the current gate keeps 0.4618 of the R5 fires (status '
+                             'view build ff10274b7) - every grid runs with --survival\n',
+                  'baseline': {'artifact': 'output_r5_merged_1_7',
+                               'window': '2022-05-05..2026-05-05',
+                               'fires': 2280,
+                               'tickers': 527,
+                               'holdout_n': 612,
+                               'fires_by_side': {'short': 1227, 'long': 1053}},
+                  'gate': '(morning_star AND rsi_14 < 45 AND squeeze_momentum <= 0.0096) | short '
+                          '(evening_star AND rsi_14 > 55 AND NOT borrow AND squeeze_momentum <= '
+                          '0.0096) (screener strat_morning_star)',
+                  'tools': {},
+                  'params': [{'id': 'P1',
+                              'producer': 'technical.py compute_candles',
+                              'param': 'morning_star identity (LONG)',
+                              'production': '3-bar morning star',
+                              'band': ['3-bar morning star'],
+                              'free_band': None,
+                              'resim_band': None,
+                              'env': None,
+                              'consumers': ['backtest/signals/screener.py'],
+                              'sweep_levels': None,
+                              'subset_safe': None,
+                              'status': 'UNTESTED',
+                              'type': 'identity',
+                              'engine_implemented': True,
+                              'evidence': 'backtest/signals/technical.py compute_candles '
+                                          '(morning_star); backtest/signals/screener.py '
+                                          'strat_morning_star (fl)',
+                              'derivation': 'the boolean itself - its knobs are the body-ratio and '
+                                            'recovery rows; held at production',
+                              'legs': ['long']},
+                             {'id': 'P2',
+                              'producer': 'technical.py compute_candles',
+                              'param': 'mid-candle small-body ratio (LONG)',
+                              'production': 0.3,
+                              'band': [0.3],
+                              'free_band': None,
+                              'resim_band': None,
+                              'env': None,
+                              'consumers': ['backtest/signals/screener.py'],
+                              'sweep_levels': None,
+                              'subset_safe': False,
+                              'status': 'UNTESTED',
+                              'type': 'float',
+                              'engine_implemented': False,
+                              'evidence': 'backtest/signals/technical.py compute_candles (the mid '
+                                          "bar's body < 0.3 x range)",
+                              'derivation': 'held at production - no env knob exists, so any other '
+                                            'level is an engine run with no actuator (S6-B2569a); '
+                                            "the charter's P2.1 plans [0.2, 0.3, 0.4]; the mid "
+                                            "bar's body / range is not persisted",
+                              'legs': ['long']},
+                             {'id': 'P3',
+                              'producer': 'technical.py compute_candles',
+                              'param': 'recovery rule (LONG)',
+                              'production': 'close above bar-1 midpoint',
+                              'band': ['close above bar-1 midpoint'],
+                              'free_band': None,
+                              'resim_band': None,
+                              'env': None,
+                              'consumers': ['backtest/signals/screener.py'],
+                              'sweep_levels': None,
+                              'subset_safe': False,
+                              'status': 'UNTESTED',
+                              'type': 'identity',
+                              'engine_implemented': False,
+                              'evidence': 'backtest/signals/technical.py compute_candles (the '
+                                          "third bar's close vs the first bar's midpoint)",
+                              'derivation': 'held at production - no env knob exists, so any other '
+                                            'level is an engine run with no actuator (S6-B2569a); '
+                                            "the charter's P2.2 plans the midpoint against 0.382 / "
+                                            '0.5 / 0.618 retracements; not persisted',
+                              'legs': ['long']},
+                             {'id': 'P4',
+                              'producer': 'technical.py compute_candles',
+                              'param': 'evening_star identity (SHORT)',
+                              'production': '3-bar evening star',
+                              'band': ['3-bar evening star'],
+                              'free_band': None,
+                              'resim_band': None,
+                              'env': None,
+                              'consumers': ['backtest/signals/screener.py'],
+                              'sweep_levels': None,
+                              'subset_safe': None,
+                              'status': 'UNTESTED',
+                              'type': 'identity',
+                              'engine_implemented': True,
+                              'evidence': 'backtest/signals/technical.py compute_candles '
+                                          '(evening_star); backtest/signals/screener.py '
+                                          'strat_morning_star (fs)',
+                              'derivation': 'the mirror boolean; held at production',
+                              'legs': ['short']},
+                             {'id': 'P5',
+                              'producer': 'technical.py compute_candles',
+                              'param': 'evening-star knobs (SHORT)',
+                              'production': '0.3 / midpoint',
+                              'band': ['0.3 / midpoint'],
+                              'free_band': None,
+                              'resim_band': None,
+                              'env': None,
+                              'consumers': ['backtest/signals/screener.py'],
+                              'sweep_levels': None,
+                              'subset_safe': False,
+                              'status': 'UNTESTED',
+                              'type': 'identity',
+                              'engine_implemented': False,
+                              'evidence': 'backtest/signals/technical.py compute_candles '
+                                          '(evening_star)',
+                              'derivation': 'held at production - no env knob exists, so any other '
+                                            'level is an engine run with no actuator (S6-B2569a); '
+                                            "the charter's P1.1 mirrors the morning-star knobs",
+                              'legs': ['short']},
+                             {'id': 'P6',
+                              'producer': 'technical.py compute_rsi',
+                              'param': 'rsi_14 ceiling (LONG)',
+                              'production': 45,
+                              'band': [45, 42.77, 40.556, 38.242, 34.71],
+                              'free_band': [45, 42.77, 40.556, 38.242, 34.71],
+                              'resim_band': [],
+                              'env': None,
+                              'consumers': ['backtest/signals/screener.py'],
+                              'sweep_levels': None,
+                              'subset_safe': True,
+                              'status': 'UNTESTED',
+                              'type': 'float',
+                              'engine_implemented': True,
+                              'evidence': 'backtest/signals/technical.py compute_rsi (rsi_{p}); '
+                                          'backtest/signals/screener.py strat_morning_star (fl: '
+                                          'rsi_14 < 45)',
+                              'derivation': 'TIGHTER = a LOWER ceiling on the persisted rsi_14 - '
+                                            "the charter's measured long-leg levels 42.77 / 40.556 "
+                                            '/ 38.242 / 34.71 keep 822 / 616 / 411 / 206 fires '
+                                            '(charter P3)',
+                              'legs': ['long'],
+                              'signal_keys': ['rsi_14']},
+                             {'id': 'P7',
+                              'producer': 'technical.py compute_rsi',
+                              'param': 'rsi_14 floor (SHORT)',
+                              'production': 55,
+                              'band': [55],
+                              'free_band': None,
+                              'resim_band': None,
+                              'env': None,
+                              'consumers': ['backtest/signals/screener.py'],
+                              'sweep_levels': None,
+                              'subset_safe': False,
+                              'status': 'UNTESTED',
+                              'type': 'float',
+                              'engine_implemented': False,
+                              'evidence': 'backtest/signals/technical.py compute_rsi (rsi_{p}); '
+                                          'backtest/signals/screener.py strat_morning_star (fs: '
+                                          'rsi_14 > 55)',
+                              'derivation': 'held at production - no env knob exists, so any other '
+                                            'level is an engine run with no actuator (S6-B2569a); '
+                                            "the charter's short-leg levels (P4) are offline on "
+                                            "rsi_14 for a short-leg campaign; the key's one row is "
+                                            "the long ceiling's",
+                              'legs': ['short']},
+                             {'id': 'P8',
+                              'producer': 'technical.py compute_rsi',
+                              'param': 'rsi span (both legs)',
+                              'production': 14,
+                              'band': [14],
+                              'free_band': None,
+                              'resim_band': None,
+                              'env': None,
+                              'consumers': ['backtest/signals/screener.py'],
+                              'sweep_levels': None,
+                              'subset_safe': False,
+                              'status': 'UNTESTED',
+                              'type': 'int',
+                              'engine_implemented': False,
+                              'evidence': 'backtest/signals/technical.py compute_rsi (its period '
+                                          'loop)',
+                              'derivation': 'held at production - no env knob exists, so any other '
+                                            'level is an engine run with no actuator (S6-B2569a); '
+                                            "the charter's P3.1 / P4.1 plan [9, 14, 21]; values at "
+                                            'other spans are not persisted',
+                              'legs': ['long', 'short']},
+                             {'id': 'P9',
+                              'producer': 'technical.py compute_squeeze',
+                              'param': 'squeeze_momentum ceiling (both legs)',
+                              'production': 0.0096,
+                              'band': [0.0096, -1.0855, -2.3375, -4.0938, -7.707],
+                              'free_band': [0.0096, -1.0855, -2.3375, -4.0938, -7.707],
+                              'resim_band': [],
+                              'env': None,
+                              'consumers': ['backtest/signals/screener.py'],
+                              'sweep_levels': None,
+                              'subset_safe': True,
+                              'status': 'UNTESTED',
+                              'type': 'float',
+                              'engine_implemented': True,
+                              'evidence': 'backtest/signals/technical.py compute_squeeze '
+                                          '(squeeze_momentum); backtest/signals/screener.py '
+                                          'strat_morning_star (<= 0.0096 on both legs)',
+                              'derivation': 'TIGHTER = a LOWER ceiling on the persisted '
+                                            "squeeze_momentum - the charter's measured levels "
+                                            '-1.0855 / -2.3375 / -4.0938 / -7.707 keep 842 / 632 / '
+                                            '421 / 211 fires (charter P5); per-leg retention is '
+                                            'recomputed at grid time',
+                              'legs': ['long', 'short'],
+                              'signal_keys': ['squeeze_momentum']},
+                             {'id': 'P10',
+                              'producer': '_short_borrow_trap_active (shared screener helper)',
+                              'param': 'days_to_cover cap (borrow guard, SHORT leg)',
+                              'production': '5.0',
+                              'band': ['5.0'],
+                              'free_band': None,
+                              'resim_band': None,
+                              'env': None,
+                              'consumers': ['backtest/signals/screener.py'],
+                              'sweep_levels': None,
+                              'subset_safe': True,
+                              'status': 'UNTESTED',
+                              'type': 'float',
+                              'engine_implemented': True,
+                              'evidence': 'backtest/signals/screener.py _short_borrow_trap_active '
+                                          '(dtc > 5.0)',
+                              'derivation': 'the shared short-side borrow guard: days_to_cover > '
+                                            '5.0 blocks the SHORT fire (B718a owner-ruled); a '
+                                            'tighter cap is offline on the persisted '
+                                            "days_to_cover, a band only on the owner's word "
+                                            '(bollinger_lower P10 precedent); the LONG campaign '
+                                            'never reads it',
+                              'legs': ['short']}]},
+ 'm_and_a_target_long': {'formula': '\n'
+                                    'ID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered '
+                                    'COMPUTATION STEP in\n'
+                                    'the producer->gate derivation; the Table A render '
+                                    '(output_audit/b3249_<name>_table_a.md)\n'
+                                    'numbers its band rows P<n>.x - integer ids here. R1 '
+                                    'PRE-REGISTRATION (runbook 2.7\n'
+                                    'step 1, B2855) written S6-B3423 B3139q-r203d, BEFORE the '
+                                    "owner's T3 words: no\n"
+                                    "level below is approved, and B-rows join on the owner's word "
+                                    '(S6-B3304 precedent).\n'
+                                    '\n'
+                                    '=============================== PRODUCER LAYER '
+                                    '===============================\n'
+                                    '\n'
+                                    'P1  8k_item_1_01_filed_within_30d identity\n'
+                                    'P2  filing window (days)\n'
+                                    'P3  accumulation range floor\n'
+                                    '\n'
+                                    '============================== STRATEGY LAYER '
+                                    '==============================\n'
+                                    '\n'
+                                    '\n'
+                                    '\n'
+                                    'long_fires  = P1 AND P3   (screener.py '
+                                    'strat_m_and_a_target_long; P2 binds inside P1)\n'
+                                    'T1 SURVIVAL: the current gate keeps 0.7341 of the R5 fires '
+                                    '(status view build ff10274b7; the floor post-dates R5) - '
+                                    'every grid runs with --survival\n',
+                         'baseline': {'artifact': 'output_r5_merged_1_7',
+                                      'window': '2022-05-05..2026-05-05',
+                                      'fires': 1023,
+                                      'tickers': 355,
+                                      'holdout_n': 274,
+                                      'fires_by_side': {'long': 1023}},
+                         'gate': '8k_item_1_01_filed_within_30d AND po3_accum_range_pct >= 0.0556 '
+                                 '(screener strat_m_and_a_target_long)',
+                         'tools': {},
+                         'params': [{'id': 'P1',
+                                     'producer': 'sec_edgar_extractor.py '
+                                                 'eight_k_item_filed_within_days',
+                                     'param': '8k_item_1_01_filed_within_30d identity',
+                                     'production': 'Item 1.01 8-K within 30 days',
+                                     'band': ['Item 1.01 8-K within 30 days'],
+                                     'free_band': None,
+                                     'resim_band': None,
+                                     'env': None,
+                                     'consumers': ['backtest/signals/screener.py'],
+                                     'sweep_levels': None,
+                                     'subset_safe': None,
+                                     'status': 'UNTESTED',
+                                     'type': 'identity',
+                                     'engine_implemented': True,
+                                     'evidence': 'backtest/signals/sec_edgar_extractor.py '
+                                                 'eight_k_item_filed_within_days '
+                                                 '(8k_item_{code}_filed_within_{n}d); '
+                                                 'backtest/signals/screener.py '
+                                                 'strat_m_and_a_target_long',
+                                     'derivation': 'the boolean itself - its knob is the window '
+                                                   'row; held at production'},
+                                    {'id': 'P2',
+                                     'producer': 'sec_edgar_extractor.py '
+                                                 'eight_k_item_filed_within_days',
+                                     'param': 'filing window (days)',
+                                     'production': 30,
+                                     'band': [30],
+                                     'free_band': None,
+                                     'resim_band': None,
+                                     'env': None,
+                                     'consumers': ['backtest/signals/screener.py'],
+                                     'sweep_levels': None,
+                                     'subset_safe': False,
+                                     'status': 'UNTESTED',
+                                     'type': 'int',
+                                     'engine_implemented': False,
+                                     'evidence': 'backtest/signals/sec_edgar_extractor.py '
+                                                 'eight_k_item_filed_within_days (the 30-day '
+                                                 'lookback)',
+                                     'derivation': 'held at production - no env knob exists, so '
+                                                   'any other level is an engine run with no '
+                                                   "actuator (S6-B2569a); the charter's P1.1 plans "
+                                                   '[7, 14, 30, 60]; no filing date is persisted '
+                                                   'on the fire'},
+                                    {'id': 'P3',
+                                     'producer': 'ict_producers.py compute_po3_signals',
+                                     'param': 'accumulation range floor',
+                                     'production': 0.0556,
+                                     'band': [0.0556, 0.0679, 0.0844, 0.1112, 0.1559],
+                                     'free_band': [0.0556, 0.0679, 0.0844, 0.1112, 0.1559],
+                                     'resim_band': [],
+                                     'env': None,
+                                     'consumers': ['backtest/signals/screener.py'],
+                                     'sweep_levels': None,
+                                     'subset_safe': True,
+                                     'status': 'UNTESTED',
+                                     'type': 'float',
+                                     'engine_implemented': True,
+                                     'evidence': 'backtest/signals/ict_producers.py '
+                                                 'compute_po3_signals (po3_accum_range_pct); '
+                                                 'backtest/signals/screener.py '
+                                                 'strat_m_and_a_target_long (>= 0.0556)',
+                                     'derivation': 'TIGHTER = a HIGHER floor on the persisted '
+                                                   "po3_accum_range_pct - the charter's measured "
+                                                   'levels 0.0679 / 0.0844 / 0.1112 / 0.1559 keep '
+                                                   '603 / 451 / 301 / 151 of the surviving fires '
+                                                   '(charter P2); the floor post-dates R5, so 751 '
+                                                   'of the 1,023 R5 fires survive it (charter T1)',
+                                     'signal_keys': ['po3_accum_range_pct']}]},
+ 'rsi_oversold': {'formula': '\n'
+                             'ID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered '
+                             'COMPUTATION STEP in\n'
+                             'the producer->gate derivation; the Table A render '
+                             '(output_audit/b3249_<name>_table_a.md)\n'
+                             'numbers its band rows P<n>.x - integer ids here. R1 PRE-REGISTRATION '
+                             '(runbook 2.7\n'
+                             "step 1, B2855) written S6-B3423 B3139q-r203d, BEFORE the owner's T3 "
+                             'words: no\n'
+                             "level below is approved, and B-rows join on the owner's word "
+                             '(S6-B3304 precedent).\n'
+                             '\n'
+                             '=============================== PRODUCER LAYER '
+                             '===============================\n'
+                             '\n'
+                             'P3  rsi_2 span (both legs)\n'
+                             'P4  rsi_14 span (both legs)\n'
+                             'P5  price_above_sma_50 identity (LONG)\n'
+                             'P6  below_sma_50 identity (SHORT)\n'
+                             'P7  SMA span (the 50 in the SMA flags, both legs)\n'
+                             'P8  price_above_ema_200 identity (LONG)\n'
+                             'P9  below_ema_200 identity (SHORT)\n'
+                             'P10 EMA span (the 200 in the EMA flags, both legs)\n'
+                             '\n'
+                             '============================== STRATEGY LAYER '
+                             '==============================\n'
+                             '\n'
+                             'P1  RSI oversold rule (LONG)\n'
+                             'P2  RSI overbought rule (SHORT)\n'
+                             'P11 days_to_cover cap (borrow guard, SHORT leg)\n'
+                             '\n'
+                             'long_fires  = P1 AND P5 AND P8   (screener.py strat_rsi_oversold, '
+                             'fl)\n'
+                             'short_fires = P2 AND P6 AND P9 AND NOT P11   (screener.py '
+                             'strat_rsi_oversold, fs)\n',
+                  'baseline': {'artifact': 'output_r5_merged_1_7',
+                               'window': '2022-05-05..2026-05-05',
+                               'fires': 1945,
+                               'tickers': 518,
+                               'holdout_n': 462,
+                               'fires_by_side': {'long': 986, 'short': 959}},
+                  'gate': '((rsi_2 < 7 OR rsi_14 < 40) AND price_above_sma_50 AND '
+                          'price_above_ema_200) | short ((rsi_2 > 93 OR rsi_14 > 60) AND '
+                          'below_sma_50 AND below_ema_200 AND NOT borrow) (screener '
+                          'strat_rsi_oversold)',
+                  'tools': {},
+                  'params': [{'id': 'P1',
+                              'producer': 'screener.py strat_rsi_oversold',
+                              'param': 'RSI oversold rule (LONG)',
+                              'production': 'rsi_2 < 7 OR rsi_14 < 40',
+                              'band': ['rsi_2 < 7 OR rsi_14 < 40'],
+                              'free_band': None,
+                              'resim_band': None,
+                              'env': None,
+                              'consumers': ['backtest/signals/screener.py'],
+                              'sweep_levels': None,
+                              'subset_safe': False,
+                              'status': 'UNTESTED',
+                              'type': 'identity',
+                              'engine_implemented': False,
+                              'evidence': 'backtest/signals/screener.py strat_rsi_oversold (fl; '
+                                          'B1147 loosened it from rsi_2 < 5 OR rsi_14 < 35)',
+                              'derivation': 'held at production as a COMPOSITE: tightening either '
+                                            'cut of the OR keeps a subset of the recorded fires '
+                                            '(rsi_2 and rsi_14 are both persisted), but the rule '
+                                            'is not one key:op axis, so it needs its own offline '
+                                            'leg (the bollinger_lower P11 precedent); its Table A '
+                                            'render carries no threshold row for it - the builder '
+                                            'reads no threshold inside an OR (S6-B3429)',
+                              'legs': ['long']},
+                             {'id': 'P2',
+                              'producer': 'screener.py strat_rsi_oversold',
+                              'param': 'RSI overbought rule (SHORT)',
+                              'production': 'rsi_2 > 93 OR rsi_14 > 60',
+                              'band': ['rsi_2 > 93 OR rsi_14 > 60'],
+                              'free_band': None,
+                              'resim_band': None,
+                              'env': None,
+                              'consumers': ['backtest/signals/screener.py'],
+                              'sweep_levels': None,
+                              'subset_safe': False,
+                              'status': 'UNTESTED',
+                              'type': 'identity',
+                              'engine_implemented': False,
+                              'evidence': 'backtest/signals/screener.py strat_rsi_oversold (fs; '
+                                          'B1147 loosened it from rsi_2 > 95 OR rsi_14 > 65)',
+                              'derivation': 'the mirror composite; held at production as a '
+                                            'COMPOSITE: tightening either cut of the OR keeps a '
+                                            'subset of the recorded fires (rsi_2 and rsi_14 are '
+                                            'both persisted), but the rule is not one key:op axis, '
+                                            'so it needs its own offline leg (the bollinger_lower '
+                                            'P11 precedent); its Table A render carries no '
+                                            'threshold row for it - the builder reads no threshold '
+                                            'inside an OR (S6-B3429)',
+                              'legs': ['short']},
+                             {'id': 'P3',
+                              'producer': 'technical.py compute_rsi',
+                              'param': 'rsi_2 span (both legs)',
+                              'production': 2,
+                              'band': [2],
+                              'free_band': None,
+                              'resim_band': None,
+                              'env': None,
+                              'consumers': ['backtest/signals/screener.py'],
+                              'sweep_levels': None,
+                              'subset_safe': False,
+                              'status': 'UNTESTED',
+                              'type': 'int',
+                              'engine_implemented': False,
+                              'evidence': 'backtest/signals/technical.py compute_rsi (its period '
+                                          'loop)',
+                              'derivation': 'held at production - no env knob exists, so any other '
+                                            'level is an engine run with no actuator (S6-B2569a); '
+                                            "the render's P6.1 plans [2, 3, 5]; values at other "
+                                            'spans are not persisted',
+                              'legs': ['long', 'short']},
+                             {'id': 'P4',
+                              'producer': 'technical.py compute_rsi',
+                              'param': 'rsi_14 span (both legs)',
+                              'production': 14,
+                              'band': [14],
+                              'free_band': None,
+                              'resim_band': None,
+                              'env': None,
+                              'consumers': ['backtest/signals/screener.py'],
+                              'sweep_levels': None,
+                              'subset_safe': False,
+                              'status': 'UNTESTED',
+                              'type': 'int',
+                              'engine_implemented': False,
+                              'evidence': 'backtest/signals/technical.py compute_rsi (its period '
+                                          'loop)',
+                              'derivation': 'held at production - no env knob exists, so any other '
+                                            'level is an engine run with no actuator (S6-B2569a); '
+                                            "the render's P5.1 plans [9, 14, 21]; values at other "
+                                            'spans are not persisted',
+                              'legs': ['long', 'short']},
+                             {'id': 'P5',
+                              'producer': 'technical.py compute_ema_sma',
+                              'param': 'price_above_sma_50 identity (LONG)',
+                              'production': 'close > SMA(50)',
+                              'band': ['close > SMA(50)'],
+                              'free_band': None,
+                              'resim_band': None,
+                              'env': None,
+                              'consumers': ['backtest/signals/screener.py'],
+                              'sweep_levels': None,
+                              'subset_safe': None,
+                              'status': 'UNTESTED',
+                              'type': 'identity',
+                              'engine_implemented': True,
+                              'evidence': 'backtest/signals/technical.py compute_ema_sma '
+                                          '(price_above_sma_{slow}); backtest/signals/screener.py '
+                                          'strat_rsi_oversold (fl)',
+                              'derivation': 'the boolean itself - its knob is the SMA span row; '
+                                            'held at production',
+                              'legs': ['long']},
+                             {'id': 'P6',
+                              'producer': 'technical.py compute_ema_sma',
+                              'param': 'below_sma_50 identity (SHORT)',
+                              'production': 'close < SMA(50)',
+                              'band': ['close < SMA(50)'],
+                              'free_band': None,
+                              'resim_band': None,
+                              'env': None,
+                              'consumers': ['backtest/signals/screener.py'],
+                              'sweep_levels': None,
+                              'subset_safe': None,
+                              'status': 'UNTESTED',
+                              'type': 'identity',
+                              'engine_implemented': True,
+                              'evidence': 'backtest/signals/technical.py compute_ema_sma '
+                                          '(below_sma_{fast} / below_sma_{slow}); '
+                                          'backtest/signals/screener.py strat_rsi_oversold (fs)',
+                              'derivation': 'the mirror boolean; held at production',
+                              'legs': ['short']},
+                             {'id': 'P7',
+                              'producer': 'technical.py compute_ema_sma',
+                              'param': 'SMA span (the 50 in the SMA flags, both legs)',
+                              'production': 50,
+                              'band': [50],
+                              'free_band': None,
+                              'resim_band': None,
+                              'env': None,
+                              'consumers': ['backtest/signals/screener.py'],
+                              'sweep_levels': None,
+                              'subset_safe': False,
+                              'status': 'UNTESTED',
+                              'type': 'int',
+                              'engine_implemented': False,
+                              'evidence': 'backtest/signals/technical.py compute_ema_sma (its loop '
+                                          'over config EMA_PAIRS)',
+                              'derivation': 'held at production - no env knob exists, so any other '
+                                            'level is an engine run with no actuator (S6-B2569a); '
+                                            "the render's P2.1 / P4.1 plan [20, 50, 100]; values "
+                                            'at other spans are not persisted',
+                              'legs': ['long', 'short']},
+                             {'id': 'P8',
+                              'producer': 'technical.py compute_ema_sma',
+                              'param': 'price_above_ema_200 identity (LONG)',
+                              'production': 'close > EMA(200)',
+                              'band': ['close > EMA(200)'],
+                              'free_band': None,
+                              'resim_band': None,
+                              'env': None,
+                              'consumers': ['backtest/signals/screener.py'],
+                              'sweep_levels': None,
+                              'subset_safe': None,
+                              'status': 'UNTESTED',
+                              'type': 'identity',
+                              'engine_implemented': True,
+                              'evidence': 'backtest/signals/technical.py compute_ema_sma '
+                                          '(price_above_ema_{slow}); backtest/signals/screener.py '
+                                          'strat_rsi_oversold (fl)',
+                              'derivation': 'the boolean itself - its knob is the span row; held '
+                                            'at production',
+                              'legs': ['long']},
+                             {'id': 'P9',
+                              'producer': 'technical.py compute_ema_sma',
+                              'param': 'below_ema_200 identity (SHORT)',
+                              'production': 'close < EMA(200)',
+                              'band': ['close < EMA(200)'],
+                              'free_band': None,
+                              'resim_band': None,
+                              'env': None,
+                              'consumers': ['backtest/signals/screener.py'],
+                              'sweep_levels': None,
+                              'subset_safe': None,
+                              'status': 'UNTESTED',
+                              'type': 'identity',
+                              'engine_implemented': True,
+                              'evidence': 'backtest/signals/technical.py compute_ema_sma '
+                                          '(below_ema_{slow}); backtest/signals/screener.py '
+                                          'strat_rsi_oversold (fs)',
+                              'derivation': 'the mirror boolean; held at production',
+                              'legs': ['short']},
+                             {'id': 'P10',
+                              'producer': 'technical.py compute_ema_sma',
+                              'param': 'EMA span (the 200 in the EMA flags, both legs)',
+                              'production': 200,
+                              'band': [200],
+                              'free_band': None,
+                              'resim_band': None,
+                              'env': None,
+                              'consumers': ['backtest/signals/screener.py'],
+                              'sweep_levels': None,
+                              'subset_safe': False,
+                              'status': 'UNTESTED',
+                              'type': 'int',
+                              'engine_implemented': False,
+                              'evidence': 'backtest/signals/technical.py compute_ema_sma (its loop '
+                                          'over config EMA_PAIRS)',
+                              'derivation': 'held at production - no env knob exists, so any other '
+                                            'level is an engine run with no actuator (S6-B2569a); '
+                                            "the charter's planned spans [9, 20, 21, 50, 100, 150, "
+                                            '200, 250] are resim; STRAT_EMA_SPAN does not reach a '
+                                            'gate that reads the literal key (S6-B3253)',
+                              'legs': ['long', 'short']},
+                             {'id': 'P11',
+                              'producer': '_short_borrow_trap_active (shared screener helper)',
+                              'param': 'days_to_cover cap (borrow guard, SHORT leg)',
+                              'production': '5.0',
+                              'band': ['5.0'],
+                              'free_band': None,
+                              'resim_band': None,
+                              'env': None,
+                              'consumers': ['backtest/signals/screener.py'],
+                              'sweep_levels': None,
+                              'subset_safe': True,
+                              'status': 'UNTESTED',
+                              'type': 'float',
+                              'engine_implemented': True,
+                              'evidence': 'backtest/signals/screener.py _short_borrow_trap_active '
+                                          '(dtc > 5.0)',
+                              'derivation': 'the shared short-side borrow guard: days_to_cover > '
+                                            '5.0 blocks the SHORT fire (B718a owner-ruled); a '
+                                            'tighter cap is offline on the persisted '
+                                            "days_to_cover, a band only on the owner's word "
+                                            '(bollinger_lower P10 precedent); the LONG campaign '
+                                            'never reads it',
+                              'legs': ['short']}]}})
+
+
 # B3119 - THE FAMILY ADAPTER (S6-B2883): bollinger_lower PROMOTED into SPECS
 # for the owner-approved span campaign (verbatim 2026-09-27: "Q2 approved one
 # line change fix. I want to test various spans"). The SPECS entry is DERIVED
