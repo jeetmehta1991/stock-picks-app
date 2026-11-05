@@ -2303,8 +2303,8 @@ and where did the rest stop?
   never Sharpe and never the holdout** (L455 for the Sharpe half; B2136 for the holdout half, where the
   renderer itself was found ranking on the holdout key); an artifact with no in-sample key - every
   pre-B2010 grid - renders its values prefixed `HOLDOUT` so a reader cannot mistake one for the other.
-  And the renderer **asserts** `graded + starved-IS + no-Sharpe + zero-fires == combos` rather than
-  trusting the arithmetic.
+  And a funnel whose `graded + starved-IS + no-Sharpe + zero-fires` is not `combos` renders an
+  **UNCLASSIFIED** row rather than trusting the arithmetic (B1702; test_b3396b, S6-B3396).
 - **PARAMETERS TESTED (B2137, owner directive; family-complete since B2585).** Beneath the funnel, a
   second block names the bands each config exercised, one column per parameter of its family - the same
   derivation and markers as the funnel cell, so the two renders cannot contradict each other. A `bands`
@@ -2324,8 +2324,8 @@ and where did the rest stop?
 ### 7.5 Section 4b - TABLE D, the cross-config ranked list (shipped S6-B2330; documented S6-B2499; unified B2725)
 
 **Table C answers "what happened inside one config"; Table D answers "across every config, which
-outcomes rank highest"** - one row per (config x exit) outcome, top 25 by default (owner directive
-2026-08-28).
+outcomes rank highest"** - one row per (config x exit) outcome, EVERY row by default (S6-B2700,
+owner question 2026-09-12, over the top 25 of 2026-08-28; show_table_d's terminal print keeps --top 20).
 
 - **Sort: `is_ci_lo` descending, then `n` descending - and NOTHING is filtered.** Step-1 admission is
   min-trades >= 10 plus a ranked list with NO gates (owner ruling B1608), so every column is displayed,

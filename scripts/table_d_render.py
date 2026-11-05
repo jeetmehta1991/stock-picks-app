@@ -800,7 +800,13 @@ def _step(arts: list) -> str:
         f" ({note[2:]})" if note else "")
 
 
-def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
+# S6-B3396 (S6-B2700, owner question 2026-09-12): Table D shows EVERY row by
+# default - one constant for the function and the CLI, so a caller that
+# omits top cannot get the old 25-row cut
+ALL_ROWS = 10**9
+
+
+def build_table(strategy: str, artifact_paths: list, top: int = ALL_ROWS) -> str:
     params = _spec(strategy)["params"]
     arts, rows, skips = load(artifact_paths, params)
     # S6-B3139z: the spec above is the per-param merge with SPECS
@@ -1062,7 +1068,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--strategy", required=True)
     ap.add_argument("--artifacts", nargs="+", required=True)
-    ap.add_argument("--top", type=int, default=10**9,
+    ap.add_argument("--top", type=int, default=ALL_ROWS,
                     help="rows to show (default: ALL - S6-B2700 deferred half closed at B2702)")
     ap.add_argument("--out", required=True)
     a = ap.parse_args()

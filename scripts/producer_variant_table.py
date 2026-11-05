@@ -8089,8 +8089,8 @@ def table_c(grids: dict[str, dict], root=None) -> list[str]:
     failure. The docstring always said so; the HEADER did not, and the header
     is what gets quoted.
 
-    `graded + no_exit + zero_fires` must equal `combos`; the renderer asserts it
-    rather than trusting the arithmetic.
+    `graded + starved-IS + no-Sharpe + zero-fires` must equal `combos`; a funnel that
+    does not reconcile renders an UNCLASSIFIED row (B1702) - never silent, never a crash.
     """
     # B1898 (d), owner directive: every presentation of this table defines its
     # own terms. A reader who meets `graded` or `ci_lo` for the first time in a

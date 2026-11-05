@@ -329,7 +329,7 @@ def control_comparison(rec: dict, rec1: dict, control: str) -> dict:
     return block
 
 
-def render_table(rec: dict, top: int = 20) -> str:
+def render_table(rec: dict, top: int | None = None) -> str:
     rows = []
     head = (f"# STEP-2 HOLDOUT READ - {rec['strategy']}\n\n"
             f"{rec['design']}. Window {rec['window']['holdout'][0]} .. "
@@ -349,18 +349,23 @@ def render_table(rec: dict, top: int = 20) -> str:
              f"{a['holdout_n']}, full n {a['full_n']}, holdout sharpe "
              f"{a.get('holdout_sharpe')}, PF {a.get('profit_factor')}, sortino "
              f"{a.get('sortino')}, PSR {a.get('psr')}.\nGates: {gate_line}.\n\n")
-    # the full ranked holdout view (top N by holdout sharpe) - every line
-    # labelled ADMISSION or peeked, so the artifact cannot be misread as a menu
+    # the full holdout view - every line labelled ADMISSION or peeked, so the
+    # artifact cannot be misread as a menu. S6-B3396 (runbook line 1007, census
+    # 951): EVERY (cell, exit) line with its six-gate result - the ranked lines
+    # by holdout sharpe, then the lines with none ('-') - so the admission-
+    # bearing line is always in the table; `top` cuts only when a caller asks
     ranked = sorted((r for r in rec["rows"] if r.get("holdout_sharpe") is not None),
                     key=lambda r: r["holdout_sharpe"], reverse=True)
+    ranked += [r for r in rec["rows"] if r.get("holdout_sharpe") is None]
     rows.append("| rank | levels | exit | HO n | HO sharpe | PF | sortino | PSR "
                 "| gates | verdict | status |")
     rows.append("|" + "---|" * 11)
-    for i, r in enumerate(ranked[:top], 1):
+    for i, r in enumerate(ranked if top is None else ranked[:top], 1):
         status = "**ADMISSION**" if r["admission_bearing"] else "peeked"
+        hs = "-" if r.get("holdout_sharpe") is None else f"{r['holdout_sharpe']:.3f}"
         rows.append(
-            f"| {i} | {r['levels']} | {r['exit']} | {r['holdout_n']} | "
-            f"{r['holdout_sharpe']:.3f} | {r.get('profit_factor')} | "
+            f"| {i} | {r['levels']} | {r['exit']} | {r.get('holdout_n')} | "
+            f"{hs} | {r.get('profit_factor')} | "
             f"{r.get('sortino')} | {r.get('psr')} | "
             f"{r.get('n_gates')}/{r.get('n_gates_evaluable')} | {r['verdict']} "
             f"| {status} |")

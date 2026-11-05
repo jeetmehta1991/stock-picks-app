@@ -36569,9 +36569,9 @@ def test_b2644_step2_artifact_carries_every_line_and_one_admission():
 
     rendered = m.render_table(rec)
     assert jp.with_suffix(".md").read_text(encoding="utf-8") == rendered
-    assert rendered.count("**ADMISSION**") <= 1   # admission may sit below top-N
-    # L686: mutate what the renderer actually reads - the table shows the TOP
-    # 20 by holdout sharpe, so dropping the LAST row changes nothing (measured:
+    assert rendered.count("**ADMISSION**") == 1   # every line shown (S6-B3396)
+    # L686: mutate what the renderer actually reads - the table ranked by
+    # holdout sharpe once cut at 20, so dropping the LAST row changed nothing (measured:
     # the first draft of this arm passed vacuously exactly that way). Remove
     # the top-ranked row instead; rank 1 must change.
     rec2 = copy.deepcopy(rec)
@@ -74641,3 +74641,90 @@ def test_b3394d_the_reproduction_record_says_what_it_compared(tmp_path, monkeypa
     rec = _j.loads(out.read_text(encoding="utf-8"))
     assert rec["reproduction"]["compared"].startswith("none needed - production base"), rec["reproduction"]
     assert "reproduction OK" not in printed and "reproduction (none needed" in printed, printed[-600:]
+
+def test_b3396a_every_step2_holdout_table_shows_every_line():
+    """S6-B3396 (runbook line 1007, census 951): the STEP-2 form shows every
+    (cell, exit) line with its six-gate result. offline_holdout_read rendered
+    the top 20 by holdout sharpe, so 7 of the 9 committed tables never showed
+    their admission-bearing line (MEASURED B3139q-r197). Every committed table
+    now equals the renderer, holds one row per recorded line - the lines with
+    no holdout sharpe rendered '-' after the ranked ones - and shows exactly
+    one ADMISSION line; a top cut still works when a caller asks for one."""
+    import importlib.util as ilu
+    import json
+    import subprocess
+    import sys as _sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    spec = ilu.spec_from_file_location("ohr_b3396a", root / "scripts" / "offline_holdout_read.py")
+    m = ilu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    mds = subprocess.run(["git", "ls-files", "output_audit/*.md"], cwd=root,
+                         capture_output=True, text=True).stdout.split()
+    seen = 0
+    for rel in mds:
+        md = root / rel
+        if not md.read_text(encoding="utf-8", errors="replace").startswith("# STEP-2 HOLDOUT READ"):
+            continue
+        seen += 1
+        rec = json.loads(md.with_suffix(".json").read_text(encoding="utf-8"))
+        rendered = m.render_table(rec)
+        assert md.read_text(encoding="utf-8") == rendered, rel
+        body = [ln for ln in rendered.split("**CONTROL COMPARISON")[0].splitlines()
+                if ln.startswith("| ") and not ln.startswith("| rank")]
+        assert len(body) == len(rec["rows"]) == rec["trials"], (rel, len(body), len(rec["rows"]))
+        assert rendered.count("**ADMISSION**") == 1, rel
+        unscored = sum(1 for r in rec["rows"] if r.get("holdout_sharpe") is None)
+        assert sum(1 for ln in body if ln.split("|")[5].strip() == "-") == unscored, rel
+        cut = m.render_table(rec, top=3).split("**CONTROL COMPARISON")[0]
+        assert len([ln for ln in cut.splitlines() if ln.startswith("| ")
+                    and not ln.startswith("| rank")]) == min(3, len(rec["rows"])), rel
+    assert seen >= 1, "positive control: a committed holdout-read table exists"
+
+
+def test_b3396b_table_d_shows_every_row_and_the_funnel_discloses_what_it_cannot_reconcile():
+    """S6-B3396 (census 2240, 2219): (1) table_d_render's function default and
+    CLI default are ONE constant, every row (S6-B2700, owner question
+    2026-09-12) - the function defaulted to 25 while the CLI showed all, so a
+    caller omitting top got the cut the owner had removed; the runbook line
+    states every row. (2) Table C's funnel - graded, starved-IS, no-Sharpe and
+    zero-fires sum to combos - renders an UNCLASSIFIED row when a row lands in
+    two buckets and none when it reconciles (B1702's disclosure; the docstring
+    and the runbook said 'asserts')."""
+    import ast
+    import importlib.util as ilu
+    import inspect
+    import sys as _sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import table_d_render as tdr
+    assert tdr.ALL_ROWS == 10 ** 9
+    assert inspect.signature(tdr.build_table).parameters["top"].default == tdr.ALL_ROWS
+    tree = ast.parse((root / "scripts" / "table_d_render.py").read_text(encoding="utf-8"))
+    tops = [kw.value for c in ast.walk(tree) if isinstance(c, ast.Call)
+            and getattr(c.func, "attr", "") == "add_argument"
+            and c.args and getattr(c.args[0], "value", None) == "--top"
+            for kw in c.keywords if kw.arg == "default"]
+    assert len(tops) == 1 and isinstance(tops[0], ast.Name) and tops[0].id == "ALL_ROWS"
+    plan = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+    assert "one row per (config x exit) outcome, EVERY row by default (S6-B2700," in plan
+    assert "top 25 by default (owner directive" not in plan
+    assert "the renderer **asserts** `graded + starved-IS" not in plan
+
+    spec = ilu.spec_from_file_location("pvt_b3396b", root / "scripts" / "producer_variant_table.py")
+    pv = ilu.module_from_spec(spec)
+    spec.loader.exec_module(pv)
+
+    def grid(rows):
+        return {"results": rows, "step1_ranking": [],
+                "config": {"P1_swing_length": 20, "P6_span": 200}}
+    ok = [{"is_sharpe": 0.5, "sharpe": None, "verdict": "FAIL", "tail_n": 2},
+          {"is_sharpe": None, "sharpe": None, "verdict": "NO_EXIT_SELECTABLE", "tail_n": 1},
+          {"is_sharpe": None, "sharpe": None, "verdict": "ZERO_FIRES", "tail_n": 3}]
+    assert not any("UNCLASSIFIED" in r for r in pv.table_c({"t": grid(ok)}))
+    twice = ok + [{"is_sharpe": 0.4, "sharpe": None, "verdict": "ZERO_FIRES", "tail_n": 4}]
+    assert any("**UNCLASSIFIED" in r for r in pv.table_c({"t": grid(twice)}))
