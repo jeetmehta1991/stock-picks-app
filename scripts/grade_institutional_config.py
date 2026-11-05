@@ -225,7 +225,8 @@ def grade(cube_csv: Path, config: dict, admit: dict, *, min_n: int = 10,
         # campaign-level family (configs x exits) is not priced here. No
         # ranking or verdict reads it (B1608).
         "multiplicity": rc.bh_fdr_report(rc.exit_family_rows(
-            per_exit, cube["exit_method"].astype(str).unique())),
+            per_exit, cube["exit_method"].astype(str).unique()),
+            grain="cell_exit"),          # S6-B3396: one row per exit searched
         "per_exit": per_exit,
         "results_n_exits": len(per_exit),
         # B2612: the Step-2 leg - ALWAYS present so a reader (and the battery's

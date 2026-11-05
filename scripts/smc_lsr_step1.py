@@ -373,7 +373,8 @@ def main() -> int:
            # otherwise the report says graded=0 while hundreds of cells
            # were graded, which is the silent-loss shape the partition
            # exists to stop (S6-B2773, found on its first live run).
-           "multiplicity": rc.bh_fdr_report(rows, permutation_null=pn),
+           "multiplicity": rc.bh_fdr_report(rows, permutation_null=pn,
+                                            grain="cell_exit"),  # S6-B3396
            "step1_ranking": ranked[:80], "rows": rows,
            "holdout_read": "NOT FIRED - Step 2 needs its own owner word (11.2c)"}
     Path(a.out).write_text(json.dumps(rec, indent=2), encoding="utf-8")

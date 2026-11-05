@@ -253,7 +253,8 @@ def main() -> int:
            # B2768/B2775: grid-stage BH-FDR as a COMPLETE PARTITION,
            # REPORT-ONLY - changes no gate and no ranking (B1608). The null is
            # handed in because this grader establishes significance that way.
-           "multiplicity": rc.bh_fdr_report(rows, permutation_null=pn),
+           "multiplicity": rc.bh_fdr_report(rows, permutation_null=pn,
+                                            grain="cell_exit"),  # S6-B3396
            "step1_ranking": ranked[:80], "rows": rows,
            "holdout_read": "NOT FIRED - Step 2 needs its own owner word (11.2c)"}
     Path(a.out).write_text(json.dumps(rec, indent=2), encoding="utf-8")

@@ -161,7 +161,7 @@ def main() -> int:
            # 11.2b2d: mandatory, report-only. No numeric search here, so no
            # permutation null exists to hand in - the partition's
            # scored_unpriced bucket carries the graded rows honestly.
-           "multiplicity": rc.bh_fdr_report(rows),
+           "multiplicity": rc.bh_fdr_report(rows, grain="cell_exit"),  # S6-B3396
            "step1_ranking": ranked[:80], "rows": rows,
            "holdout_read": "NOT FIRED - Step 2 needs its own owner word (11.2c)"}
     Path(a.out).write_text(json.dumps(rec, indent=2), encoding="utf-8")

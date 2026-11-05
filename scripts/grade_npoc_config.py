@@ -282,7 +282,8 @@ def grade(cube_csv: Path, config: dict, *, min_n: int = 10, top_n: int = 10,
         # the mandatory report-only multiplicity block (B3101/S6-B2766):
         # every exit SEARCHED in this cube, partitioned; nothing gates on it.
         "multiplicity": rc.bh_fdr_report(rc.exit_family_rows(
-            per_exit, cube["exit_method"].astype(str).unique())),
+            per_exit, cube["exit_method"].astype(str).unique()),
+            grain="cell_exit"),          # S6-B3396: one row per exit searched
         "per_exit": per_exit,
         "results_n_exits": len(per_exit),
         "step2": grade_step2(cube, ho_rows, min_n=min_n, declared_step2=step2,

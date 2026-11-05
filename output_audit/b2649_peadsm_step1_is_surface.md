@@ -1,4 +1,6 @@
-# TABLE D (OFFLINE FORM) - pead_with_smart_money_long
+# SWEEP RANKED LIST - pead_with_smart_money_long
+
+Not a Table D: the campaign's one unified Table D is rendered by scripts/table_d_render.py over every artifact of the campaign, this one included (runbook 7.5; addendum tables are barred).
 
 Ranked producer combinations from the IN-SAMPLE sweep: 48 of 48 cells, 1248 trials (cells x exits); window 2022-05-05 .. 2025-05-05; holdout NOT read by this artifact.
 

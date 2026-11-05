@@ -444,7 +444,8 @@ def main() -> int:
                              if valid else None),
             "p_value": round(p, 4) if p is not None else None,
             "graded_cells_nonbarred": len(ranked)}
-    multiplicity = rc.bh_fdr_report(family, permutation_null=null_block)
+    multiplicity = rc.bh_fdr_report(family, permutation_null=null_block,
+                                    trials_searched=trials)   # S6-B3396
     multiplicity["trials"] = trials
     multiplicity["basis_note"] = (
         f"{len(cells)} (axis, level) cells x their exits = {trials} searched; "

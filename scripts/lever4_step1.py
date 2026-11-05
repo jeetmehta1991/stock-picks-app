@@ -196,7 +196,7 @@ def main(argv=None) -> int:
            "cells_graded": len(graded),
            # 11.2b2d: mandatory, report-only - no numeric search, so no
            # permutation null exists; the partition says so.
-           "multiplicity": rc.bh_fdr_report(rows),
+           "multiplicity": rc.bh_fdr_report(rows, grain="cell_exit"),  # S6-B3396
            "step1_ranking": ranked[:80], "rows": rows,
            "holdout_read": "NOT FIRED - Step 2 needs its own owner word (11.2c)"}
     if a.step2:

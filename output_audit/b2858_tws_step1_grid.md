@@ -1,4 +1,6 @@
-# TABLE D (OFFLINE FORM) - three_white_soldiers
+# SWEEP RANKED LIST - three_white_soldiers
+
+Not a Table D: the campaign's one unified Table D is rendered by scripts/table_d_render.py over every artifact of the campaign, this one included (runbook 7.5; addendum tables are barred).
 
 Ranked producer combinations from the IN-SAMPLE sweep: 5 of 5 cells, 130 trials (cells x exits); window 2022-05-05 .. 2025-05-05; holdout NOT read by this artifact.
 

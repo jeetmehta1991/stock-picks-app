@@ -1,0 +1,103 @@
+........................................................................ [  3%]
+........................................................................ [  7%]
+........................................................................ [ 10%]
+........................................................................ [ 14%]
+........................................................................ [ 17%]
+........................................................................ [ 21%]
+........................................................................ [ 24%]
+........................................................................ [ 28%]
+..............................................s......................... [ 31%]
+....................s.................................................s. [ 35%]
+........................................................................ [ 39%]
+........................................................................ [ 42%]
+........................................................................ [ 46%]
+........................................................................ [ 49%]
+........................................................................ [ 53%]
+........................................................................ [ 56%]
+........................................................................ [ 60%]
+........................................................................ [ 63%]
+........................................................................ [ 67%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+........................................................................ [ 78%]
+........................................................................ [ 81%]
+........................................................................ [ 85%]
+........................................................................ [ 88%]
+........................................................................ [ 92%]
+........................................................................ [ 95%]
+........................................................................ [ 99%]
+............                                                             [100%]
+============================== warnings summary ===============================
+backtest/tests/test_unit.py::test_b3383_return_correlation_states_its_basis
+backtest/tests/test_unit.py::test_b3383_return_correlation_states_its_basis
+  C:\Users\jeetm\Github\stock-picks-app\scripts\build_strategy_return_correlation.py:116: RuntimeWarning: invalid value encountered in sqrt
+    return s_bar * np.sqrt(n / (1 + (n - 1) * rho))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================ slowest 40 durations =============================
+243.70s call     backtest/tests/test_unit.py::test_b2337_no_header_asserted_by_substring_over_whole_output
+207.24s call     backtest/tests/test_unit.py::test_b2638_reproduction_failure_refuses
+125.41s call     backtest/tests/test_unit.py::test_b3269_pregate_selector_reaches_the_tests_that_read_a_change
+97.65s call     backtest/tests/test_unit.py::test_b3195_offline_sweep_refuses_a_looser_level
+69.06s call     backtest/tests/test_unit.py::test_b3139az_a_count_axis_is_kept_positive_and_a_flag_op_refuses_a_count
+67.40s call     backtest/tests/test_unit.py::test_b3293_no_preregistration_candidate_on_a_negative_or_noise_surface
+55.73s call     backtest/tests/test_unit.py::test_b3358_the_engine_entry_needs_the_owners_recorded_word
+54.90s call     backtest/tests/test_unit.py::test_b3140c_c16_reruns_queue_readers_when_the_queue_moved_after_the_gate
+43.56s call     backtest/tests/test_unit.py::test_b3387_pregate_selects_a_census_that_globs_by_name_pattern
+40.06s call     backtest/tests/test_unit.py::test_b3287_a_commit_adding_files_reruns_the_tracked_set_tests
+38.05s call     backtest/tests/test_unit.py::test_b1463_no_new_near_identical_pairs
+37.73s call     backtest/tests/test_unit.py::test_b1616_engine_defaults_are_byte_identical_and_knobs_bite
+35.87s call     backtest/tests/test_unit.py::test_b3248d_squeeze_knobs_reach_the_producer_and_production_is_unmoved
+35.66s call     backtest/tests/test_unit.py::test_b3395b_the_holdout_read_ledger
+35.47s call     backtest/tests/test_unit.py::test_b3099_drift_check_is_content_aware
+35.19s call     backtest/tests/test_unit.py::test_b3413_pregate_reads_are_counted_and_exempt
+33.62s call     backtest/tests/test_unit.py::test_b1619_breaker_variants_isolate_and_do_not_move_the_base
+30.90s call     backtest/tests/test_unit.py::test_b3153_detached_tasks_run_hidden
+29.00s call     backtest/tests/test_unit.py::test_smart_money_all_keys_present
+24.78s call     backtest/tests/test_unit.py::test_b1778_no_control_chars_in_gate_scripts
+23.45s call     backtest/tests/test_unit.py::test_b3248f_producer_spot_check_three_legs
+20.80s call     backtest/tests/test_unit.py::test_b3139ai_the_net_transform_has_one_definition
+16.90s call     backtest/tests/test_unit.py::test_bug273_institutional_signal_no_bulk_returns_none
+16.28s call     backtest/tests/test_unit.py::test_b2207_ledger_lock_serializes_concurrent_landings
+15.82s call     backtest/tests/test_unit.py::test_b3276_census_check_fails_on_an_unreviewed_status
+15.54s call     backtest/tests/test_unit.py::test_b3139_bollinger_step2_free_levels_reproduce_on_the_landed_cube
+15.26s call     backtest/tests/test_unit.py::test_b1884_raises_arms_use_genuinely_invalid_fixtures
+14.97s call     backtest/tests/test_unit.py::test_b2116_run_wave_resume_loop_both_ways
+14.94s call     backtest/tests/test_unit.py::test_bug272_insider_signal_no_bulk_returns_none
+13.80s call     backtest/tests/test_unit.py::test_b3311_dangling_citation_window_covers_every_lesson
+13.33s call     backtest/tests/test_unit.py::test_b3283_pregate_selects_the_tests_that_read_their_own_module
+12.43s call     backtest/tests/test_unit.py::test_b3245_the_gate_discloses_code_line_citations_an_edit_moved
+11.21s call     backtest/tests/test_unit.py::test_dec458_lead_lag_wired_in_screen_universe
+10.73s call     backtest/tests/test_unit.py::test_b3267_battery_fails_a_cube_that_drops_a_closed_fire
+10.68s call     backtest/tests/test_unit.py::test_b2127_launch_refuses_when_the_engine_drifted_from_the_manifest
+9.43s call     backtest/tests/test_unit.py::test_b3285_moved_citation_names_its_enclosing_function
+9.35s call     backtest/tests/test_unit.py::test_b1510_producer_artifact_standard
+9.22s call     backtest/tests/test_unit.py::test_b3141a_pairs_producer_knobs_reach_the_engine_and_bite
+8.97s call     backtest/tests/test_unit.py::test_b3137_tier_union_is_the_tier_resolvers_own_windows
+8.90s call     backtest/tests/test_unit.py::test_s6b3092b_preleg_exemptions_are_named_reasoned_and_gap_only
+2025 passed, 3 skipped, 2 warnings in 2059.65s (0:34:19)
+
+pytest_exit=0
+tree=SAME
+exit=0
+elapsed_s=2092
+chain_inflight=none
+chain_inflight_start=none
+chain_inflight_end=none
+power_start=ac
+power_end=ac
+engine_inflight=none
+engine_inflight_start=none
+engine_inflight_end=none
+engine_dead_within_window=none
+beside_wave_override=none
+output_audit_created=none
+output_audit_modified_tracked=none
+output_audit_modified_untracked=none
+readset=CLEAN
+readset_rerun=none
+readset_suite_writes=2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
+moved_line_citations=none
+pregate=STALE (2 of 37 changed path(s) differ from the run at 2026-11-05T03:14:09Z, first EXECUTION_QUEUE.md)
+runbook_drift=tickets 14, not named in the runbook 12 (S6-B3422, S6-B3421, S6-B3398, S6-B3400, S6-B3402, S6-B3401, S6-B3333, S6-B3409, S6-B3423, S6-B3424, S6-B3425, S6-B3426); lessons 0, not cited 0
+stamp_binding=kept-green

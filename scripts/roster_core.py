@@ -601,7 +601,8 @@ def exit_family_rows(per_exit, exits_searched) -> list:
     return rows
 
 
-def bh_fdr_report(rows, q: float = 0.10, *, permutation_null=None) -> dict:
+def bh_fdr_report(rows, q: float = 0.10, *, permutation_null=None,
+                  grain=None, trials_searched=None) -> dict:
     """Benjamini-Hochberg over a grid's graded rows, as a COMPLETE PARTITION.
 
     B2768 shipped this report-only; B2775 makes it RECONCILE, after two live
@@ -625,8 +626,19 @@ def bh_fdr_report(rows, q: float = 0.10, *, permutation_null=None) -> dict:
 
     `permutation_null` lets a grader that establishes significance that way
     hand it in, so the artifact never claims nothing was graded when it was.
+
+    S6-B3396 (census 461, runbook 1.4: record trials_searched (cells x exits)
+    with every ranked list): `trials_searched` is the number of (cell, exit)
+    pairs the search spanned. A grader whose rows ARE that grain declares
+    grain="cell_exit" and the rows naming an exit are counted (a coverage-skip
+    row naming none is not a trial); a grader whose rows are one per cell
+    passes the count it measured. Neither: None plus a note - a cell count
+    never stands in for a trial count (L580).
     """
     import math
+
+    if grain not in (None, "cell_exit"):
+        raise ValueError(f"bh_fdr_report: unknown grain {grain!r}")
 
     try:
         rows = list(rows or [])
@@ -716,4 +728,12 @@ def bh_fdr_report(rows, q: float = 0.10, *, permutation_null=None) -> dict:
         out["note"] += ("; NO per-row p-values and no permutation null supplied "
                         "- this grid's significance is UNPRICED, which is not "
                         "the same as nothing having been graded")
+    if trials_searched is None and grain == "cell_exit":
+        trials_searched = sum(1 for r in rows if isinstance(r, dict)
+                              and r.get("exit") is not None)
+    out["trials_searched"] = trials_searched
+    if trials_searched is None:
+        out["trials_searched_note"] = ("not recorded: the rows are not at the "
+                                       "(cell, exit) grain and the caller "
+                                       "passed no count (S6-B3396)")
     return out

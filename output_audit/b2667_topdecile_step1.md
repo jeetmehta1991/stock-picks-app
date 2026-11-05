@@ -1,4 +1,6 @@
-# TABLE D (OFFLINE FORM) - xs_momentum_top_decile
+# SWEEP RANKED LIST - xs_momentum_top_decile
+
+Not a Table D: the campaign's one unified Table D is rendered by scripts/table_d_render.py over every artifact of the campaign, this one included (runbook 7.5; addendum tables are barred).
 
 Ranked producer combinations from the IN-SAMPLE sweep: 34 of 64 cells, 1664 trials (cells x exits); window 2022-05-05 .. 2025-05-05; holdout NOT read by this artifact.
 

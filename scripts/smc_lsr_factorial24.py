@@ -90,9 +90,11 @@ def factorial_rows(base: pd.DataFrame, levels: dict[float, float],
             for q, lev in levels.items():               # B1 band
                 cell = cell0[cell0[MOM].notna() & (cell0[MOM] >= lev)]
                 best = None
+                n_ex = 0                                # S6-B3396
                 for ex, grp in cell.groupby("exit_method"):
                     if ex == BARRED_EXIT:
                         continue
+                    n_ex += 1
                     si = rc.in_sample(grp)
                     r = rc._sharpe(si["pnl_pct"].values, si["hold_days"],
                                    min_n=min_n)
@@ -109,7 +111,8 @@ def factorial_rows(base: pd.DataFrame, levels: dict[float, float],
                        "momentum_floor": float(lev),
                        "fires": int(cell.drop_duplicates(
                            ["ticker", "entry_date"]).shape[0]),
-                       "verdict": "RANKED" if best else "BELOW_POWER_FLOOR"}
+                       "verdict": "RANKED" if best else "BELOW_POWER_FLOOR",
+                       "exits_searched": n_ex}
                 row.update(best or {"exit": None, "is_sharpe": None,
                                     "is_ci_lo": None, "is_n": 0})
                 rows.append(row)
@@ -242,7 +245,9 @@ def main() -> int:
                          "b2694 step1 depth cells by the same builder; the "
                          "momentum cross inside each cell is the new "
                          "measurement"),
-        "multiplicity": {"method": "permutation null, momentum shuffled "
+        "multiplicity": {"trials_searched": sum(r["exits_searched"]   # S6-B3396
+                                                for r in rows),
+                         "method": "permutation null, momentum shuffled "
                                    "across base fires, full 24-cell grid "
                                    "re-graded per perm (SYNTHETIC maxima)",
                          "n_perms": a.null_perms, "seed": a.null_seed,

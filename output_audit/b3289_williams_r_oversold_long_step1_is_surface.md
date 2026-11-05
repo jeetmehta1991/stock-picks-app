@@ -1,4 +1,6 @@
-# TABLE D (OFFLINE FORM) - williams_r_oversold
+# SWEEP RANKED LIST - williams_r_oversold
+
+Not a Table D: the campaign's one unified Table D is rendered by scripts/table_d_render.py over every artifact of the campaign, this one included (runbook 7.5; addendum tables are barred).
 
 Ranked producer combinations from the IN-SAMPLE sweep: 18 of 18 cells, 468 trials (cells x exits); window 2022-05-05 .. 2025-05-05; holdout NOT read by this artifact.
 

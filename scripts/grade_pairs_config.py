@@ -271,7 +271,8 @@ def grade(cube_csv: Path, config: dict, *, min_n: int = 10, top_n: int = 10,
         "step1_distinct_outcomes": 1,
         "step1_ranking": ranked[:top_n],
         "multiplicity": rc.bh_fdr_report(rc.exit_family_rows(
-            per_exit, cube["exit_method"].astype(str).unique())),
+            per_exit, cube["exit_method"].astype(str).unique()),
+            grain="cell_exit"),          # S6-B3396: one row per exit searched
         "per_exit": per_exit,
         "results_n_exits": len(per_exit),
         "step2": grade_step2(cube, ho_rows, min_n=min_n, declared_step2=step2,

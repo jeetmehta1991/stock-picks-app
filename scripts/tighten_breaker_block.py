@@ -347,6 +347,7 @@ def main() -> int:
 
     from episode_disclosure import month_concentration  # S6-B3318
     rows = []
+    trials_searched = 0      # S6-B3396: the (combination, exit) pairs searched
     for cm, bmax, amax, tn in itertools.product(
             CLOSE_MITIGATION, BREAK_PCT_MAX, AGE_BARS_MAX, TAIL_N):
         keep = {k for k, d in diags[cm].items() if survives(d, bmax, amax, tn)}
@@ -359,6 +360,7 @@ def main() -> int:
                  for r in g.itertuples()]]
         is_m = rc.in_sample(sub)
         ho_m = rc.holdout(sub)
+        trials_searched += int(is_m["exit_method"].nunique())   # offered to select_exit
         # B1715 DIAGNOSTIC ONLY - the ranking is untouched. `select_exit`
         # already computes IN-SAMPLE stats for the chosen exit and the caller
         # discarded them. Keeping the IS Sharpe lets the P0-2 selection leak be
@@ -536,7 +538,7 @@ def main() -> int:
          # gates (B1608), so a rejection rule here would silently become a
          # gate at the stage the plan says has none. It makes the TRIALS
          # COUNT visible, which a reader of this artifact could not get.
-         "multiplicity": rc.bh_fdr_report(rows),
+         "multiplicity": rc.bh_fdr_report(rows, trials_searched=trials_searched),
          # B2138 (S6-B2136 / owner directive): record the CROSS-CONFIG axes in
          # the artifact itself. P1 swing_length and P6 span define WHICH config
          # a cube is; they were written nowhere, so every grid was ambiguous

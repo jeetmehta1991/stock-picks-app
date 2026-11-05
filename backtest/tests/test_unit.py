@@ -36504,7 +36504,8 @@ def test_b2638_grid_axis_epistemics_rule_survives():
 
 def test_b2643_offline_table_d_ships_with_the_artifact():
     """B2643: the ranked producer-combination view must not wait for an engine
-    run - the sweep writes TABLE D (offline form) beside its JSON, and the two
+    run - the sweep writes its ranked list beside its JSON (headed SWEEP RANKED
+    LIST since S6-B3396, the one Table D being table_d_render), and the two
     agree (writer-reader contract, PIVOT #37 class). Proven able to fail: a
     mutated record renders a different table than the one on disk."""
     import importlib.util as ilu
@@ -38394,7 +38395,14 @@ def test_b2775_salvage_grader_hands_in_its_permutation_null():
     from pathlib import Path as _P
     src = (_P(__file__).resolve().parents[2] / "scripts" / "smc_lsr_step1.py"
            ).read_text(encoding="utf-8", errors="replace")
-    assert "rc.bh_fdr_report(rows, permutation_null=pn)" in src, (
+    # S6-B3396: the KEYWORD, read from the AST - the exact call text moved
+    # when the grain keyword was added (a pin coupled to the argument list
+    # fails on a correct change, B2775's own note above)
+    import ast as _ast
+    calls = [n for n in _ast.walk(_ast.parse(src)) if isinstance(n, _ast.Call)
+             and getattr(n.func, "attr", None) == "bh_fdr_report"]
+    assert any(k.arg == "permutation_null" and getattr(k.value, "id", None) == "pn"
+               for c in calls for k in c.keywords), (
         "the permutation-null grader must hand its null to the report, or it "
         "will keep claiming graded=0 while hundreds of cells were graded")
 
@@ -74966,3 +74974,120 @@ def test_b3396f_both_table_d_renderers_append_the_per_tier_best_through_one_func
     monkeypatch.setattr(pvt, "outcome_signature", lambda *a: "same")
     landing = "\n".join(pvt.table_d({"sw20": g}))
     assert " of " in landing.split("| # | config |")[1].split("\n")[2], landing[:600]
+
+
+def test_b3396g_every_multiplicity_block_records_trials_searched():
+    """S6-B3396 (runbook 1.4, census 461): 'record trials_searched (cells x
+    exits) with every ranked list'. Only offline_level_sweep wrote it, the
+    breadth grid called it `trials`, ten graders carried the figure only as
+    the partition's `searched`, tighten_breaker_block (one row per
+    combination) recorded combinations, and the hand-built factorial block
+    no trial count at all. roster_core.bh_fdr_report now writes
+    trials_searched: it counts the rows naming an exit when the caller
+    declares grain="cell_exit", or takes the count a per-cell grader
+    measured; neither gives None and a note, never a cell count standing in
+    (L580). Every call site declares one or the other - a writer added
+    later without either fails here."""
+    import ast
+    import sys as _sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import roster_core as rc
+    rows = [{"exit": "e1", "verdict": "ZERO_FIRES"}, {"exit": "e2", "p": 0.2},
+            {"exit": None, "cell": "SKIP:k"}]
+    # (cell, exit) rows are the trials; a coverage-skip row naming no exit is not
+    rep = rc.bh_fdr_report(rows, grain="cell_exit")
+    assert rep["trials_searched"] == 2 and "trials_searched_note" not in rep, rep
+    # a per-cell grader passes the count it measured
+    assert rc.bh_fdr_report([{"exit": "e1", "p": 0.2}],
+                            trials_searched=24)["trials_searched"] == 24
+    # neither: None and a note - never the row count standing in
+    rep = rc.bh_fdr_report([{"exit": "e1", "p": 0.2}])
+    assert rep["trials_searched"] is None and "trials_searched_note" in rep, rep
+    with pytest.raises(ValueError, match="unknown grain"):
+        rc.bh_fdr_report([], grain="cell")
+    # the census: every bh_fdr_report call under scripts/ declares a grain or
+    # a count, and the population is the one measured at S6-B3396 (13 files)
+    calls = {}
+    for f in sorted((root / "scripts").glob("*.py")):
+        for n in ast.walk(ast.parse(f.read_text(encoding="utf-8"))):
+            if (isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute)
+                    and n.func.attr == "bh_fdr_report"):
+                calls.setdefault(f.name, []).append(
+                    {k.arg: (k.value.value if isinstance(k.value, ast.Constant) else "expr")
+                     for k in n.keywords})
+    assert set(calls) == {
+        "breadth_step1_grid.py", "grade_bollinger_config.py", "grade_candle_config.py",
+        "grade_institutional_config.py", "grade_knob_config.py", "grade_npoc_config.py",
+        "grade_pairs_config.py", "lever4_step1.py", "offline_level_sweep.py",
+        "smc_family_step1.py", "smc_lsr_step1.py", "smc_obb_step1.py",
+        "tighten_breaker_block.py"}, sorted(calls)
+    bad = {f: kw for f, kws in calls.items() for kw in kws
+           if kw.get("grain") != "cell_exit" and "trials_searched" not in kw}
+    assert not bad, bad
+    # the one hand-built multiplicity block counts its own trials
+    tree = ast.parse((root / "scripts" / "smc_lsr_factorial24.py").read_text(encoding="utf-8"))
+    blocks = [n.values[i] for n in ast.walk(tree) if isinstance(n, ast.Dict)
+              for i, k in enumerate(n.keys)
+              if isinstance(k, ast.Constant) and k.value == "multiplicity"]
+    assert len(blocks) == 1 and isinstance(blocks[0], ast.Dict), blocks
+    assert "trials_searched" in [k.value for k in blocks[0].keys
+                                 if isinstance(k, ast.Constant)]
+
+
+def test_b3396h_the_sweep_stamps_its_generator_and_writes_a_ranked_list_not_a_table_d():
+    """S6-B3396 (census 911 + 956). 911, runbook T4: 'the Step-1 artifact is
+    stamped with its generator and cube (#309)' - offline_level_sweep's
+    record named neither; stamp_generator writes both and main calls it
+    before the record is written. 956: 'a late-landing axis re-renders the
+    one table; separate addendum tables are barred' - the sweep's per-sweep
+    markdown was headed TABLE D (OFFLINE FORM), a second Table D beside the
+    unified one (B2699). It is now headed SWEEP RANKED LIST and names
+    table_d_render; B2643's rule that it is written beside its JSON on every
+    sweep stands. Every committed sweep list equals its render (18 at
+    S6-B3396) and none is headed TABLE D."""
+    import ast
+    import importlib.util as ilu
+    import json
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    spec = ilu.spec_from_file_location("ols_b3396h", root / "scripts" / "offline_level_sweep.py")
+    m = ilu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    assert m.stamp_generator({}) == {
+        "generator": "scripts/offline_level_sweep.py",
+        "cube": "output_r5_merged_1_7/trade_exit_detail.csv"}
+    # wiring: main stamps the record before it writes it
+    tree = ast.parse((root / "scripts" / "offline_level_sweep.py").read_text(encoding="utf-8"))
+    main = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "main")
+    lines = lambda name: sorted(c.lineno for c in ast.walk(main) if isinstance(c, ast.Call)
+                                and getattr(c.func, "id", getattr(c.func, "attr", None)) == name)
+    assert lines("stamp_generator") and lines("write_text"), (lines("stamp_generator"),)
+    assert lines("stamp_generator")[0] < lines("write_text")[0]
+    # the render: a ranked list naming the one Table D renderer
+    rec = json.loads((root / "output_audit" / "b2638_pead_step1_is_surface.json")
+                     .read_text(encoding="utf-8"))
+    out = m.render_table(rec)
+    first = out.split(chr(10), 1)[0]
+    assert first == "# SWEEP RANKED LIST - " + rec["strategy"], first
+    assert not any(x.startswith("# TABLE D") for x in out.split(chr(10)))
+    assert "scripts/table_d_render.py" in out and "Generated by" not in out
+    stamped = m.render_table(m.stamp_generator(dict(rec)))
+    assert ("Generated by scripts/offline_level_sweep.py from "
+            "output_r5_merged_1_7/trade_exit_detail.csv.") in stamped
+    # every committed sweep list: equal to its render, none a second Table D
+    heads = ("# SWEEP RANKED LIST - ", "# TABLE D (OFFLINE FORM) - ")
+    seen = 0
+    for md in sorted((root / "output_audit").glob("*.md")):
+        with open(md, encoding="utf-8", errors="replace") as fh:
+            top = fh.readline()
+        if not top.startswith(heads):
+            continue
+        seen += 1
+        assert top.startswith(heads[0]), md.name
+        body = md.read_text(encoding="utf-8")
+        art = json.loads(md.with_suffix(".json").read_text(encoding="utf-8"))
+        assert body == m.render_table(art), md.name
+    assert seen >= 18, seen
