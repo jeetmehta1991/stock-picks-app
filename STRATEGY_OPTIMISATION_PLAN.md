@@ -2338,8 +2338,8 @@ outcomes rank highest"** - one row per (config x exit) outcome, the top 25 at la
   FULL Table A inventory - one column per producer band, from the per-family axis map `D_AXIS_FAMILIES`
   (R2; the S6-B2500 registry that replaced hardcoded keys; a family absent from the registry still falls
   back to the first family's columns, which render '-' - visible, never silent,
-  `producer_variant_table.py:3544-3551`) - plus `# | config | exit | is_ci_lo | n |
-  tier | dup | is_sharpe | cls | holdout_n | full_period_n | verdict`. A late-landing axis re-renders the
+  `producer_variant_table._d_family`) - plus `# | config | exit | is_ci_lo | n |
+  tier | dup | is_sharpe | cls | holdout_n | full_period_n | verdict` (the landing table adds npt_excl; the campaign renderer table_d_render takes the same columns from producer_variant_table.TABLE_D_FIXED_COLUMNS, its rank and Table A columns standing for # and config - test_b3396e, S6-B3396). A late-landing axis re-renders the
   one table; addendum tables are barred. TABLE D-2 is RETIRED: there were once TWO renderers, and the
   grid one kept a split the owner had rejected; pin
   `test_b2725_landing_table_d_is_unified_with_every_producer_band` (five arms, fail-proofed by deleting a
@@ -2351,14 +2351,14 @@ outcomes rank highest"** - one row per (config x exit) outcome, the top 25 at la
   the sort key deliberately.
 - **`dup` reads `k of m`:** this row's (ci_lo, sharpe, n, exit) signature appears in m configs - ONE
   discovery restated, never independent confirmations. Duplicates are labelled, not dropped: suppressing
-  rows in a step the owner ruled has no gates is itself a gate. `cls` = equivalence-class size.
+  rows in a step the owner ruled has no gates is itself a gate. `cls` = equivalence-class size. Both renderers label dup through producer_variant_table.outcome_signature and print cls as '-' where a row does not carry it (test_b3396e, S6-B3396).
 - **The exit-selection disclosure prints on the table itself:** Step 1 picks each cell's exit by SHARPE
   alone (owner ruling B1605, a cheap ranking pass) while this table RANKS by `is_ci_lo` - two objectives,
   disclosed because a row can lead on `is_ci_lo` carrying the exit that won on Sharpe. Not every
   registered exit is effective per cell: `next_pivot_target` is refused on boundary-spanning cells
   (B2014, `npt_excluded_identity_boundary`) and a byte-identical collapse removes another (B1593) - 22
   effective per cell when this was written; derive the effective count live (§7.6) - the renderers now print the registered count from producer_variant_table.registered_exit_count and call the effective count measured per cell (test_b3396c, S6-B3396).
-- **A per-tier best summary is appended** - the comparison a rank order hides; a SUPERSEDED grid (`producer_variant_table.SUPERSEDED_GRIDS`, each with its recorded reason) is marked in Tables C and D and skipped by that best (S6-B3266).
+- **A per-tier best summary is appended** to both Table Ds through producer_variant_table.tier_best_lines (test_b3396f, S6-B3396) - the comparison a rank order hides; a SUPERSEDED grid (`producer_variant_table.SUPERSEDED_GRIDS`, each with its recorded reason) is marked in Tables C and D and skipped by that best (S6-B3266).
 - **The renderer is the only source:** `python scripts/show_table_d.py` (grid form) and
   `scripts/table_d_render.py` (offline form). Print it, never retype it (L652). Regenerated at every
   landing: `postconfig_doc.build()` renders it through `producer_variant_table.table_d`, invoked by the

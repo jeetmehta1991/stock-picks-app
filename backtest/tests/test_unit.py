@@ -44710,18 +44710,23 @@ def test_b3082_table_d_reads_the_factorial_artifact_shape(tmp_path):
     #    i.e. trades. The value is constant across exits BY CONSTRUCTION -
     #    every entry is replayed through all 24 exits - and varies 69..560
     #    ACROSS configs, verified on 18 of 18.
-    # the helper fixture carries fires=261 and full_period_n=261, so DEEP
-    assert cells[-3] == "261" and cells[-2] == "261", cells
+    # the helper fixture carries fires=261 and full_period_n=261, so DEEP.
+    # S6-B3396: cells are read by HEADER, never by position from the row's
+    # end - the unified fixed columns moved them (L706)
+    hdr = [x for x in out.split(chr(10)) if x.startswith("| rank |")]
+    assert len(hdr) == 1, out
+    col = {h.strip(): j for j, h in enumerate(hdr[0].strip("|").split("|"))}
+    assert cells[col["n"]] == "261" and cells[col["full_period_n"]] == "261", cells
     #    and the depth band is computed from it, so a reader can see that the
     #    leading cell is the SHALLOWEST of the leaders (rank is not
     #    trustworthiness)
-    assert cells[-1] == "DEEP", cells
+    assert cells[col["tier"]] == "DEEP", cells
     assert m._tier(100) == "DEEP" and m._tier(99) == "MID"
     assert m._tier(29) == "THIN"
     #    an ABSENT count still renders absent, and never as 0 or THIN (L580)
     assert m._n(None) == "-" and m._n(0) == "0"
     assert m._tier(None) == "-"
-    assert "IS n is the in-sample trade count" in out
+    assert "COUNTS - n is the in-sample trade count" in out
 
 
 def test_b3082_inventory_labels_come_from_evidence_not_band_shape(tmp_path):
@@ -44956,10 +44961,14 @@ def test_b3088_table_d_counts_are_trades_and_carry_a_depth_tier():
     assert len(rows) == 2, out
     r1 = [c.strip() for c in rows[0].strip("|").split("|")]
     r2 = [c.strip() for c in rows[1].strip("|").split("|")]
+    # S6-B3396: read by HEADER, not by position from the end (L706)
+    hdr = [x for x in out.split(chr(10)) if x.startswith("| rank |")]
+    assert len(hdr) == 1, out
+    col = {h.strip(): j for j, h in enumerate(hdr[0].strip("|").split("|"))}
     # the count is the TRADE count, not a dash
-    assert r1[-3] == "98" and r2[-3] == "181", (r1, r2)
+    assert r1[col["n"]] == "98" and r2[col["n"]] == "181", (r1, r2)
     # and the leader is the SHALLOWER sample - the exact thing tier exposes
-    assert r1[-1] == "MID" and r2[-1] == "DEEP", (r1, r2)
+    assert r1[col["tier"]] == "MID" and r2[col["tier"]] == "DEEP", (r1, r2)
     assert "TIER - DEEP n>=100" in out
 
 
@@ -57904,7 +57913,16 @@ def test_b3173a_table_d_reads_free_level_artifacts():
     assert "TESTED at {0.0028, 0.0059, 0.0096, 0.0141}" in inv["P6"], inv["P6"]
     assert "NOT TESTED" not in inv["P5"], inv["P5"]
     assert any(l.startswith("OFFLINE FREE LEVELS") and "kept per level: 6" in l for l in lines)
-    prod = [l for l in lines if "| breakeven_plus_trail | 0.509 | 0.257 | 659 | 659 |" in l]
+    # S6-B3396: the production cell found by HEADER, not by a cell sequence
+    # in one column order (the unified fixed columns moved them - L706)
+    hdr = [l for l in lines if l.startswith("| rank |")]
+    assert len(hdr) == 1, md[:400]
+    col = {h.strip(): j for j, h in enumerate(hdr[0].strip("|").split("|"))}
+    cells = [[c.strip() for c in l.strip("|").split("|")] for l in lines
+             if l.startswith("| ") and l[2:3].isdigit()]
+    prod = [c for c in cells if c[col["exit"]] == "breakeven_plus_trail"
+            and c[col["is_sharpe"]] == "0.509" and c[col["is_ci_lo"]] == "0.257"
+            and c[col["n"]] == "659" and c[col["full_period_n"]] == "659"]
     assert len(prod) == 1, "the production cell appears once"
 
     for fam, glob in (("three_white_soldiers", "output_candle_tws_c01_*_free_levels.json"),
@@ -68109,7 +68127,11 @@ def test_b3372_a_per_leg_render_credits_a_shared_axis_to_the_rendered_legs_param
     assert "LONG LEG ONLY" in pv["P1"] and "COMPANION" not in pv["P1"], pv["P1"]
     assert "OFFLINE COMPANION ROWS (1, in this column): k >= {5.0}" in pv["P2"], pv["P2"]
     body = [ln for ln in md.splitlines() if ln.startswith("| 1 |")]
-    assert body == ["| 1 | 0.0 | k >= 5.0 | time_stop_10d | 0.900 | 0.2 | 40 | - | MID |"], body
+    # S6-B3396: the unified fixed columns (exit, is_ci_lo, n, tier, dup,
+    # is_sharpe, cls, holdout_n, full_period_n, verdict); the axis cells this
+    # pin exists for are unchanged
+    assert body == ["| 1 | 0.0 | k >= 5.0 | time_stop_10d | 0.2 | 40 | MID | - "
+                    "| 0.900 | - | - | - | - |"], body
 
 
 def test_b3330_a_detached_launchs_own_log_is_not_a_moved_input(tmp_path, monkeypatch):
@@ -74810,3 +74832,137 @@ def test_b3396d_every_familys_parameters_block_carries_its_specs_params():
         cols = [c.strip().split(" ")[0] for c in head.strip("|").split("|")[1:] if c.strip()]
         want = [p["id"] for p in pvt.resolved_spec(s)["params"]]   # P- and B-rows
         assert cols == want, (s, rel, cols, want)
+
+
+def _b3396_campaign_fixture(tmp_path):
+    """Two factorial corners of three_white_soldiers whose regime_flip
+    outcome is byte-identical (a restatement: one discovery, two cells) plus
+    one distinct exit - the shape `dup` exists to label."""
+    import json as _j
+    arts = []
+    for body in (0.5, 0.6):
+        art = {"strategy": "three_white_soldiers", "rows": 4800,
+               "results_n_exits": 24,
+               "config": {"P2_n_bars": 3, "P3_min_body_pct": body,
+                          "P4_min_step_pct": 0.0, "P5_max_wick_pct": 0.3},
+               "per_exit": [
+                   {"exit": "regime_flip", "is_sharpe": 0.99, "is_ci_lo": 0.225,
+                    "fires": 98, "rank": 1,
+                    "admit": {"holdout_n": 0, "full_period_n": 98}}]}
+        if body == 0.5:
+            art["per_exit"].append(
+                {"exit": "time_stop_10d", "is_sharpe": 0.63, "is_ci_lo": 0.075,
+                 "fires": 181, "rank": 2,
+                 "admit": {"holdout_n": 0, "full_period_n": 181}})
+        p = tmp_path / f"zz_{body}.json"
+        p.write_text(_j.dumps(art), encoding="utf-8")
+        arts.append(str(p))
+    return arts
+
+
+def test_b3396e_campaign_table_d_carries_the_unified_columns_and_labels_dup(tmp_path):
+    """S6-B3396 (runbook 7.5, census 2250 + 2265): the campaign's unified
+    Table D (table_d_render) is ONE table whose fixed columns are the unified
+    Table D's - exit, is_ci_lo, n, tier, dup, is_sharpe, cls, holdout_n,
+    full_period_n, verdict - in that order, from
+    producer_variant_table.TABLE_D_FIXED_COLUMNS less npt_excl (this table
+    takes npt_barred rows out of the ranking). It carried only exit /
+    IS sharpe / IS ci_lo / IS n / full n / tier, so a restated discovery read
+    as independent confirmations and cls was invisible. `dup` reads 'k of m'
+    through the landing table's own signature function; a value a row does
+    not carry reads '-' (L580)."""
+    import sys as _sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    import table_d_render as t
+    want = tuple(c for c in pvt.TABLE_D_FIXED_COLUMNS if c != "npt_excl")
+    assert t.FIXED_COLUMNS == want == ("exit", "is_ci_lo", "n", "tier", "dup",
+                                       "is_sharpe", "cls", "holdout_n",
+                                       "full_period_n", "verdict")
+    # one definition each, imported - never a copy that can drift (L788)
+    assert t.DEPTH_TIERS is pvt.DEPTH_TIERS
+    assert t.outcome_signature is pvt.outcome_signature
+    out = t.build_table("three_white_soldiers", _b3396_campaign_fixture(tmp_path))
+    lines = out.split(chr(10))
+    hdr = [x for x in lines if x.startswith("| rank |")]
+    assert len(hdr) == 1, out
+    head = [h.strip() for h in hdr[0].strip("|").split("|")]
+    params = [p["param"] for p in t._spec("three_white_soldiers")["params"]]
+    assert head == ["rank"] + params + list(want), head
+    body = [x for x in lines if x[:4] in ("| 1 ", "| 2 ", "| 3 ")]
+    assert len(body) == 3, out
+    cells = [[c.strip() for c in b.strip("|").split("|")] for b in body]
+    # every body row has exactly the header's cell count (L863 / #303)
+    assert all(len(c) == len(head) for c in cells), cells
+    col = {h: j for j, h in enumerate(head)}
+    by_exit = {}
+    for c in cells:
+        by_exit.setdefault(c[col["exit"]], []).append(c)
+    rf, ts = by_exit["regime_flip"], by_exit["time_stop_10d"]
+    # the restatement is LABELLED, not dropped and not shown as two finds
+    assert sorted(c[col["dup"]] for c in rf) == ["1 of 2", "2 of 2"], rf
+    assert ts[0][col["dup"]] == "-", ts
+    assert rf[0][col["is_sharpe"]] == "0.990" and rf[0][col["is_ci_lo"]] == "0.225"
+    assert ts[0][col["n"]] == "181" and ts[0][col["tier"]] == "DEEP"
+    assert ts[0][col["full_period_n"]] == "181" and ts[0][col["holdout_n"]] == "0"
+    # no row carries class_size or a verdict: '-', never 0 or None (L580)
+    assert all(c[col["cls"]] == "-" and c[col["verdict"]] == "-" for c in cells)
+    assert any(x.startswith("DUP - ") and "2 of 3 ranked rows share a signature" in x
+               for x in lines), out
+    assert any(x.startswith("CLS / HOLDOUT / VERDICT - ")
+               and "0 of 3 ranked rows carry it" in x and "3 of 3 carry one" in x
+               for x in lines), out
+    # the values a row DOES carry reach their cells
+    r = {"exit": "e1", "is_sharpe": 1.0, "is_ci_lo": None, "is_n": None,
+         "class_size": 7, "full_n_count_only": 40,
+         "admit": {"holdout_n": 12, "verdict": "PASS"}}
+    fc = dict(zip(want, t._fixed_cells(r, "1 of 3")))
+    assert fc == {"exit": "e1", "is_ci_lo": "-", "n": "-", "tier": "-",
+                  "dup": "1 of 3", "is_sharpe": "1.000", "cls": "7",
+                  "holdout_n": "12", "full_period_n": "40",
+                  "verdict": "PASS"}, fc
+
+
+def test_b3396f_both_table_d_renderers_append_the_per_tier_best_through_one_function(tmp_path, monkeypatch):
+    """S6-B3396 (runbook 7.5, census 2274): 'a per-tier best summary is
+    appended' - the landing table_d appended it and the campaign renderer
+    did not. Both now append producer_variant_table.tier_best_lines, and the
+    landing output was proved byte-identical across 252 renders of 114
+    committed grids when the block moved into it. Routing is proved by
+    swapping the shared function for a sentinel: a renderer that kept its
+    own copy would not print it."""
+    import json
+    import sys as _sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    import table_d_render as t
+    assert t.tier_best_lines is pvt.tier_best_lines
+    arts = _b3396_campaign_fixture(tmp_path)
+    out = t.build_table("three_white_soldiers", arts)
+    lines = out.split(chr(10))
+    i = lines.index("**Best within each depth tier** (the comparison a rank order hides):")
+    assert i > max(j for j, x in enumerate(lines) if x.startswith("| 3 |")), out
+    assert lines[i + 2:i + 6] == ["| tier | best is_ci_lo | at n | rows |",
+                                  "|---|---|---|---|",
+                                  "| DEEP | +0.075 | 181 | 1 |",
+                                  "| MID | +0.225 | 98 | 2 |"], lines[i:]
+    # an absent count is in no tier (L580); an empty tier prints no line
+    rows = [{"ci": 0.3, "n": None}, {"ci": None, "n": 50}, {"ci": 0.1, "n": 12}]
+    assert pvt.tier_best_lines(rows)[-1] == "| THIN | +0.100 | 12 | 1 |"
+    assert not any(x.startswith(("| DEEP", "| MID")) for x in pvt.tier_best_lines(rows))
+    # routing: both renderers call the ONE function
+    g = json.loads((root / "output_audit" / "output_b2174_sw20_sw20_grid_auto.json")
+                   .read_text(encoding="utf-8"))
+    monkeypatch.setattr(pvt, "tier_best_lines", lambda *a, **k: ["SENTINEL-TIER"])
+    monkeypatch.setattr(t, "tier_best_lines", lambda *a, **k: ["SENTINEL-TIER"])
+    assert "SENTINEL-TIER" in pvt.table_d({"sw20": g})
+    assert "SENTINEL-TIER" in t.build_table("three_white_soldiers", arts)
+    monkeypatch.setattr(pvt, "outcome_signature", lambda *a: "same")
+    landing = "\n".join(pvt.table_d({"sw20": g}))
+    assert " of " in landing.split("| # | config |")[1].split("\n")[2], landing[:600]

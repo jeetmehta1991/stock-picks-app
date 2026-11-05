@@ -7557,6 +7557,39 @@ TABLE_D_FIXED_COLUMNS = ("exit", "is_ci_lo", "n", "tier", "dup",
                         "is_sharpe", "cls", "holdout_n",
                         "full_period_n", "verdict", "npt_excl")
 
+
+def outcome_signature(ci, sh, n, exit_) -> tuple:
+    """A Table D row's (is_ci_lo, is_sharpe, n, exit) signature - the key
+    `dup` labels restatements by: one discovery restated m times, never m
+    independent confirmations (runbook 7.5). S6-B3396 (census 2265): ONE
+    definition for both Table D renderers, this landing table_d and the
+    campaign's table_d_render, so they cannot disagree about what a
+    restatement is (L799). Rounded to the 3 places the tables print."""
+    return (round(ci, 3) if ci is not None else None,
+            round(sh, 3) if sh is not None else None, n, exit_)
+
+
+def tier_best_lines(rows: list, ci: str = "ci", n: str = "n",
+                    live=None) -> list:
+    """The per-tier best block appended to Table D - the comparison a rank
+    order hides (runbook 7.5). S6-B3396 (census 2274): both Table D renderers
+    append it through this function. `ci` and `n` name the row keys a
+    renderer keeps the lower bound and the in-sample count under; `live`
+    drops rows the caller excludes (the landing table's superseded configs,
+    S6-B3266). A row missing either value sits in no tier - an absent count
+    is never read as a shallow one (L580) - and a tier with no row prints
+    no line."""
+    out = ["", "**Best within each depth tier** (the comparison a rank order hides):",
+           "", "| tier | best is_ci_lo | at n | rows |", "|---|---|---|---|"]
+    for lo, hi, name in DEPTH_TIERS:
+        sub = [r for r in rows if r.get(ci) is not None and r.get(n) is not None
+               and r[n] >= lo and (hi is None or r[n] < hi)
+               and (live is None or live(r))]
+        if sub:
+            b = max(sub, key=lambda r: r[ci])
+            out.append(f"| {name} | {b[ci]:+.3f} | {b[n]} | {len(sub)} |")
+    return out
+
 D_AXIS_FAMILIES = {
     # S6-B2940: the candle pair. WITHOUT this a candle cfg falls through
     # _d_family to smc's columns and Table D renders P1 swing / P2
@@ -7800,9 +7833,8 @@ def table_d(grids: dict[str, dict], top: int = 25) -> list[str]:
                 row[f"A{_j}"] = _d_axis_value(spec, cfg, a, g)
             rows.append(row)
 
-    sig = lambda r: (round(r["ci"], 3) if r["ci"] is not None else None,
-                     round(r["sh"], 3) if r["sh"] is not None else None,
-                     r["n"], r["exit"])
+    # S6-B3396: the signature both Table D renderers label `dup` by
+    sig = lambda r: outcome_signature(r["ci"], r["sh"], r["n"], r["exit"])
     counts = Counter(sig(r) for r in rows)
     rows.sort(key=lambda r: (-(r["ci"] if r["ci"] is not None else -9e9),
                              -(r["n"] or 0)))
@@ -7868,15 +7900,9 @@ def table_d(grids: dict[str, dict], top: int = 25) -> list[str]:
     out += ["", f"_{len(rows)} ranked outcomes across {len(grids)} graded "
                 f"configs; {len(counts)} distinct signatures._"] + _superseded_note(grids)
 
-    # per-tier best - the comparison the rank order actively hides
-    out += ["", "**Best within each depth tier** (the comparison a rank order hides):",
-            "", "| tier | best is_ci_lo | at n | rows |", "|---|---|---|---|"]
-    for lo, hi, name in DEPTH_TIERS:
-        sub = [r for r in rows if r["ci"] is not None and r["n"] is not None
-               and r["n"] >= lo and (hi is None or r["n"] < hi) and _live_row(r)]
-        if sub:
-            b = max(sub, key=lambda r: r["ci"])
-            out.append(f"| {name} | {b['ci']:+.3f} | {b['n']} | {len(sub)} |")
+    # per-tier best - the comparison the rank order actively hides; one
+    # function for both Table D renderers (S6-B3396)
+    out += tier_best_lines(rows, live=_live_row)
     return out
 
 

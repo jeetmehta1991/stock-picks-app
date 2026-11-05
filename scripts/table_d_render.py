@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from collections import Counter
 import re
 import sys
 from pathlib import Path
@@ -32,7 +33,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 from producer_variant_table import (  # noqa: E402
-    SPECS, SPECS_PHASE0, resolved_spec, registered_exit_count)
+    DEPTH_TIERS, SPECS, SPECS_PHASE0, TABLE_D_FIXED_COLUMNS, outcome_signature,
+    registered_exit_count, resolved_spec, tier_best_lines)
 
 
 def _spec(strategy: str) -> dict:
@@ -586,12 +588,20 @@ def load(paths: list, params: list | None = None) -> tuple[list, list, list]:
     return arts, rows, skips
 
 
-# B3088: buckets COPIED from producer_variant_table.DEPTH_TIERS rather than
-# re-invented, so the two renderers cannot drift (L799). Runbook 6.4b: tier =
-# DEEP n>=100 / MID 30-99 / THIN 10-29. It exists because rank improves
+# B3088: the buckets are producer_variant_table.DEPTH_TIERS. Runbook 6.4b:
+# tier = DEEP n>=100 / MID 30-99 / THIN 10-29. It exists because rank improves
 # monotonically as evidence thins - RANK IS NOT TRUSTWORTHINESS - so the depth
-# band has to sit beside the ranking key.
-DEPTH_TIERS = ((100, None, "DEEP"), (30, 100, "MID"), (0, 30, "THIN"))
+# band has to sit beside the ranking key. S6-B3396: IMPORTED above, no longer
+# a copy - a copy is a second definition that can drift (L788).
+
+# S6-B3396 (census 2250): this table's fixed columns are the unified Table
+# D's, runbook 7.5's list - the landing TABLE_D_FIXED_COLUMNS less npt_excl.
+# The landing column flags a CELL whose next_pivot_target exit was refused
+# (B2014); here every row whose exit is next_pivot_target (npt_barred) is
+# taken out of the ranking and the header says so, so the column could only
+# read '-'. The `#` and `config` of the landing table are this table's rank
+# and its Table A columns - a row is one cell.
+FIXED_COLUMNS = tuple(c for c in TABLE_D_FIXED_COLUMNS if c != "npt_excl")
 
 
 def _tier(n) -> str:
@@ -606,6 +616,34 @@ def _tier(n) -> str:
         if n >= lo and (hi is None or n < hi):
             return name
     return "-"
+
+
+def _sig(r: dict) -> tuple:
+    """S6-B3396 (census 2265): a row's dup signature, the landing table's."""
+    return outcome_signature(r.get("is_ci_lo"), r.get("is_sharpe"),
+                             r.get("is_n"), r.get("exit"))
+
+
+def _fixed_cells(r: dict, dup: str) -> list:
+    """S6-B3396: one row's fixed cells, in FIXED_COLUMNS order. A value the
+    row does not carry renders '-' (L580): cls (class_size) is written by
+    the landing grader's step1_ranking and by no artifact this table reads,
+    and holdout_n / verdict only where a row keeps the grader's admit
+    record - Step 1 does not read the holdout (B1608). A column added to
+    TABLE_D_FIXED_COLUMNS without a value here raises, never drops."""
+    ad = r.get("admit") or {}
+    ci = r.get("is_ci_lo")
+    vals = {"exit": str(r["exit"]),
+            "is_ci_lo": "-" if ci is None else str(round(ci, 3)),
+            "n": _n(r.get("is_n")),
+            "tier": _tier(r.get("is_n")),
+            "dup": dup,
+            "is_sharpe": f"{r['is_sharpe']:.3f}",
+            "cls": _n(r.get("class_size")),
+            "holdout_n": _n(ad.get("holdout_n")),
+            "full_period_n": _n(r.get("full_n_count_only")),
+            "verdict": _n(ad.get("verdict"))}
+    return [vals[c] for c in FIXED_COLUMNS]
 
 
 def _rank_key(r: dict) -> tuple:
@@ -832,6 +870,7 @@ def build_table(strategy: str, artifact_paths: list, top: int = ALL_ROWS) -> str
     skips = [s for s in skips if s.get("axis") in known]
     ranked = sorted((r for r in rows if not r.get("npt_barred")),
                     key=_rank_key)
+    counts = Counter(_sig(r) for r in ranked)          # S6-B3396: dup
 
     # B3082c: evidence of testing comes in two shapes and BOTH count.
     #   sweep     - r["axis"]/r["level"], one axis per row
@@ -1007,14 +1046,14 @@ def build_table(strategy: str, artifact_paths: list, top: int = ALL_ROWS) -> str
             *["  - " + x for x in inv],
             *[u"NULL PRICE - " + x for x in nulls],
             *["DISPOSITION - " + x for x in skip_notes],
-            *(["COUNTS - IS n is the in-sample trade count for the cell and "
-               "full n the full-period count. On a FACTORIAL artifact the "
+            *(["COUNTS - n is the in-sample trade count for the cell and "
+               "full_period_n the full-period count. On a FACTORIAL artifact the "
                "grader stores the first under the name 'fires', which counts "
                "CUBE ROWS and not signal fires; n is identical across exits "
                "BY CONSTRUCTION, because every entry is replayed through all "
                f"{registered_exit_count()} registered exit methods (S6-B3396), and "
-               "it varies across configs. full n equals "
-               "IS n wherever holdout_n is 0 - Step 1 does not read the "
+               "it varies across configs. full_period_n equals "
+               "n wherever holdout_n is 0 - Step 1 does not read the "
                "holdout."]
               if any(r.get("levels") and not r.get("offline_factorial")
                      and not r.get("offline_free_level")
@@ -1023,14 +1062,14 @@ def build_table(strategy: str, artifact_paths: list, top: int = ALL_ROWS) -> str
             *_episode_lines(ranked, min(top, EPISODE_HEAD)),
             *(["DEPTH SURFACE - an offline_level_sweep surface stores each "
                "cell's BEST exit only and no lower bound, so its rows show that "
-               "exit with IS ci_lo blank and rank after every row that records "
+               "exit with is_ci_lo '-' and rank after every row that records "
                "one (L580; S6-B3316)"]
               if any(r.get("offline_surface") for r in ranked) else []),
             *([_offline_factorial_note(arts)]
               if any(r.get("offline_factorial") for r in ranked) else []),
             *([_free_level_note(arts)]
               if any(r.get("offline_free_level") for r in ranked) else []),
-            *(["COUNTS - %d of %d ranked rows carry no IS n, so their tier "
+            *(["COUNTS - %d of %d ranked rows carry no n, so their tier "
                "reads '-'. An absent count is never rendered as 0 or as THIN "
                "(L580)." % (sum(1 for r in ranked if r.get("is_n") is None),
                             len(ranked))]
@@ -1038,31 +1077,45 @@ def build_table(strategy: str, artifact_paths: list, top: int = ALL_ROWS) -> str
             "TIER - DEEP n>=100, MID 30-99, THIN 10-29. Rank improves "
             "monotonically as evidence thins, so RANK IS NOT TRUSTWORTHINESS "
             "and the depth band sits beside the ranking key deliberately.",
-            "SORT - is_ci_lo DESCENDING, then IS n descending, nothing filtered (runbook section 7.5). Ranking on Sharpe is the REJECTED order: a higher Sharpe can carry a NEGATIVE lower bound (L455)."
+            "SORT - is_ci_lo DESCENDING, then n descending, nothing filtered (runbook section 7.5). Ranking on Sharpe is the REJECTED order: a higher Sharpe can carry a NEGATIVE lower bound (L455)."
             + ("" if any(r.get("is_n") is not None for r in ranked)
-               else " No row carries IS n, so the secondary key cannot discriminate and rows tied on is_ci_lo keep artifact order - never a substituted count."),
+               else " No row carries n, so the secondary key cannot discriminate and rows tied on is_ci_lo keep artifact order - never a substituted count."),
             "EXITS - Step 1 picks each cell's exit by SHARPE alone (B1605) while this table RANKS by is_ci_lo. Two objectives, so a leading row can carry the exit that won on Sharpe.",
+            # S6-B3396 (census 2265): dup and cls, disclosed with their counts
+            "DUP - dup reads 'k of m': this row's (is_ci_lo, is_sharpe, n, exit) "
+            "signature appears on m ranked rows - one discovery restated, never m "
+            "confirmations; labelled, never dropped (runbook 7.5). %d of %d ranked "
+            "rows share a signature." % (sum(v for v in counts.values() if v > 1),
+                                         len(ranked)),
+            "CLS / HOLDOUT / VERDICT - cls is the equivalence-class size the landing "
+            "grader writes in step1_ranking: %d of %d ranked rows carry it. holdout_n "
+            "and verdict come from a row's admit record: %d of %d carry one; Step 1 "
+            "does not read the holdout (B1608). An absent value reads '-', never 0 "
+            "(L580)." % (sum(1 for r in ranked if r.get("class_size") is not None),
+                         len(ranked),
+                         sum(1 for r in ranked if r.get("admit")), len(ranked)),
             f"Showing top {min(top, len(ranked))} of {len(ranked)} ranked cells.",
             "",
+            # S6-B3396 (census 2250): the unified Table D's fixed columns
             "| rank | " + " | ".join(p["param"] for p in params)
-            + " | exit | IS sharpe | IS ci_lo | IS n | full n | tier |",
-            "|" + "---|" * (len(params) + 7)]
+            + " | " + " | ".join(FIXED_COLUMNS) + " |",
+            "|" + "---|" * (len(params) + 1 + len(FIXED_COLUMNS))]
 
     body = []
+    seen = Counter()
     for i, r in enumerate(ranked[:top], 1):
         c = _row_cells(r, params)
-        ci = r.get("is_ci_lo")
+        k = _sig(r)
+        seen[k] += 1
+        dup = f"{seen[k]} of {counts[k]}" if counts[k] > 1 else "-"
+        # B3082b: '-' for a value the artifact does not carry (L580)
         body.append("| " + str(i) + " | "
                     + " | ".join(c[p["param"]] for p in params)
-                    + f" | {r['exit']} | {r['is_sharpe']:.3f} | "
-                    + ("" if ci is None else str(round(ci, 3)))
-                    # B3082b: '-' for a count the artifact does not carry.
-                    # An unmeasured value must never render as 0 or None
-                    # (L580); .get keeps a sweep row's behaviour unchanged.
-                    + " | " + _n(r.get("is_n"))
-                    + " | " + _n(r.get("full_n_count_only"))
-                    + " | " + _tier(r.get("is_n")) + " |")
-    return "\n".join(head + body) + "\n"
+                    + " | " + " | ".join(_fixed_cells(r, dup)) + " |")
+    # S6-B3396 (census 2274): the per-tier best over every ranked row, the
+    # landing table's block through the same function
+    tiers = tier_best_lines(ranked, ci="is_ci_lo", n="is_n")
+    return "\n".join(head + body + tiers) + "\n"
 
 
 def main() -> int:
