@@ -4525,6 +4525,18 @@ _DURABILITY = ("durability pinned", "no detection mechanism", "detection is",
                "durability: not pinnable", "not pinnable", "cannot be pinned")
 
 
+# S6-B3424 (owner ruling 'All' on S6-B3422 (D), sent 2026-11-05T03:34:16Z):
+# one line per defect an automated gate caught before any commit. It must name
+# the catching gate (a scan_ / test_b identifier, the pre-gate, preflight or
+# the guard) and say 'before any commit' - the strict form, because an escape
+# fails open (L596).
+_PRECOMMIT_CATCH = re.compile(
+    r"^[^\n]*pre-commit catch \(s6-b3424\):[^\n]*?"
+    r"(?:(?<![a-z0-9_])(?:scan_[a-z0-9_]+|test_b\d[a-z0-9_]*)|pre-gate|"
+    r"preflight|guard)[^\n]*?before any commit[^\n]*$",
+    re.IGNORECASE | re.MULTILINE)
+
+
 def scan_miss_capture_complete(entries, *, text=None, observed=None,
                                touched=None) -> list[str]:
     """Phase 5 wants THREE artifacts on a miss, not one (B1751 / #234)."""
@@ -4536,6 +4548,16 @@ def scan_miss_capture_complete(entries, *, text=None, observed=None,
     t = _response_text(entries, text)
     if not t or not _miss_hits(t):
         return []
+    # S6-B3424: a pre-commit catch needs its queue line, not the five members.
+    # Only lines in the strict form leave the miss check; any other miss
+    # sentence in the same response still needs all five.
+    rest = _PRECOMMIT_CATCH.sub("", t)
+    if rest != t and not _miss_hits(rest):
+        queued = (observed.get("EXECUTION_QUEUE.md ticket") if observed is not None
+                  else _artifact_touched("EXECUTION_QUEUE.md"))
+        return require_each(
+            "PRE-COMMIT CATCH WITHOUT ITS QUEUE LINE (S6-B3424)",
+            {"EXECUTION_QUEUE.md line naming the catch": bool(queued)})
     if observed is None:
         observed = {
             "LEARNINGS.md entry": _artifact_touched("LEARNINGS.md"),

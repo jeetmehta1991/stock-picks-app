@@ -25220,6 +25220,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
     for frag, why in (
         ("tracked output_audit artifacts are TEST INPUTS",
          "B3129/L880: outside the fingerprint is not outside the test inputs"),
+        ("PROCESS DIET (S6-B3424",
+         "S6-B3424: a defect a gate caught before any commit is not a Phase-5 miss"),
         ('as a miss (Phase 5) the moment it is noticed.',
          "B2382: Standing activation owner directive 20260707  Council"),
         ('1. **NO UNDER-GENERALIZATION.** When a defect is found, fix the CLASS, not',
@@ -26448,7 +26450,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 372 -> 374 at B3139q-r154 (L998's close-only clause and L999's row; same call).
     # 374 -> 375 at B3139q-r166 (L1005's working-directory row; same call).
     # 375 -> 377 at B3139q-r170 (the two S6-B3410 cadence fragments).
-    assert len(gutted) == 377, gutted
+    # 377 -> 378 at S6-B3424 (the process-diet fragment).
+    assert len(gutted) == 378, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -75091,3 +75094,42 @@ def test_b3396h_the_sweep_stamps_its_generator_and_writes_a_ranked_list_not_a_ta
         art = json.loads(md.with_suffix(".json").read_text(encoding="utf-8"))
         assert body == m.render_table(art), md.name
     assert seen >= 18, seen
+
+
+def test_b3424_a_pre_commit_catch_needs_one_queue_line_not_five_members():
+    """S6-B3424 (owner ruling 'All' on S6-B3422 (D), sent 2026-11-05T03:34:16Z):
+    a defect an automated gate catches before any commit is not a Phase-5
+    miss - one queue line names it. scan_miss_capture_complete removes only
+    lines in the strict form 'Pre-commit catch (S6-B3424): <gate> caught
+    <defect> before any commit.' before it looks for a miss, then asks for the
+    queue line alone; any other miss sentence still needs all five members."""
+    import sys as _sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import verify_turn_compliance as v
+    members = {"LEARNINGS.md entry": False,
+               "CHECKLIST.md item or explicit compliance-failure citation": False,
+               "EXECUTION_QUEUE.md ticket": True,
+               "mechanism for the CLASS (scan_/pin test) or explicit JUDGMENT-ONLY": False}
+    line = ("Pre-commit catch (S6-B3424): test_b3372 caught a defect I made, a row "
+            "literal in the old column order, before any commit.")
+    # the line IS a miss to the detector, so the escape below is exercised
+    assert v._miss_hits(line), "fixture must register as a miss"
+    assert v.scan_miss_capture_complete([], text=line, observed=members) == []
+    # without the queue line it fires
+    no_q = dict(members, **{"EXECUTION_QUEUE.md ticket": False})
+    out = v.scan_miss_capture_complete([], text=line, observed=no_q)
+    assert out and "S6-B3424" in out[0], out
+    # any other miss sentence still needs all five members
+    other = line + "\nI made a mistake in the reported count, which reached the owner."
+    assert v.scan_miss_capture_complete([], text=other, observed=members)
+    # the form must name the catching gate and say 'before any commit'
+    for loose in ("Pre-commit catch (S6-B3424): I made a defect in a row literal.",
+                  "Pre-commit catch (S6-B3424): test_b3372 caught a defect I made."):
+        assert v.scan_miss_capture_complete([], text=loose, observed=members), loose
+    # the always-read skill carries the rule and names this pin
+    skill = (root / ".claude" / "skills" / "execution-discipline" / "SKILL.md").read_text(
+        encoding="utf-8")
+    assert "PROCESS DIET (S6-B3424" in skill and "test_b3424" in skill

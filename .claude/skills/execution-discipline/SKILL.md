@@ -801,6 +801,17 @@ A "miss" = any error, silent skip, stale claim, wrong count, missed scope item,
 or owner correction — found by you, the owner, or an audit. Same turn, no
 deferral.
 
+**PROCESS DIET (S6-B3424; owner ruling 'All' on S6-B3422 (D), sent 2026-11-05T03:34:16Z).** A
+defect an automated gate catches BEFORE ANY COMMIT - the pre-gate or a pin going red on a draft,
+preflight refusing a staged tree, the shell guard refusing a command - is NOT a Phase-5 miss: it
+gets one queue line and one line in the close, written `Pre-commit catch (S6-B3424): <gate>
+caught <defect> before any commit.`, and no lesson, checklist item, pin or scan. No new gate is
+built for a wording or bookkeeping slip. A miss that reached a commit, the owner or a strategy
+result keeps all five members below. MEASURED behind the ruling: 105 commits from 2026-10-22,
+80 touching process docs or gates, 0 changing the Phase 1B admissions; 11 of 12 hand-read
+lessons from the period were about the process itself. Enforced by scan_miss_capture_complete's
+pre-commit form, pinned by test_b3424.
+
 **A MISS INCLUDES HOW A QUESTION WAS ANSWERED, NOT ONLY WHAT WAS BUILT (B1722 /
 L503 / CHECKLIST #228).** Asked what had been done about a specific root cause, I
 listed nine enforcement hooks. Every one existed and worked — and every one
