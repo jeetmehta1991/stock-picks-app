@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 from pathlib import Path
 
@@ -42,8 +43,16 @@ def _ps(cmd: str) -> str:
     return (r.stdout or "") + (r.stderr or "")
 
 
-def candidates(out_dir: str) -> list[tuple[int, int, str]]:
-    """(pid, parent_pid, command_line) for python processes naming out_dir."""
+def candidates(out_dir: str, *, self_pid: int | None = None) -> list[tuple[int, int, str]]:
+    """(pid, parent_pid, command_line) for python processes naming out_dir.
+
+    S6-B3408 (the L1008 class - a probe matching its own trace): this tool's
+    own command line carries --out-dir <out_dir>, so it listed ITSELF -
+    MEASURED at the owner's pause (2026-10-31), 12 rows of which 2 were the
+    tool's launcher and interpreter, and --execute would have stopped the
+    tool before it read the survivors. The caller and its python ancestors
+    (`self_pid`, default os.getpid()) and every kill_wave_tree.py process -
+    a concurrent dry run included - are dropped before anything is matched."""
     raw = _ps("Get-CimInstance Win32_Process -Filter \"Name='python.exe'\" | "
               "ForEach-Object { \"$($_.ProcessId)|$($_.ParentProcessId)|"
               "$($_.CommandLine)\" }")
@@ -53,6 +62,15 @@ def candidates(out_dir: str) -> list[tuple[int, int, str]]:
         if len(parts) != 3 or not parts[0].strip().isdigit():
             continue
         rows.append((int(parts[0]), int(parts[1]), parts[2]))
+    me = os.getpid() if self_pid is None else self_pid
+    parent_of = {p: pp for p, pp, _ in rows}
+    mine: set[int] = set()
+    cur = me
+    while cur in parent_of and cur not in mine:
+        mine.add(cur)
+        cur = parent_of[cur]
+    rows = [(p, pp, c) for p, pp, c in rows
+            if p not in mine and "kill_wave_tree" not in c]
     # the parent names the output dir on its command line; workers are spawned
     # children of it and carry a multiprocessing bootstrap instead, so they are
     # matched through the parent chain rather than by string.

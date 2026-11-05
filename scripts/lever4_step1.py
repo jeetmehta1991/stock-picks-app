@@ -93,6 +93,36 @@ def budget_for(raw, strat: str):
     return None if entry is None else json.dumps(entry, sort_keys=True)
 
 
+def verify_budget(cube_dir: Path, strat: str, budget) -> str:
+    """S6-B3417: '' when the landed arm ran the gate budget --gate-budget
+    names for this strategy; else the refusal - the flag names WHICH cube
+    this is (S6-B2900), and it was stamped unverified on every engine cube.
+    The arm's env is the record run_wave writes; an env without
+    LEVER4_GATE_BUDGET ran production, which a budget of None names. No
+    manifest, an unreadable one or an arm with no env block records nothing,
+    so it is refused (fail closed, L642). MEASURED at B3139q-r202: 5 of 5
+    landed LEVER4 engine grids match their arm."""
+    mf = Path(cube_dir) / "run_manifest.json"
+    if not mf.exists():
+        return (f"REFUSED (S6-B3417): no run_manifest.json in {cube_dir} - the "
+                "gate budget the engine ran is unrecorded, so --gate-budget "
+                "verifies nothing")
+    try:
+        arms = (json.loads(mf.read_text(encoding="utf-8")) or {}).get("arms") or []
+    except (OSError, ValueError) as exc:
+        return f"REFUSED (S6-B3417): run_manifest.json unreadable: {exc!r}"
+    env = (arms[0] or {}).get("env") if arms and isinstance(arms[0], dict) else None
+    if not isinstance(env, dict):
+        return ("REFUSED (S6-B3417): the landed arm declares no env block - the "
+                "gate budget the engine ran is unrecorded (fail closed, L642)")
+    landed = budget_for(env.get("LEVER4_GATE_BUDGET"), strat)
+    if landed != budget:
+        return (f"REFUSED (S6-B3417): the cube ran gate budget {landed} for "
+                f"{strat}, --gate-budget says {budget} - grading would file one "
+                "cube under another config's name")
+    return ""
+
+
 def rank(graded: list) -> list:
     """Graded, non-npt rows in the RULED order: the in-sample lower bound
     is_ci_lo first (runbook 6.4b; grade_npoc_config's sort), None last,
@@ -155,6 +185,10 @@ def main(argv=None) -> int:
         if lerrs:
             raise SystemExit(f"{lerrs[0]} (S6-B3367: the breadth leg rides the "
                              "spec's arm - make_spec --breadth-leg)")
+    if not is_r5:
+        why = verify_budget(cube_dir, strat, budget)        # S6-B3417
+        if why:
+            raise SystemExit(why)
     m = _build(None if is_r5 else cube_dir, strat=strat, keys=[],
                survival=a.survival)
     fires = m.drop_duplicates(["ticker", "entry_date"])

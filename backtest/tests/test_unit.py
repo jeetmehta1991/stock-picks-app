@@ -62271,7 +62271,10 @@ def test_b3240_lever4_grader_and_replay_spot_check_follow_the_budget(tmp_path):
                    "exit_method": ex, "pnl_pct": 1.0 + i, "hold_days": 5}
                   for i, (t, d, _s) in enumerate(fires) for ex in ("e1", "e2")]
                  ).to_csv(cube / "trade_exit_detail.csv", index=False)
-    # (1) the grader
+    # (1) the grader - on a cube whose landed arm records the budget, as a
+    # real landing's does (S6-B3417 verifies the flag against it)
+    (cube / "run_manifest.json").write_text(json.dumps(
+        {"arms": [{"env": {"LEVER4_GATE_BUDGET": r2}}]}), encoding="utf-8")
     out = tmp_path / "grid.json"
     assert l4.main(["--strategy", name, "--cube", str(cube), "--gate-budget", r2,
                     "--min-n", "1", "--out", str(out)]) == 0
@@ -66315,7 +66318,8 @@ def test_b3331_lever4_step2_leg_reads_the_long_leg_once_on_the_is_selected_exit(
                  "--min-n", "5", "--step2", "--out", str(out)])
     assert "S6-B3353" in str(e.value) and "breadth" in str(e.value) and not out.exists()
     (cube / "run_manifest.json").write_text(json.dumps({"arms": [{"tag": "a1", "step2_breadth_leg": {
-        "state": "ran", "evidence": "fixture breadth grid"}}]}), encoding="utf-8")
+        "state": "ran", "evidence": "fixture breadth grid"},
+        "env": {"LEVER4_GATE_BUDGET": r2}}]}), encoding="utf-8")   # S6-B3417
     assert l4.main(["--strategy", name, "--cube", str(cube), "--gate-budget", r2,
                     "--min-n", "5", "--step2", "--preregistered-exit", "eB",
                     "--out", str(out)]) == 0
@@ -73496,9 +73500,9 @@ def test_b3397d_spot_coverage_certifies_or_names_the_gap():
 
 def test_b3397d_step4_carries_the_coverage_and_is_not_refused(tmp_path, monkeypatch):
     """S6-B3397 (L654 - the wiring): run_family records step4_coverage and
-    appends the coverage clause to step 4's evidence; NOT CERTIFIED leaves
-    step 4 DONE (a disclosure), and the row is a grader check, never a
-    step-1 FAIL."""
+    appends the coverage clause to step 4's evidence; the row is a grader
+    check, never a step-1 FAIL. Since S6-B3415 (a) (the owner's 'Do',
+    2026-11-05) NOT CERTIFIED holds step 4 OPEN - test_b3415 pins the hold."""
     import json
     import os
     import types
@@ -73536,7 +73540,7 @@ def test_b3397d_step4_carries_the_coverage_and_is_not_refused(tmp_path, monkeypa
     assert "coverage CERTIFIED" in notes["4_three_leg_spot_check"][1], notes
     by, notes = run_for("camarilla_r4_breakout")
     assert by["step4_coverage"][0] == "WARN" and "borrow_ok" in by["step4_coverage"][1]
-    assert notes["4_three_leg_spot_check"][0] == "DONE", "a disclosure, not a refusal"
+    assert notes["4_three_leg_spot_check"][0] == "OPEN", notes      # S6-B3415 (a)
     assert "NOT CERTIFIED" in notes["4_three_leg_spot_check"][1]
     assert "step4_coverage" in rp._GRADER_CHECKS
 
@@ -75133,3 +75137,169 @@ def test_b3424_a_pre_commit_catch_needs_one_queue_line_not_five_members():
     skill = (root / ".claude" / "skills" / "execution-discipline" / "SKILL.md").read_text(
         encoding="utf-8")
     assert "PROCESS DIET (S6-B3424" in skill and "test_b3424" in skill
+
+
+def test_b3408_kill_wave_tree_never_lists_itself():
+    """S6-B3408 (the L1008 class): kill_wave_tree.candidates kept every
+    python process naming the out-dir, and its own command line carries
+    --out-dir <that dir>, so it listed itself (2 of 12 rows at the owner's
+    2026-10-31 pause) and --execute would have stopped the tool before it
+    read the survivors. The caller and its python ancestors and every
+    kill_wave_tree.py process are dropped; the wave's own rows still match."""
+    import importlib.util as _ilu
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = _ilu.spec_from_file_location("kill_wave_tree_b3408", root / "scripts" / "kill_wave_tree.py")
+    kwt = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(kwt)
+    wave = ["100|4|C:/py.exe scripts/run_phase1a.py --output-dir output_TARGET",
+            "101|100|C:/py.exe -c from multiprocessing.spawn import spawn_main",
+            "200|9|C:/py.exe -m pytest backtest/tests/test_unit.py"]
+    tool = ["300|299|C:/v/python.exe scripts/kill_wave_tree.py --out-dir output_TARGET --execute",
+            "299|7|C:/v/python.exe scripts/kill_wave_tree.py --out-dir output_TARGET --execute"]
+    wrapper = ["400|399|C:/py.exe my_wrapper.py --watch output_TARGET",
+               "399|8|C:/py.exe my_wrapper.py --watch output_TARGET"]
+    rows = wave + tool + wrapper
+
+    def pids(self_pid):
+        kwt._ps = lambda cmd: chr(10).join(rows)
+        return sorted(p for p, _, _ in kwt.candidates("output_TARGET", self_pid=self_pid))
+    # the tool's own rows (a concurrent run's too) never match, by name
+    assert 300 not in pids(None) and 299 not in pids(None)
+    # the caller and its python ancestors never match, whatever they are named
+    assert pids(400) == [100, 101], pids(400)
+    # without the caller in the table, the wrapper is an ordinary match
+    assert 400 in pids(None) and 399 in pids(None)
+    # the wave's rows are untouched
+    assert {100, 101} <= set(pids(400)) and 200 not in pids(400)
+
+
+def test_b3415_a_not_certified_spot_check_holds_step_4_open(tmp_path, monkeypatch):
+    """S6-B3415 (a), the owner's 'Do' sent 2026-11-05T04:46:01Z: runbook 5.3
+    step 4 says the spot check must not certify a strategy until its
+    coverage audit passes; the battery measured that and still wrote step 4
+    DONE (10 of 17 families NOT CERTIFIED, MEASURED at B3139q-r202). Now a
+    NOT CERTIFIED step 4 stays OPEN for a hand disposition, a CERTIFIED one
+    is DONE, a failed spot check is FAIL - and a hand DONE survives a
+    re-run, because merge_row never downgrades a terminal row."""
+    import json
+    import os
+    import types
+    from pathlib import Path
+    rp = _rp_b3397a()
+    monkeypatch.setattr(rp, "ROOT", tmp_path)
+    monkeypatch.setattr(rp, "knob_is_read", lambda env, root: True)
+    monkeypatch.setattr(rp, "knob_consumers", lambda env: ())
+    monkeypatch.setattr(rp, "declared_consumers", lambda spec, env: ())
+    (tmp_path / "output_audit").mkdir()
+
+    def run_for(fam, spot_rc=0):
+        def fake_run(cmd, env_extra=None):
+            cmd = [str(c) for c in cmd]
+            body = "{}"
+            if os.path.basename(cmd[1]) == "grade_knob_config.py":
+                body = json.dumps({"config": {}, "strategy": fam,
+                                   "generator": "scripts/grade_knob_config.py",
+                                   "cube_rows": 48, "is_rows": 48, "holdout_rows": 0,
+                                   "rows": [{"cell": "base:long"}]})
+            for i, c in enumerate(cmd):
+                if c == "--out":
+                    Path(cmd[i + 1]).write_text(body, encoding="utf-8")
+            is_spot = "spot_check" in os.path.basename(cmd[1])
+            return types.SimpleNamespace(returncode=spot_rc if is_spot else 0,
+                                         stdout="", stderr="")
+        monkeypatch.setattr(rp, "_run", fake_run)
+        cube = tmp_path / f"cube_{fam}_{spot_rc}"
+        cube.mkdir(exist_ok=True)
+        p = {k: 1 for k in rp.SPECS[fam]["tools"]["keys"].values()}
+        _res, notes, _, _ = rp.run_family(fam, cube, p, {"window": {}}, step=1)
+        return notes["4_three_leg_spot_check"]
+    st, ev = run_for("camarilla_r4_breakout")
+    assert st == "OPEN" and ev.startswith("NOT CERTIFIED - hand disposition owed"), (st, ev)
+    assert "borrow_ok" in ev and "S6-B3415 (a)" in ev
+    st, ev = run_for("squeeze_breakout")
+    assert st == "DONE" and "coverage CERTIFIED" in ev, (st, ev)
+    st, _ev = run_for("camarilla_r4_breakout", spot_rc=1)
+    assert st == "FAIL"
+    # a hand DONE is never downgraded by a re-run's OPEN
+    entry = {"4_three_leg_spot_check": {"status": "DONE", "evidence": "hand: borrow_ok checked"}}
+    rp.merge_row(entry, "4_three_leg_spot_check", "OPEN", "NOT CERTIFIED", "t")
+    assert entry["4_three_leg_spot_check"]["status"] == "DONE"
+    # and the step stays un-closed until then
+    import verify_postconfig_complete as vpc
+    assert not vpc.is_closed({"status": "OPEN", "evidence": "NOT CERTIFIED"})
+
+
+def test_b3417_graders_verify_identity_flags_against_the_landed_arm(tmp_path):
+    """S6-B3417: three graders stamped identity flags without checking them
+    - grade_institutional_config's four knob flags, lever4_step1's
+    --gate-budget and tighten_breaker_block's --span - so a hand run or an
+    argv defect filed a cube under another config's name. Each now compares
+    its flags with what the landed arm records and refuses on a moved flag,
+    a missing manifest or an arm with no record (fail closed, L642); each
+    main calls its check before it grades. MEASURED at B3139q-r202: 33 of 33
+    smc, 20 of 20 institutional and 5 of 5 LEVER4 engine grids match their
+    arm, so no landed grid is refused."""
+    import ast
+    import json
+    import sys as _sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import grade_institutional_config as gi
+    import lever4_step1 as l4
+    import tighten_breaker_block as tb
+
+    def cube(name, arm):
+        d = tmp_path / name
+        d.mkdir()
+        if arm is not None:
+            (d / "run_manifest.json").write_text(json.dumps({"arms": [arm]}),
+                                                 encoding="utf-8")
+        return d
+    # lever4: the arm's budget entry for THIS strategy
+    s = "pivot_r1_breakout"
+    raw = json.dumps({s: {"k": 3, "mandatory": ["above_r1"]}})
+    b = l4.budget_for(raw, s)
+    assert l4.verify_budget(cube("l1", {"env": {"LEVER4_GATE_BUDGET": raw}}), s, b) == ""
+    assert l4.verify_budget(cube("l2", {"env": {}}), s, None) == ""
+    assert "S6-B3417" in l4.verify_budget(cube("l3", {"env": {}}), s, b)
+    assert "S6-B3417" in l4.verify_budget(cube("l4", {"env": {"LEVER4_GATE_BUDGET": raw}}), s, None)
+    assert "no run_manifest" in l4.verify_budget(cube("l5", None), s, b)
+    assert "no env block" in l4.verify_budget(cube("l6", {"tag": "a"}), s, b)
+    # tighten: STRAT_EMA_SPAN, a blank or absent value is production (None)
+    assert tb.verify_span(cube("t1", {"env": {"STRAT_EMA_SPAN": "50"}}), 50) == ""
+    assert tb.verify_span(cube("t2", {"env": {"STRAT_EMA_SPAN": ""}}), None) == ""
+    assert "S6-B3417" in tb.verify_span(cube("t3", {"env": {"STRAT_EMA_SPAN": "50"}}), 200)
+    assert "S6-B3417" in tb.verify_span(cube("t4", {"env": {}}), 50)
+    assert "no run_manifest" in tb.verify_span(cube("t5", None) / "trade_exit_detail.csv", 50)
+    # institutional: plain arm keys, compared as numbers
+    arm = {"min_consecutive_quarters": 8, "growth_lookback_quarters": 4,
+           "growth_multiple": 1.1, "ema_span": 200}
+    fl = {"--min-consecutive-quarters": 8, "--growth-lookback-quarters": 4,
+          "--growth-multiple": 1.1, "--span": 200}
+    assert gi.verify_arm_identity(cube("i1", arm), fl) == ""
+    out = gi.verify_arm_identity(cube("i2", arm), dict(fl, **{"--growth-multiple": 1.25}))
+    assert "growth_multiple landed 1.1" in out, out
+    assert "ema_span absent" in gi.verify_arm_identity(
+        cube("i3", {k: v for k, v in arm.items() if k != "ema_span"}), fl)
+    assert "no run_manifest" in gi.verify_arm_identity(cube("i4", None), fl)
+    # each main calls its check BEFORE it grades (an AST order check, L748)
+    for f, check, before in (("lever4_step1.py", "verify_budget", "_build"),
+                             ("tighten_breaker_block.py", "verify_span", "load_cube"),
+                             ("grade_institutional_config.py", "verify_arm_identity", "grade")):
+        tree = ast.parse((root / "scripts" / f).read_text(encoding="utf-8"))
+        main = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "main")
+        at = lambda name: sorted(c.lineno for c in ast.walk(main) if isinstance(c, ast.Call)
+                                 and getattr(c.func, "id", getattr(c.func, "attr", None)) == name)
+        assert at(check) and at(before) and at(check)[0] < at(before)[0], (f, at(check), at(before))
+    # a REAL landed arm passes, where its cube is on this machine
+    landed = root / "output_icg_cfg1"
+    if (landed / "run_manifest.json").exists():
+        g = json.loads((root / "output_audit" / "output_icg_cfg1_grid_auto.json").read_text(encoding="utf-8"))
+        c = g["config"]
+        assert gi.verify_arm_identity(landed, {
+            "--min-consecutive-quarters": c["P4_min_consecutive_quarters"],
+            "--growth-lookback-quarters": c["P5_growth_lookback_quarters"],
+            "--growth-multiple": c["P6_growth_multiple"], "--span": c["P9_span"]}) == ""

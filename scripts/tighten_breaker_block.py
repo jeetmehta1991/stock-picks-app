@@ -157,6 +157,37 @@ def survives(diag: dict, break_max, age_max, tail_n) -> bool:
     return False
 
 
+def verify_span(cube: Path, span) -> str:
+    """S6-B3417: '' when the landed arm ran the --span this grid stamps as
+    P6; else the refusal. --swing-length is checked through the diagnosis-
+    loss limit, the span was stamped unverified. The arm's env records
+    STRAT_EMA_SPAN when the run moved it; an env without it (or with a blank,
+    the engine's unset path) ran production, which a --span of None names.
+    No manifest, an unreadable one or an arm with no env block verifies
+    nothing - refused (fail closed, L642). MEASURED at B3139q-r202: 33 of 33
+    landed smc grids match their arm."""
+    d = cube.parent if cube.suffix else cube
+    mf = d / "run_manifest.json"
+    if not mf.exists():
+        return (f"REFUSED (S6-B3417): no run_manifest.json in {d} - the span "
+                "the engine ran is unrecorded, so --span verifies nothing")
+    try:
+        arms = (json.loads(mf.read_text(encoding="utf-8")) or {}).get("arms") or []
+    except (OSError, ValueError) as exc:
+        return f"REFUSED (S6-B3417): run_manifest.json unreadable: {exc!r}"
+    env = (arms[0] or {}).get("env") if arms and isinstance(arms[0], dict) else None
+    if not isinstance(env, dict):
+        return ("REFUSED (S6-B3417): the landed arm declares no env block - the "
+                "span the engine ran is unrecorded (fail closed, L642)")
+    raw = env.get("STRAT_EMA_SPAN")
+    landed = None if raw is None or not str(raw).strip() else str(raw).strip()
+    if landed != (None if span is None else str(span)):
+        return (f"REFUSED (S6-B3417): the cube ran STRAT_EMA_SPAN {raw!r}, "
+                f"--span says {span!r} - grading would file one cube under "
+                "another config's name")
+    return ""
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=None, help="default: derived from the cube dir (or _r5 for the R5 default); a fixed bNNN default clobbers historical artifacts (S6-B2118e)")
@@ -229,6 +260,10 @@ def main() -> int:
     if _is_r5:
         from step1_gates import require_surviving_or_unchanged
         require_surviving_or_unchanged(STRATEGY, a.survival)
+    if not _is_r5:
+        why = verify_span(Path(a.cube), a.span)              # S6-B3417
+        if why:
+            raise SystemExit(why)
     cube = rc.load_cube(Path(a.cube) if a.cube else R5_CUBE)
     g = cube[cube["strategy"] == STRATEGY].copy()
     if a.survival:

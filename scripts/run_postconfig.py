@@ -913,10 +913,24 @@ def run_family(fam_name: str, cube_dir: Path, p: dict,
     results.append(("step4_coverage", cov_st, cov_ev))
     if ok4:
         tail = f"{tail}; coverage {cov_ev}"
-    notes["4_three_leg_spot_check"] = (
-        ("DONE", f"{sb.get('note', 'AUTO')}: {Path(sb['script']).stem} at "
-                 f"manifest {label}; {tail[:200]}") if ok4 else
-        ("FAIL", f"{Path(sb['script']).stem} exit {sc.returncode}: {tail[:200]}"))
+    # S6-B3415 (a), the owner's 'Do' sent 2026-11-05T04:46:01Z: a spot check that does
+    # not re-derive every input family the strategy reads cannot certify it
+    # (runbook 5.3 step 4), so a NOT CERTIFIED step 4 stays OPEN for a hand
+    # disposition - DONE once the uncovered inputs are checked, or N/A with a
+    # reason - never DONE beside 'NOT CERTIFIED' (L655). A hand DONE survives
+    # a re-run: merge_row never downgrades a terminal row.
+    if not ok4:
+        notes["4_three_leg_spot_check"] = (
+            "FAIL", f"{Path(sb['script']).stem} exit {sc.returncode}: {tail[:200]}")
+    elif cov_st != "PASS":
+        notes["4_three_leg_spot_check"] = (
+            "OPEN", f"NOT CERTIFIED - hand disposition owed (S6-B3415 (a)): "
+                    f"{sb.get('note', 'AUTO')}: {Path(sb['script']).stem} at "
+                    f"manifest {label}; {tail[:300]}")
+    else:
+        notes["4_three_leg_spot_check"] = (
+            "DONE", f"{sb.get('note', 'AUTO')}: {Path(sb['script']).stem} at "
+                    f"manifest {label}; {tail[:200]}")
 
     # ---- step 7: every swept knob is READ from the environment and its
     # declared consumer list equals the tree's (S6-B2573d); plus the family's
@@ -1907,8 +1921,9 @@ def spot_coverage(strategy, checker_script) -> tuple:
     """S6-B3397 (runbook 5.3 step 4, census 1874): may the spot check CERTIFY
     this strategy? verify_spotcheck_coverage.audit with the family checker's
     own verifiable families. PASS = CERTIFIED; WARN = NOT CERTIFIED, the
-    uncovered families and keys named - a disclosure, never a FAIL: whether it
-    holds step 4 open is the owner's word (S6-B3415, L857 (c)). MEASURED at
+    uncovered families and keys named - never a FAIL; since S6-B3415 (a)
+    (the owner's 'Do' sent 2026-11-05T04:46:01Z) a WARN holds step 4 OPEN for a hand
+    disposition (run_family). MEASURED at
     B3139q-r186: 7 of 17 battery families CERTIFIED, 10 NOT (8 on borrow_ok,
     1 also on the VIX bands, 4 checked by spot_check_replay, which re-derives
     no input family). Unmeasurable -> WARN with why, never a silent pass."""
@@ -1925,7 +1940,7 @@ def spot_coverage(strategy, checker_script) -> tuple:
         f"{g} {fams[g][:4]}" for g in gaps)
         + f" - {checker_script} re-derives "
         + (", ".join(sorted(can)) if can else "no input family")
-        + " (whether this holds step 4 open: S6-B3415)")
+        + " (step 4 stays OPEN for a hand disposition: S6-B3415 (a))")
 
 
 def rc_live_gates() -> tuple:

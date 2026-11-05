@@ -236,6 +236,48 @@ def grade(cube_csv: Path, config: dict, admit: dict, *, min_n: int = 10,
     }
 
 
+_ARM_KEYS = (("min_consecutive_quarters", "--min-consecutive-quarters"),
+             ("growth_lookback_quarters", "--growth-lookback-quarters"),
+             ("growth_multiple", "--growth-multiple"),
+             ("ema_span", "--span"))
+
+
+def verify_arm_identity(cube_dir: Path, flags: dict) -> str:
+    """S6-B3417: '' when the landed arm recorded every identity flag; else
+    the refusal. The four flags were written into config and combo and the
+    cube graded unchanged, so a moved flag only moved the stamp (Lens 12,
+    S6-B3397 8f). The institutional arms record the knobs as PLAIN ARM KEYS -
+    0 of 20 landed manifests carry INST_* env keys - so this reads arm keys,
+    never the env-only verifier, which would refuse all 20. No manifest, an
+    unreadable one, no arm or an absent key verifies nothing - refused (fail
+    closed, L642). MEASURED at B3139q-r202: 20 of 20 landed grids match."""
+    mf = Path(cube_dir) / "run_manifest.json"
+    if not mf.exists():
+        return (f"REFUSED (S6-B3417): no run_manifest.json in {cube_dir} - the "
+                "config the engine ran is unrecorded, so the flags verify nothing")
+    try:
+        arms = (json.loads(mf.read_text(encoding="utf-8")) or {}).get("arms") or []
+    except (OSError, ValueError) as exc:
+        return f"REFUSED (S6-B3417): run_manifest.json unreadable: {exc!r}"
+    arm = arms[0] if arms and isinstance(arms[0], dict) else None
+    if arm is None:
+        return "REFUSED (S6-B3417): the manifest records no arm (fail closed, L642)"
+    bad = []
+    for key, flag in _ARM_KEYS:
+        try:
+            if key not in arm:
+                bad.append(f"{key} absent from the arm")
+            elif float(arm[key]) != float(flags[flag]):
+                bad.append(f"{key} landed {arm[key]!r}, {flag} says {flags[flag]!r}")
+        except (TypeError, ValueError):
+            bad.append(f"{key} landed {arm.get(key)!r}, not a number")
+    if bad:
+        return ("REFUSED (S6-B3417): the flags do not match the landed arm - "
+                "grading would file one cube under another config's name: "
+                + "; ".join(bad))
+    return ""
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--cube", required=True,
@@ -269,6 +311,13 @@ def main() -> int:
         cube = cube / "trade_exit_detail.csv"
     if not cube.exists():
         print(f"[FAIL] no cube at {cube}")
+        return 2
+    why = verify_arm_identity(cube.parent, {                  # S6-B3417
+        "--min-consecutive-quarters": a.min_consecutive_quarters,
+        "--growth-lookback-quarters": a.growth_lookback_quarters,
+        "--growth-multiple": a.growth_multiple, "--span": a.span})
+    if why:
+        print(why)
         return 2
     out = Path(a.out) if a.out else (
         ROOT / "output_audit" / f"{cube.parent.name}_grid_auto.json")
