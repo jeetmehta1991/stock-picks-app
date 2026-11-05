@@ -32,7 +32,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 from producer_variant_table import (  # noqa: E402
-    SPECS, SPECS_PHASE0, resolved_spec)
+    SPECS, SPECS_PHASE0, resolved_spec, registered_exit_count)
 
 
 def _spec(strategy: str) -> dict:
@@ -116,7 +116,7 @@ def _factorial_rows(a: dict) -> list:
             # counts of CUBE ROWS, i.e. trades. VERIFIED across 18 of 18
             # configs: rows / results_n_exits == fires == full_period_n
             # exactly. The value is identical across exits BY CONSTRUCTION
-            # (every entry is replayed through all 24 exits) and varies
+            # (every entry is replayed through every registered exit) and varies
             # 69..560 across configs. full_period_n matches fires only
             # because holdout_n is 0 - Step 1 does not read the holdout.
             "is_n": pe.get("fires"),
@@ -1012,7 +1012,8 @@ def build_table(strategy: str, artifact_paths: list, top: int = ALL_ROWS) -> str
                "grader stores the first under the name 'fires', which counts "
                "CUBE ROWS and not signal fires; n is identical across exits "
                "BY CONSTRUCTION, because every entry is replayed through all "
-               "24 exit methods, and it varies across configs. full n equals "
+               f"{registered_exit_count()} registered exit methods (S6-B3396), and "
+               "it varies across configs. full n equals "
                "IS n wherever holdout_n is 0 - Step 1 does not read the "
                "holdout."]
               if any(r.get("levels") and not r.get("offline_factorial")

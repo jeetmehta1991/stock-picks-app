@@ -29127,9 +29127,12 @@ def test_b2330_table_d_ranks_without_gating_and_shows_depth():
     # the exit column as "best by the sort key". It is not.
     assert 'SHARPE alone' in out and 'is_ci_lo' in out, (
         'the exit-selection ruler must be stated on the table itself')
-    assert '24' in out and '22' in out, (
-        'the registered-vs-effective exit counts must be disclosed: 24 - 1 npt'
-        ' - 1 collapsed = 22, so a reader is not told all 24 competed')
+    # S6-B3396 (census 2273 + 2288): derived at render, never typed - the
+    # registered count from len(EXIT_STRATEGIES), the effective count measured
+    # per cell, so a reader is not told every registered exit competed
+    assert f"**{mod.registered_exit_count()} exit methods are registered**" in out and \
+        "effective count varies by cell" in out, (
+            'the registered-vs-effective exit disclosure must be on the table')
 
     # S6-B2334 (owner Q3): all six axes. B2725 CONTRACT CHANGE - they are
     # columns of the MAIN table now, not a joined second one: the owner
@@ -74689,7 +74692,9 @@ def test_b3396b_table_d_shows_every_row_and_the_funnel_discloses_what_it_cannot_
     CLI default are ONE constant, every row (S6-B2700, owner question
     2026-09-12) - the function defaulted to 25 while the CLI showed all, so a
     caller omitting top got the cut the owner had removed; the runbook line
-    states every row. (2) Table C's funnel - graded, starved-IS, no-Sharpe and
+    names each document's default - the landing Table D keeps its top 25
+    (owner directive 2026-08-28; postconfig_doc passes top=25), the campaign's
+    offline table renders every row. (2) Table C's funnel - graded, starved-IS, no-Sharpe and
     zero-fires sum to combos - renders an UNCLASSIFIED row when a row lands in
     two buckets and none when it reconciles (B1702's disclosure; the docstring
     and the runbook said 'asserts')."""
@@ -74711,8 +74716,12 @@ def test_b3396b_table_d_shows_every_row_and_the_funnel_discloses_what_it_cannot_
             for kw in c.keywords if kw.arg == "default"]
     assert len(tops) == 1 and isinstance(tops[0], ast.Name) and tops[0].id == "ALL_ROWS"
     plan = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
-    assert "one row per (config x exit) outcome, EVERY row by default (S6-B2700," in plan
-    assert "top 25 by default (owner directive" not in plan
+    assert "one row per (config x exit) outcome, the top 25 at landing (owner directive" in plan
+    assert "the campaign's offline unified table (table_d_render) renders EVERY row (S6-B2700)" in plan
+    import producer_variant_table as _pvt
+    assert inspect.signature(_pvt.table_d).parameters["top"].default == 25
+    assert "_table_d(_grids, top=25)" in (root / "scripts" / "postconfig_doc.py").read_text(
+        encoding="utf-8")
     assert "the renderer **asserts** `graded + starved-IS" not in plan
 
     spec = ilu.spec_from_file_location("pvt_b3396b", root / "scripts" / "producer_variant_table.py")
@@ -74728,3 +74737,76 @@ def test_b3396b_table_d_shows_every_row_and_the_funnel_discloses_what_it_cannot_
     assert not any("UNCLASSIFIED" in r for r in pv.table_c({"t": grid(ok)}))
     twice = ok + [{"is_sharpe": 0.4, "sharpe": None, "verdict": "ZERO_FIRES", "tail_n": 4}]
     assert any("**UNCLASSIFIED" in r for r in pv.table_c({"t": grid(twice)}))
+
+def test_b3396c_exit_counts_are_derived_never_typed(monkeypatch):
+    """S6-B3396 (runbook 7.6, census 2273 + 2288): the Table D renderers quote
+    the registered exit count from len(EXIT_STRATEGIES) at render
+    (producer_variant_table.registered_exit_count) and say the effective
+    count is measured per cell - the landing preamble typed '24 ... 22 ...
+    24 - 1 - 1 = 22' and the campaign renderer typed '24 exit methods'. The
+    runbook's own quoted count must equal the live one."""
+    import re
+    import json
+    import sys as _sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    from backtest.engine.exit_strategies import EXIT_STRATEGIES
+    n = len(EXIT_STRATEGIES)
+    assert pvt.registered_exit_count() == n
+    plan = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+    quoted = re.findall(r"`len\(EXIT_STRATEGIES\)` is (\d+) today", plan)
+    assert quoted == [str(n)], quoted
+    g = json.loads((root / "output_audit" / "output_b2174_sw20_sw20_grid_auto.json").read_text(encoding="utf-8"))
+    md = "\n".join(pvt.table_d({"sw20": g}))
+    assert f"**{n} exit methods are registered**" in md
+    assert "24 - 1 - 1 = 22" not in md and "22 are effective" not in md and "missing from 24" not in md
+    # the live count is 24 today, so only a FORCED count separates derived from typed
+    monkeypatch.setattr(pvt, "registered_exit_count", lambda: 99)
+    md99 = "\n".join(pvt.table_d({"sw20": g}))
+    assert "**99 exit methods are registered**" in md99
+    src = (root / "scripts" / "table_d_render.py").read_text(encoding="utf-8")
+    assert "24 exit methods" not in src and "registered_exit_count()" in src
+
+
+def test_b3396d_every_familys_parameters_block_carries_its_specs_params():
+    """S6-B3396 (runbook 7.5 Parameters tested, census 2222): Table C's second
+    block has one column per parameter of the config's family. Other
+    families render through producer_bands (B2585); smc renders the fixed
+    P_AXES six, pinned here equal to its SPECS P-params so the two cannot
+    drift; and for one committed grid of each family the rendered header
+    carries every Table A row of the family, depth P-rows and breadth B-rows
+    (MEASURED B3139q-r198: e.g. bollinger_lower 11 of 11, naked_poc_retest_long
+    P1-P6 and B1-B6)."""
+    import json
+    import subprocess
+    import sys as _sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    smc = pvt.resolved_spec("smc_breaker_block_long")
+    assert [(p["id"], p["param"]) for p in smc["params"] if str(p["id"]).startswith("P")] \
+        == [tuple(x) for x in pvt.P_AXES]
+    files = subprocess.run(["git", "ls-files", "output_audit/*grid_auto*.json"], cwd=root,
+                           capture_output=True, text=True).stdout.split()
+    first = {}
+    for rel in sorted(files):
+        try:
+            d = json.loads((root / rel).read_text(encoding="utf-8"))
+        except ValueError:
+            continue
+        s = d.get("strategy")
+        if s and s not in first and (pvt.SPECS.get(s) or pvt.SPECS_PHASE0.get(s)):
+            first[s] = (rel, d)
+    assert len(first) >= 5, sorted(first)
+    for s, (rel, d) in sorted(first.items()):
+        rows = pvt.table_c({Path(rel).stem: d}, root)
+        i = next(k for k, r in enumerate(rows) if r.startswith("**Parameters tested"))
+        head = next(r for r in rows[i:] if r.startswith("| config |"))
+        cols = [c.strip().split(" ")[0] for c in head.strip("|").split("|")[1:] if c.strip()]
+        want = [p["id"] for p in pvt.resolved_spec(s)["params"]]   # P- and B-rows
+        assert cols == want, (s, rel, cols, want)

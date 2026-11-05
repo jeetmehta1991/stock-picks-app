@@ -2305,7 +2305,7 @@ and where did the rest stop?
   pre-B2010 grid - renders its values prefixed `HOLDOUT` so a reader cannot mistake one for the other.
   And a funnel whose `graded + starved-IS + no-Sharpe + zero-fires` is not `combos` renders an
   **UNCLASSIFIED** row rather than trusting the arithmetic (B1702; test_b3396b, S6-B3396).
-- **PARAMETERS TESTED (B2137, owner directive; family-complete since B2585).** Beneath the funnel, a
+- **PARAMETERS TESTED (B2137, owner directive; family-complete since B2585; producer_bands reads resolved_spec, so PHASE0-only rows are columns too - test_b3396d, S6-B3396).** Beneath the funnel, a
   second block names the bands each config exercised, one column per parameter of its family - the same
   derivation and markers as the funnel cell, so the two renders cannot contradict each other. A `bands`
   COUNT says how many values were exercised; this block says WHICH, and an axis pinned at a single value
@@ -2324,8 +2324,8 @@ and where did the rest stop?
 ### 7.5 Section 4b - TABLE D, the cross-config ranked list (shipped S6-B2330; documented S6-B2499; unified B2725)
 
 **Table C answers "what happened inside one config"; Table D answers "across every config, which
-outcomes rank highest"** - one row per (config x exit) outcome, EVERY row by default (S6-B2700,
-owner question 2026-09-12, over the top 25 of 2026-08-28; show_table_d's terminal print keeps --top 20).
+outcomes rank highest"** - one row per (config x exit) outcome, the top 25 at landing (owner directive
+2026-08-28; postconfig_doc passes top=25); the campaign's offline unified table (table_d_render) renders EVERY row (S6-B2700).
 
 - **Sort: `is_ci_lo` descending, then `n` descending - and NOTHING is filtered.** Step-1 admission is
   min-trades >= 10 plus a ranked list with NO gates (owner ruling B1608), so every column is displayed,
@@ -2357,7 +2357,7 @@ owner question 2026-09-12, over the top 25 of 2026-08-28; show_table_d's termina
   disclosed because a row can lead on `is_ci_lo` carrying the exit that won on Sharpe. Not every
   registered exit is effective per cell: `next_pivot_target` is refused on boundary-spanning cells
   (B2014, `npt_excluded_identity_boundary`) and a byte-identical collapse removes another (B1593) - 22
-  effective per cell when this was written; derive the effective count live (§7.6).
+  effective per cell when this was written; derive the effective count live (§7.6) - the renderers now print the registered count from producer_variant_table.registered_exit_count and call the effective count measured per cell (test_b3396c, S6-B3396).
 - **A per-tier best summary is appended** - the comparison a rank order hides; a SUPERSEDED grid (`producer_variant_table.SUPERSEDED_GRIDS`, each with its recorded reason) is marked in Tables C and D and skipped by that best (S6-B3266).
 - **The renderer is the only source:** `python scripts/show_table_d.py` (grid form) and
   `scripts/table_d_render.py` (offline form). Print it, never retype it (L652). Regenerated at every
@@ -2372,7 +2372,7 @@ owner question 2026-09-12, over the top 25 of 2026-08-28; show_table_d's termina
 
 ### 7.6 The exit registry, and why a cube's exit COUNT is a dated fact
 
-**`len(EXIT_STRATEGIES)` is 24 today - derived by running the code, never recalled.** B2110 deprecated
+**`len(EXIT_STRATEGIES)` is 24 today - derived by running the code, never recalled (test_b3396c holds this figure to the live count).** B2110 deprecated
 two exits on the owner-approved LEVER9 option (a) intersection - never selected in 482 cell selections
 AND an outcome-duplicate of a survivor: `atr_trail_mae_conditional` (100.0 pct identical to
 `atr_trail_1x` over 52,700 shared trades) and `smart_money_reversal` (99.3 pct). Their functions are kept

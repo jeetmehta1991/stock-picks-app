@@ -20556,6 +20556,27 @@ two causes at two layers: the wired renderer emitted the wrong shape, and the
 delivery bypassed the renderer altogether. **Paste the renderer's output
 verbatim; never retype a locked table, not even two rows of it.**
 
+**Addendum (B3139q-r198, S6-B3396 slices 11a and 11b): THE SAME CLASS, THREE
+TIMES IN ONE TICKET.** (1) Slice 11a replaced the runbook's 'top 25 by default
+(owner directive 2026-08-28)' with S6-B2700's every-row ruling. That ruling
+was about the campaign's offline unified Table D (table_d_render); the
+paragraph I edited describes the LANDING Tables C and D, which postconfig_doc
+renders with top=25 on purpose. The edit and a pin asserting it shipped in
+fc7496697; 11b restores the landing rule beside the campaign rule, each naming
+its renderer. (2) producer_variant_table.producer_bands read SPECS alone after
+S6-B3139z made resolved_spec the one Table A spec, so Table C's
+Parameters-tested block dropped a family's PHASE0-only rows - MEASURED,
+bollinger_lower's B1-B8 - while band_coverage_gate and table_d_render had
+migrated. (3) Sweeping the typed '24 / 22' exit counts, I said no copy
+remained; one was a literal split across two lines ('missing from ' + '24._'),
+which a line grep cannot see, and the new pin's first run found it.
+**Compliance failure against #303** for (1) and (2): name the renderer a
+ruling binds, and sweep every reader when the source of truth moves. (3) is
+the L713 reading-unit class. Mechanism: test_b3396b pins each Table D's
+default to its own renderer, test_b3396d renders one committed grid per family
+and requires every Table A row as a column, test_b3396c forces a different
+exit count and requires the tables to print it.
+
 ### L791 - I TESTED A STRATEGY THE OWNER HAD ALREADY BANKED, AFTER READING THE MEMORY THAT SAID NOT TO (B2731, owner-caught 2026-09-12)
 
 **Owner, verbatim:** *"smc_breaker_block_long we are not testing this as it has

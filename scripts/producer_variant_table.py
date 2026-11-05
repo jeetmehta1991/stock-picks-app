@@ -7724,6 +7724,16 @@ def _d_axis_value(spec, cfg: dict, admit: dict, art=None):
     return (cfg if src == "cfg" else (admit or {})).get(key)
 
 
+def registered_exit_count() -> int:
+    """S6-B3396 (census 2273 + 2288): len(EXIT_STRATEGIES), derived at render -
+    the ONE count the Table D renderers quote, never a typed 24."""
+    _root = str(Path(__file__).resolve().parent.parent)
+    if _root not in _sys.path:
+        _sys.path.insert(0, _root)
+    from backtest.engine.exit_strategies import EXIT_STRATEGIES
+    return len(EXIT_STRATEGIES)
+
+
 def table_d(grids: dict[str, dict], top: int = 25) -> list[str]:
     """STEP-1 RANKED LIST - one row per (config x exit) outcome, top N.
 
@@ -7819,10 +7829,12 @@ def table_d(grids: dict[str, dict], top: int = 25) -> list[str]:
         "this table RANKS by is_ci_lo. Two different objectives, disclosed because "
         "a row can lead on is_ci_lo while carrying the exit that won on Sharpe. "
         "Step 2 re-ranks ALL exits by gates passed and is the admission criterion; "
-        "it has not run. **24 exit methods are registered; 22 are effective per "
-        "cell** - next_pivot_target is refused on boundary-spanning cells (B2014, "
-        "flagged by npt_excluded_identity_boundary) and 1 more is collapsed as "
-        "byte-identical to a survivor (B1593). 24 - 1 - 1 = 22.",
+        f"it has not run. **{registered_exit_count()} exit methods are registered** "
+        "(len(EXIT_STRATEGIES), derived at render); per cell next_pivot_target is "
+        "refused on boundary-spanning cells (B2014, flagged by "
+        "npt_excluded_identity_boundary) and byte-identical exits collapse to one "
+        "(B1593), so the effective count varies by cell and is measured, not typed "
+        "(the landing record's exits_effective; S6-B3396).",
         "",
         # B2725: the producer-band glossary belongs ON the unified table.
         ("_**EVERY PRODUCER BAND IS A COLUMN HERE** (owner ruling: one "
@@ -7832,8 +7844,8 @@ def table_d(grids: dict[str, dict], top: int = 25) -> list[str]:
          "production, mitigate on high/low), P4 age_bars_max (None = "
          "production, no cap), P5 break_pct_max (None = production, no "
          "cap). `npt_excl` = next_pivot_target refused on this cell as "
-         "boundary-spanning (B2014), one of the two exits missing from "
-         "24._"),
+         "boundary-spanning (B2014), one of the exits a cell can lose "
+         "(S6-B3396)._"),
         "",
         ("| # | config | " + " | ".join(_labels) + " | "
          + " | ".join(TABLE_D_FIXED_COLUMNS) + " |"),
@@ -7920,7 +7932,7 @@ def table_d_params(grids: dict[str, dict], top: int = 25) -> list[str]:
         "high/low), P3 tail_n, P4 age_bars_max (None = production, no cap), "
         "P5 break_pct_max (None = production, no cap), P6 span. `npt_excl` = "
         "next_pivot_target was refused on this cell as boundary-spanning "
-        "(B2014), which is one of the two exits missing from 24._"
+        "(B2014), one of the exits a cell can lose (S6-B3396)._"
         if _is_smc else
         "_The swept axes for the same rows, same order - join on `#`. Axis "
         "labels come from the per-family registry (D_AXIS_FAMILIES); `npt_excl`"
@@ -7990,8 +8002,11 @@ def producer_bands(name, grid, root=None):
       4. declared free band, no artifact -> `v1,v2(free, declared)`
       5. NOT-SWEPT-BY-DESIGN -> `v(not swept)`
       6. otherwise `?` - never a number (L580)
+    S6-B3396 (census 2222): reads resolved_spec, the ONE Table A spec
+    (S6-B3139z) - SPECS alone dropped a family's PHASE0-only rows (MEASURED:
+    bollinger_lower's B1-B8). A render path, not a battery lookup (B2634).
     """
-    spec = SPECS.get(grid.get("strategy"))
+    spec = resolved_spec(grid.get("strategy"))
     if not spec:
         return None
     cfg = grid.get("config") or {}
