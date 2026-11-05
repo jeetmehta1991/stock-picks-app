@@ -75303,3 +75303,45 @@ def test_b3417_graders_verify_identity_flags_against_the_landed_arm(tmp_path):
             "--min-consecutive-quarters": c["P4_min_consecutive_quarters"],
             "--growth-lookback-quarters": c["P5_growth_lookback_quarters"],
             "--growth-multiple": c["P6_growth_multiple"], "--span": c["P9_span"]}) == ""
+
+
+def test_b3428_no_strategy_gate_reads_a_number_for_truth():
+    """S6-B3428 (B3139q-r203, L1012, CHECKLIST #331): a gate that reads a
+    persisted NUMBER for its truth applies no threshold - B1145's loosening
+    executor turned the reviewed 'rsi_14 < 35' into s.get('rsi_14', False),
+    which passes any non-zero RSI, so strat_rsi_oversold_with_smart_money_long
+    tests no RSI level. scripts/truthy_numeric_reads.py lists every s.get read
+    consumed for its truth in screener.py and joins it to the key's persisted
+    kind (output_audit/b3428_signal_key_types.json, measured on the R5 trade
+    log). The frozen set is the one known instance, pending the owner's
+    ruling on S6-B3428, and binds both ways: a new numeric-for-truth read
+    fails, and so does a fixed one left in the set. MEASURED B3139q-r203: 701
+    truthy reads over 269 keys, 1 numeric; the 4 days_to_cover /
+    short_interest_pct reads are value coalesces before a comparison."""
+    import json
+    import sys as _sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import truthy_numeric_reads as tnr
+    types = json.loads((root / "output_audit" / "b3428_signal_key_types.json")
+                       .read_text(encoding="utf-8"))["types"]
+    reads = tnr.truthy_reads((root / "backtest" / "signals" / "screener.py")
+                             .read_text(encoding="utf-8"))
+    assert len(types) >= 800 and len(reads) >= 500, (len(types), len(reads))
+    hits = {(f, k) for f, k, _ in tnr.numeric_truthy(reads, types)}
+    known = {("strat_rsi_oversold_with_smart_money_long", "rsi_14")}
+    assert hits == known, ("numeric-for-truth reads changed: new "
+                           f"{sorted(hits - known)}, gone {sorted(known - hits)}")
+    # the detector fires on a number read for truth and stays quiet on a
+    # value coalesce and on a flag
+    src = ("def strat_x(s):\n"
+           "    fires = s.get('adx', False) and s.get('vol_above_avg', False)\n"
+           "    return _strat(fires, 'long', 'x', [], [])\n"
+           "def strat_y(s):\n"
+           "    a = s.get('adx', 0.0) or 0.0\n"
+           "    return _strat(a > 20, 'long', 'y', [], [])\n")
+    kinds = {"adx": ["num"], "vol_above_avg": ["bool"]}
+    got = {(f, k) for f, k, _ in tnr.numeric_truthy(tnr.truthy_reads(src), kinds)}
+    assert got == {("strat_x", "adx")}, got

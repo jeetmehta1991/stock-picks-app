@@ -1,0 +1,112 @@
+{
+  "_doc": "runbook 3.6 steps 1-2: consistent-sign BH-FDR survivors under BOTH exits, clustered by the producer module that writes the key (build_table_a module index); representative = max joint effect min(|a|, |b|) (#165). A SCREEN, never a gate - B-row registration happens at the T3 owner band review.",
+  "strategy": "macd_bullish_with_smart_money_long",
+  "direction": "long",
+  "survival_applied": false,
+  "basis": "net",
+  "cube_dir": "output_r5_merged_1_7 (default)",
+  "exit_a": "time_stop_10d",
+  "exit_b": "breakeven_plus_trail",
+  "screens": {
+    "a": "output_audit/b3249_macd_bullish_with_smart_money_long_screen_long_ts10_net.json",
+    "b": "output_audit/b3249_macd_bullish_with_smart_money_long_screen_long_bept_net.json"
+  },
+  "survivors_a": 12,
+  "survivors_b": 10,
+  "n_consistent": 6,
+  "clusters": {
+    "backtest/signals/cot_positioning.py": {
+      "representative": "cot_copper_commercials_pctile_3y",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "cot_copper_commercials_pctile_3y",
+        "cot_dow_mmoney_pctile_3y",
+        "cot_dxy_mmoney_pctile_3y",
+        "cot_copper_commercials_net_pct",
+        "cot_rut_commercials_net_pct"
+      ],
+      "rows": [
+        {
+          "key": "cot_copper_commercials_pctile_3y",
+          "kind": "numeric",
+          "effect_a": 2.6729319461077843,
+          "effect_b": 7.109745275449102,
+          "joint": 2.6729319461077843,
+          "p_a": 8.234648355419566e-07,
+          "p_b": 5.0883347710574024e-11,
+          "sign": "+",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_dow_mmoney_pctile_3y",
+          "kind": "numeric",
+          "effect_a": -2.545876584440228,
+          "effect_b": -5.950047020872864,
+          "joint": 2.545876584440228,
+          "p_a": 0.0001494504832571822,
+          "p_b": 8.434884674953881e-05,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_dxy_mmoney_pctile_3y",
+          "kind": "numeric",
+          "effect_a": 2.2379597619047615,
+          "effect_b": 4.269234688644689,
+          "joint": 2.2379597619047615,
+          "p_a": 0.0004916940043322942,
+          "p_b": 4.57837460543792e-06,
+          "sign": "+",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_copper_commercials_net_pct",
+          "kind": "numeric",
+          "effect_a": 1.790348079877112,
+          "effect_b": 7.1399374999999985,
+          "joint": 1.790348079877112,
+          "p_a": 3.027164928489272e-06,
+          "p_b": 3.8893467496275245e-13,
+          "sign": "+",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_rut_commercials_net_pct",
+          "kind": "numeric",
+          "effect_a": -0.8038392823290453,
+          "effect_b": -5.917704148950576,
+          "joint": 0.8038392823290453,
+          "p_a": 0.00013783974461809657,
+          "p_b": 8.044568588808003e-06,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        }
+      ]
+    },
+    "backtest/signals/cross_asset.py": {
+      "representative": "sector_weakest_rs",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "sector_weakest_rs"
+      ],
+      "rows": [
+        {
+          "key": "sector_weakest_rs",
+          "kind": "numeric",
+          "effect_a": -2.7260690819713993,
+          "effect_b": -5.6391753894279875,
+          "joint": 2.7260690819713993,
+          "p_a": 4.464247992989894e-06,
+          "p_b": 4.420626986303958e-08,
+          "sign": "-",
+          "module": "backtest/signals/cross_asset.py"
+        }
+      ]
+    }
+  },
+  "unindexed": {
+    "members": [],
+    "n": 0,
+    "note": "keys the producer index cannot place - a mixed bag, never a cluster, so no representative (runbook 3.6, S6-B3394)"
+  }
+}

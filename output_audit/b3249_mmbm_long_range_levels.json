@@ -1,0 +1,19 @@
+{
+  "_doc": "S6-B3249 R1 measurement (B3139q-r203): po3_accum_range_pct on mmbm_long's R5 fires - the persisted ratio behind the producer's accumulation ceiling (ict_producers.py:47, tight_range_threshold 0.05). Read-only scan of output_r5_merged_1_7/trade_log.csv signals_at_entry, deduped on ticker x entry_date. Levels are the 0.8/0.6/0.4/0.2 quantiles rounded to 4 dp; kept = fires with po3_accum_range_pct <= level. Control: every fire carries the key and satisfies <= 0.05 (the setup requires accumulation_active). Proposed levels for the owner's T3 band review - none approved.",
+  "strategy": "mmbm_long",
+  "cube": "output_r5_merged_1_7",
+  "key": "po3_accum_range_pct",
+  "op": "le",
+  "production": 0.05,
+  "fires": 1337,
+  "fires_with_key": 1337,
+  "min": 0.0146,
+  "max": 0.05,
+  "over_production": 0,
+  "levels": [
+    {"quantile": 0.8, "level": 0.046, "kept": 1076, "kept_pct": 80.5},
+    {"quantile": 0.6, "level": 0.0419, "kept": 808, "kept_pct": 60.4},
+    {"quantile": 0.4, "level": 0.0368, "kept": 535, "kept_pct": 40.0},
+    {"quantile": 0.2, "level": 0.0308, "kept": 269, "kept_pct": 20.1}
+  ]
+}

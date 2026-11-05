@@ -1,0 +1,26 @@
+{
+ "strategy": "rsi_oversold_with_smart_money_long",
+ "fires": 2753,
+ "fires_with_rsi_14": 2753,
+ "rsi_min": 24.87,
+ "rsi_median": 52.3,
+ "partner": "institutional_multi_quarter_persistence_long",
+ "cuts": [
+  {
+   "cut": "rsi_14 < 35",
+   "fires": 143,
+   "jaccard_vs_partner": 0.049,
+   "share_held_by_partner": 0.874
+  },
+  {
+   "cut": "rsi_14 < 30",
+   "fires": 22,
+   "jaccard_vs_partner": 0.008,
+   "share_held_by_partner": 0.864
+  }
+ ],
+ "as_is": {
+  "fires": 2753,
+  "jaccard_vs_partner": 0.813
+ }
+}

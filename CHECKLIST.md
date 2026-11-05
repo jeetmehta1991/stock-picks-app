@@ -6802,3 +6802,22 @@ script must exist where the hook looks - a shim at the moved directory's
 scripts/ that runs the real guard lets one cd to the root pass; scripts/ is
 inside the pyramid gate's fingerprint, so write and delete the shim in one
 call, never across a gate's start or end.
+
+### #331 - A STRATEGY GATE READS A FLAG OR A COMPARISON, NEVER A BARE NUMBER (B3139q-r203 / L1012)
+
+`s.get("<numeric key>", False)` in a truth position passes for any non-zero
+value, and NaN is truthy too, so the threshold the strategy's name promises is
+not applied. MEASURED (L1012): strat_rsi_oversold_with_smart_money_long has
+tested no RSI level since B1145's executor replaced the flag rsi_14_oversold
+with the number rsi_14 and dropped the reviewed "< 35"; its 2,753 R5 fires
+overlap an admitted strategy at Jaccard 0.813. Any edit that swaps a flag for
+a number carries the comparison with it; a value coalesce before a comparison
+(`s.get(k, 0.0) or 0.0` then `> 5.0`) is not a truth read.
+
+MECHANISM: scripts/truthy_numeric_reads.py joins every truth-consumed s.get
+read in backtest/signals/screener.py to the key's persisted kind
+(output_audit/b3428_signal_key_types.json, measured on the R5 trade log),
+pinned by test_b3428_no_strategy_gate_reads_a_number_for_truth - the one known
+instance is frozen both ways until the owner rules S6-B3428. A key the type
+map has not measured is not judged; re-measure with --write-types when the
+producer set grows.

@@ -1,0 +1,188 @@
+{
+  "_doc": "runbook 3.6 steps 1-2: consistent-sign BH-FDR survivors under BOTH exits, clustered by the producer module that writes the key (build_table_a module index); representative = max joint effect min(|a|, |b|) (#165). A SCREEN, never a gate - B-row registration happens at the T3 owner band review.",
+  "strategy": "mmbm_long",
+  "direction": "long",
+  "survival_applied": false,
+  "basis": "net",
+  "cube_dir": "output_r5_merged_1_7 (default)",
+  "exit_a": "time_stop_10d",
+  "exit_b": "breakeven_plus_trail",
+  "screens": {
+    "a": "output_audit/b3249_mmbm_long_screen_long_ts10_net.json",
+    "b": "output_audit/b3249_mmbm_long_screen_long_bept_net.json"
+  },
+  "survivors_a": 64,
+  "survivors_b": 11,
+  "n_consistent": 11,
+  "clusters": {
+    "backtest/signals/cross_asset.py": {
+      "representative": "sector_weakest_rs",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "sector_weakest_rs",
+        "sector_strongest_rs",
+        "bond_equity_20d_pct_change"
+      ],
+      "rows": [
+        {
+          "key": "sector_weakest_rs",
+          "kind": "numeric",
+          "effect_a": -5.472895106060605,
+          "effect_b": -4.113300585858585,
+          "joint": 4.113300585858585,
+          "p_a": 3.019359536912042e-20,
+          "p_b": 2.0551315488777742e-16,
+          "sign": "-",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "sector_strongest_rs",
+          "kind": "numeric",
+          "effect_a": -2.0690492721338645,
+          "effect_b": -2.82406503652282,
+          "joint": 2.0690492721338645,
+          "p_a": 0.0022696554285405734,
+          "p_b": 1.2508481496665978e-05,
+          "sign": "-",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "bond_equity_20d_pct_change",
+          "kind": "numeric",
+          "effect_a": 1.927786681536174,
+          "effect_b": 0.6996035943188228,
+          "joint": 0.6996035943188228,
+          "p_a": 0.0008097421937977102,
+          "p_b": 0.00016800642430970944,
+          "sign": "+",
+          "module": "backtest/signals/cross_asset.py"
+        }
+      ]
+    },
+    "backtest/signals/cot_positioning.py": {
+      "representative": "cot_ndx_mmoney_pctile_3y",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "cot_ndx_mmoney_pctile_3y",
+        "cot_dxy_commercials_net_pct",
+        "cot_dxy_commercials_pctile_3y",
+        "cot_sp500_mmoney_pctile_3y",
+        "cot_copper_commercials_net_pct"
+      ],
+      "rows": [
+        {
+          "key": "cot_ndx_mmoney_pctile_3y",
+          "kind": "numeric",
+          "effect_a": 4.2622309694681295,
+          "effect_b": 5.905483933885123,
+          "joint": 4.2622309694681295,
+          "p_a": 0.000457187168660787,
+          "p_b": 5.574638239073603e-09,
+          "sign": "+",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_dxy_commercials_net_pct",
+          "kind": "numeric",
+          "effect_a": -3.9452167234891533,
+          "effect_b": -2.2170326135818366,
+          "joint": 2.2170326135818366,
+          "p_a": 5.463313030542597e-09,
+          "p_b": 9.21300382642246e-07,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_dxy_commercials_pctile_3y",
+          "kind": "numeric",
+          "effect_a": -2.3061390217625513,
+          "effect_b": -1.006945432018962,
+          "joint": 1.006945432018962,
+          "p_a": 2.1718208333683815e-08,
+          "p_b": 3.365574489370455e-06,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_sp500_mmoney_pctile_3y",
+          "kind": "numeric",
+          "effect_a": -2.2058210622390035,
+          "effect_b": -0.9089763471781152,
+          "joint": 0.9089763471781152,
+          "p_a": 1.076987567184015e-06,
+          "p_b": 6.667767531271223e-05,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_copper_commercials_net_pct",
+          "kind": "numeric",
+          "effect_a": 2.0969850656660416,
+          "effect_b": 0.5937411757348343,
+          "joint": 0.5937411757348343,
+          "p_a": 2.816179354658036e-08,
+          "p_b": 1.94653138959826e-05,
+          "sign": "+",
+          "module": "backtest/signals/cot_positioning.py"
+        }
+      ]
+    },
+    "backtest/signals/technical.py": {
+      "representative": "ppo_hist",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "ppo_hist",
+        "stochrsi_d"
+      ],
+      "rows": [
+        {
+          "key": "ppo_hist",
+          "kind": "numeric",
+          "effect_a": 2.727987363482541,
+          "effect_b": 4.361019961031637,
+          "joint": 2.727987363482541,
+          "p_a": 5.009826677792357e-05,
+          "p_b": 0.0001601519215276796,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "stochrsi_d",
+          "kind": "numeric",
+          "effect_a": 2.4308434343434344,
+          "effect_b": 2.4627939393939395,
+          "joint": 2.4308434343434344,
+          "p_a": 7.250300293067462e-07,
+          "p_b": 3.0297912041206574e-05,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        }
+      ]
+    },
+    "backtest/signals/screener.py": {
+      "representative": "stochrsi_oversold",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "stochrsi_oversold"
+      ],
+      "rows": [
+        {
+          "key": "stochrsi_oversold",
+          "kind": "bool",
+          "effect_a": -1.8380378515547289,
+          "effect_b": -2.338885183231782,
+          "joint": 1.8380378515547289,
+          "p_a": 1.3231063534805976e-05,
+          "p_b": 0.0004803381003196272,
+          "sign": "-",
+          "module": "backtest/signals/screener.py"
+        }
+      ]
+    }
+  },
+  "unindexed": {
+    "members": [],
+    "n": 0,
+    "note": "keys the producer index cannot place - a mixed bag, never a cluster, so no representative (runbook 3.6, S6-B3394)"
+  }
+}

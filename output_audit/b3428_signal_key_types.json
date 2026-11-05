@@ -1,0 +1,2614 @@
+{
+ "_doc": "S6-B3428: signals_at_entry key -> value kinds seen on the first 20000 rows of output_r5_merged_1_7/trade_log.csv (bool / num / int01 / none). Written by scripts/truthy_numeric_reads.py --write-types.",
+ "rows": 20000,
+ "types": {
+  "8k_item_1_01_filed_within_30d": [
+   "bool"
+  ],
+  "8k_item_5_02_filed_within_7d": [
+   "bool"
+  ],
+  "above_avwap_20high": [
+   "bool"
+  ],
+  "above_avwap_20low": [
+   "bool"
+  ],
+  "above_avwap_252low": [
+   "bool"
+  ],
+  "above_avwap_50low": [
+   "bool"
+  ],
+  "above_cam_r3": [
+   "bool"
+  ],
+  "above_cam_r4": [
+   "bool"
+  ],
+  "above_cpr": [
+   "bool"
+  ],
+  "above_pivot": [
+   "bool"
+  ],
+  "above_prev_high": [
+   "bool"
+  ],
+  "above_prev_high_clearance_atr_05": [
+   "bool"
+  ],
+  "above_prev_low": [
+   "bool"
+  ],
+  "above_r1": [
+   "bool"
+  ],
+  "above_r2": [
+   "bool"
+  ],
+  "above_vwap": [
+   "bool"
+  ],
+  "above_wood_p": [
+   "bool"
+  ],
+  "ad_rising": [
+   "bool"
+  ],
+  "adx": [
+   "num"
+  ],
+  "adx_cross_up": [
+   "bool"
+  ],
+  "adx_cross_up_20": [
+   "bool"
+  ],
+  "adx_di_bear": [
+   "bool"
+  ],
+  "adx_di_bull": [
+   "bool"
+  ],
+  "adx_di_minus": [
+   "num"
+  ],
+  "adx_di_plus": [
+   "num"
+  ],
+  "adx_strong": [
+   "bool"
+  ],
+  "adx_trending": [
+   "bool"
+  ],
+  "ao": [
+   "num"
+  ],
+  "ao_cross_dn": [
+   "bool"
+  ],
+  "ao_cross_up": [
+   "bool"
+  ],
+  "ao_positive": [
+   "bool"
+  ],
+  "ao_twin_peaks_bull": [
+   "bool"
+  ],
+  "at_key_fib": [
+   "bool"
+  ],
+  "at_key_fib_wide": [
+   "bool"
+  ],
+  "atr": [
+   "num"
+  ],
+  "atr_14": [
+   "num"
+  ],
+  "atr_pct": [
+   "num"
+  ],
+  "avg_position_age_quarters": [
+   "int01",
+   "num"
+  ],
+  "avwap_20high": [
+   "num"
+  ],
+  "avwap_20high_loss_recent_3d": [
+   "bool"
+  ],
+  "avwap_20high_reclaim_recent_3d": [
+   "bool"
+  ],
+  "avwap_20low": [
+   "num"
+  ],
+  "avwap_20low_loss_recent_3d": [
+   "bool"
+  ],
+  "avwap_20low_reclaim_recent_3d": [
+   "bool"
+  ],
+  "avwap_252low": [
+   "num"
+  ],
+  "avwap_252low_loss_recent_3d": [
+   "bool"
+  ],
+  "avwap_252low_reclaim_recent_3d": [
+   "bool"
+  ],
+  "avwap_50low": [
+   "num"
+  ],
+  "avwap_50low_loss_recent_3d": [
+   "bool"
+  ],
+  "avwap_50low_reclaim_recent_3d": [
+   "bool"
+  ],
+  "bb_10_20_above_mid": [
+   "bool"
+  ],
+  "bb_10_20_bandwidth": [
+   "num"
+  ],
+  "bb_10_20_expanding": [
+   "bool"
+  ],
+  "bb_10_20_lower": [
+   "num"
+  ],
+  "bb_10_20_mid": [
+   "num"
+  ],
+  "bb_10_20_pctb": [
+   "int01",
+   "num"
+  ],
+  "bb_10_20_pctb_gt_75": [
+   "bool"
+  ],
+  "bb_10_20_pctb_gt_8": [
+   "bool"
+  ],
+  "bb_10_20_pctb_gt_85": [
+   "bool"
+  ],
+  "bb_10_20_pctb_gt_9": [
+   "bool"
+  ],
+  "bb_10_20_pctb_gt_95": [
+   "bool"
+  ],
+  "bb_10_20_pctb_lt_05": [
+   "bool"
+  ],
+  "bb_10_20_pctb_lt_1": [
+   "bool"
+  ],
+  "bb_10_20_pctb_lt_15": [
+   "bool"
+  ],
+  "bb_10_20_pctb_lt_2": [
+   "bool"
+  ],
+  "bb_10_20_pctb_lt_25": [
+   "bool"
+  ],
+  "bb_10_20_reclaim_from_lower_recent_3d": [
+   "bool"
+  ],
+  "bb_10_20_reclaim_from_upper_recent_3d": [
+   "bool"
+  ],
+  "bb_10_20_squeeze": [
+   "bool"
+  ],
+  "bb_10_20_touch_lower": [
+   "bool"
+  ],
+  "bb_10_20_touch_upper": [
+   "bool"
+  ],
+  "bb_10_20_upper": [
+   "num"
+  ],
+  "bb_20_15_above_mid": [
+   "bool"
+  ],
+  "bb_20_15_bandwidth": [
+   "num"
+  ],
+  "bb_20_15_expanding": [
+   "bool"
+  ],
+  "bb_20_15_lower": [
+   "num"
+  ],
+  "bb_20_15_mid": [
+   "num"
+  ],
+  "bb_20_15_pctb": [
+   "num"
+  ],
+  "bb_20_15_pctb_gt_75": [
+   "bool"
+  ],
+  "bb_20_15_pctb_gt_8": [
+   "bool"
+  ],
+  "bb_20_15_pctb_gt_85": [
+   "bool"
+  ],
+  "bb_20_15_pctb_gt_9": [
+   "bool"
+  ],
+  "bb_20_15_pctb_gt_95": [
+   "bool"
+  ],
+  "bb_20_15_pctb_lt_05": [
+   "bool"
+  ],
+  "bb_20_15_pctb_lt_1": [
+   "bool"
+  ],
+  "bb_20_15_pctb_lt_15": [
+   "bool"
+  ],
+  "bb_20_15_pctb_lt_2": [
+   "bool"
+  ],
+  "bb_20_15_pctb_lt_25": [
+   "bool"
+  ],
+  "bb_20_15_reclaim_from_lower_recent_3d": [
+   "bool"
+  ],
+  "bb_20_15_reclaim_from_upper_recent_3d": [
+   "bool"
+  ],
+  "bb_20_15_squeeze": [
+   "bool"
+  ],
+  "bb_20_15_touch_lower": [
+   "bool"
+  ],
+  "bb_20_15_touch_upper": [
+   "bool"
+  ],
+  "bb_20_15_upper": [
+   "num"
+  ],
+  "bb_20_20_above_mid": [
+   "bool"
+  ],
+  "bb_20_20_bandwidth": [
+   "num"
+  ],
+  "bb_20_20_expanding": [
+   "bool"
+  ],
+  "bb_20_20_lower": [
+   "num"
+  ],
+  "bb_20_20_mid": [
+   "num"
+  ],
+  "bb_20_20_pctb": [
+   "num"
+  ],
+  "bb_20_20_pctb_gt_75": [
+   "bool"
+  ],
+  "bb_20_20_pctb_gt_8": [
+   "bool"
+  ],
+  "bb_20_20_pctb_gt_85": [
+   "bool"
+  ],
+  "bb_20_20_pctb_gt_9": [
+   "bool"
+  ],
+  "bb_20_20_pctb_gt_95": [
+   "bool"
+  ],
+  "bb_20_20_pctb_lt_05": [
+   "bool"
+  ],
+  "bb_20_20_pctb_lt_1": [
+   "bool"
+  ],
+  "bb_20_20_pctb_lt_15": [
+   "bool"
+  ],
+  "bb_20_20_pctb_lt_2": [
+   "bool"
+  ],
+  "bb_20_20_pctb_lt_25": [
+   "bool"
+  ],
+  "bb_20_20_reclaim_from_lower_recent_3d": [
+   "bool"
+  ],
+  "bb_20_20_reclaim_from_upper_recent_3d": [
+   "bool"
+  ],
+  "bb_20_20_squeeze": [
+   "bool"
+  ],
+  "bb_20_20_touch_lower": [
+   "bool"
+  ],
+  "bb_20_20_touch_upper": [
+   "bool"
+  ],
+  "bb_20_20_upper": [
+   "num"
+  ],
+  "bearish_engulfing": [
+   "bool"
+  ],
+  "bearish_pin_bar": [
+   "bool"
+  ],
+  "below_avwap_20high": [
+   "bool"
+  ],
+  "below_avwap_20low": [
+   "bool"
+  ],
+  "below_avwap_252low": [
+   "bool"
+  ],
+  "below_avwap_50low": [
+   "bool"
+  ],
+  "below_cam_s3": [
+   "bool"
+  ],
+  "below_cam_s4": [
+   "bool"
+  ],
+  "below_cpr": [
+   "bool"
+  ],
+  "below_ema_20": [
+   "bool"
+  ],
+  "below_ema_200": [
+   "bool"
+  ],
+  "below_ema_200_break_recent_5d": [
+   "bool"
+  ],
+  "below_ema_20_break_recent_5d": [
+   "bool"
+  ],
+  "below_ema_21": [
+   "bool"
+  ],
+  "below_ema_21_break_recent_5d": [
+   "bool"
+  ],
+  "below_ema_50": [
+   "bool"
+  ],
+  "below_ema_50_break_recent_5d": [
+   "bool"
+  ],
+  "below_ema_9": [
+   "bool"
+  ],
+  "below_ema_9_break_recent_5d": [
+   "bool"
+  ],
+  "below_prev_high": [
+   "bool"
+  ],
+  "below_prev_low": [
+   "bool"
+  ],
+  "below_prev_low_clearance_atr_05": [
+   "bool"
+  ],
+  "below_s1": [
+   "bool"
+  ],
+  "below_s2": [
+   "bool"
+  ],
+  "below_sma_20": [
+   "bool"
+  ],
+  "below_sma_200": [
+   "bool"
+  ],
+  "below_sma_21": [
+   "bool"
+  ],
+  "below_sma_50": [
+   "bool"
+  ],
+  "below_sma_9": [
+   "bool"
+  ],
+  "below_vwap": [
+   "bool"
+  ],
+  "blowoff_lookback_window": [
+   "num"
+  ],
+  "blowoff_recent_3d": [
+   "bool"
+  ],
+  "bond_equity_20d_pct_change": [
+   "num"
+  ],
+  "bond_equity_ratio": [
+   "num"
+  ],
+  "break_52w_high": [
+   "bool"
+  ],
+  "break_52w_high_clearance_atr_05": [
+   "bool"
+  ],
+  "break_52w_high_confirmed_today": [
+   "bool"
+  ],
+  "break_52w_low": [
+   "bool"
+  ],
+  "bullish_engulfing": [
+   "bool"
+  ],
+  "bullish_pin_bar": [
+   "bool"
+  ],
+  "buy_count": [
+   "int01",
+   "num"
+  ],
+  "cam_r1": [
+   "num"
+  ],
+  "cam_r2": [
+   "num"
+  ],
+  "cam_r3": [
+   "num"
+  ],
+  "cam_r4": [
+   "num"
+  ],
+  "cam_s1": [
+   "num"
+  ],
+  "cam_s2": [
+   "num"
+  ],
+  "cam_s3": [
+   "num"
+  ],
+  "cam_s4": [
+   "num"
+  ],
+  "cap_band": [
+   "str"
+  ],
+  "capitulation_lookback_window": [
+   "num"
+  ],
+  "capitulation_recent_3d": [
+   "bool"
+  ],
+  "ceo_buy": [
+   "bool"
+  ],
+  "cfo_buy": [
+   "bool"
+  ],
+  "chandelier_long_bullish": [
+   "bool"
+  ],
+  "chandelier_long_flip_dn": [
+   "bool"
+  ],
+  "chandelier_long_value": [
+   "num"
+  ],
+  "chandelier_short_bearish": [
+   "bool"
+  ],
+  "chandelier_short_flip_up": [
+   "bool"
+  ],
+  "chandelier_short_value": [
+   "num"
+  ],
+  "classification_change_from_tech": [
+   "bool"
+  ],
+  "classification_change_to_defensive": [
+   "bool"
+  ],
+  "classification_change_to_tech": [
+   "bool"
+  ],
+  "classification_changed_recent": [
+   "bool"
+  ],
+  "close_above_open": [
+   "bool"
+  ],
+  "close_below_open": [
+   "bool"
+  ],
+  "close_in_bottom_40pct_of_range": [
+   "bool"
+  ],
+  "close_in_top_40pct_of_range": [
+   "bool"
+  ],
+  "cluster_buy": [
+   "bool"
+  ],
+  "cmf": [
+   "int01",
+   "num"
+  ],
+  "cmf_cross_dn": [
+   "bool"
+  ],
+  "cmf_cross_up": [
+   "bool"
+  ],
+  "cmf_negative": [
+   "bool"
+  ],
+  "cmf_positive": [
+   "bool"
+  ],
+  "cnn_fg_days_since_publish": [
+   "int01",
+   "num"
+  ],
+  "committed_growth_holders": [
+   "int01",
+   "num"
+  ],
+  "concentrated_sell": [
+   "bool"
+  ],
+  "corp_donations_1y": [
+   "int01",
+   "num"
+  ],
+  "corp_donations_count_1y": [
+   "int01",
+   "num"
+  ],
+  "corp_donations_unique_pacs": [
+   "int01",
+   "num"
+  ],
+  "cot_copper_commercials_net_pct": [
+   "num"
+  ],
+  "cot_copper_commercials_pctile_3y": [
+   "int01",
+   "num"
+  ],
+  "cot_copper_mmoney_pctile_3y": [
+   "int01",
+   "num"
+  ],
+  "cot_dow_commercials_net_pct": [
+   "num"
+  ],
+  "cot_dow_commercials_pctile_3y": [
+   "num"
+  ],
+  "cot_dow_mmoney_pctile_3y": [
+   "int01",
+   "num"
+  ],
+  "cot_dxy_commercials_net_pct": [
+   "num"
+  ],
+  "cot_dxy_commercials_pctile_3y": [
+   "int01",
+   "num"
+  ],
+  "cot_dxy_mmoney_pctile_3y": [
+   "int01",
+   "num"
+  ],
+  "cot_gold_commercials_net_pct": [
+   "int01",
+   "num"
+  ],
+  "cot_gold_commercials_pctile_3y": [
+   "int01",
+   "num"
+  ],
+  "cot_gold_mmoney_pctile_3y": [
+   "int01",
+   "num"
+  ],
+  "cot_ndx_commercials_net_pct": [
+   "int01",
+   "num"
+  ],
+  "cot_ndx_commercials_pctile_3y": [
+   "int01",
+   "num"
+  ],
+  "cot_ndx_mmoney_pctile_3y": [
+   "num"
+  ],
+  "cot_rut_commercials_net_pct": [
+   "int01",
+   "num"
+  ],
+  "cot_rut_commercials_pctile_3y": [
+   "int01",
+   "num"
+  ],
+  "cot_rut_mmoney_pctile_3y": [
+   "int01",
+   "num"
+  ],
+  "cot_sp500_commercials_net_pct": [
+   "int01",
+   "num"
+  ],
+  "cot_sp500_commercials_pctile_3y": [
+   "int01",
+   "num"
+  ],
+  "cot_sp500_mmoney_pctile_3y": [
+   "int01",
+   "num"
+  ],
+  "cpr_bottom": [
+   "num"
+  ],
+  "cpr_narrow": [
+   "bool"
+  ],
+  "cpr_narrow_tight": [
+   "bool"
+  ],
+  "cpr_top": [
+   "num"
+  ],
+  "cpr_width": [
+   "int01",
+   "num"
+  ],
+  "cup_handle_breakout_level": [
+   "num"
+  ],
+  "cup_handle_depth_pct": [
+   "num"
+  ],
+  "cup_handle_detected": [
+   "bool"
+  ],
+  "cup_handle_neckline_break_retest_long": [
+   "bool"
+  ],
+  "cup_handle_rim": [
+   "num"
+  ],
+  "days_since_classification_change": [
+   "num"
+  ],
+  "days_since_deletion": [
+   "num"
+  ],
+  "days_since_inclusion": [
+   "num"
+  ],
+  "days_since_last_earnings": [
+   "int01",
+   "num"
+  ],
+  "days_to_cover": [
+   "num"
+  ],
+  "days_to_next_holiday": [
+   "int01",
+   "none",
+   "num"
+  ],
+  "days_to_rebalance": [
+   "num"
+  ],
+  "days_until_fomc": [
+   "int01",
+   "num"
+  ],
+  "dc10_breakout_dn": [
+   "bool"
+  ],
+  "dc10_breakout_dn_1pct": [
+   "bool"
+  ],
+  "dc10_breakout_up": [
+   "bool"
+  ],
+  "dc10_breakout_up_1pct": [
+   "bool"
+  ],
+  "dc10_lower": [
+   "num"
+  ],
+  "dc10_mid": [
+   "num"
+  ],
+  "dc10_new_high": [
+   "bool"
+  ],
+  "dc10_strong_breakout_dn": [
+   "bool"
+  ],
+  "dc10_strong_breakout_up": [
+   "bool"
+  ],
+  "dc10_upper": [
+   "num"
+  ],
+  "dc20_breakout_dn": [
+   "bool"
+  ],
+  "dc20_breakout_up": [
+   "bool"
+  ],
+  "dc20_lower": [
+   "num"
+  ],
+  "dc20_mid": [
+   "num"
+  ],
+  "dc20_new_high": [
+   "bool"
+  ],
+  "dc20_resistance_break_retest_strong": [
+   "bool"
+  ],
+  "dc20_support_break_retest_strong": [
+   "bool"
+  ],
+  "dc20_upper": [
+   "num"
+  ],
+  "defensive_leadership": [
+   "bool"
+  ],
+  "dema": [
+   "num"
+  ],
+  "director_only_buy": [
+   "bool"
+  ],
+  "doji": [
+   "bool"
+  ],
+  "double_bottom_detected": [
+   "bool"
+  ],
+  "double_bottom_neckline": [
+   "num"
+  ],
+  "double_bottom_trough": [
+   "num"
+  ],
+  "double_top_detected": [
+   "bool"
+  ],
+  "double_top_neckline": [
+   "num"
+  ],
+  "double_top_peak": [
+   "num"
+  ],
+  "dow": [
+   "int01",
+   "num"
+  ],
+  "dpi_30d_avg": [
+   "num"
+  ],
+  "dpi_elevated": [
+   "bool"
+  ],
+  "dpi_recent": [
+   "num"
+  ],
+  "drying_volume_on_down_turn": [
+   "bool"
+  ],
+  "drying_volume_on_up_turn": [
+   "bool"
+  ],
+  "dxy_20d_pct_change": [
+   "int01",
+   "num"
+  ],
+  "dxy_proxy_close": [
+   "num"
+  ],
+  "earnings_announcement_return": [
+   "num"
+  ],
+  "earnings_eps_yoy_growth": [
+   "int01",
+   "num"
+  ],
+  "ema_20_50_bearish": [
+   "bool"
+  ],
+  "ema_20_50_bullish": [
+   "bool"
+  ],
+  "ema_20_50_death_cross": [
+   "bool"
+  ],
+  "ema_20_50_golden_cross": [
+   "bool"
+  ],
+  "ema_50_200_bearish": [
+   "bool"
+  ],
+  "ema_50_200_bullish": [
+   "bool"
+  ],
+  "ema_50_200_death_cross": [
+   "bool"
+  ],
+  "ema_50_200_golden_cross": [
+   "bool"
+  ],
+  "ema_9_21_bearish": [
+   "bool"
+  ],
+  "ema_9_21_bullish": [
+   "bool"
+  ],
+  "ema_9_21_death_cross": [
+   "bool"
+  ],
+  "ema_9_21_golden_cross": [
+   "bool"
+  ],
+  "entry_stop_long": [
+   "num"
+  ],
+  "entry_stop_short": [
+   "num"
+  ],
+  "evening_star": [
+   "bool"
+  ],
+  "fib_236": [
+   "num"
+  ],
+  "fib_382": [
+   "num"
+  ],
+  "fib_500": [
+   "num"
+  ],
+  "fib_618": [
+   "num"
+  ],
+  "fib_786": [
+   "num"
+  ],
+  "fib_ext_127": [
+   "num"
+  ],
+  "fib_ext_162": [
+   "num"
+  ],
+  "flag_bear_break_retest_short": [
+   "bool"
+  ],
+  "flag_bear_breakdown_level": [
+   "num"
+  ],
+  "flag_bear_broke": [
+   "bool"
+  ],
+  "flag_bear_detected": [
+   "bool"
+  ],
+  "flag_bear_pole_move_pct": [
+   "num"
+  ],
+  "flag_bull_break_retest_long": [
+   "bool"
+  ],
+  "flag_bull_breakout_level": [
+   "num"
+  ],
+  "flag_bull_broke": [
+   "bool"
+  ],
+  "flag_bull_detected": [
+   "bool"
+  ],
+  "flag_bull_pole_move_pct": [
+   "num"
+  ],
+  "force_index_cross_dn": [
+   "bool"
+  ],
+  "force_index_cross_up": [
+   "bool"
+  ],
+  "force_index_positive": [
+   "bool"
+  ],
+  "gap_dn_1_5pct": [
+   "bool"
+  ],
+  "gap_dn_2pct": [
+   "bool"
+  ],
+  "gap_dn_pct": [
+   "int01",
+   "num"
+  ],
+  "gap_up_1_5pct": [
+   "bool"
+  ],
+  "gap_up_2pct": [
+   "bool"
+  ],
+  "gap_up_pct": [
+   "int01",
+   "num"
+  ],
+  "gold_silver_20d_pct_change": [
+   "num"
+  ],
+  "gold_silver_ratio": [
+   "num"
+  ],
+  "gov_contracts_4q_sum": [
+   "num"
+  ],
+  "gov_contracts_last_qtr_amount": [
+   "num"
+  ],
+  "gov_contracts_qoq_growth": [
+   "int01",
+   "num"
+  ],
+  "hammer": [
+   "bool"
+  ],
+  "head_shoulders_bottom_detected": [
+   "bool"
+  ],
+  "head_shoulders_bottom_neckline": [
+   "num"
+  ],
+  "head_shoulders_magnitude_pct": [
+   "num"
+  ],
+  "head_shoulders_top_detected": [
+   "bool"
+  ],
+  "head_shoulders_top_neckline": [
+   "num"
+  ],
+  "house_buy_count_90d": [
+   "int01",
+   "num"
+  ],
+  "house_cluster_buy": [
+   "bool"
+  ],
+  "house_cluster_sell": [
+   "bool"
+  ],
+  "house_net_buy_90d": [
+   "int01",
+   "num"
+  ],
+  "house_sell_count_90d": [
+   "int01",
+   "num"
+  ],
+  "htf_aligned_bear": [
+   "bool"
+  ],
+  "htf_aligned_bull": [
+   "bool"
+  ],
+  "htf_disagreement": [
+   "bool"
+  ],
+  "hull_bearish": [
+   "bool"
+  ],
+  "hull_bullish": [
+   "bool"
+  ],
+  "hull_flip_dn": [
+   "bool"
+  ],
+  "hull_flip_up": [
+   "bool"
+  ],
+  "hull_ma": [
+   "num"
+  ],
+  "ichi_above_cloud": [
+   "bool"
+  ],
+  "ichi_above_cloud_break_recent_5d": [
+   "bool"
+  ],
+  "ichi_below_cloud": [
+   "bool"
+  ],
+  "ichi_below_cloud_break_recent_5d": [
+   "bool"
+  ],
+  "ichi_cloud_thick": [
+   "bool"
+  ],
+  "ichi_kijun": [
+   "num"
+  ],
+  "ichi_senkou_a": [
+   "num"
+  ],
+  "ichi_senkou_b": [
+   "num"
+  ],
+  "ichi_tenkan": [
+   "num"
+  ],
+  "ichi_tk_bearish": [
+   "bool"
+  ],
+  "ichi_tk_bullish": [
+   "bool"
+  ],
+  "ichi_tk_cross_dn": [
+   "bool"
+  ],
+  "ichi_tk_cross_up": [
+   "bool"
+  ],
+  "ichi_weekly_above_cloud": [
+   "bool"
+  ],
+  "ichi_weekly_below_cloud": [
+   "bool"
+  ],
+  "ichi_weekly_in_cloud": [
+   "bool"
+  ],
+  "in_reversal_window": [
+   "bool"
+  ],
+  "inside_bar": [
+   "bool"
+  ],
+  "inside_cpr": [
+   "bool"
+  ],
+  "inside_kc": [
+   "bool"
+  ],
+  "insider_cluster_active": [
+   "bool"
+  ],
+  "insider_director_buyers_30d": [
+   "int01",
+   "num"
+  ],
+  "insider_officer_buyers_30d": [
+   "int01",
+   "num"
+  ],
+  "insider_total_shares_bought_30d": [
+   "int01",
+   "num"
+  ],
+  "insider_unique_buyers_30d": [
+   "int01",
+   "num"
+  ],
+  "institutional_buy": [
+   "bool"
+  ],
+  "institutional_increased": [
+   "int01",
+   "num"
+  ],
+  "institutional_negative": [
+   "bool"
+  ],
+  "institutional_new_positions": [
+   "int01",
+   "num"
+  ],
+  "institutional_persistence_growing": [
+   "bool"
+  ],
+  "institutional_persistence_strong": [
+   "bool"
+  ],
+  "institutional_signal": [
+   "str"
+  ],
+  "institutional_strong_buy": [
+   "bool"
+  ],
+  "inverted_cup_handle_breakdown_level": [
+   "num"
+  ],
+  "inverted_cup_handle_detected": [
+   "bool"
+  ],
+  "inverted_cup_handle_height_pct": [
+   "num"
+  ],
+  "inverted_cup_handle_rim_low": [
+   "num"
+  ],
+  "is_friday": [
+   "bool"
+  ],
+  "is_halloween_period": [
+   "bool"
+  ],
+  "is_halloween_period_first_day": [
+   "bool"
+  ],
+  "is_january": [
+   "bool"
+  ],
+  "is_january_extended": [
+   "bool"
+  ],
+  "is_monday": [
+   "bool"
+  ],
+  "is_pre_holiday": [
+   "bool"
+  ],
+  "is_summer_period": [
+   "bool"
+  ],
+  "is_totm_window": [
+   "bool"
+  ],
+  "is_totm_window_first_day": [
+   "bool"
+  ],
+  "is_week_open": [
+   "bool"
+  ],
+  "kc_lower": [
+   "num"
+  ],
+  "kc_mid": [
+   "num"
+  ],
+  "kc_touch_lower": [
+   "bool"
+  ],
+  "kc_touch_upper": [
+   "bool"
+  ],
+  "kc_upper": [
+   "num"
+  ],
+  "large_dollar_buy": [
+   "bool"
+  ],
+  "last_event_type": [
+   "str"
+  ],
+  "lobbying_amount_1y": [
+   "int01",
+   "num"
+  ],
+  "lobbying_amount_q": [
+   "int01",
+   "num"
+  ],
+  "lobbying_amount_yoy": [
+   "int01",
+   "num"
+  ],
+  "macd_12_26_9_bearish": [
+   "bool"
+  ],
+  "macd_12_26_9_bullish": [
+   "bool"
+  ],
+  "macd_12_26_9_crossover_dn": [
+   "bool"
+  ],
+  "macd_12_26_9_crossover_up": [
+   "bool"
+  ],
+  "macd_12_26_9_hist": [
+   "num"
+  ],
+  "macd_12_26_9_line": [
+   "num"
+  ],
+  "macd_12_26_9_signal": [
+   "num"
+  ],
+  "macd_8_21_5_bearish": [
+   "bool"
+  ],
+  "macd_8_21_5_bullish": [
+   "bool"
+  ],
+  "macd_8_21_5_crossover_dn": [
+   "bool"
+  ],
+  "macd_8_21_5_crossover_up": [
+   "bool"
+  ],
+  "macd_8_21_5_hist": [
+   "num"
+  ],
+  "macd_8_21_5_line": [
+   "num"
+  ],
+  "macd_8_21_5_signal": [
+   "num"
+  ],
+  "marubozu_bear": [
+   "bool"
+  ],
+  "marubozu_bull": [
+   "bool"
+  ],
+  "mfi": [
+   "int01",
+   "num"
+  ],
+  "mfi_broad_overbought": [
+   "bool"
+  ],
+  "mfi_broad_oversold": [
+   "bool"
+  ],
+  "mfi_overbought": [
+   "bool"
+  ],
+  "mfi_oversold": [
+   "bool"
+  ],
+  "monthly_above_sma_12": [
+   "bool"
+  ],
+  "monthly_above_sma_6": [
+   "bool"
+  ],
+  "monthly_bias_bear": [
+   "bool"
+  ],
+  "monthly_bias_bull": [
+   "bool"
+  ],
+  "monthly_close": [
+   "num"
+  ],
+  "monthly_momentum_6m": [
+   "int01",
+   "num"
+  ],
+  "monthly_momentum_pos": [
+   "bool"
+  ],
+  "monthly_sma_12": [
+   "num"
+  ],
+  "monthly_sma_6": [
+   "num"
+  ],
+  "morning_star": [
+   "bool"
+  ],
+  "naked_poc_count": [
+   "num"
+  ],
+  "naked_poc_nearest_distance_pct": [
+   "num"
+  ],
+  "near_52w_high": [
+   "bool"
+  ],
+  "near_52w_high_95pct": [
+   "bool"
+  ],
+  "near_52w_high_retest_long": [
+   "bool"
+  ],
+  "near_52w_low": [
+   "bool"
+  ],
+  "near_52w_low_105pct": [
+   "bool"
+  ],
+  "near_52w_low_retest_short": [
+   "bool"
+  ],
+  "near_avwap_20high_atr_05x": [
+   "bool"
+  ],
+  "near_avwap_20high_atr_10x": [
+   "bool"
+  ],
+  "near_avwap_20high_atr_15x": [
+   "bool"
+  ],
+  "near_avwap_20high_atr_20x": [
+   "bool"
+  ],
+  "near_avwap_20low_atr_05x": [
+   "bool"
+  ],
+  "near_avwap_20low_atr_10x": [
+   "bool"
+  ],
+  "near_avwap_20low_atr_15x": [
+   "bool"
+  ],
+  "near_avwap_20low_atr_20x": [
+   "bool"
+  ],
+  "near_avwap_252low_atr_05x": [
+   "bool"
+  ],
+  "near_avwap_252low_atr_10x": [
+   "bool"
+  ],
+  "near_avwap_252low_atr_15x": [
+   "bool"
+  ],
+  "near_avwap_252low_atr_20x": [
+   "bool"
+  ],
+  "near_avwap_50low_atr_05x": [
+   "bool"
+  ],
+  "near_avwap_50low_atr_10x": [
+   "bool"
+  ],
+  "near_avwap_50low_atr_15x": [
+   "bool"
+  ],
+  "near_avwap_50low_atr_20x": [
+   "bool"
+  ],
+  "near_cam_r3": [
+   "bool"
+  ],
+  "near_cam_s3": [
+   "bool"
+  ],
+  "near_cam_s4": [
+   "bool"
+  ],
+  "near_fib_236": [
+   "bool"
+  ],
+  "near_fib_382": [
+   "bool"
+  ],
+  "near_fib_500": [
+   "bool"
+  ],
+  "near_fib_618": [
+   "bool"
+  ],
+  "near_fib_786": [
+   "bool"
+  ],
+  "near_pivot": [
+   "bool"
+  ],
+  "near_prev_close": [
+   "bool"
+  ],
+  "near_prev_high": [
+   "bool"
+  ],
+  "near_prev_low": [
+   "bool"
+  ],
+  "near_r1": [
+   "bool"
+  ],
+  "near_r1_wide": [
+   "bool"
+  ],
+  "near_r2": [
+   "bool"
+  ],
+  "near_r2_wide": [
+   "bool"
+  ],
+  "near_s1": [
+   "bool"
+  ],
+  "near_s1_wide": [
+   "bool"
+  ],
+  "near_s2": [
+   "bool"
+  ],
+  "near_s2_wide": [
+   "bool"
+  ],
+  "near_s3": [
+   "bool"
+  ],
+  "near_wood_r1": [
+   "bool"
+  ],
+  "near_wood_s1": [
+   "bool"
+  ],
+  "new_sector": [
+   "str"
+  ],
+  "news_article_count": [
+   "int01",
+   "num"
+  ],
+  "news_bearish_pct": [
+   "int01",
+   "num"
+  ],
+  "news_bullish_pct": [
+   "int01",
+   "num"
+  ],
+  "news_count_5d": [
+   "int01",
+   "num"
+  ],
+  "news_count_7d": [
+   "int01",
+   "num"
+  ],
+  "news_prior_article_count": [
+   "int01",
+   "num"
+  ],
+  "news_sentiment_30d": [
+   "int01",
+   "num"
+  ],
+  "news_sentiment_5d": [
+   "int01",
+   "num"
+  ],
+  "news_sentiment_mean": [
+   "int01",
+   "num"
+  ],
+  "news_sentiment_score": [
+   "int01",
+   "num"
+  ],
+  "news_sentiment_shift": [
+   "int01",
+   "num"
+  ],
+  "news_source": [
+   "str"
+  ],
+  "news_uses_polygon_score": [
+   "bool"
+  ],
+  "news_volume_zscore_5d": [
+   "int01",
+   "num"
+  ],
+  "obv_bearish": [
+   "bool"
+  ],
+  "obv_bullish": [
+   "bool"
+  ],
+  "obv_diverge_bull": [
+   "bool"
+  ],
+  "obv_falling": [
+   "bool"
+  ],
+  "obv_rising": [
+   "bool"
+  ],
+  "otc_short_ratio_recent": [
+   "num"
+  ],
+  "otc_volume_recent": [
+   "num"
+  ],
+  "outside_bar": [
+   "bool"
+  ],
+  "pair_count_active": [
+   "int01",
+   "num"
+  ],
+  "pair_counterparty": [
+   "str"
+  ],
+  "pair_half_life": [
+   "num"
+  ],
+  "pair_max_abs_zscore": [
+   "num"
+  ],
+  "pair_zscore_signed": [
+   "num"
+  ],
+  "patent_momentum_90d_avg": [
+   "int01"
+  ],
+  "patent_momentum_above_avg": [
+   "bool"
+  ],
+  "patent_momentum_recent": [
+   "int01"
+  ],
+  "pct_change_10d": [
+   "int01",
+   "num"
+  ],
+  "pct_change_20d": [
+   "int01",
+   "num"
+  ],
+  "pct_change_5d": [
+   "int01",
+   "num"
+  ],
+  "pct_from_avwap_20high": [
+   "int01",
+   "num"
+  ],
+  "pct_from_avwap_20low": [
+   "int01",
+   "num"
+  ],
+  "pct_from_avwap_252low": [
+   "num"
+  ],
+  "pct_from_avwap_50low": [
+   "num"
+  ],
+  "pct_from_vwap": [
+   "num"
+  ],
+  "pead_negative_surprise": [
+   "bool"
+  ],
+  "pead_positive_surprise": [
+   "bool"
+  ],
+  "persistent_holders_4q": [
+   "int01",
+   "num"
+  ],
+  "persistent_holders_8q": [
+   "int01",
+   "num"
+  ],
+  "pin_bar": [
+   "bool"
+  ],
+  "pivot": [
+   "num"
+  ],
+  "po3_accum_range_pct": [
+   "num"
+  ],
+  "po3_accumulation_active": [
+   "bool"
+  ],
+  "po3_bearish": [
+   "bool"
+  ],
+  "po3_bullish": [
+   "bool"
+  ],
+  "po3_close_position": [
+   "int01",
+   "num"
+  ],
+  "po3_manipulation_sweep_down": [
+   "bool"
+  ],
+  "po3_manipulation_sweep_up": [
+   "bool"
+  ],
+  "po3_mmbm_setup": [
+   "bool"
+  ],
+  "po3_mmsm_setup": [
+   "bool"
+  ],
+  "po3_sweep_above_prior_high": [
+   "bool"
+  ],
+  "po3_sweep_below_prior_low": [
+   "bool"
+  ],
+  "ppo": [
+   "num"
+  ],
+  "ppo_bullish": [
+   "bool"
+  ],
+  "ppo_crossover_dn": [
+   "bool"
+  ],
+  "ppo_crossover_up": [
+   "bool"
+  ],
+  "ppo_hist": [
+   "int01",
+   "num"
+  ],
+  "ppo_signal": [
+   "num"
+  ],
+  "pre_fomc_d0": [
+   "bool"
+  ],
+  "pre_fomc_d1": [
+   "bool"
+  ],
+  "pre_fomc_window": [
+   "bool"
+  ],
+  "prev_close": [
+   "num"
+  ],
+  "prev_high": [
+   "num"
+  ],
+  "prev_low": [
+   "num"
+  ],
+  "price_above_dema": [
+   "bool"
+  ],
+  "price_above_ema_20": [
+   "bool"
+  ],
+  "price_above_ema_200": [
+   "bool"
+  ],
+  "price_above_ema_200_break_recent_5d": [
+   "bool"
+  ],
+  "price_above_ema_20_break_recent_5d": [
+   "bool"
+  ],
+  "price_above_ema_21": [
+   "bool"
+  ],
+  "price_above_ema_21_break_recent_5d": [
+   "bool"
+  ],
+  "price_above_ema_50": [
+   "bool"
+  ],
+  "price_above_ema_50_break_recent_5d": [
+   "bool"
+  ],
+  "price_above_ema_9": [
+   "bool"
+  ],
+  "price_above_ema_9_break_recent_5d": [
+   "bool"
+  ],
+  "price_above_hull": [
+   "bool"
+  ],
+  "price_above_sma_200": [
+   "bool"
+  ],
+  "price_above_sma_21": [
+   "bool"
+  ],
+  "price_above_sma_50": [
+   "bool"
+  ],
+  "price_above_tema": [
+   "bool"
+  ],
+  "price_below_dema": [
+   "bool"
+  ],
+  "price_below_hull": [
+   "bool"
+  ],
+  "price_below_tema": [
+   "bool"
+  ],
+  "prior_sector": [
+   "str"
+  ],
+  "psar_bullish": [
+   "bool"
+  ],
+  "psar_flip_dn": [
+   "bool"
+  ],
+  "psar_flip_up": [
+   "bool"
+  ],
+  "psar_value": [
+   "num"
+  ],
+  "r1": [
+   "num"
+  ],
+  "r1_break_retest_long": [
+   "bool"
+  ],
+  "r2": [
+   "num"
+  ],
+  "r3": [
+   "num"
+  ],
+  "recent_blowoff_at_r3": [
+   "bool"
+  ],
+  "recent_capitulation_at_s3": [
+   "bool"
+  ],
+  "resistance_break_retest": [
+   "bool"
+  ],
+  "risk_off_regime_bond_signal": [
+   "bool"
+  ],
+  "risk_off_regime_bond_signal_strong": [
+   "bool"
+  ],
+  "risk_off_regime_gold_signal": [
+   "bool"
+  ],
+  "risk_on_regime_bond_signal": [
+   "bool"
+  ],
+  "risk_on_regime_bond_signal_strong": [
+   "bool"
+  ],
+  "roc_12": [
+   "int01",
+   "num"
+  ],
+  "roc_positive": [
+   "bool"
+  ],
+  "roc_turning_dn": [
+   "bool"
+  ],
+  "roc_turning_up": [
+   "bool"
+  ],
+  "rsi_14": [
+   "num"
+  ],
+  "rsi_14_bullish": [
+   "bool"
+  ],
+  "rsi_14_cross_dn_extreme_ob_recent_3d": [
+   "bool"
+  ],
+  "rsi_14_cross_dn_overbought_recent_3d": [
+   "bool"
+  ],
+  "rsi_14_cross_up_extreme_os_recent_3d": [
+   "bool"
+  ],
+  "rsi_14_cross_up_oversold_recent_3d": [
+   "bool"
+  ],
+  "rsi_14_extreme_ob": [
+   "bool"
+  ],
+  "rsi_14_extreme_os": [
+   "bool"
+  ],
+  "rsi_14_overbought": [
+   "bool"
+  ],
+  "rsi_14_oversold": [
+   "bool"
+  ],
+  "rsi_14_rising": [
+   "bool"
+  ],
+  "rsi_2": [
+   "int01",
+   "num"
+  ],
+  "rsi_21": [
+   "num"
+  ],
+  "rsi_21_bullish": [
+   "bool"
+  ],
+  "rsi_21_cross_dn_extreme_ob_recent_3d": [
+   "bool"
+  ],
+  "rsi_21_cross_dn_overbought_recent_3d": [
+   "bool"
+  ],
+  "rsi_21_cross_up_extreme_os_recent_3d": [
+   "bool"
+  ],
+  "rsi_21_cross_up_oversold_recent_3d": [
+   "bool"
+  ],
+  "rsi_21_extreme_ob": [
+   "bool"
+  ],
+  "rsi_21_extreme_os": [
+   "bool"
+  ],
+  "rsi_21_overbought": [
+   "bool"
+  ],
+  "rsi_21_oversold": [
+   "bool"
+  ],
+  "rsi_21_rising": [
+   "bool"
+  ],
+  "rsi_2_bullish": [
+   "bool"
+  ],
+  "rsi_2_cross_dn_extreme_ob_recent_3d": [
+   "bool"
+  ],
+  "rsi_2_cross_dn_overbought_recent_3d": [
+   "bool"
+  ],
+  "rsi_2_cross_up_extreme_os_recent_3d": [
+   "bool"
+  ],
+  "rsi_2_cross_up_oversold_recent_3d": [
+   "bool"
+  ],
+  "rsi_2_extreme_ob": [
+   "bool"
+  ],
+  "rsi_2_extreme_os": [
+   "bool"
+  ],
+  "rsi_2_overbought": [
+   "bool"
+  ],
+  "rsi_2_oversold": [
+   "bool"
+  ],
+  "rsi_2_rising": [
+   "bool"
+  ],
+  "rsi_9": [
+   "num"
+  ],
+  "rsi_9_bullish": [
+   "bool"
+  ],
+  "rsi_9_cross_dn_extreme_ob_recent_3d": [
+   "bool"
+  ],
+  "rsi_9_cross_dn_overbought_recent_3d": [
+   "bool"
+  ],
+  "rsi_9_cross_up_extreme_os_recent_3d": [
+   "bool"
+  ],
+  "rsi_9_cross_up_oversold_recent_3d": [
+   "bool"
+  ],
+  "rsi_9_extreme_ob": [
+   "bool"
+  ],
+  "rsi_9_extreme_os": [
+   "bool"
+  ],
+  "rsi_9_overbought": [
+   "bool"
+  ],
+  "rsi_9_oversold": [
+   "bool"
+  ],
+  "rsi_9_rising": [
+   "bool"
+  ],
+  "s1": [
+   "num"
+  ],
+  "s1_break_retest_short": [
+   "bool"
+  ],
+  "s2": [
+   "num"
+  ],
+  "s3": [
+   "num"
+  ],
+  "sc_13d_filed_within_30d": [
+   "bool"
+  ],
+  "sc_13d_latest_filer_identity": [
+   "str"
+  ],
+  "sc_13g_filed_within_30d": [
+   "bool"
+  ],
+  "sc_13g_latest_filer_identity": [
+   "str"
+  ],
+  "sc_13g_latest_percent_owned": [
+   "int01",
+   "num"
+  ],
+  "search_volume_index_recent": [
+   "int01",
+   "num"
+  ],
+  "search_volume_observations": [
+   "num"
+  ],
+  "search_volume_zscore_30d": [
+   "int01",
+   "num"
+  ],
+  "sector": [
+   "str"
+  ],
+  "sector_etf": [
+   "str"
+  ],
+  "sector_etf_return_20d": [
+   "int01",
+   "num"
+  ],
+  "sector_etf_return_pct": [
+   "int01",
+   "num"
+  ],
+  "sector_etf_ticker": [
+   "str"
+  ],
+  "sector_outperforming_spy": [
+   "bool"
+  ],
+  "sector_rs_map": [
+   "dict"
+  ],
+  "sector_strongest": [
+   "str"
+  ],
+  "sector_strongest_rs": [
+   "num"
+  ],
+  "sector_underperforming_spy": [
+   "bool"
+  ],
+  "sector_weakest": [
+   "str"
+  ],
+  "sector_weakest_rs": [
+   "num"
+  ],
+  "sell_count": [
+   "int01",
+   "num"
+  ],
+  "shooting_star": [
+   "bool"
+  ],
+  "short_interest_observations": [
+   "num"
+  ],
+  "short_interest_pct": [
+   "num"
+  ],
+  "short_interest_settlement_date": [
+   "str"
+  ],
+  "short_interest_shares_outstanding_source": [
+   "str"
+  ],
+  "signal": [
+   "str"
+  ],
+  "sma_20_50_bullish": [
+   "bool"
+  ],
+  "sma_20_50_golden_cross": [
+   "bool"
+  ],
+  "sma_50_200_bullish": [
+   "bool"
+  ],
+  "sma_50_200_golden_cross": [
+   "bool"
+  ],
+  "sma_9_21_bullish": [
+   "bool"
+  ],
+  "sma_9_21_golden_cross": [
+   "bool"
+  ],
+  "smc_bos_bearish": [
+   "bool"
+  ],
+  "smc_bos_bullish": [
+   "bool"
+  ],
+  "smc_bos_retest_long": [
+   "bool"
+  ],
+  "smc_bos_retest_short": [
+   "bool"
+  ],
+  "smc_breaker_block_bearish": [
+   "bool"
+  ],
+  "smc_breaker_block_bullish": [
+   "bool"
+  ],
+  "smc_choch_bearish": [
+   "bool"
+  ],
+  "smc_choch_bullish": [
+   "bool"
+  ],
+  "smc_dealing_range_pct": [
+   "num"
+  ],
+  "smc_equal_highs_swept": [
+   "bool"
+  ],
+  "smc_equal_lows_swept": [
+   "bool"
+  ],
+  "smc_fvg_bearish_active": [
+   "bool"
+  ],
+  "smc_fvg_bullish_active": [
+   "bool"
+  ],
+  "smc_fvg_retest_long_zone": [
+   "bool"
+  ],
+  "smc_fvg_retest_short_zone": [
+   "bool"
+  ],
+  "smc_in_discount_zone": [
+   "bool"
+  ],
+  "smc_in_premium_zone": [
+   "bool"
+  ],
+  "smc_inverse_fvg_bearish": [
+   "bool"
+  ],
+  "smc_inverse_fvg_bullish": [
+   "bool"
+  ],
+  "smc_liquidity_swept_dn": [
+   "bool"
+  ],
+  "smc_liquidity_swept_up": [
+   "bool"
+  ],
+  "smc_mitigation_block_long": [
+   "bool"
+  ],
+  "smc_mitigation_block_short": [
+   "bool"
+  ],
+  "smc_ob_bearish_active": [
+   "bool"
+  ],
+  "smc_ob_bullish_active": [
+   "bool"
+  ],
+  "smc_ote_long_zone": [
+   "bool"
+  ],
+  "smc_ote_short_zone": [
+   "bool"
+  ],
+  "smc_retracement_pct": [
+   "int01",
+   "num"
+  ],
+  "spy_return_20d": [
+   "num"
+  ],
+  "squeeze_fire_dn": [
+   "bool"
+  ],
+  "squeeze_fire_up": [
+   "bool"
+  ],
+  "squeeze_in": [
+   "bool"
+  ],
+  "squeeze_momentum": [
+   "int01",
+   "num"
+  ],
+  "squeeze_positive": [
+   "bool"
+  ],
+  "stoch_bearish_cross": [
+   "bool"
+  ],
+  "stoch_broad_overbought": [
+   "bool"
+  ],
+  "stoch_broad_oversold": [
+   "bool"
+  ],
+  "stoch_bullish_cross": [
+   "bool"
+  ],
+  "stoch_d": [
+   "num"
+  ],
+  "stoch_k": [
+   "num"
+  ],
+  "stoch_overbought": [
+   "bool"
+  ],
+  "stoch_oversold": [
+   "bool"
+  ],
+  "stochrsi_cross_dn": [
+   "bool"
+  ],
+  "stochrsi_cross_up": [
+   "bool"
+  ],
+  "stochrsi_d": [
+   "int01",
+   "num"
+  ],
+  "stochrsi_k": [
+   "int01",
+   "num"
+  ],
+  "stochrsi_overbought": [
+   "bool"
+  ],
+  "stochrsi_oversold": [
+   "bool"
+  ],
+  "supertrend_bearish": [
+   "bool"
+  ],
+  "supertrend_bullish": [
+   "bool"
+  ],
+  "supertrend_flip_dn": [
+   "bool"
+  ],
+  "supertrend_flip_recent_long_5d": [
+   "bool"
+  ],
+  "supertrend_flip_recent_short_5d": [
+   "bool"
+  ],
+  "supertrend_flip_up": [
+   "bool"
+  ],
+  "supertrend_lookback_window": [
+   "num"
+  ],
+  "supertrend_value": [
+   "num"
+  ],
+  "support_break_retest": [
+   "bool"
+  ],
+  "swing_high": [
+   "num"
+  ],
+  "swing_low": [
+   "num"
+  ],
+  "tema": [
+   "num"
+  ],
+  "tema_above_dema": [
+   "bool"
+  ],
+  "tema_cross_dn": [
+   "bool"
+  ],
+  "tema_cross_up": [
+   "bool"
+  ],
+  "three_black_crows": [
+   "bool"
+  ],
+  "three_white_soldiers": [
+   "bool"
+  ],
+  "total_active_holders": [
+   "int01",
+   "num"
+  ],
+  "trading_day_of_month": [
+   "int01",
+   "num"
+  ],
+  "trading_days_left_in_month": [
+   "int01",
+   "num"
+  ],
+  "triangle_apex_break_retest_long": [
+   "bool"
+  ],
+  "triangle_ascending_detected": [
+   "bool"
+  ],
+  "triangle_breakdown_pct": [
+   "num"
+  ],
+  "triangle_breakout_pct": [
+   "num"
+  ],
+  "triangle_descending_detected": [
+   "bool"
+  ],
+  "triangle_resistance_level": [
+   "num"
+  ],
+  "triangle_support_level": [
+   "num"
+  ],
+  "triangle_symmetric_detected": [
+   "bool"
+  ],
+  "uo": [
+   "num"
+  ],
+  "uo_overbought": [
+   "bool"
+  ],
+  "uo_oversold": [
+   "bool"
+  ],
+  "usd_strengthening": [
+   "bool"
+  ],
+  "usd_weakening": [
+   "bool"
+  ],
+  "vix_band": [
+   "str"
+  ],
+  "vix_band_high": [
+   "bool"
+  ],
+  "vix_band_low": [
+   "bool"
+  ],
+  "vix_band_mid": [
+   "bool"
+  ],
+  "vix_percentile": [
+   "int01",
+   "num"
+  ],
+  "vix_term_backwardation": [
+   "bool"
+  ],
+  "vix_term_contango": [
+   "bool"
+  ],
+  "vix_today": [
+   "num"
+  ],
+  "vix_value": [
+   "num"
+  ],
+  "vix_vix3m_ratio": [
+   "num"
+  ],
+  "vol_above_avg": [
+   "bool"
+  ],
+  "vol_below_avg": [
+   "bool"
+  ],
+  "vol_ratio_20d": [
+   "int01",
+   "num"
+  ],
+  "vol_spike_12x": [
+   "bool"
+  ],
+  "vol_spike_15x": [
+   "bool"
+  ],
+  "vol_spike_17x": [
+   "bool"
+  ],
+  "vol_spike_2x": [
+   "bool"
+  ],
+  "vol_spike_2x_on_down_day_recent_3d": [
+   "bool"
+  ],
+  "vol_spike_2x_on_up_day_recent_3d": [
+   "bool"
+  ],
+  "vol_spike_3x": [
+   "bool"
+  ],
+  "vp_above_value_area": [
+   "bool"
+  ],
+  "vp_below_value_area": [
+   "bool"
+  ],
+  "vp_close_above_poc": [
+   "bool"
+  ],
+  "vp_close_below_poc": [
+   "bool"
+  ],
+  "vp_close_near_poc_pct": [
+   "int01",
+   "num"
+  ],
+  "vp_in_value_area": [
+   "bool"
+  ],
+  "vp_poc": [
+   "num"
+  ],
+  "vp_value_area_high": [
+   "num"
+  ],
+  "vp_value_area_low": [
+   "num"
+  ],
+  "vwap": [
+   "num"
+  ],
+  "vwap_lower_1": [
+   "num"
+  ],
+  "vwap_lower_2": [
+   "num"
+  ],
+  "vwap_upper_1": [
+   "num"
+  ],
+  "vwap_upper_2": [
+   "num"
+  ],
+  "week_open_gap_down_15pct": [
+   "bool"
+  ],
+  "week_open_gap_down_pct": [
+   "int01",
+   "num"
+  ],
+  "week_open_gap_up_15pct": [
+   "bool"
+  ],
+  "week_open_gap_up_pct": [
+   "int01",
+   "num"
+  ],
+  "weekly_above_ema_10": [
+   "bool"
+  ],
+  "weekly_above_ema_20": [
+   "bool"
+  ],
+  "weekly_bias_bear": [
+   "bool"
+  ],
+  "weekly_bias_bull": [
+   "bool"
+  ],
+  "weekly_close": [
+   "num"
+  ],
+  "weekly_ema_10": [
+   "num"
+  ],
+  "weekly_ema_20": [
+   "num"
+  ],
+  "weekly_momentum_4w": [
+   "int01",
+   "num"
+  ],
+  "weekly_momentum_pos": [
+   "bool"
+  ],
+  "williams_r": [
+   "int01",
+   "num"
+  ],
+  "williams_r_overbought": [
+   "bool"
+  ],
+  "williams_r_oversold": [
+   "bool"
+  ],
+  "williams_r_rising": [
+   "bool"
+  ],
+  "within_pead_window": [
+   "bool"
+  ],
+  "within_post_deletion_window": [
+   "bool"
+  ],
+  "within_post_inclusion_window": [
+   "bool"
+  ],
+  "within_pre_rebalance_window": [
+   "bool"
+  ],
+  "wood_p": [
+   "num"
+  ],
+  "wood_r1": [
+   "num"
+  ],
+  "wood_r2": [
+   "num"
+  ],
+  "wood_s1": [
+   "num"
+  ],
+  "wood_s2": [
+   "num"
+  ],
+  "xs_avoid_high_ivol": [
+   "bool"
+  ],
+  "xs_avoid_high_max": [
+   "bool"
+  ],
+  "xs_beta": [
+   "num"
+  ],
+  "xs_beta_decile": [
+   "int01",
+   "num"
+  ],
+  "xs_high_beta_decile": [
+   "bool"
+  ],
+  "xs_ivol": [
+   "num"
+  ],
+  "xs_ivol_decile": [
+   "int01",
+   "num"
+  ],
+  "xs_low_beta_bottom_quintile": [
+   "bool"
+  ],
+  "xs_low_beta_decile": [
+   "bool"
+  ],
+  "xs_low_beta_decile_entry_recent_5d": [
+   "bool"
+  ],
+  "xs_low_beta_top_quintile": [
+   "bool"
+  ],
+  "xs_max_anomaly": [
+   "num"
+  ],
+  "xs_max_anomaly_decile": [
+   "int01",
+   "num"
+  ],
+  "xs_momentum_12_1": [
+   "int01",
+   "num"
+  ],
+  "xs_momentum_bottom_decile": [
+   "bool"
+  ],
+  "xs_momentum_bottom_quintile": [
+   "bool"
+  ],
+  "xs_momentum_decile": [
+   "int01",
+   "num"
+  ],
+  "xs_momentum_top_decile": [
+   "bool"
+  ],
+  "xs_momentum_top_quintile": [
+   "bool"
+  ],
+  "xs_quality_bottom_quintile": [
+   "bool"
+  ],
+  "xs_quality_decile": [
+   "int01",
+   "num"
+  ],
+  "xs_quality_gross_profitability": [
+   "num"
+  ],
+  "xs_quality_top_quintile": [
+   "bool"
+  ],
+  "xs_quality_top_tercile": [
+   "bool"
+  ],
+  "year_high": [
+   "num"
+  ],
+  "year_high_break_retest_long": [
+   "bool"
+  ],
+  "year_low": [
+   "num"
+  ],
+  "year_low_break_retest_short": [
+   "bool"
+  ],
+  "yoy_surprise_high": [
+   "bool"
+  ],
+  "yoy_surprise_negative": [
+   "bool"
+  ],
+  "yoy_surprise_threshold_long": [
+   "num"
+  ],
+  "yoy_surprise_threshold_short": [
+   "num"
+  ]
+ }
+}

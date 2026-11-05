@@ -1,0 +1,264 @@
+{
+  "_doc": "runbook 3.6 steps 1-2: consistent-sign BH-FDR survivors under BOTH exits, clustered by the producer module that writes the key (build_table_a module index); representative = max joint effect min(|a|, |b|) (#165). A SCREEN, never a gate - B-row registration happens at the T3 owner band review.",
+  "strategy": "macd_crossover",
+  "direction": "long",
+  "survival_applied": false,
+  "basis": "net",
+  "cube_dir": "output_r5_merged_1_7 (default)",
+  "exit_a": "time_stop_10d",
+  "exit_b": "breakeven_plus_trail",
+  "screens": {
+    "a": "output_audit/b3249_macd_crossover_screen_long_ts10_net.json",
+    "b": "output_audit/b3249_macd_crossover_screen_long_bept_net.json"
+  },
+  "survivors_a": 34,
+  "survivors_b": 85,
+  "n_consistent": 16,
+  "clusters": {
+    "backtest/signals/technical.py": {
+      "representative": "bb_10_20_pctb",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "bb_10_20_pctb",
+        "bb_10_20_pctb_gt_85",
+        "atr_pct"
+      ],
+      "rows": [
+        {
+          "key": "bb_10_20_pctb",
+          "kind": "numeric",
+          "effect_a": -2.3671890138888885,
+          "effect_b": -4.450562680555556,
+          "joint": 2.3671890138888885,
+          "p_a": 2.8140981776949756e-08,
+          "p_b": 0.0004283027382642186,
+          "sign": "-",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "bb_10_20_pctb_gt_85",
+          "kind": "bool",
+          "effect_a": -2.06970298638684,
+          "effect_b": -3.2989566785511713,
+          "joint": 2.06970298638684,
+          "p_a": 9.524544272230532e-05,
+          "p_b": 0.001040205460246644,
+          "sign": "-",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "atr_pct",
+          "kind": "numeric",
+          "effect_a": 1.221442892857143,
+          "effect_b": 10.117783859126984,
+          "joint": 1.221442892857143,
+          "p_a": 0.0011159647351768188,
+          "p_b": 0.00045986711062211133,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        }
+      ]
+    },
+    "backtest/signals/cross_asset.py": {
+      "representative": "gold_silver_20d_pct_change",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "gold_silver_20d_pct_change",
+        "vix_term_backwardation",
+        "vix_term_contango",
+        "risk_off_regime_gold_signal",
+        "bond_equity_20d_pct_change",
+        "gold_silver_ratio"
+      ],
+      "rows": [
+        {
+          "key": "gold_silver_20d_pct_change",
+          "kind": "numeric",
+          "effect_a": 3.1567642252663624,
+          "effect_b": 9.955357643835615,
+          "joint": 3.1567642252663624,
+          "p_a": 1.52544791138147e-08,
+          "p_b": 1.3794015391966268e-11,
+          "sign": "+",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "vix_term_backwardation",
+          "kind": "bool",
+          "effect_a": 2.9794451443390946,
+          "effect_b": 19.34110006729271,
+          "joint": 2.9794451443390946,
+          "p_a": 2.866441644012489e-06,
+          "p_b": 2.5324212945534905e-10,
+          "sign": "+",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "vix_term_contango",
+          "kind": "bool",
+          "effect_a": -2.9794451443390946,
+          "effect_b": -19.34110006729271,
+          "joint": 2.9794451443390946,
+          "p_a": 2.866441644012489e-06,
+          "p_b": 2.5324212945534905e-10,
+          "sign": "-",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "risk_off_regime_gold_signal",
+          "kind": "bool",
+          "effect_a": 1.5495139659466584,
+          "effect_b": 3.750890500289829,
+          "joint": 1.5495139659466584,
+          "p_a": 0.0005397642612938884,
+          "p_b": 0.0007769029377104415,
+          "sign": "+",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "bond_equity_20d_pct_change",
+          "kind": "numeric",
+          "effect_a": 0.8718847919288859,
+          "effect_b": 3.844997657724984,
+          "joint": 0.8718847919288859,
+          "p_a": 0.0011184186514217667,
+          "p_b": 0.003513467068517287,
+          "sign": "+",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "gold_silver_ratio",
+          "kind": "numeric",
+          "effect_a": 0.8629855252525253,
+          "effect_b": 8.929608292929291,
+          "joint": 0.8629855252525253,
+          "p_a": 0.00057433633354354,
+          "p_b": 6.521655330077313e-07,
+          "sign": "+",
+          "module": "backtest/signals/cross_asset.py"
+        }
+      ]
+    },
+    "backtest/signals/short_interest.py": {
+      "representative": "days_to_cover",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "days_to_cover"
+      ],
+      "rows": [
+        {
+          "key": "days_to_cover",
+          "kind": "numeric",
+          "effect_a": -2.3926464285714286,
+          "effect_b": -7.118993303571427,
+          "joint": 2.3926464285714286,
+          "p_a": 0.0005296691846438669,
+          "p_b": 2.020542163561928e-05,
+          "sign": "-",
+          "module": "backtest/signals/short_interest.py"
+        }
+      ]
+    },
+    "backtest/signals/polars_panel.py": {
+      "representative": "rsi_2",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "rsi_2",
+        "rsi_2_extreme_ob",
+        "rsi_2_overbought"
+      ],
+      "rows": [
+        {
+          "key": "rsi_2",
+          "kind": "numeric",
+          "effect_a": -3.0276067757936507,
+          "effect_b": -7.278947057539683,
+          "joint": 3.0276067757936507,
+          "p_a": 4.354376700631407e-08,
+          "p_b": 3.3496037342683695e-07,
+          "sign": "-",
+          "module": "backtest/signals/polars_panel.py"
+        },
+        {
+          "key": "rsi_2_extreme_ob",
+          "kind": "bool",
+          "effect_a": -1.993976173946958,
+          "effect_b": -3.9252810016900677,
+          "joint": 1.993976173946958,
+          "p_a": 6.958848054438044e-06,
+          "p_b": 0.0011249057317877034,
+          "sign": "-",
+          "module": "backtest/signals/polars_panel.py"
+        },
+        {
+          "key": "rsi_2_overbought",
+          "kind": "bool",
+          "effect_a": -1.636472615508748,
+          "effect_b": -4.957545067096993,
+          "joint": 1.636472615508748,
+          "p_a": 0.0018723602670373239,
+          "p_b": 0.004443332785971249,
+          "sign": "-",
+          "module": "backtest/signals/polars_panel.py"
+        }
+      ]
+    },
+    "backtest/signals/calendar_effects.py": {
+      "representative": "trading_day_of_month",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "trading_day_of_month",
+        "trading_days_left_in_month"
+      ],
+      "rows": [
+        {
+          "key": "trading_day_of_month",
+          "kind": "numeric",
+          "effect_a": -2.348581141083791,
+          "effect_b": -3.771536020927827,
+          "joint": 2.348581141083791,
+          "p_a": 0.0007640171550099531,
+          "p_b": 0.002085228532393019,
+          "sign": "-",
+          "module": "backtest/signals/calendar_effects.py"
+        },
+        {
+          "key": "trading_days_left_in_month",
+          "kind": "numeric",
+          "effect_a": 2.3445981593145033,
+          "effect_b": 3.758173421136147,
+          "joint": 2.3445981593145033,
+          "p_a": 0.0017495756335613281,
+          "p_b": 0.00397369544451611,
+          "sign": "+",
+          "module": "backtest/signals/calendar_effects.py"
+        }
+      ]
+    },
+    "backtest/signals/cross_sectional.py": {
+      "representative": "xs_max_anomaly",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "xs_max_anomaly"
+      ],
+      "rows": [
+        {
+          "key": "xs_max_anomaly",
+          "kind": "numeric",
+          "effect_a": 1.308241628959276,
+          "effect_b": 11.022474758030151,
+          "joint": 1.308241628959276,
+          "p_a": 0.0006386501100892987,
+          "p_b": 1.2361411740723535e-06,
+          "sign": "+",
+          "module": "backtest/signals/cross_sectional.py"
+        }
+      ]
+    }
+  },
+  "unindexed": {
+    "members": [],
+    "n": 0,
+    "note": "keys the producer index cannot place - a mixed bag, never a cluster, so no representative (runbook 3.6, S6-B3394)"
+  }
+}

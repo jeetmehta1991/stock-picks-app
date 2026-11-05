@@ -4716,6 +4716,861 @@ SPECS_PHASE0.update({"camarilla_r4_breakout": {
 }})
 
 
+# S6-B3249 / S6-B3423 (b) - R1 PRE-REGISTRATION (B3139q-r203; runbook 2.7 step 1, B2855
+# owner-directed 2026-09-17: the spec precedes the T3 band words). Five of the
+# S6-B3249 shortlist, written from each strategy's Table A render
+# (output_audit/b3249_<name>_table_a.md) BEFORE the owner's band review: no level
+# is approved, every engine-only band is held at production (no env knob exists),
+# and the B-rows join on the owner's word (the camarilla_r4_breakout precedent,
+# S6-B3304). mmbm_long P3 carries measured OFFLINE levels
+# (output_audit/b3249_mmbm_long_range_levels.json). rsi_oversold_with_smart_money_long
+# is held for S6-B3428; r1_break_retest and avwap_252_breakout are the next batch.
+SPECS_PHASE0.update({'macd_fast_crossover': {'formula': '\n'
+                                    'ID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered '
+                                    'COMPUTATION STEP in\n'
+                                    'the producer->gate derivation; the Table A render '
+                                    '(output_audit/b3249_<name>_table_a.md)\n'
+                                    'numbers its band rows P<n>.x - integer ids here. R1 '
+                                    'PRE-REGISTRATION (runbook 2.7\n'
+                                    'step 1, B2855) written S6-B3249 B3139q-r203, BEFORE the '
+                                    "owner's T3 words: no\n"
+                                    "level below is approved, and B-rows join on the owner's word "
+                                    '(S6-B3304 precedent).\n'
+                                    '\n'
+                                    '=============================== PRODUCER LAYER '
+                                    '===============================\n'
+                                    '\n'
+                                    'P1  macd_8_21_5_crossover_up  (technical.py compute_macd: '
+                                    "hist > 0 and the prior bar's\n"
+                                    '       hist <= 0; the triple is one of the two compute_macd '
+                                    'loops over)\n'
+                                    'P2  macd_8_21_5_crossover_dn  (technical.py compute_macd: '
+                                    "hist < 0 and the prior bar's hist >= 0)\n"
+                                    'P3  MACD span triple 8/21/5  (technical.py compute_macd - '
+                                    'fast/slow/signal EMA spans)\n'
+                                    '\n'
+                                    '=============================== STRATEGY LAYER '
+                                    '===============================\n'
+                                    '\n'
+                                    'P4  _short_borrow_trap_active(s)  (screener.py; days_to_cover '
+                                    '> 5.0 blocks the\n'
+                                    '       SHORT fire - B718a)\n'
+                                    '\n'
+                                    'long_fires  = P1                (screener.py '
+                                    'strat_macd_fast_crossover)\n'
+                                    'short_fires = P2 AND NOT P4     (screener.py '
+                                    'strat_macd_fast_crossover)\n',
+                         'baseline': {'artifact': 'output_r5_merged_1_7',
+                                      'fires': 4070,
+                                      'tickers': 540,
+                                      'holdout_n': 967,
+                                      'window': '2022-05-05..2026-05-05',
+                                      'fires_by_side': {'long': 1912, 'short': 2158}},
+                         'gate': 'macd_8_21_5_crossover_up | short (macd_8_21_5_crossover_dn AND '
+                                 'NOT borrow) (screener strat_macd_fast_crossover)',
+                         'tools': {},
+                         'params': [{'id': 'P1',
+                                     'producer': 'technical.py compute_macd',
+                                     'param': 'macd_8_21_5_crossover_up identity (LONG)',
+                                     'production': 'hist cross up 8/21/5',
+                                     'band': ['hist cross up 8/21/5'],
+                                     'free_band': None,
+                                     'resim_band': None,
+                                     'env': None,
+                                     'consumers': ['backtest/signals/screener.py'],
+                                     'sweep_levels': None,
+                                     'subset_safe': None,
+                                     'status': 'UNTESTED',
+                                     'type': 'identity',
+                                     'engine_implemented': True,
+                                     'evidence': 'backtest/signals/technical.py compute_macd '
+                                                 '({key}_crossover_up); '
+                                                 'backtest/signals/screener.py '
+                                                 'strat_macd_fast_crossover (fl)',
+                                     'derivation': 'the boolean itself - its knob is P3; held at '
+                                                   'production',
+                                     'legs': ['long']},
+                                    {'id': 'P2',
+                                     'producer': 'technical.py compute_macd',
+                                     'param': 'macd_8_21_5_crossover_dn identity (SHORT)',
+                                     'production': 'hist cross down 8/21/5',
+                                     'band': ['hist cross down 8/21/5'],
+                                     'free_band': None,
+                                     'resim_band': None,
+                                     'env': None,
+                                     'consumers': ['backtest/signals/screener.py'],
+                                     'sweep_levels': None,
+                                     'subset_safe': None,
+                                     'status': 'UNTESTED',
+                                     'type': 'identity',
+                                     'engine_implemented': True,
+                                     'evidence': 'backtest/signals/technical.py compute_macd '
+                                                 '({key}_crossover_dn); '
+                                                 'backtest/signals/screener.py '
+                                                 'strat_macd_fast_crossover (fs)',
+                                     'derivation': 'the mirror boolean - its knob is P3; held at '
+                                                   'production',
+                                     'legs': ['short']},
+                                    {'id': 'P3',
+                                     'producer': 'technical.py compute_macd',
+                                     'param': 'MACD span triple (both legs)',
+                                     'production': '8/21/5',
+                                     'band': ['8/21/5'],
+                                     'free_band': None,
+                                     'resim_band': None,
+                                     'env': None,
+                                     'consumers': ['backtest/signals/screener.py'],
+                                     'sweep_levels': None,
+                                     'subset_safe': False,
+                                     'status': 'UNTESTED',
+                                     'type': 'identity',
+                                     'engine_implemented': False,
+                                     'evidence': 'backtest/signals/technical.py compute_macd (its '
+                                                 'triple loop: (12,26,9) and (8,21,5))',
+                                     'derivation': 'held at production - no env knob exists, so '
+                                                   'any other level is an engine run with no '
+                                                   'actuator (S6-B2569a); Table A P1.x/P2.x '
+                                                   'BANDS-TO-DEFINE: the only other computed '
+                                                   "triple is 12/26/9, strat_macd_crossover's own "
+                                                   'gate (a registered sibling), and the histogram '
+                                                   'is persisted in PRICE units, so a magnitude '
+                                                   'cut needs a price-normalised derivation before '
+                                                   'it is an offline level',
+                                     'legs': ['long', 'short']},
+                                    {'id': 'P4',
+                                     'producer': '_short_borrow_trap_active (shared screener '
+                                                 'helper)',
+                                     'param': 'days_to_cover cap (borrow guard, SHORT leg)',
+                                     'production': '5.0',
+                                     'band': ['5.0'],
+                                     'free_band': None,
+                                     'resim_band': None,
+                                     'env': None,
+                                     'consumers': ['backtest/signals/screener.py'],
+                                     'sweep_levels': None,
+                                     'subset_safe': True,
+                                     'status': 'UNTESTED',
+                                     'type': 'float',
+                                     'engine_implemented': True,
+                                     'evidence': 'backtest/signals/screener.py '
+                                                 '_short_borrow_trap_active (dtc > 5.0)',
+                                     'derivation': 'the shared short-side borrow guard: '
+                                                   'days_to_cover > 5.0 blocks the SHORT fire '
+                                                   '(B718a owner-ruled); a tighter cap is offline '
+                                                   'on the persisted days_to_cover, a band only on '
+                                                   "the owner's word (bollinger_lower P10 "
+                                                   'precedent); the LONG campaign never reads it',
+                                     'legs': ['short']}]},
+ 'macd_crossover': {'formula': '\n'
+                               'ID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered '
+                               'COMPUTATION STEP in\n'
+                               'the producer->gate derivation; the Table A render '
+                               '(output_audit/b3249_<name>_table_a.md)\n'
+                               'numbers its band rows P<n>.x - integer ids here. R1 '
+                               'PRE-REGISTRATION (runbook 2.7\n'
+                               "step 1, B2855) written S6-B3249 B3139q-r203, BEFORE the owner's T3 "
+                               'words: no\n'
+                               "level below is approved, and B-rows join on the owner's word "
+                               '(S6-B3304 precedent).\n'
+                               '\n'
+                               '=============================== PRODUCER LAYER '
+                               '===============================\n'
+                               '\n'
+                               'P1  macd_12_26_9_crossover_up  (technical.py compute_macd: hist > '
+                               "0 and the prior bar's\n"
+                               '       hist <= 0; the triple is one of the two compute_macd loops '
+                               'over)\n'
+                               'P2  macd_12_26_9_crossover_dn  (technical.py compute_macd: hist < '
+                               "0 and the prior bar's hist >= 0)\n"
+                               'P3  MACD span triple 12/26/9  (technical.py compute_macd - '
+                               'fast/slow/signal EMA spans)\n'
+                               '\n'
+                               '=============================== STRATEGY LAYER '
+                               '===============================\n'
+                               '\n'
+                               'P4  _short_borrow_trap_active(s)  (screener.py; days_to_cover > '
+                               '5.0 blocks the\n'
+                               '       SHORT fire - B718a)\n'
+                               '\n'
+                               'long_fires  = P1                (screener.py '
+                               'strat_macd_crossover)\n'
+                               'short_fires = P2 AND NOT P4     (screener.py '
+                               'strat_macd_crossover)\n',
+                    'baseline': {'artifact': 'output_r5_merged_1_7',
+                                 'fires': 2910,
+                                 'tickers': 532,
+                                 'holdout_n': 687,
+                                 'window': '2022-05-05..2026-05-05',
+                                 'fires_by_side': {'long': 1386, 'short': 1524}},
+                    'gate': 'macd_12_26_9_crossover_up | short (macd_12_26_9_crossover_dn AND NOT '
+                            'borrow) (screener strat_macd_crossover)',
+                    'tools': {},
+                    'params': [{'id': 'P1',
+                                'producer': 'technical.py compute_macd',
+                                'param': 'macd_12_26_9_crossover_up identity (LONG)',
+                                'production': 'hist cross up 12/26/9',
+                                'band': ['hist cross up 12/26/9'],
+                                'free_band': None,
+                                'resim_band': None,
+                                'env': None,
+                                'consumers': ['backtest/signals/screener.py'],
+                                'sweep_levels': None,
+                                'subset_safe': None,
+                                'status': 'UNTESTED',
+                                'type': 'identity',
+                                'engine_implemented': True,
+                                'evidence': 'backtest/signals/technical.py compute_macd '
+                                            '({key}_crossover_up); backtest/signals/screener.py '
+                                            'strat_macd_crossover (fl)',
+                                'derivation': 'the boolean itself - its knob is P3; held at '
+                                              'production',
+                                'legs': ['long']},
+                               {'id': 'P2',
+                                'producer': 'technical.py compute_macd',
+                                'param': 'macd_12_26_9_crossover_dn identity (SHORT)',
+                                'production': 'hist cross down 12/26/9',
+                                'band': ['hist cross down 12/26/9'],
+                                'free_band': None,
+                                'resim_band': None,
+                                'env': None,
+                                'consumers': ['backtest/signals/screener.py'],
+                                'sweep_levels': None,
+                                'subset_safe': None,
+                                'status': 'UNTESTED',
+                                'type': 'identity',
+                                'engine_implemented': True,
+                                'evidence': 'backtest/signals/technical.py compute_macd '
+                                            '({key}_crossover_dn); backtest/signals/screener.py '
+                                            'strat_macd_crossover (fs)',
+                                'derivation': 'the mirror boolean - its knob is P3; held at '
+                                              'production',
+                                'legs': ['short']},
+                               {'id': 'P3',
+                                'producer': 'technical.py compute_macd',
+                                'param': 'MACD span triple (both legs)',
+                                'production': '12/26/9',
+                                'band': ['12/26/9'],
+                                'free_band': None,
+                                'resim_band': None,
+                                'env': None,
+                                'consumers': ['backtest/signals/screener.py'],
+                                'sweep_levels': None,
+                                'subset_safe': False,
+                                'status': 'UNTESTED',
+                                'type': 'identity',
+                                'engine_implemented': False,
+                                'evidence': 'backtest/signals/technical.py compute_macd (its '
+                                            'triple loop: (12,26,9) and (8,21,5))',
+                                'derivation': 'held at production - no env knob exists, so any '
+                                              'other level is an engine run with no actuator '
+                                              '(S6-B2569a); Table A P1.x/P2.x BANDS-TO-DEFINE: the '
+                                              'only other computed triple is 8/21/5, '
+                                              "strat_macd_fast_crossover's own gate (a registered "
+                                              'sibling), and the histogram is persisted in PRICE '
+                                              'units, so a magnitude cut needs a price-normalised '
+                                              'derivation before it is an offline level',
+                                'legs': ['long', 'short']},
+                               {'id': 'P4',
+                                'producer': '_short_borrow_trap_active (shared screener helper)',
+                                'param': 'days_to_cover cap (borrow guard, SHORT leg)',
+                                'production': '5.0',
+                                'band': ['5.0'],
+                                'free_band': None,
+                                'resim_band': None,
+                                'env': None,
+                                'consumers': ['backtest/signals/screener.py'],
+                                'sweep_levels': None,
+                                'subset_safe': True,
+                                'status': 'UNTESTED',
+                                'type': 'float',
+                                'engine_implemented': True,
+                                'evidence': 'backtest/signals/screener.py '
+                                            '_short_borrow_trap_active (dtc > 5.0)',
+                                'derivation': 'the shared short-side borrow guard: days_to_cover > '
+                                              '5.0 blocks the SHORT fire (B718a owner-ruled); a '
+                                              'tighter cap is offline on the persisted '
+                                              "days_to_cover, a band only on the owner's word "
+                                              '(bollinger_lower P10 precedent); the LONG campaign '
+                                              'never reads it',
+                                'legs': ['short']}]},
+ 'force_index_breakout': {'formula': '\n'
+                                     'ID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered '
+                                     'COMPUTATION STEP in\n'
+                                     'the producer->gate derivation; the Table A render '
+                                     '(output_audit/b3249_<name>_table_a.md)\n'
+                                     'numbers its band rows P<n>.x - integer ids here. R1 '
+                                     'PRE-REGISTRATION (runbook 2.7\n'
+                                     'step 1, B2855) written S6-B3249 B3139q-r203, BEFORE the '
+                                     "owner's T3 words: no\n"
+                                     "level below is approved, and B-rows join on the owner's word "
+                                     '(S6-B3304 precedent).\n'
+                                     '\n'
+                                     '=============================== PRODUCER LAYER '
+                                     '===============================\n'
+                                     '\n'
+                                     'P1  force_index_cross_up  (technical.py compute_volume: '
+                                     'EMA(13) of close-diff x volume\n'
+                                     '       crosses above 0)\n'
+                                     'P2  force_index_cross_dn  (technical.py compute_volume: the '
+                                     'same crosses below 0)\n'
+                                     'P3  force index EMA span 13  (technical.py compute_volume, '
+                                     'fi13)\n'
+                                     'P4  price_above_ema_20  (technical.py compute_ema_sma: close '
+                                     '> EMA(20))\n'
+                                     'P5  below_ema_20  (technical.py compute_ema_sma: close < '
+                                     'EMA(20))\n'
+                                     'P6  EMA span 20  (the 20 in the two flags above; EMA_PAIRS '
+                                     'fast span)\n'
+                                     'P7  close_above_open  (technical.py compute_pivots)\n'
+                                     'P8  minimum body (close above open, LONG leg)  (Table A P2.1 '
+                                     '- production 0.0)\n'
+                                     'P9  close_below_open  (technical.py compute_pivots)\n'
+                                     'P10 minimum body (close below open, SHORT leg)  (Table A '
+                                     'P3.1 - production 0.0)\n'
+                                     '\n'
+                                     '=============================== STRATEGY LAYER '
+                                     '===============================\n'
+                                     '\n'
+                                     'P11 _short_borrow_trap_active(s)  (screener.py; '
+                                     'days_to_cover > 5.0 blocks the\n'
+                                     '       SHORT fire - B718a)\n'
+                                     '\n'
+                                     'long_fires  = P1 AND P4 AND P7              (screener.py '
+                                     'strat_force_index_breakout, fl)\n'
+                                     'short_fires = P2 AND P5 AND P9 AND NOT P11  (screener.py '
+                                     'strat_force_index_breakout, fs)\n',
+                          'baseline': {'artifact': 'output_r5_merged_1_7',
+                                       'fires': 3013,
+                                       'tickers': 532,
+                                       'holdout_n': 676,
+                                       'window': '2022-05-05..2026-05-05',
+                                       'fires_by_side': {'long': 1211, 'short': 1802}},
+                          'gate': '(force_index_cross_up AND price_above_ema_20 AND '
+                                  'close_above_open) | short (force_index_cross_dn AND '
+                                  'below_ema_20 AND close_below_open AND NOT borrow) (screener '
+                                  'strat_force_index_breakout)',
+                          'tools': {},
+                          'params': [{'id': 'P1',
+                                      'producer': 'technical.py compute_volume',
+                                      'param': 'force_index_cross_up identity (LONG)',
+                                      'production': 'EMA13 FI cross up',
+                                      'band': ['EMA13 FI cross up'],
+                                      'free_band': None,
+                                      'resim_band': None,
+                                      'env': None,
+                                      'consumers': ['backtest/signals/screener.py'],
+                                      'sweep_levels': None,
+                                      'subset_safe': None,
+                                      'status': 'UNTESTED',
+                                      'type': 'identity',
+                                      'engine_implemented': True,
+                                      'evidence': 'backtest/signals/technical.py compute_volume '
+                                                  '(force_index_cross_up); '
+                                                  'backtest/signals/screener.py '
+                                                  'strat_force_index_breakout (fl)',
+                                      'derivation': 'the boolean itself - its knob is P3; held at '
+                                                    'production',
+                                      'legs': ['long']},
+                                     {'id': 'P2',
+                                      'producer': 'technical.py compute_volume',
+                                      'param': 'force_index_cross_dn identity (SHORT)',
+                                      'production': 'EMA13 FI cross down',
+                                      'band': ['EMA13 FI cross down'],
+                                      'free_band': None,
+                                      'resim_band': None,
+                                      'env': None,
+                                      'consumers': ['backtest/signals/screener.py'],
+                                      'sweep_levels': None,
+                                      'subset_safe': None,
+                                      'status': 'UNTESTED',
+                                      'type': 'identity',
+                                      'engine_implemented': True,
+                                      'evidence': 'backtest/signals/technical.py compute_volume '
+                                                  '(force_index_cross_dn); '
+                                                  'backtest/signals/screener.py '
+                                                  'strat_force_index_breakout (fs)',
+                                      'derivation': 'the mirror boolean - its knob is P3; held at '
+                                                    'production',
+                                      'legs': ['short']},
+                                     {'id': 'P3',
+                                      'producer': 'technical.py compute_volume',
+                                      'param': 'force index EMA span (both legs)',
+                                      'production': 13,
+                                      'band': [13],
+                                      'free_band': None,
+                                      'resim_band': None,
+                                      'env': None,
+                                      'consumers': ['backtest/signals/screener.py'],
+                                      'sweep_levels': None,
+                                      'subset_safe': False,
+                                      'status': 'UNTESTED',
+                                      'type': 'int',
+                                      'engine_implemented': False,
+                                      'evidence': 'backtest/signals/technical.py compute_volume '
+                                                  '(fi13 = ewm span 13)',
+                                      'derivation': 'held at production - no env knob exists, so '
+                                                    'any other level is an engine run with no '
+                                                    'actuator (S6-B2569a); Table A P4/P5 '
+                                                    'BANDS-TO-DEFINE; the force-index value itself '
+                                                    'is not persisted (only force_index_positive '
+                                                    'and the two crosses), so no level is offline',
+                                      'legs': ['long', 'short']},
+                                     {'id': 'P4',
+                                      'producer': 'technical.py compute_ema_sma',
+                                      'param': 'price_above_ema_20 identity (LONG)',
+                                      'production': 'close > EMA(20)',
+                                      'band': ['close > EMA(20)'],
+                                      'free_band': None,
+                                      'resim_band': None,
+                                      'env': None,
+                                      'consumers': ['backtest/signals/screener.py'],
+                                      'sweep_levels': None,
+                                      'subset_safe': None,
+                                      'status': 'UNTESTED',
+                                      'type': 'identity',
+                                      'engine_implemented': True,
+                                      'evidence': 'backtest/signals/technical.py compute_ema_sma '
+                                                  '(price_above_ema_{fast}); '
+                                                  'backtest/signals/screener.py '
+                                                  'strat_force_index_breakout (fl)',
+                                      'derivation': 'the boolean itself - its knob is P6; held at '
+                                                    'production',
+                                      'legs': ['long']},
+                                     {'id': 'P5',
+                                      'producer': 'technical.py compute_ema_sma',
+                                      'param': 'below_ema_20 identity (SHORT)',
+                                      'production': 'close < EMA(20)',
+                                      'band': ['close < EMA(20)'],
+                                      'free_band': None,
+                                      'resim_band': None,
+                                      'env': None,
+                                      'consumers': ['backtest/signals/screener.py'],
+                                      'sweep_levels': None,
+                                      'subset_safe': None,
+                                      'status': 'UNTESTED',
+                                      'type': 'identity',
+                                      'engine_implemented': True,
+                                      'evidence': 'backtest/signals/technical.py compute_ema_sma '
+                                                  '(below_ema_{fast}); '
+                                                  'backtest/signals/screener.py '
+                                                  'strat_force_index_breakout (fs)',
+                                      'derivation': 'the mirror boolean - its knob is P6; held at '
+                                                    'production',
+                                      'legs': ['short']},
+                                     {'id': 'P6',
+                                      'producer': 'technical.py compute_ema_sma',
+                                      'param': 'EMA span (the 20 in the EMA flags, both legs)',
+                                      'production': 20,
+                                      'band': [20],
+                                      'free_band': None,
+                                      'resim_band': None,
+                                      'env': None,
+                                      'consumers': ['backtest/signals/screener.py'],
+                                      'sweep_levels': None,
+                                      'subset_safe': False,
+                                      'status': 'UNTESTED',
+                                      'type': 'int',
+                                      'engine_implemented': False,
+                                      'evidence': 'backtest/signals/technical.py compute_ema_sma '
+                                                  '(its loop over config EMA_PAIRS)',
+                                      'derivation': 'held at production - no env knob exists, so '
+                                                    'any other level is an engine run with no '
+                                                    'actuator (S6-B2569a); Table A P1/P6 '
+                                                    'BANDS-TO-DEFINE',
+                                      'legs': ['long', 'short']},
+                                     {'id': 'P7',
+                                      'producer': 'technical.py compute_pivots',
+                                      'param': 'close_above_open identity (LONG)',
+                                      'production': 'close > open',
+                                      'band': ['close > open'],
+                                      'free_band': None,
+                                      'resim_band': None,
+                                      'env': None,
+                                      'consumers': ['backtest/signals/screener.py'],
+                                      'sweep_levels': None,
+                                      'subset_safe': None,
+                                      'status': 'UNTESTED',
+                                      'type': 'identity',
+                                      'engine_implemented': True,
+                                      'evidence': 'backtest/signals/technical.py compute_pivots '
+                                                  '(close_above_open); '
+                                                  'backtest/signals/screener.py '
+                                                  'strat_force_index_breakout (fl)',
+                                      'derivation': 'the boolean itself - its knob is P8; held at '
+                                                    'production',
+                                      'legs': ['long']},
+                                     {'id': 'P8',
+                                      'producer': 'technical.py compute_pivots',
+                                      'param': 'minimum body pct (LONG)',
+                                      'production': 0.0,
+                                      'band': [0.0],
+                                      'free_band': None,
+                                      'resim_band': None,
+                                      'env': None,
+                                      'consumers': ['backtest/signals/screener.py'],
+                                      'sweep_levels': None,
+                                      'subset_safe': False,
+                                      'status': 'UNTESTED',
+                                      'type': 'float',
+                                      'engine_implemented': False,
+                                      'evidence': 'backtest/signals/technical.py compute_pivots '
+                                                  '(close_above_open)',
+                                      'derivation': 'held at production - no env knob exists, so '
+                                                    'any other level is an engine run with no '
+                                                    'actuator (S6-B2569a); Table A P2.1 planned '
+                                                    '[0, 0.2, 0.5] pct - bar OHLC is not persisted '
+                                                    'on the fires, so every level other than '
+                                                    'production is engine-only',
+                                      'legs': ['long']},
+                                     {'id': 'P9',
+                                      'producer': 'technical.py compute_pivots',
+                                      'param': 'close_below_open identity (SHORT)',
+                                      'production': 'close < open',
+                                      'band': ['close < open'],
+                                      'free_band': None,
+                                      'resim_band': None,
+                                      'env': None,
+                                      'consumers': ['backtest/signals/screener.py'],
+                                      'sweep_levels': None,
+                                      'subset_safe': None,
+                                      'status': 'UNTESTED',
+                                      'type': 'identity',
+                                      'engine_implemented': True,
+                                      'evidence': 'backtest/signals/technical.py compute_pivots '
+                                                  '(close_below_open); '
+                                                  'backtest/signals/screener.py '
+                                                  'strat_force_index_breakout (fs)',
+                                      'derivation': 'the mirror boolean - its knob is P10; held at '
+                                                    'production',
+                                      'legs': ['short']},
+                                     {'id': 'P10',
+                                      'producer': 'technical.py compute_pivots',
+                                      'param': 'minimum body pct (SHORT)',
+                                      'production': 0.0,
+                                      'band': [0.0],
+                                      'free_band': None,
+                                      'resim_band': None,
+                                      'env': None,
+                                      'consumers': ['backtest/signals/screener.py'],
+                                      'sweep_levels': None,
+                                      'subset_safe': False,
+                                      'status': 'UNTESTED',
+                                      'type': 'float',
+                                      'engine_implemented': False,
+                                      'evidence': 'backtest/signals/technical.py compute_pivots '
+                                                  '(close_below_open)',
+                                      'derivation': 'held at production - no env knob exists, so '
+                                                    'any other level is an engine run with no '
+                                                    'actuator (S6-B2569a); Table A P3.1 planned '
+                                                    '[0, 0.2, 0.5] pct - the mirror of P8',
+                                      'legs': ['short']},
+                                     {'id': 'P11',
+                                      'producer': '_short_borrow_trap_active (shared screener '
+                                                  'helper)',
+                                      'param': 'days_to_cover cap (borrow guard, SHORT leg)',
+                                      'production': '5.0',
+                                      'band': ['5.0'],
+                                      'free_band': None,
+                                      'resim_band': None,
+                                      'env': None,
+                                      'consumers': ['backtest/signals/screener.py'],
+                                      'sweep_levels': None,
+                                      'subset_safe': True,
+                                      'status': 'UNTESTED',
+                                      'type': 'float',
+                                      'engine_implemented': True,
+                                      'evidence': 'backtest/signals/screener.py '
+                                                  '_short_borrow_trap_active (dtc > 5.0)',
+                                      'derivation': 'the shared short-side borrow guard: '
+                                                    'days_to_cover > 5.0 blocks the SHORT fire '
+                                                    '(B718a owner-ruled); a tighter cap is offline '
+                                                    'on the persisted days_to_cover, a band only '
+                                                    "on the owner's word (bollinger_lower P10 "
+                                                    'precedent); the LONG campaign never reads it',
+                                      'legs': ['short']}]},
+ 'macd_bullish_with_smart_money_long': {'formula': '\n'
+                                                   'ID SEMANTICS (owner ruling 2026-09-12): P<n> = '
+                                                   'a numbered COMPUTATION STEP in\n'
+                                                   'the producer->gate derivation; the Table A '
+                                                   'render (output_audit/b3249_<name>_table_a.md)\n'
+                                                   'numbers its band rows P<n>.x - integer ids '
+                                                   'here. R1 PRE-REGISTRATION (runbook 2.7\n'
+                                                   'step 1, B2855) written S6-B3249 B3139q-r203, '
+                                                   "BEFORE the owner's T3 words: no\n"
+                                                   'level below is approved, and B-rows join on '
+                                                   "the owner's word (S6-B3304 precedent).\n"
+                                                   '\n'
+                                                   '=============================== PRODUCER LAYER '
+                                                   '===============================\n'
+                                                   '\n'
+                                                   'P1  macd_12_26_9_bullish  (technical.py '
+                                                   'compute_macd: hist > 0 - a STATE, B1199\n'
+                                                   '       loosened the gate from '
+                                                   'macd_12_26_9_crossover_up)\n'
+                                                   'P2  MACD span triple 12/26/9  (technical.py '
+                                                   'compute_macd)\n'
+                                                   'P3  price_above_ema_200  (technical.py '
+                                                   'compute_ema_sma: close > EMA(200), an\n'
+                                                   '       EMA_PAIRS slow span)\n'
+                                                   'P4  EMA span 200  (the 200 in '
+                                                   'price_above_ema_200; the gate reads the '
+                                                   'LITERAL key)\n'
+                                                   '\n'
+                                                   '=============================== STRATEGY LAYER '
+                                                   '===============================\n'
+                                                   '\n'
+                                                   'P5  _has_smart_money_buy(s)  (screener.py: '
+                                                   'insider_cluster_active OR cfo_buy OR\n'
+                                                   '       large_dollar_buy OR '
+                                                   'institutional_strong_buy OR '
+                                                   'institutional_buy)\n'
+                                                   '\n'
+                                                   'long_fires = P1 AND P3 AND P5   (screener.py '
+                                                   'strat_macd_bullish_with_smart_money_long)\n',
+                                        'baseline': {'artifact': 'output_r5_merged_1_7',
+                                                     'fires': 1162,
+                                                     'tickers': 447,
+                                                     'holdout_n': 277,
+                                                     'window': '2022-05-05..2026-05-05',
+                                                     'fires_by_side': {'long': 1162}},
+                                        'gate': 'macd_12_26_9_bullish AND price_above_ema_200 AND '
+                                                '_has_smart_money_buy (screener '
+                                                'strat_macd_bullish_with_smart_money_long)',
+                                        'tools': {},
+                                        'params': [{'id': 'P1',
+                                                    'producer': 'technical.py compute_macd',
+                                                    'param': 'macd_12_26_9_bullish identity',
+                                                    'production': 'hist > 0 (12/26/9)',
+                                                    'band': ['hist > 0 (12/26/9)'],
+                                                    'free_band': None,
+                                                    'resim_band': None,
+                                                    'env': None,
+                                                    'consumers': ['backtest/signals/screener.py'],
+                                                    'sweep_levels': None,
+                                                    'subset_safe': None,
+                                                    'status': 'UNTESTED',
+                                                    'type': 'identity',
+                                                    'engine_implemented': True,
+                                                    'evidence': 'backtest/signals/technical.py '
+                                                                'compute_macd ({key}_bullish); '
+                                                                'backtest/signals/screener.py '
+                                                                'strat_macd_bullish_with_smart_money_long',
+                                                    'derivation': 'the boolean itself - its knob '
+                                                                  'is P2; held at production'},
+                                                   {'id': 'P2',
+                                                    'producer': 'technical.py compute_macd',
+                                                    'param': 'MACD span triple',
+                                                    'production': '12/26/9',
+                                                    'band': ['12/26/9'],
+                                                    'free_band': None,
+                                                    'resim_band': None,
+                                                    'env': None,
+                                                    'consumers': ['backtest/signals/screener.py'],
+                                                    'sweep_levels': None,
+                                                    'subset_safe': False,
+                                                    'status': 'UNTESTED',
+                                                    'type': 'identity',
+                                                    'engine_implemented': False,
+                                                    'evidence': 'backtest/signals/technical.py '
+                                                                'compute_macd (its triple loop)',
+                                                    'derivation': 'held at production - no env '
+                                                                  'knob exists, so any other level '
+                                                                  'is an engine run with no '
+                                                                  'actuator (S6-B2569a); Table A '
+                                                                  'P1.1: (8,21,5) is the only '
+                                                                  'other computed triple and '
+                                                                  'swapping it changes which bars '
+                                                                  'fire; the histogram is '
+                                                                  'persisted in PRICE units, so a '
+                                                                  'magnitude cut needs a '
+                                                                  'price-normalised derivation '
+                                                                  'first'},
+                                                   {'id': 'P3',
+                                                    'producer': 'technical.py compute_ema_sma',
+                                                    'param': 'price_above_ema_200 identity',
+                                                    'production': 'close > EMA(200)',
+                                                    'band': ['close > EMA(200)'],
+                                                    'free_band': None,
+                                                    'resim_band': None,
+                                                    'env': None,
+                                                    'consumers': ['backtest/signals/screener.py'],
+                                                    'sweep_levels': None,
+                                                    'subset_safe': None,
+                                                    'status': 'UNTESTED',
+                                                    'type': 'identity',
+                                                    'engine_implemented': True,
+                                                    'evidence': 'backtest/signals/technical.py '
+                                                                'compute_ema_sma '
+                                                                '(price_above_ema_{slow}); '
+                                                                'backtest/signals/screener.py '
+                                                                'strat_macd_bullish_with_smart_money_long',
+                                                    'derivation': 'the boolean itself - its knob '
+                                                                  'is P4; held at production'},
+                                                   {'id': 'P4',
+                                                    'producer': 'technical.py compute_ema_sma',
+                                                    'param': 'EMA span (the 200 in '
+                                                             'price_above_ema_200)',
+                                                    'production': 200,
+                                                    'band': [200],
+                                                    'free_band': None,
+                                                    'resim_band': None,
+                                                    'env': None,
+                                                    'consumers': ['backtest/signals/screener.py'],
+                                                    'sweep_levels': None,
+                                                    'subset_safe': False,
+                                                    'status': 'UNTESTED',
+                                                    'type': 'int',
+                                                    'engine_implemented': False,
+                                                    'evidence': 'backtest/signals/technical.py '
+                                                                'compute_ema_sma (its loop over '
+                                                                'config EMA_PAIRS)',
+                                                    'derivation': 'held at production - no env '
+                                                                  'knob exists, so any other level '
+                                                                  'is an engine run with no '
+                                                                  'actuator (S6-B2569a); Table A '
+                                                                  'P2.1 planned [9, 20, 21, 50, '
+                                                                  '100, 150, 200, 250] - all but '
+                                                                  '200 resim; STRAT_EMA_SPAN does '
+                                                                  'not reach this gate, which '
+                                                                  'reads the literal key '
+                                                                  '(S6-B3253); the canonical-span '
+                                                                  'flags are persisted, so they '
+                                                                  'enter only as ADD-A-CONDITION '
+                                                                  'legs'},
+                                                   {'id': 'P5',
+                                                    'producer': '_has_smart_money_buy (shared '
+                                                                'screener helper)',
+                                                    'param': 'smart-money union (5 flags)',
+                                                    'production': 'any of 5',
+                                                    'band': ['any of 5'],
+                                                    'free_band': None,
+                                                    'resim_band': None,
+                                                    'env': None,
+                                                    'consumers': ['backtest/signals/screener.py'],
+                                                    'sweep_levels': None,
+                                                    'subset_safe': None,
+                                                    'status': 'UNTESTED',
+                                                    'type': 'identity',
+                                                    'engine_implemented': True,
+                                                    'evidence': 'backtest/signals/screener.py '
+                                                                '_has_smart_money_buy; '
+                                                                'backtest/signals/screener.py '
+                                                                'strat_macd_bullish_with_smart_money_long',
+                                                    'derivation': 'a union of five persisted '
+                                                                  'flags; held at production - '
+                                                                  'narrowing the union (an '
+                                                                  'EVENT-only subset, for example) '
+                                                                  'is a subset of the recorded '
+                                                                  'fires, an option for the '
+                                                                  "owner's band review, not "
+                                                                  'registered here'}]},
+ 'mmbm_long': {'formula': '\n'
+                          'ID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered COMPUTATION '
+                          'STEP in\n'
+                          'the producer->gate derivation; the Table A render '
+                          '(output_audit/b3249_<name>_table_a.md)\n'
+                          'numbers its band rows P<n>.x - integer ids here. R1 PRE-REGISTRATION '
+                          '(runbook 2.7\n'
+                          "step 1, B2855) written S6-B3249 B3139q-r203, BEFORE the owner's T3 "
+                          'words: no\n'
+                          "level below is approved, and B-rows join on the owner's word (S6-B3304 "
+                          'precedent).\n'
+                          '\n'
+                          '=============================== PRODUCER LAYER '
+                          '===============================\n'
+                          '\n'
+                          "P1  po3_mmbm_setup  (ict_producers.py compute_po3_signals: today's low "
+                          'sweeps under\n'
+                          '       the prior accumulation range low, the close is back above it, '
+                          'and close > open)\n'
+                          'P2  accumulation window 5  (compute_po3_signals accum_window, the '
+                          'prior-N-bar range)\n'
+                          'P3  accumulation range ceiling 0.05  (compute_po3_signals '
+                          'tight_range_threshold: the\n'
+                          '       setup needs (range high - range low) / mean close <= 0.05; the '
+                          'ratio is\n'
+                          '       persisted on every fire as po3_accum_range_pct, 4 dp)\n'
+                          '\n'
+                          '=============================== STRATEGY LAYER '
+                          '===============================\n'
+                          '\n'
+                          'long_fires = P1   (screener.py strat_mmbm_long; P2 and P3 bind inside '
+                          'P1)\n',
+               'baseline': {'artifact': 'output_r5_merged_1_7',
+                            'fires': 1337,
+                            'tickers': 452,
+                            'holdout_n': 349,
+                            'window': '2022-05-05..2026-05-05',
+                            'fires_by_side': {'long': 1337}},
+               'gate': 'po3_mmbm_setup (screener strat_mmbm_long)',
+               'tools': {},
+               'params': [{'id': 'P1',
+                           'producer': 'ict_producers.py compute_po3_signals',
+                           'param': 'po3_mmbm_setup identity',
+                           'production': 'PO3 MMBM setup',
+                           'band': ['PO3 MMBM setup'],
+                           'free_band': None,
+                           'resim_band': None,
+                           'env': None,
+                           'consumers': ['backtest/signals/screener.py'],
+                           'sweep_levels': None,
+                           'subset_safe': None,
+                           'status': 'UNTESTED',
+                           'type': 'identity',
+                           'engine_implemented': True,
+                           'evidence': 'backtest/signals/ict_producers.py compute_po3_signals '
+                                       '(po3_mmbm_setup); backtest/signals/screener.py '
+                                       'strat_mmbm_long',
+                           'derivation': 'the boolean itself - its knobs are P2 and P3; held at '
+                                         'production'},
+                          {'id': 'P2',
+                           'producer': 'ict_producers.py compute_po3_signals',
+                           'param': 'accumulation window (bars)',
+                           'production': 5,
+                           'band': [5],
+                           'free_band': None,
+                           'resim_band': None,
+                           'env': None,
+                           'consumers': ['backtest/signals/screener.py'],
+                           'sweep_levels': None,
+                           'subset_safe': False,
+                           'status': 'UNTESTED',
+                           'type': 'int',
+                           'engine_implemented': False,
+                           'evidence': 'backtest/signals/ict_producers.py compute_po3_signals '
+                                       '(accum_window=5); backtest/signals/screener.py '
+                                       'screen_instrument (compute_po3_signals(df) at defaults)',
+                           'derivation': 'held at production - no env knob exists, so any other '
+                                         'level is an engine run with no actuator (S6-B2569a); '
+                                         "Table A P1 BANDS-TO-DEFINE; the window's range is "
+                                         'persisted only at 5 bars, so no other window is offline'},
+                          {'id': 'P3',
+                           'producer': 'ict_producers.py compute_po3_signals',
+                           'param': 'accumulation range ceiling',
+                           'production': 0.05,
+                           'band': [0.05, 0.046, 0.0419, 0.0368, 0.0308],
+                           'free_band': [0.05, 0.046, 0.0419, 0.0368, 0.0308],
+                           'resim_band': [],
+                           'env': None,
+                           'consumers': ['backtest/signals/screener.py'],
+                           'sweep_levels': None,
+                           'subset_safe': True,
+                           'status': 'UNTESTED',
+                           'type': 'float',
+                           'engine_implemented': True,
+                           'evidence': 'backtest/signals/ict_producers.py compute_po3_signals '
+                                       '(tight_range_threshold=0.05, po3_accum_range_pct); '
+                                       'output_audit/b3249_mmbm_long_range_levels.json (1,337 of '
+                                       '1,337 fires; kept 1076/808/535/269)',
+                           'derivation': 'TIGHTER = a LOWER ceiling on the persisted '
+                                         'po3_accum_range_pct - a subset of the recorded fires '
+                                         '(offline); levels are the 0.8/0.6/0.4/0.2 quantiles of '
+                                         'the key on the R5 fires; a looser ceiling admits bars '
+                                         'the cube never recorded and has no knob, so it stays out '
+                                         'of the band',
+                           'signal_keys': ['po3_accum_range_pct']}]}})
+
+
 # B3119 - THE FAMILY ADAPTER (S6-B2883): bollinger_lower PROMOTED into SPECS
 # for the owner-approved span campaign (verbatim 2026-09-27: "Q2 approved one
 # line change fix. I want to test various spans"). The SPECS entry is DERIVED

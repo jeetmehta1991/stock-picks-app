@@ -1,0 +1,396 @@
+{
+  "_doc": "runbook 3.6 steps 1-2: consistent-sign BH-FDR survivors under BOTH exits, clustered by the producer module that writes the key (build_table_a module index); representative = max joint effect min(|a|, |b|) (#165). A SCREEN, never a gate - B-row registration happens at the T3 owner band review.",
+  "strategy": "force_index_breakout",
+  "direction": "long",
+  "survival_applied": false,
+  "basis": "net",
+  "cube_dir": "output_r5_merged_1_7 (default)",
+  "exit_a": "time_stop_10d",
+  "exit_b": "breakeven_plus_trail",
+  "screens": {
+    "a": "output_audit/b3249_force_index_breakout_screen_long_ts10_net.json",
+    "b": "output_audit/b3249_force_index_breakout_screen_long_bept_net.json"
+  },
+  "survivors_a": 38,
+  "survivors_b": 111,
+  "n_consistent": 27,
+  "clusters": {
+    "backtest/signals/technical.py": {
+      "representative": "pct_from_avwap_20high",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "pct_from_avwap_20high",
+        "squeeze_momentum",
+        "atr_pct",
+        "pct_from_avwap_20low",
+        "bb_10_20_bandwidth",
+        "above_avwap_20high",
+        "below_avwap_20high",
+        "chandelier_short_flip_up",
+        "near_r1_wide",
+        "sma_20_50_bullish",
+        "bb_20_15_pctb",
+        "bb_20_20_pctb",
+        "vix_value",
+        "cpr_width"
+      ],
+      "rows": [
+        {
+          "key": "pct_from_avwap_20high",
+          "kind": "numeric",
+          "effect_a": 4.0052135593220335,
+          "effect_b": 9.40086836158192,
+          "joint": 4.0052135593220335,
+          "p_a": 5.172387528308077e-09,
+          "p_b": 4.278124842013752e-10,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "squeeze_momentum",
+          "kind": "numeric",
+          "effect_a": 3.4677015706806285,
+          "effect_b": 6.955422513089005,
+          "joint": 3.4677015706806285,
+          "p_a": 3.890270873419079e-08,
+          "p_b": 8.935267284978291e-10,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "atr_pct",
+          "kind": "numeric",
+          "effect_a": 3.35040942408377,
+          "effect_b": 8.88983664921466,
+          "joint": 3.35040942408377,
+          "p_a": 6.949387206964666e-05,
+          "p_b": 0.004156750642072777,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "pct_from_avwap_20low",
+          "kind": "numeric",
+          "effect_a": 3.1714849206349203,
+          "effect_b": 9.645461263086794,
+          "joint": 3.1714849206349203,
+          "p_a": 0.00020008655978104602,
+          "p_b": 3.321681012212771e-05,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "bb_10_20_bandwidth",
+          "kind": "numeric",
+          "effect_a": 2.8290041884816755,
+          "effect_b": 7.89500837696335,
+          "joint": 2.8290041884816755,
+          "p_a": 0.0017073765935773629,
+          "p_b": 0.0056256297314619405,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "above_avwap_20high",
+          "kind": "bool",
+          "effect_a": 2.053681031529069,
+          "effect_b": 3.688454464734828,
+          "joint": 2.053681031529069,
+          "p_a": 0.0006534000974675901,
+          "p_b": 0.00036355969508201637,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "below_avwap_20high",
+          "kind": "bool",
+          "effect_a": -2.053681031529069,
+          "effect_b": -3.688454464734828,
+          "joint": 2.053681031529069,
+          "p_a": 0.0006534000974675901,
+          "p_b": 0.00036355969508201637,
+          "sign": "-",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "chandelier_short_flip_up",
+          "kind": "bool",
+          "effect_a": 1.9627742967514932,
+          "effect_b": 5.345218025798593,
+          "joint": 1.9627742967514932,
+          "p_a": 0.0007158142444208319,
+          "p_b": 5.868658483015977e-05,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "near_r1_wide",
+          "kind": "bool",
+          "effect_a": -1.6830424513274338,
+          "effect_b": -4.4642582973451335,
+          "joint": 1.6830424513274338,
+          "p_a": 0.00229049056078129,
+          "p_b": 1.5513994811217942e-05,
+          "sign": "-",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "sma_20_50_bullish",
+          "kind": "bool",
+          "effect_a": -1.6772962313390312,
+          "effect_b": -3.2458906803418808,
+          "joint": 1.6772962313390312,
+          "p_a": 0.00253923726502189,
+          "p_b": 0.0010936009361036188,
+          "sign": "-",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "bb_20_15_pctb",
+          "kind": "numeric",
+          "effect_a": 2.99714554973822,
+          "effect_b": 1.4337335078534033,
+          "joint": 1.4337335078534033,
+          "p_a": 0.00016342902133896958,
+          "p_b": 0.004409380825615147,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "bb_20_20_pctb",
+          "kind": "numeric",
+          "effect_a": 2.99714554973822,
+          "effect_b": 1.4337335078534033,
+          "joint": 1.4337335078534033,
+          "p_a": 0.00016448901623357395,
+          "p_b": 0.004425884887982576,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "vix_value",
+          "kind": "numeric",
+          "effect_a": 1.3200267015706806,
+          "effect_b": 6.268184816753926,
+          "joint": 1.3200267015706806,
+          "p_a": 8.5460847354864e-05,
+          "p_b": 1.0353162461823498e-05,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "cpr_width",
+          "kind": "numeric",
+          "effect_a": 1.2876118973603838,
+          "effect_b": 5.875416603948517,
+          "joint": 1.2876118973603838,
+          "p_a": 0.0007758675866872283,
+          "p_b": 5.894281032776563e-05,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        }
+      ]
+    },
+    "backtest/signals/cot_positioning.py": {
+      "representative": "cot_sp500_commercials_pctile_3y",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "cot_sp500_commercials_pctile_3y",
+        "cot_sp500_commercials_net_pct",
+        "cot_rut_commercials_net_pct"
+      ],
+      "rows": [
+        {
+          "key": "cot_sp500_commercials_pctile_3y",
+          "kind": "numeric",
+          "effect_a": -3.800275734938092,
+          "effect_b": -9.492509559382997,
+          "joint": 3.800275734938092,
+          "p_a": 0.00041719068135071365,
+          "p_b": 1.8522641511981693e-07,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_sp500_commercials_net_pct",
+          "kind": "numeric",
+          "effect_a": -3.32301070834719,
+          "effect_b": -9.928611733732403,
+          "joint": 3.32301070834719,
+          "p_a": 0.00016123225876146826,
+          "p_b": 2.2661713830649344e-07,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_rut_commercials_net_pct",
+          "kind": "numeric",
+          "effect_a": -1.4585142857142854,
+          "effect_b": -5.792682481203008,
+          "joint": 1.4585142857142854,
+          "p_a": 0.0007840635169977506,
+          "p_b": 9.135882010389153e-07,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        }
+      ]
+    },
+    "backtest/signals/cross_asset.py": {
+      "representative": "gold_silver_20d_pct_change",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "gold_silver_20d_pct_change",
+        "vix_term_backwardation",
+        "vix_term_contango",
+        "sector_strongest_rs",
+        "dxy_proxy_close",
+        "vix_vix3m_ratio",
+        "vix_today"
+      ],
+      "rows": [
+        {
+          "key": "gold_silver_20d_pct_change",
+          "kind": "numeric",
+          "effect_a": 3.6008549016067883,
+          "effect_b": 9.638834756574594,
+          "joint": 3.6008549016067883,
+          "p_a": 0.0002609928238953993,
+          "p_b": 1.6278324363694773e-06,
+          "sign": "+",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "vix_term_backwardation",
+          "kind": "bool",
+          "effect_a": 3.00637274909964,
+          "effect_b": 12.877224009603843,
+          "joint": 3.00637274909964,
+          "p_a": 2.8693502449009813e-06,
+          "p_b": 4.5879920650433985e-08,
+          "sign": "+",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "vix_term_contango",
+          "kind": "bool",
+          "effect_a": -3.00637274909964,
+          "effect_b": -12.877224009603843,
+          "joint": 3.00637274909964,
+          "p_a": 2.8693502449009813e-06,
+          "p_b": 4.5879920650433985e-08,
+          "sign": "-",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "sector_strongest_rs",
+          "kind": "numeric",
+          "effect_a": -2.1262698785785896,
+          "effect_b": -9.523227163863204,
+          "joint": 2.1262698785785896,
+          "p_a": 9.394615145282802e-06,
+          "p_b": 1.7392693315929818e-10,
+          "sign": "-",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "dxy_proxy_close",
+          "kind": "numeric",
+          "effect_a": 2.0365616002961553,
+          "effect_b": 7.952957710613992,
+          "joint": 2.0365616002961553,
+          "p_a": 0.0029933969732959097,
+          "p_b": 3.7067214367204043e-06,
+          "sign": "+",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "vix_vix3m_ratio",
+          "kind": "numeric",
+          "effect_a": 1.5966019228938602,
+          "effect_b": 8.072529535141996,
+          "joint": 1.5966019228938602,
+          "p_a": 0.000751934511324979,
+          "p_b": 5.666167498794826e-06,
+          "sign": "+",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "vix_today",
+          "kind": "numeric",
+          "effect_a": 1.3200267015706806,
+          "effect_b": 6.268184816753926,
+          "joint": 1.3200267015706806,
+          "p_a": 8.5460847354864e-05,
+          "p_b": 1.0353162461823498e-05,
+          "sign": "+",
+          "module": "backtest/signals/cross_asset.py"
+        }
+      ]
+    },
+    "backtest/signals/ict_producers.py": {
+      "representative": "po3_accum_range_pct",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "po3_accum_range_pct"
+      ],
+      "rows": [
+        {
+          "key": "po3_accum_range_pct",
+          "kind": "numeric",
+          "effect_a": 4.158641361256545,
+          "effect_b": 9.342857068062827,
+          "joint": 4.158641361256545,
+          "p_a": 7.934578042099758e-05,
+          "p_b": 0.00043517341658241783,
+          "sign": "+",
+          "module": "backtest/signals/ict_producers.py"
+        }
+      ]
+    },
+    "backtest/signals/multi_timeframe.py": {
+      "representative": "weekly_momentum_4w",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "weekly_momentum_4w"
+      ],
+      "rows": [
+        {
+          "key": "weekly_momentum_4w",
+          "kind": "numeric",
+          "effect_a": 3.797432460732985,
+          "effect_b": 2.2454691099476447,
+          "joint": 2.2454691099476447,
+          "p_a": 3.127055739848004e-05,
+          "p_b": 0.0016312212833019422,
+          "sign": "+",
+          "module": "backtest/signals/multi_timeframe.py"
+        }
+      ]
+    },
+    "backtest/signals/cross_sectional.py": {
+      "representative": "xs_max_anomaly",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "xs_max_anomaly"
+      ],
+      "rows": [
+        {
+          "key": "xs_max_anomaly",
+          "kind": "numeric",
+          "effect_a": 3.442560110780424,
+          "effect_b": 9.48952541335979,
+          "joint": 3.442560110780424,
+          "p_a": 1.633591730783341e-05,
+          "p_b": 0.00012995374128334678,
+          "sign": "+",
+          "module": "backtest/signals/cross_sectional.py"
+        }
+      ]
+    }
+  },
+  "unindexed": {
+    "members": [],
+    "n": 0,
+    "note": "keys the producer index cannot place - a mixed bag, never a cluster, so no representative (runbook 3.6, S6-B3394)"
+  }
+}
