@@ -17,15 +17,19 @@
 - **C. INSTITUTIONAL FAMILY (CLOSED)** - C.1, C.2, C.3
 - **D. PEAD FAMILY (CLOSED)** - D.1, D.2, D.3
 - **E. CROSS-SECTIONAL MOMENTUM (xs_momentum_top_decile, vwap_extension, xs_low_beta)** - E.1, E.2, E.3
-- **F. CANDLE FAMILY (three_white_soldiers / three_black_crows_short - IN CAMPAIGN)** - F.1, F.2, F.3, F.4, F.5, F.6
+- **F. CANDLE FAMILY (three_white_soldiers / three_black_crows_short - ADMITTED 2026-09-26, B3115)** - F.1, F.2, F.3, F.4, F.5, F.6
 - **G. FAMILY EXAMPLES OF CLASS-LEVEL COMMANDS AND ARTIFACTS** - G.1, G.2, G.3, G.4, G.5, G.6, G.7, G.8
 - **H. SHARED LAUNCH MEASUREMENTS (both families)** - H.1, H.2
-- **I. BOLLINGER FAMILY (bollinger_lower - IN CAMPAIGN)** - I.1, I.2, I.3, I.4, I.5, I.6, I.7, I.8, I.9, I.10, I.11, I.12
+- **I. BOLLINGER FAMILY (bollinger_lower - CLOSED BY THE OWNER, NOTHING ADMITTED)** - I.1, I.2, I.3, I.4, I.5, I.6, I.7, I.8, I.9, I.10, I.11, I.12
 - **J. PAIRS FAMILY (pairs_mean_reversion_long / pairs_mean_reversion_short - ADMITTED 2026-10-13)** - J.1, J.2
-- **K. VOLUME_PROFILE FAMILY (naked_poc_retest_long - IN CAMPAIGN)** - K.1, K.2, K.3, K.4, K.5, K.6, K.7, K.8, K.9, K.10, K.11, K.12, K.13, K.14, K.15
-- **L. MEAN-REVERSION FAMILY (cmf_flip - IN CAMPAIGN)** - L.1, L.2
+- **K. VOLUME_PROFILE FAMILY (naked_poc_retest_long - CLOSED BY THE OWNER)** - K.1, K.2, K.3, K.4, K.5, K.6, K.7, K.8, K.9, K.10, K.11, K.12, K.13, K.14, K.15
+- **L. MEAN-REVERSION FAMILY (cmf_flip - CLOSED, NO READ)** - L.1, L.2, L.3, L.4
 - **M. MOMENTUM FAMILY (williams_r_oversold - CLOSED BY THE OWNER)** - M.1, M.2, M.3
-- **N. SQUEEZE FAMILY (squeeze_breakout - IN CAMPAIGN)** - N.1, N.2
+- **N. SQUEEZE FAMILY (squeeze_breakout - IN CAMPAIGN, PAUSED UNDER S6-B3409)** - N.1, N.2
+- **O. PIVOT FAMILY (camarilla_r4_breakout - IN CAMPAIGN, PAUSED UNDER S6-B3409)** - O.1, O.2
+- **P. VWAP FAMILY (avwap_252_breakout - IN CAMPAIGN)** - P.1, P.2
+- **Q. THE OFFLINE ROSTER SPRINT (S6-B3423 - NOT-STARTED rows graded offline, no campaign opened)** - Q.1, Q.2, Q.3, Q.4
+- **R. LEVER4 GATE-BUDGET PROGRAMME (four condition-stacked long sides - S6-B1248-LEVER4-GATE-BUDGET)** - R.1, R.2, R.3, R.4, R.5, R.6, R.7
 
 ---
 
@@ -1708,7 +1712,7 @@ ratification is never needed again.
 
 ---
 
-## F. CANDLE FAMILY (three_white_soldiers / three_black_crows_short - IN CAMPAIGN)
+## F. CANDLE FAMILY (three_white_soldiers / three_black_crows_short - ADMITTED 2026-09-26, B3115)
 
 ### F.1 The candle instance - second worked derivation, S6-B3089 (old STEP 3)
 
@@ -2092,7 +2096,7 @@ stale the moment one is repaired, and a stale list nearly retired a working exit
 **UPDATE B3115 (2026-09-26) - ADMISSION SUPERSEDES THE (c) PARKING.** Hours after ruling (c), the owner ruled verbatim: 'Approved add this cell to the phase 1B roster along with the mirror short strategy.' three_white_soldiers is ADMITTED at the c14 breadth line (producer n_bars 3/body 0.5/step 0.0/wick 0.3 + cot_ndx_mmoney_pctile_3y >= 0.637, exit class_time_stop; HO 1.779 psr 0.9653 PF 2.154 sortino 2.873 n 36/343; labels GRID-SELECTED-OWNER-RULED + DISCLOSED-RE-READ + IS-HOLDOUT-INVERSION with IS -0.421) as admissions entry 15 (S6-B3114b), rendered into PHASE_1B_ROSTER.md by the S6-B2413 identity-only pipeline - the renderer gained the read-tool evidence dialect (all_live_gates/full_n) as S6-B3114b's pinned helpers. The REGISTERED mirror strat_three_black_crows_short is counted per the standing mirror policy (pattern-only; the breadth filter has no ruled economic mirror - asymmetry surfaced). The b3114 forward registration STAYS LIVE as additional evidence per the B2660 doctrine (never a strike condition post-admission). Deployable total 29 -> 31 distinct (15 Step-2 admissions).
 ---
 
-## I. BOLLINGER FAMILY (bollinger_lower - IN CAMPAIGN)
+## I. BOLLINGER FAMILY (bollinger_lower - CLOSED BY THE OWNER, NOTHING ADMITTED)
 
 Appended B3127 (2026-09-29, S6-B3120h): the campaign records owed by runbook 4.7/4.8/4.9,
 written from the committed artifacts named per section. bollinger_lower is a DUAL strategy
@@ -2407,7 +2411,7 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
 - **Evidence:** output_audit/b3145_pairs_admission_checks.json, output_audit/b3145_pairs_prod_holdout_null.json,
   output_audit/b3145_pairs_breadth_step3_read_checks.json. Admission is not deployment.
 
-## K. VOLUME_PROFILE FAMILY (naked_poc_retest_long - IN CAMPAIGN)
+## K. VOLUME_PROFILE FAMILY (naked_poc_retest_long - CLOSED BY THE OWNER)
 
 ### K.1 Pick and baseline (B3139q-r69q, owner word 2026-10-14: "Lets start with naked poc retest long")
 
@@ -2771,7 +2775,7 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
   Table D files re-rendered with the S6-B3372 renderer, which now credits the short depth sweep
   to P2 and P10. The slot passes to the next long candidate (S6-B3249).
 
-## N. SQUEEZE FAMILY (squeeze_breakout - IN CAMPAIGN)
+## N. SQUEEZE FAMILY (squeeze_breakout - IN CAMPAIGN, PAUSED UNDER S6-B3409)
 
 ### N.1 Opened (B3139q-r86; owner word 2026-10-21, verbatim "Approve all recs execute", approving S6-B3232 (a); S6-B3248)
 
@@ -2818,7 +2822,7 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
 - **LAUNCH PREP (B3139q-r165):** scripts/grade_knob_config.py writes resim_configs, so a landed engine level counts at the coverage gate (test_b3248i). THE FIRE PROJECTION (scripts/project_knob_fires.py, test_b3248j; output_audit/b3248_squeeze_breakout_fire_projection.json): the producer counted on every Step-1 window bar of 196 of 200 tickers at production and under each arm, the ratio scaling the current-gate projection 104.9: SQUEEZE_KC_MULT=1.5 169.2; SQUEEZE_BB_STD=2.5 150.4; SQUEEZE_MOM_WINDOW=10 179.4; SQUEEZE_MOM_WINDOW=30 88.0; SQUEEZE_KC_PERIOD=14 96.2; SQUEEZE_KC_PERIOD=30 137.1; SQUEEZE_PRIOR_N=1 1.6. Prior squeeze N = 1 projects 1.6 - under the Step-1 admission floor of 10 (L685); it runs as ruled but alone, in a trailing chain b3248sq6 that waits for the 7th config, so a waiver in words before it starts drops it (recommended: waive). LEVERAGE: 4 free combinations per engine run (below the 50:1 advisory floor; the launch word of 2026-10-28 is the explicit word). SPECS: 8 Step-1 specs b3248sq_p2_2p0 (the production centre) to _p6_1, each citing the owner's ruling on S6-B3248, the depth null p 0.0198. PRICE: $0 (LOCAL), run_wave's projection 3.64 h per config, 29.1 h for 8. DEVIATION, STATED: the knob's other consumers (bb_squeeze_volume, morning_star) do not ride the runs - no rider path yet (S6-B3389).
 - **LAUNCH, TWO LANDINGS AND THE OWNER'S PAUSE (B3139q-r166..r168):** launched 2026-10-31 (r166) as chain b3248sq - the 7 Step-1 specs, production centre first - with the trailing chain b3248sq6 (p6_1, N = 1) waiting on the 7th. LANDED: config 1, the production centre (output_b3248sq_p2_2p0_p2_2p0, 16:08:19Z, commit 4831646fa) - 23 ranked exits on 580 trades, best breakeven_plus_trail at is_ci_lo 0.297 (is_sharpe 0.561); config 2, Keltner multiplier 1.5 (output_b3248sq_p2_1p5_p2_1p5, 19:32:53Z, commit d1b3f8e3f) - 23 ranked exits on 726 trades, best breakeven_plus_trail at is_ci_lo 0.279 (is_sharpe 0.522); both batteries exit 0 with 0 findings, spot checks 50 of 50, lenses 11 of 11 INFO (in-sample Step-1 rankings: Step 1 admits nothing). Two defects of the r163 free-level leg surfaced at these landings: the consolidated report does not regenerate (S6-B3406), and the free levels cover only the demand-pruning warmup's fires - 83 of 580 and 114 of 726 (S6-B3407) - so they are not evidence for the held read until fixed. Coverage after the two landings: 6 engine levels untested (Bollinger std 2.5, momentum window 10 and 30, Keltner period 14 and 30, N = 1). PAUSED on the owner's word, sent 2026-10-31T20:02:18Z, verbatim 'No more config or strategy runs till my explicit command. The execution has been all over the place and workflows and execution infrastructure has not been followed. Pause current': config 3 (Bollinger std 2.5) stopped at sim day 9 of 250 (its checkpoint at day 5), the chain HALTED by design at 20:05:22Z with p4_10, p4_30, p5_14 and p5_30 not launched, p6_1's waiting chain stopped, every chain task disabled, the hourly monitor deleted. **Waits on:** the owner's explicit command (S6-B3248).
 
-## O. PIVOT FAMILY (camarilla_r4_breakout - IN CAMPAIGN)
+## O. PIVOT FAMILY (camarilla_r4_breakout - IN CAMPAIGN, PAUSED UNDER S6-B3409)
 
 ### O.1 Opened (B3139q-r111; owner word 2026-10-21, verbatim "Approve all recs execute", approving
 S6-B3232 (a) - the remaining nine follow in the shortlist's order as slots free (S6-B3249) - and
@@ -2870,6 +2874,7 @@ S6-B3304)
 - **T5 COVERED-FIRES RE-SWEEP (B3139q-r150; owner word sent 2026-10-28T00:35:55Z, verbatim "Approve all recs / Fable mode / Proceed / Be extremely thorough and get context for each ticket", on (a)):** B1 (long, pct_from_avwap_20low, covered 0.855) and B8 (short, monthly_momentum_6m, covered 0.907) graded on their covered fires, net, 104 of 104 cells each. LONG null p 0.0396; best by IS lower bound ge 3.511 at breakeven_plus_trail IS 0.81 (0.604) on 613, 2025-04 holding 0.235. SHORT null p 0.0099; best ge 0.2354 at breakeven_plus_trail IS 1.025 (0.528) on 186, no month over 0.097. Coverage complete but for the scheduled engine-only distance level 0.45 (Table A P1.1). **Waits on:** the 0.45 engine run, and the owner's word on one pre-registered read covering both (S6-B3304).
 - **RULINGS AND ENGINE PREP (B3139q-r137..r164):** the owner's (b), sent 2026-10-28T11:01:41Z, verbatim "Approve your recommendations fable mode proceed", SCHEDULED the distance multiplier's engine-only level 0.45 - recorded 'held' on my recommendation at r120 and never put to the owner as schedule-or-waive (S6-B3349); RETRACTED from the r120 bullet: its 'found nothing' covered the offline levels only. "approved", sent 16:47:50Z, launches the run once prepared, within the 5 h Step-1 cap. Prepared: r161 CAM_R4_S4_DIST, one actuator for R4 and S4 read by compute_pivots at call time (production byte-identical, test_b3304d); r162 and r163 the shared knob grader, producer spot check and free-level leg (S6-B3248's rows); r164 the SPECS registration with 0.45 on P2 and P4, and the charter's P1.1 re-rendered with its actuator and its derive module (scripts/camarilla_derived.py, built r120, which the r111 text still called unbuilt). The 0.45 level reads untested on both legs until the run lands. **Waits on:** the spec, the fire projection and the launch; then the read decision S6-B3304's r150 row puts to the owner (recommendation (a): one pre-registered read after the 0.45 run lands).
 - **THE 0.45 LAUNCH REFUSED AT THE DEPTH-NULL DOOR (B3139q-r165):** make_spec --dry: the offline depth search is priced as noise - p_value_best 0.2574 long and 0.5248 short against 0.20 (S6-B3206) - and the owner's (b) of 2026-10-28 was given without that fact. THE FIRE PROJECTION at 0.45 (output_audit/b3304_camarilla_r4_breakout_fire_projection.json): ratio 1.1889, projected 335.8 Step-1 fires against the current-gate base 282.4. LEVERAGE: 80 free combinations per engine run. THE OWNER'S DECISION (S6-B3304): (a) override in words, (b) waive 0.45 in words, (c) hold - recommended (b); the read decision (r150) stays the owner's.
+- **UNDER THE OWNER'S PAUSE (B3139q-r168; S6-B3409, sent 2026-10-31T20:02:18Z):** the 0.45 engine run launches on nothing short of the owner's explicit command - the conditional launch word of 2026-10-28T16:47:50Z no longer suffices - and it still needs the depth-null word (a/b/c) of the r165 bullet. Nothing was running for this campaign at the pause. The two engine runs the owner released on 2026-11-05 are LEVER4 Step-2 arms (R.7), not this one. **Waits on:** the owner's explicit command, the depth-null word and the read decision (S6-B3304).
 
 ## P. VWAP FAMILY (avwap_252_breakout - IN CAMPAIGN)
 
@@ -2894,3 +2899,296 @@ S6-B3304)
   window, no env knob); P3.1 the volume-ratio floor 1.0 with tighter offline levels 1.2 / 1.5 / 2.0;
   P4 the borrow-trap helper. **Waits on:** P1 / P2's bands defined from the producer, then the
   owner's T3 band words (S6-B3373).
+- **P1 / P2 BANDS DEFINED, BREADTH STEPS 1-2 (B3139q-r157):** from compute_vwap, read: the anchor
+  lookback [189, 252, 378] and the event window [1, 3, 5] - shared by the four anchors, so an actuator
+  is scoped to the 252-low anchor - are engine-only with no env knob, DEFINED-NO-ACTUATOR; the margin
+  by which today's close clears the AVWAP, [0, 0.25, 0.5] pct, is OFFLINE on its tighter levels through
+  the persisted pct_from_avwap_252low, and the loss mirror the same. Table A regenerated, P1 / P2
+  BANDS-DEFINED; its factorial 2,916 = 1 engine run + 35 offline level-combinations + 2,880 pending an
+  actuator. Breadth in-sample, both legs, at time_stop_10d and breakeven_plus_trail, on BOTH bases
+  (S6-B3382): GROSS long 39 + 53 survivors, 30 consistent in 10 clusters - set by SBNY's post-failure
+  prints; NET long 177 + 175, 108 consistent in 15 clusters; short 137 + 155, 128 consistent in 16
+  clusters on both bases; 15 long and 16 short NET representatives. FLAGGED: pct_from_avwap_252low is
+  a consistent long-leg cluster member and the margin axis's own key, collinear with depth; vix_value
+  and vix_today share one producer quantity.
+- **R1 REGISTERED (B3139q-r203, r203c):** runbook 2.7 puts the spec before the band words -
+  step1_gates.require_band_ruling refuses a grid for an unregistered strategy. SPECS_PHASE0
+  ['avwap_252_breakout'], 8 rows, validate_spec clean: P1 / P2 the reclaim and loss events; P3 the
+  anchor lookback 252 and P4 the event window 3, held at production (engine-only, planned [189, 252,
+  378] and [1, 3, 5]); P5 the margin past the AVWAP as ONE row for both legs on pct_from_avwap_252low
+  (one key, one column), offline levels 0 / 0.25 / 0.5 pct, long >= m and short <= -m; P6
+  vol_above_avg; P7 the volume-ratio floor 1.0 / 1.2 / 1.5 / 2.0 offline on vol_ratio_20d; P8 the
+  short-side borrow cap. T1 keeps 2,294 of 2,294 R5 fires.
+- **T3 WORDS, B-ROWS REGISTERED (B3139q-r205):** the owner's word sent 2026-11-05T12:24:51Z, verbatim
+  '1-5 approve all recs fable mode', item 3 of the r203d close - grade the offline margin and volume
+  levels, park the engine-only anchor and window levels, take the representatives as B-rows. B1-B29
+  registered: the 15 long and 16 short NET representatives (output_audit/
+  b3373_avwap_252_breakout_companions_{long,short}_net.json) on 29 keys - po3_accum_range_pct and
+  xs_max_anomaly chosen on both legs, so each is one row graded per leg; the vix pair kept as two short
+  rows; pct_from_avwap_252low not a B-row.
+- **STEP-1 GRIDS, RANKED, NO HOLDOUT READ (B3139q-r205b):** BREADTH per leg, NET, 100-permutation null
+  (output_audit/b3373_avwap_252_breakout_breadth_net_{long,short}.json). LONG: base in-sample Sharpe
+  0.411 n 1,209, 780 trials over 12 of 15 axes (pct_from_avwap_50low 0.978, avg_position_age_quarters
+  0.913 and within_pead_window 0.973 under the 0.98 coverage floor), null p 0.0099; rank 1
+  short_interest_observations >= 64 @ regime_flip 1.809 n 260 with 82 pct of its trades in 2025-04 and
+  -1.869 without that month - one episode; the best row with no month over 30 pct (a display cut
+  chosen for the report, not the 0.5 episode flag) is atr <= 1.1205 @ r_multiple_2r 1.034 n 242. SHORT:
+  base -1.761 n 617, 1,378 trials over 14 of 16 axes (total_active_holders 0.922 and otc_volume_recent
+  0.956 skipped), null p 0.0099; rank 1 vix_value <= 16.27 @ breakeven_plus_trail 0.633 n 125, no month
+  over 16 pct. DEPTH (offline_level_sweep per leg over the P5 margin x P7 volume floor, 12 cells,
+  reproduction 1.0; output_audit/b3373_avwap_252_breakout_{long,short}_net_step1_is_surface.json):
+  long best margin 0.5 pct with volume >= 2.0 @ time_stop_10d 1.102 n 127 against production 0.581,
+  null p 0.079; short best margin -0.25 with volume >= 2.0 @ breakeven_plus_trail 0.270 n 78 against
+  production -0.711, null p 0.0099 - both preregistration candidates under the 0.2 noise bar. The 5
+  coverage-skipped axes are graded only on the owner's per-axis widening word. **Waits on:** the
+  owner's word on a holdout read, once per leg (S6-B3373).
+
+## Q. THE OFFLINE ROSTER SPRINT (S6-B3423 - NOT-STARTED rows graded offline, no campaign opened)
+
+The runbook's rule is section 0.5 item 6; this part records the instance. A sprint member has no
+record in output_audit/owner_campaign_opens.json, so the status view reads it NOT-STARTED while its
+ticket holds a ranked Step-1 list - how the view should show that work is the owner's decision
+(S6-B3435).
+
+### Q.1 The ruling and the scope (S6-B3422 'All', sent 2026-11-05T03:34:16Z; S6-B3423, B3139q-r200..r201)
+
+- **The ruling:** the owner approved S6-B3422's options (A) to (E) together - Lane 2 stopped at slice
+  11d (A); offline Step-1 grading on cubes that already exist, carved out of the engine pause (B); one
+  holdout-read packet (C); the process diet (D, S6-B3424); engine runs only for top offline candidates
+  whose axes need re-simulation (E). Unchanged under every option: the six live gates, the one-shot
+  holdout read with the owner's word, BH-FDR at the roster, the Jaccard de-dup and the launch refusals.
+- **The scope, MEASURED at r201 from the status view (build ff10274b7) and the spec registries:** of
+  165 NOT-STARTED strategies, 102 have at least 100 R5 fires (57 LOOSEN, 20 NONE, 18 BOTH, 7 TIGHTEN),
+  and 99 of the 102 have no SPECS or SPECS_PHASE0 entry, which every offline Step-1 tool refuses. Ready
+  at once, 10: camarilla_r4_breakout and squeeze_breakout in campaign (their next steps engine runs,
+  paused); avwap_252_breakout (S6-B3373); smc_equal_lows_sweep_long, smc_inverse_fvg,
+  smc_liquidity_sweep_reversal and smc_order_block_bounce stalled (their Step 2 needs S6-B3333's grader
+  legs); news_momentum_long, pivot_r1_breakout and smc_bos_continuation not started with a spec (part
+  R). The 110 LOOSEN-stream strategies need new fires - engine work under (E).
+- **The order (r201):** the ready 10 to their next owner packet; a pilot of 5 spec builds to price the
+  99; then the band packet and the holdout-read packet.
+
+### Q.2 S6-B3249's seven - R1, T3 words, breadth and depth grids (B3139q-r203..r205b)
+
+- **Members:** macd_fast_crossover, macd_crossover, force_index_breakout, r1_break_retest,
+  rsi_oversold_with_smart_money_long, macd_bullish_with_smart_money_long and mmbm_long - the shortlist's
+  remainder, all NOT-STARTED, so S6-B3422 (B) covers grading them offline. T0 (status build ff10274b7):
+  stream NONE, survival 1.0, 7 of 7 (rsi_oversold_with_smart_money_long BOTH after its gate fix, Q.3).
+  Table A rendered alone, output_audit/b3249_<name>_table_a.md.
+- **Breadth steps 1-2 (r203)**, LONG leg, NET, in-sample, at time_stop_10d and breakeven_plus_trail:
+  41 representatives over the 7 (macd_fast_crossover 6, macd_crossover 6, force_index_breakout 6,
+  r1_break_retest 10, rsi_oversold_with_smart_money_long 7, macd_bullish_with_smart_money_long 2,
+  mmbm_long 4); the rsi screen predates its gate fix and is superseded (Q.3).
+- **R1 SPECS_PHASE0 entries:** 5 at r203 (macd_fast_crossover, macd_crossover, force_index_breakout,
+  macd_bullish_with_smart_money_long, mmbm_long), every engine-only band held at production with its
+  planned levels in the derivation; r1_break_retest at r203c, 23 rows - the R1 / S1 break-retest events
+  held at production (retest tolerance 1.5 x ATR14 and break window 2-8 bars, neither persisted) and one
+  offline depth axis, the volume-ratio ceiling 1.0 / 0.8 / 0.6 on vol_ratio_20d for both legs (Table A
+  P13.1); mmbm_long's one offline depth axis the accumulation ceiling 0.05 on po3_accum_range_pct,
+  tighter levels 0.046 / 0.0419 / 0.0368 / 0.0308 keeping 1,076 / 808 / 535 / 269 of 1,337 fires
+  (output_audit/b3249_mmbm_long_range_levels.json).
+- **Overlap with the 16 admitted lines on R5 entries** (output_r5_merged_1_7/_entry_index.parquet): 5
+  of 7 at Jaccard 0.103 or less; macd_bullish_with_smart_money_long 0.440 against
+  institutional_breakout_confirmation_long; rsi_oversold_with_smart_money_long 0.813 against
+  institutional_multi_quarter_persistence_long before its fix (Q.3).
+- **T3 WORDS (r205):** the owner's word sent 2026-11-05T12:24:51Z, verbatim '1-5 approve all recs
+  fable mode', item 2 of the r203d close - the 6 registered strategies' settings plus 34 B-rows. Each
+  SPECS_PHASE0 entry gains its long-leg B-rows from the committed consistent NET screen
+  (output_audit/b3249_<name>_companions_long_net.json): macd_fast_crossover 6, macd_crossover 6,
+  force_index_breakout 6, r1_break_retest 10, macd_bullish_with_smart_money_long 2, mmbm_long 4, each
+  with its legs field, status UNTESTED and the words in its derivation, each formula gaining a BREADTH
+  LAYER; the blocks were rewritten by a round-trip whose control re-rendered every old block
+  byte-identically first.
+- **BREADTH GRIDS (r205b)**, long leg, NET, 100-permutation null (output_audit/
+  b3249_<name>_breadth_net_long.json). The "no month over 30 pct" column is a display cut chosen for
+  the report, not the 0.5 episode flag:
+
+| strategy | base IS Sharpe | trials | null p | rank 1 (busiest month; IS Sharpe without it) | best row with no month over 30 pct |
+|---|---|---|---|---|---|
+| macd_fast_crossover | 0.297 | 468 | 0.079 | po3_accum_range_pct >= 0.106 @ hybrid_50pct_target 0.903 n 308 (2025-04 38 pct; 0.563) | dxy_20d_pct_change <= -0.0011 @ breakeven_plus_trail 0.742 n 652 |
+| macd_crossover | 0.185 | 624 | 0.0099 | gold_silver_20d_pct_change >= 0.0764 @ time_stop_10d 2.025 n 225 (2025-04 55 pct; 1.511) | the same key >= 0.0337, 1.321 n 453 |
+| force_index_breakout | 0.232 | 520 (pct_from_avwap_20high skipped, coverage 0.93) | 0.0099 | gold_silver_20d_pct_change >= 0.0764 @ time_stop_10d 2.902 n 194 (2025-04 60 pct; 2.812) | weekly_momentum_4w >= 0.0455, 0.913 n 191 |
+| r1_break_retest | 0.367 | 858 (earnings_announcement_return skipped, 0.926) | 0.0099 | gold_silver_20d_pct_change >= 0.0765 @ time_stop_10d 2.874 n 281 (2025-04 48 pct; 2.531) | days_until_fomc <= 9, 1.585 n 309 |
+| macd_bullish_with_smart_money_long | 0.158 | 208 | 0.0099 | sector_weakest_rs <= -0.0887 @ regime_flip 1.616 n 178 (no month over 20 pct) | the rank-1 row |
+| mmbm_long | 0.118 | 338 | 0.0099 | sector_weakest_rs <= -0.0945 @ time_stop_10d 3.215 n 200 (2022-07 43 pct; 1.606) | cot_ndx_mmoney_pctile_3y >= 0.8269 @ regime_flip 1.843 n 199 |
+
+- **DEPTH (r205b)**, offline_level_sweep, NET, 100-permutation null, reproduction 1.0: mmbm_long's
+  accumulation ceiling - best 0.0308, 0.44 n 187 against production 0.402, null p 0.802, priced as
+  noise, no candidate; r1_break_retest's volume ceiling - long best 0.6 @ ma_exit_ema9 1.014 n 190
+  against production 0.506, null p 0.069, a candidate under the 0.2 noise bar; short best is
+  production itself, 0.172, null p 1.0. The ceiling is read as <= on the 2-dp persisted vol_ratio_20d:
+  '< 1.0' reproduced 0.9896 / 0.9897 of the fires and the sweep's gate refused that run, and every miss
+  (18 long, 17 short) is stored at exactly 1.00, so '<= 1.0' reproduces 1.0 (the runbook's F3 rule).
+- **Waits on:** the owner's word on any holdout read, once; the 2 coverage-skipped axes only on the
+  owner's per-axis widening word (S6-B3249).
+
+### Q.3 rsi_oversold_with_smart_money_long - a gate that tested no RSI level (S6-B3428, L1012)
+
+- **MEASURED (r203; output_audit/b3428_rsi_restore_probe.json, the R5 trade log and entry index):**
+  the gate read s.get('rsi_14', False), true for any non-zero RSI - B1145's loosening executor replaced
+  the flag rsi_14_oversold with the number rsi_14 and dropped the reviewed '< 35'
+  (scripts/phase_1_analysis_turn_4.py). 2,753 fires, every one carrying rsi_14, median 52.3, at Jaccard
+  0.813 with the admitted institutional_multi_quarter_persistence_long, above the 0.7 de-dup line; the
+  reviewed '< 35' keeps 143 fires at Jaccard 0.049. Class sweep (scripts/truthy_numeric_reads.py): of
+  269 keys read for their truth in screener.py, 1 is a persisted number - this one. CORRECTED in the
+  same turn: an interim message called rsi_14_oversold a key nothing wrote, from a name grep that
+  cannot see a template-built key; technical.py's rsi_{p}_oversold produces it.
+- **RULED (a) (r205):** the owner's word sent 2026-11-05T12:24:51Z, item 1 - restore 'RSI < 35'. The
+  gate reads s.get('rsi_14', 50) < 35 (a missing RSI reads 50 and never fires); its other legs,
+  price_above_ema_200 and _has_smart_money_buy, are unchanged; test_b3428's frozen set is empty,
+  mutation 1 of 1 killed.
+- **R1 AND LANE (r205b):** SPECS_PHASE0 entry, 5 rows, validate_spec clean - the rsi_14 ceiling 35 with
+  offline levels 34.246 / 33.514 / 32.428 / 30.574 keeping 114 / 86 / 57 / 29 of its 143 surviving
+  fires; the stream is now BOTH, its Table A the lane charter
+  strategy_optimisation/tighten/both/rsi_oversold_with_smart_money_long.md. Its companion screen
+  REFUSED - 110 in-sample entries against the screen's floor of 500 - so it has no B-row candidates.
+  **Waits on:** the owner's T3 words on its depth band (S6-B3249).
+
+### Q.4 Batch 2 - five more NOT-STARTED longs prepped (B3139q-r203d; S6-B3423)
+
+- **Enumerated from the status view (build ff10274b7):** NOT-STARTED, at least 100 R5 fires, stream
+  NONE / BOTH / TIGHTEN, no spec - 38, of which 26 have a long side; their R5-entry overlap with the 16
+  admitted lines puts 24 of 25 below the 0.7 de-dup line, while rsi_volume_200ema sits at Jaccard 0.540
+  with 93.1 pct of its long entries inside institutional_oversold_long (the 26th,
+  rsi_oversold_with_smart_money_long, waited on S6-B3428). Batch 2 is the top five by long fires, all
+  at Jaccard 0.079 or less: morning_star, stochrsi_oversold, m_and_a_target_long, rsi_oversold,
+  tema_dema.
+- **DONE:** long-leg NET in-sample companion screens WITH the survival filter at time_stop_10d and
+  breakeven_plus_trail (output_audit/b3423_<name>_companions_long_net.json; the first run without
+  --survival was refused by S6-B3320's guard on morning_star and wrote nothing) - 18 representatives
+  (morning_star 4, stochrsi_oversold 3, m_and_a_target_long 5, rsi_oversold 3, tema_dema 3); R1
+  SPECS_PHASE0 entries, validate_spec clean 5 of 5, with offline depth axes on persisted keys -
+  stochrsi_oversold's k ceiling 20 / 15 / 10 and rsi_14 ceiling, tema_dema's TEMA buffer (derived) and
+  ao ceiling, morning_star's rsi_14 and squeeze_momentum ceilings, m_and_a_target_long's accumulation
+  floor. The grid gates pass on 5 of 5; T1 keeps 2,433 / 1,351 / 1,053 / 751 / 1,945 R5 fires, which
+  match the status view's fires x survival for stochrsi_oversold / tema_dema / morning_star /
+  m_and_a_target_long / rsi_oversold (tema_dema, morning_star and m_and_a_target_long changed since R5,
+  so every grid runs --survival). stochrsi_oversold's cross-up guard (k < 80) cannot bind on the long
+  leg, where k < 20 already does, so it is held, not an axis.
+- **Waits on:** the owner's T3 words on batch 2 - the band packet (S6-B3423).
+
+## R. LEVER4 GATE-BUDGET PROGRAMME (four condition-stacked long sides - S6-B1248-LEVER4-GATE-BUDGET)
+
+The runbook's rule is section 4.10; this part records the instance.
+
+### R.1 Census and the slice (B3139q-r72z..r81; owner words 2026-10-19 and 2026-10-20)
+
+- **Census** (scripts/lever4_condition_census.py -> output_audit/b3139_lever4_condition_census.json):
+  163 registered long sides, 123 open; open sides by AND legs 1: 9, 2: 43, 3: 49, 4: 10, 5: 6, 6: 4,
+  7: 2 - 22 open long sides AND four or more conditions (the original framing's '25' was 22).
+- **The slice, option (a), ruled 2026-10-20 ('Approve all recs fable mode be extremely thorough'):**
+  the 4 deep stacks that pass all 5 in-sample-evaluable gates at their best in-sample exit
+  (output_audit/b1453_phase_1b_roster.json, never its holdout fields) yet project under 100 Step-1
+  fires - pivot_r1_breakout 79.0, news_momentum_long 10.4, smc_bos_continuation 9.2,
+  orb_stocks_in_play_long 5.0.
+
+### R.2 The knob and the reading (B3139q-r81, r85)
+
+- **The knob:** config.LEVER4_GATE_BUDGET (env JSON, empty by default) and screener._gate_budget - the
+  long side fires when at least k of its m legs hold, every mandatory leg required; with no budget each
+  requires all m legs in the same order with the same short-circuit. MEASURED production unchanged:
+  each strategy's full outputs, hashed over the 52,725 distinct R5 signal dicts, identical before and
+  after (fires 1348 / 122 / 578 / 54, 0 errors). k = m-1 multiplies fires 5.5x / 9.5x / 9.4x / 13.9x
+  under reading R1 (any m-1 legs) and 4.5x / 8.8x / 8.2x / 11.9x under R2 (the thesis leg mandatory),
+  on those dicts - bars where some strategy entered, not a population rate. Pinned by
+  test_b1248_lever4_gate_budget_is_the_and_by_default_and_k_of_m_when_set (336 truth-table cases), 9 of
+  9 mutations killed.
+- **RULED R2 (2026-10-21, 'Approve all recs execute'):** the thesis leg is mandatory -
+  pivot_r1_breakout above_r1, news_momentum_long news_sentiment_5d, smc_bos_continuation smc_bos_bullish,
+  orb_stocks_in_play_long gap_up_pct.
+
+### R.3 On-ramp and the four Step-1 runs (B3139q-r89..r105b)
+
+- On-ramp R1-R9 done at r89 (S6-B3240); the launch ruled 2026-10-22 ('Addendum Approve all your
+  recommendations', on 'launch all four'); specs generated at r103 by make_spec.py
+  (fires_at_production 79 / 10 / 9 / 5; depth null 'none' - the budget only admits fires); the
+  worktree isolation proved end to end (S6-B3264): the engine from the worktree, the landing commit in
+  the main repo, M11 0 missing, 4 of 4.
+- **CHAIN DONE 2026-10-23T12:09:46Z**, four landings (the chain log's battery lines and each leg's
+  run_heartbeat.json): pivot_r1_breakout 1,084 of 1,084 closed fires with cube rows, 3.9547 h, rank-1
+  regime_flip is_ci_lo 0.516 is_sharpe 0.801; news_momentum_long 493, 3.1425 h, breakeven_plus_trail
+  0.151 / 0.442; smc_bos_continuation 367, 3.3427 h, breakeven_plus_trail 0.082 / 0.481;
+  orb_stocks_in_play_long 348, 3.0761 h, breakeven_plus_trail -0.075 / 0.275. All four under the
+  4.5 h cap.
+
+### R.4 The like-for-like Step-1 read (B3139q-r111)
+
+Each budget arm against the PRODUCTION-GATE SUBSET OF ITS OWN CUBE - same engine, window (2024-05-05
+to 2025-05-05) and 200 tickers, graded by the same grader (lever4_step1); the subset is the live
+production function replayed on each fire's persisted signals (build_table_a.surviving_fires).
+Control: the full-cube grade reproduces each landed grid's best cell, 4 of 4
+(output_audit/b3139q_lv4_like_for_like_step1_read.json). Best long cell by the in-sample lower bound:
+
+| arm | budget arm | production subset | fire multiple |
+|---|---|---|---|
+| pivot_r1_breakout | +0.516 (regime_flip, n 789, Sharpe 0.801) | -0.291 (breakeven_plus_trail, n 81, 0.464) | 9.7x |
+| news_momentum_long | +0.151 (breakeven_plus_trail, n 493, 0.442) | -0.244 (breakeven_plus_trail, n 58, 0.578) | 8.5x |
+| smc_bos_continuation | +0.082 (breakeven_plus_trail, n 228, 0.481) | -0.354 (earnings_blackout, n 47, 0.293) | 4.9x |
+| orb_stocks_in_play_long | -0.075 (breakeven_plus_trail, n 348, 0.275) | -0.182 (earnings_blackout, n 72, 0.303) | 4.8x |
+
+RETRACTED from the r111 draft: its baseline graded production on R5 (544 tickers over three in-sample
+years against the arms' 200 over one); it called regime_flip degraded on the budget cubes, the reverse
+of the measurement (the M7 degraded map is empty there); and it recommended closing three arms at Step
+1, a gate Step 1 does not have (B1608).
+
+### R.5 pivot_r1_breakout's Step 2 - one read, FAIL 5 of 6 (B3139q-r121..r136)
+
+- **PRICE RETRACTED (r121):** the r111 row priced a Step-2 arm 'about a day' from bollinger_lower's
+  20.762 h run - another strategy's (L964). The arm's own projection by make_spec.step2_sizing: 4.038 h
+  x the measured ratios 9.847 to 26.719 = 39.8 to 107.9 h. Re-ruled at the true price 2026-10-27
+  ('Approve all recs fable mode', on 'Step 2 at 40-108 h: launch locally now').
+- **LANDED 2026-10-29T00:51:48Z** (launched 2026-10-27T16:58:19Z): 7 legs (6 CAP_STOP, 1 COMPLETE),
+  31.89 h against the 107.89 h projection; 7,318 closed trades; cube 175,632 rows = 7,318 x 24 exits;
+  M11 7,318 of 7,318; spot check 50 of 50; lenses 11, 0 WARN or FAIL. Battery step 2 failed closed -
+  lever4_step1 had no Step-2 leg (L974) - built as S6-B3331's leg, with launch_refusals' Step-2 grader
+  check S6-B3332.
+- **THE READ** (the owner's words 2026-10-29: 'Build the leg, read once (Recommended)' and
+  'breakeven_plus_trail, per 2(i) (Recommended)'): in-sample selection breakeven_plus_trail (IS Sharpe
+  0.617, ci_lo 0.538, n 4,288); holdout read ONCE - Sharpe 0.642 (ci_lo 0.44), PF 2.156, Sortino 2.87,
+  PSR 1.0, win rate 0.32, payoff 4.59, holdout n 1,073 of full-period 5,361 - FAIL, 5 of 6 live gates
+  (pooled_sharpe 0.642 against the 1.0 gate). Nothing admitted; the arm's one read is spent. Legs (r136,
+  L975): depth - the budget, read once; breadth - not run then, ruled to run (R.6).
+
+### R.6 pivot_r1_breakout's breadth leg (S6-B3335, B3139q-r137..r205b)
+
+- **Ruled (a)** 2026-10-29T12:36:53Z ('Approve all recommendation / Fable mode'). The screen gained
+  --cube-dir (r156; test_b3335): the arm's run directory, long leg, in-sample - 4,288 entries, 314
+  signals, FDR survivors 94 (time_stop_10d) and 165 (breakeven_plus_trail), 86 consistent in 14
+  clusters; the NET re-screen (r157) the same set key for key. 14 representatives: xs_max_anomaly,
+  cot_dxy_mmoney_pctile_3y, vix_term_backwardation, atr_pct, po3_accum_range_pct, smc_ob_bullish_active
+  (negative), is_monday (negative), days_to_cover (negative), within_pead_window (negative),
+  otc_volume_recent, news_uses_polygon_score, atr, monthly_bias_bull (negative), vp_close_above_poc
+  (negative) - none one of the arm's four gate legs.
+- **T3 WORDS (r205, item 4):** 14 B-rows registered in a NEW SPECS_PHASE0 entry beside the generated
+  LEVER4 SPECS entry, which keeps its engine-facing P1 alone; resolved_spec merges the two.
+- **GRID (r205b):** breadth_step1_grid --leg long --basis net --cube-dir, 100-permutation null
+  (output_audit/b3335_pivot_r1_breakout_lv4_breadth_net_long.json): base in-sample Sharpe 0.225 n
+  4,288, 720 trials over 12 of 14 axes (monthly_bias_bull 0.972 and otc_volume_recent 0.954 under the
+  coverage floor), null p 0.0099; rank 1 vix_term_backwardation required TRUE @ regime_flip 3.017 n
+  676, with 83 pct of its trades in 2025-04 and 2.066 without that month; the best row with no month
+  over 30 pct is xs_max_anomaly >= 0.05 @ time_stop_20d 1.062 n 1,703 (0.416 without its top month).
+  **Waits on:** the owner's word; any holdout read here is a DISCLOSED-RE-READ.
+
+### R.7 news_momentum_long's and smc_bos_continuation's Step 2 (B3139q-r205..r205e; S6-B3409, S6-B3432)
+
+- **RELEASED** by the owner's word sent 2026-11-05T12:24:51Z, item 5: 'Lift the pause for two engine
+  runs' - the r111 rank order, news_momentum_long then smc_bos_continuation, in series. PRICE by
+  make_spec.step2_sizing: each arm's own Step-1 elapsed - 3.1425 h and 3.4594 h (the sizing's own read;
+  the r105b landing row recorded 3.3427 h for the second from its heartbeat) - times the 6 measured
+  Step-2/Step-1 ratios, 7.897 to 26.719: 24.8 to 84.0 h and 27.3 to 92.4 h, 52.1 to 176.4 h in
+  series. The decision row stated no price (L1013, the mechanism S6-B3431). Specs by make_spec.py --step
+  2: preregistered_exit breakeven_plus_trail for both; breadth leg not_run under S6-B3430.
+- **LAUNCHED (r205c)** as one detached chain, task registered 2026-11-05T17:25:52Z; leg 1's gate
+  receipt names the worktree at 37ba09e03a2c, 544 tickers, 4 pool workers and 4.5 h legs; first
+  heartbeat 17:43:06Z; five launch-path rules kept by hand (S6-B3398).
+- **HELD BEFORE THE SECOND RUN (r205d):** on the owner's S6-B3432 (b), sent 2026-11-05T22:06:47Z, and
+  the pause sent 22:17:52Z, the chain's interpreter was stopped at 22:20:29Z and its task unregistered
+  - the runbook's hold (section 4.5); news_momentum_long's run continues under run_wave and
+  smc_bos_continuation's waits on the owner's word. The pause was lifted 2026-11-06T15:02:12Z
+  ('Continue fable mode') and the hourly monitor re-armed on the run's heartbeat (r205e).
+- **PROGRESS** (run_heartbeat.json): sim-day 676 of 1,003 at 2026-11-06T22:40:16Z, leg 7 (leg 6 hit its 4.5 h cap at 675). On
+  2026-11-06 the machine slept about an hour (Kernel-Power 42 / 107; the run's suspended_hours
+  1.0037), and around 00:21Z the run paged under memory pressure from other applications - each pool
+  worker at 6.4 to 6.9 CPU seconds per 30 s, 1,115 pages a second, 1.13 GB of physical memory free - a
+  slowdown, not a stall. **Waits on:** the landing, then S6-B3432's remainder and the one read on the
+  owner's word.

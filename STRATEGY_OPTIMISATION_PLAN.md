@@ -206,6 +206,24 @@ and the launch-time refusal (B2578) followed (§2.1); the table above and the wo
 5. **MID-TURN COMPACTION:** if context is compacted mid-turn, re-read the operative sections, the
    stamped view, and every file about to be edited BEFORE the next substantive action (owner
    directive 2026-09-16, in durable memory) - never continue on the summary alone.
+6. **THE OFFLINE ROSTER SPRINT - many NOT-STARTED rows graded in one pass, on cubes that already
+   exist (owner ruling 'All', sent 2026-11-05T03:34:16Z, on S6-B3422 (B), (C) and (E); S6-B3423).**
+   Engine runs stay paused (§1.3); offline Step-1 grading is carved out of the pause. In order: (1)
+   rebuild the stamped view; (2) measure each NOT-STARTED candidate's fires on existing cubes and drop
+   any below the Step-1 T1 floor (`step1_gates.require_t1_floor`); (3) measure each candidate's
+   R5-entry overlap with the admitted lines and set a near-duplicate aside before any band work (the
+   Jaccard-0.70 line of §6.3, read early); (4) write each one's R1 entry (§2.1) - every offline
+   Step-1 instrument refuses a strategy with no SPECS or SPECS_PHASE0 entry
+   (`step1_gates.require_band_ruling`); (5) put the batch's Table A bands to the owner in ONE band
+   packet, the words still recorded per strategy on its ticket (§0.6); (6) run the offline Step-1
+   grids (§3.4, §3.6) - ranked lists, no holdout read; (7) put every Step-1 survivor's pre-registered
+   line to the owner in ONE holdout-read packet - one read per line, as always; (8) render any
+   admission through `build_phase_1b_roster.py` after the owner rules, the de-dup and the labels
+   re-checked; (9) list for the owner the candidates whose axes need the engine (S6-B3422 (E)).
+   Unchanged: the six live gates, the one-shot holdout read on the owner's word, BH-FDR at the roster,
+   the Jaccard de-dup and the launch refusals. A sprint member has no owner-opened campaign record, so
+   the view reads it NOT-STARTED while its ticket holds a ranked Step-1 list - how the view shows work
+   done outside a register campaign is the owner's decision (S6-B3435).
 
 ### 0.6 APPROVAL FLOW - which word covers which step (L779, owner-mandated 2026-09-10; formerly §11.2c)
 
@@ -220,7 +238,7 @@ This is the mandatory pre-execution check for every campaign:
 | **Step 2 - the holdout read** | **NO - one-way door** | its OWN explicit word, every time ('build the reader and run step 2'; 'admit all... as long as it clears') |
 | Admission to PHASE_1B_ROSTER | reversible (strike) but owner-owned | its OWN ruling per admission, or an explicit standing scope ('top 1 per strategy', 'admit all in table A') |
 | NEW-GATE wiring into strategies or engine knobs | code change | per-strategy owner approval (the ask-every-time rule) |
-| Engine launch | cost + hours | NEVER without the owner's launch word (standing) |
+| Engine launch | cost + hours | NEVER without the owner's launch word (standing); the decision row that asks for it states the run's hours, priced from the subject's own record (§4.9 Step 2.3; S6-B3431, L1013 - `scan_launch_decision_without_price`); and while the owner's pause stands, only the runs a release names (§1.3; S6-B3409) |
 
 **MECHANIZED IN PART (S6-B3338, B3139q-r138): two one-way doors in this table now check the
 owner's word against the ledger.** An engine launch: `scripts/make_spec.py --owner-word ...
@@ -471,6 +489,7 @@ pair is now consistent.
 | `next_pivot_target` | barred as a selected exit (owner 2026-09-10; §0.3) |
 | Launch path | ONLY `run_wave.py` (writes `run_manifest.json` from the spec) -> `launch_sweep.py` (runs `prelaunch_gate.py --manifest` and REFUSES on non-zero, `launch_sweep.gate_passes`, then writes `gate_receipt.json`; battery check M10 SKIPs a cube without one - a SKIP on a NEW cube is a finding, it was launched around the gate - and FAILS a receipt whose manifest is missing or no longer hashes to it, S6-B3342). Each leg's engine runs from a git worktree pinned at the manifest's frozen sha (`launch_sweep.isolated_engine_command`, S6-B3264), `drift_check` staying the leg-boundary detection. A direct `run_phase1a.py` invocation bypasses all three (S6-B2159b class), though the engine's own owner-word check still runs (S6-B3358) - never launch that way |
 | A running chain is LIVE CODE | `run_postconfig.py`, `postconfig_landing.py`, `run_wave.py`, `launch_sweep.py` and the engine are re-read at each landing/launch, so an edit while a chain runs is a deploy onto every queued spec (S6-B2573i); do not edit them mid-chain without saying so |
+| Engine runs PAUSED | **No config or strategy run without the owner's explicit command** (owner, sent 2026-10-31T20:02:18Z, verbatim *'No more config or strategy runs till my explicit command. The execution has been all over the place and workflows and execution infrastructure has not been followed. Pause current'*; S6-B3409) - it supersedes every earlier conditional launch word. OFFLINE Step-1 grading on cubes that already exist is carved out (owner 'All', sent 2026-11-05T03:34:16Z, on S6-B3422 (B)), and a release names exactly the runs it covers (two LEVER4 Step-2 runs in series, released 2026-11-05T12:24:51Z). JUDGMENT-ONLY at the launch: no refusal reads the pause - one keyed on it is a NEW GATE and the owner's to order - so the ticket is the record |
 | Isolation bypasses tier sizing | approved; comparability loss accepted (B1545; §8.1) |
 | Hourly updates while any run is active | STANDING (§8.9) |
 | Mirror shorts | a promoted long carries its short mirror by default (standing directive B1382, owner 2026-07-25); only a long-only DATA SOURCE excuses it - a structurally asymmetric source makes the mechanical inverse economically false (the B610 mirror reverted at B611) |
@@ -697,6 +716,13 @@ an engine-requiring band is refused by `validate_spec` until its `tools` block i
 adapter can no longer be deferred to "the first engine campaign" while a full band inventory is
 written against it.
 
+**What an OFFLINE Step-1 grid's gates read (MEASURED S6-B3423, a pilot of five R1 entries):** R1's
+entry, the T1 floor and a current Table A - `step1_gates.require_band_ruling`, which both offline
+instruments call - and none of R2-R9; `scripts/onramp_probe.py` passed the pilot's entries on R1, R8
+and R9 only. For a NONE-lane strategy an R1 entry is mostly production-held inventory - its depth
+bands are engine-only with no knob - so its offline work is breadth (§3.6), and its cost is the
+Table A transcription plus one producer read per depth knob.
+
 **The launch-time check (B2578, S6-B2573b):** `producer_variant_table.launch_refusals` runs in
 `run_wave.main` BEFORE any arm and in `prelaunch_gate.check` for every LOCAL manifest, refusing R1 (no
 SPECS entry), R3 (not in `run_postconfig.FAMILIES`), an undeclared or off-band env knob, a resim level
@@ -736,6 +762,13 @@ recorded in `STRATEGY_CAMPAIGN_LOG.md`, never here.
 ```bash
 grep -n "def strat_<STRATEGY>" -A 12 backtest/signals/screener.py
 ```
+**A gate leg that reads a persisted NUMBER for its truth tests no level (L1012, CHECKLIST #331;
+S6-B3428).** `s.get('<magnitude>', False)` is true for any non-zero value, so a leg named for an
+oversold cut can test nothing while its name, docstring and reason text say it does. At Step 0.1 run
+`python scripts/truthy_numeric_reads.py`; a hit is a STRATEGY-RULE defect for the owner's word -
+never a band - and `test_b3428_no_strategy_gate_reads_a_number_for_truth` freezes the set. A key
+built by a template (an f-string such as `rsi_{p}_oversold`) does not appear in a name grep: resolve
+it through `build_table_a.attribute` before calling a key unproduced.
 
 **0.2** For EVERY signal in the gate, find its producer and that producer's parameters. **Do not stop
 at the gate expression** - a gate reading as two booleans once had six producer parameters behind it
@@ -764,7 +797,16 @@ here is a producer defect, not a search. Run it AFTER the owner's band review (�
 own smoke command is in the campaign log.
 
 **0.6** Add the SPECS entry to `scripts/producer_variant_table.py` - `formula` + `params`, every row
-citing `evidence` as `file:line`. Then verify:
+citing its `evidence` by SYMBOL - the function, or the key it builds - never by line number. (This
+step said `file:line` until S6-B3433; `test_b3139bb_line_citations_in_code_only_shrink` refuses a new
+line citation in code and `test_b3231_screener_is_cited_by_symbol_not_line` one into the screener,
+because a line moves with every edit above it (L901) - the pre-gate caught both in a pilot's new
+entries, S6-B3423.) **Where the rows live (S6-B3335):** a strategy whose engine-facing entry is in
+`SPECS` carries its offline-only rows - the breadth B-rows (§3.6) - in a same-name `SPECS_PHASE0`
+entry; `producer_variant_table.resolved_spec` merges the two per param (SPECS wins on a shared id, an
+id in one only is kept), and `test_b2752f_leverage_does_not_price_an_unreachable_axis` holds every
+SPECS entry at zero unreachable axes, so a B-row written into the SPECS entry is refused before the
+commit. Then verify:
 ```bash
 PYTHONPATH=. python scripts/producer_variant_table.py --strategy <STRATEGY> --factorial
 ```
@@ -784,7 +826,7 @@ that is neither is dead weight advertising coverage the programme cannot deliver
 class: four banded resim levels (two per parameter, all off production) were unscheduled AND
 unrunnable, because the screener hardcoded both
 thresholds and no env knob had ever been built. Assert this per parameter before Step 1.0 signs the
-pre-spend manifest. Every producer leg of a strategy in the TIGHTEN or BOTH lane carries a defined band (S6-B2845, owner 2026-09-17), a lane move included (S6-B3308) - `test_b2836` pins it across the lane files.
+pre-spend manifest. Every producer leg of a strategy in the TIGHTEN or BOTH lane carries a defined band (S6-B2845, owner 2026-09-17), a lane move included (S6-B3308) - `test_b2836` pins it across the lane files. **A threshold inside an OR has no Table A row today (S6-B3429):** `scripts/build_table_a.py` emits no EXISTING-THRESHOLD row for a numeric comparison inside an `or` - an AST sweep of `screener.py` finds 11 strategy functions with one - so register the OR-composite by hand as a held row of the R1 entry until the builder emits it, or a band packet never shows the owner those cuts. **A leg implied by another leg on the same key cannot bind** - a cut looser than the side's tighter cut on that key - so hold it at production and never band it (S6-B3423; JUDGMENT-ONLY: read when the entry is written).
 
 ### 2.3 ACTUATION - A BAND WHOSE PARAMETER DOES NOT EXIST IS NOT A BAND (B2866, owner-directed 2026-09-19; formerly §11.0b)
 
@@ -988,7 +1030,7 @@ config.
 |---|---|---|---|
 | F1 | Write the SPECS entry (R1) with every parameter's `free_band` / `resim_band`. A parameter with NO env knob can have NO resim level - `validate_spec` refuses it (the S6-B2569a class) | `producer_variant_table.py --strategy <s>` | the SPECS entry + Table A |
 | F2 | Confirm which parameters actually reach THIS strategy's gate: read the gate expression in `screener.py` and follow each signal to its producer. A producer's parameter that gates only a SIBLING's signal is not this strategy's axis | grep the gate, read the producer | a per-parameter LIVE / SIBLING mark |
-| F3 | Run the sweep IN-SAMPLE ONLY, priced against its own permutation null | `offline_level_sweep.py --strategy <s> --axes '<key>:le\|ge:<levels>' --production <values> --basis net --band-ruling "<the owner's T3 words, verbatim>" --null-perms <n> --out output_audit/<b>_<s>_step1_is_surface.json` (`--band-ruling` is REQUIRED - S6-B2848a; the pre-B3096 text of this command predated it). **`--basis` is REQUIRED and recorded on the artifact (S6-B3314, owner ruling 2026-10-27, option (a)), as on the breadth grid (S6-B3139ag): `net` scores through `roster_core.net_pnl`, the roster's basis and the one every new depth campaign runs; `gross` is the raw cube pnl that every depth artifact before S6-B3314 graded by omission. The permutation null scores on the same basis.** **S6-B3290 / S6-B3290b forms (B3139q-r105..r107):** `lt` / `gt` beside `le` / `ge` where the gate is strict; `<key>:<op>:<levels>@<group>` for an OR-arm (members of a group OR, groups AND the plain axes); `--direction long\|short` for one leg of a dual strategy (per-side bands, S6-B3270) with the Step-1 artifact recording the leg; `--survival` when T1 restricted the fires (reproduction is then measured on the surviving subset, as T4 requires); `--derive <module.py>` for a band whose level is a DERIVED key of persisted geometry (a `derive(sig) -> dict` module, its path and sha256 recorded in the artifact - a holdout read refuses when that sha moved, S6-B3294). **A best cell is a preregistration_candidate only when it is worth the one-shot read (S6-B3293, B3139q-r110): the sweep VOIDS the candidate and records `preregistration_refusal` when the best cell's IS sharpe is not positive or its null p is above the S6-B3206 noise bar (`producer_variant_table.DEPTH_NULL_P_MAX`); Table D prints NO PREREGISTRATION CANDIDATE; the holdout read re-evaluates the same rule on any artifact it is handed and refuses, so an artifact written before the rule is refused too - say so in the row and spend nothing** | the ranked artifact, carrying `trials_searched` and `preregistration_candidate`, PLUS **Table D (offline form)** written unconditionally beside it as `<out>.md` (B2643, owner directive 2026-09-08: the ranked producer-combination view does not wait for an engine run; pinned by test_b2643) |
+| F3 | Run the sweep IN-SAMPLE ONLY, priced against its own permutation null | `offline_level_sweep.py --strategy <s> --axes '<key>:le\|ge:<levels>' --production <values> --basis net --band-ruling "<the owner's T3 words, verbatim>" --null-perms <n> --out output_audit/<b>_<s>_step1_is_surface.json` (`--band-ruling` is REQUIRED - S6-B2848a; the pre-B3096 text of this command predated it). **`--basis` is REQUIRED and recorded on the artifact (S6-B3314, owner ruling 2026-10-27, option (a)), as on the breadth grid (S6-B3139ag): `net` scores through `roster_core.net_pnl`, the roster's basis and the one every new depth campaign runs; `gross` is the raw cube pnl that every depth artifact before S6-B3314 graded by omission. The permutation null scores on the same basis.** **S6-B3290 / S6-B3290b forms (B3139q-r105..r107):** `lt` / `gt` beside `le` / `ge` where the gate is strict; `<key>:<op>:<levels>@<group>` for an OR-arm (members of a group OR, groups AND the plain axes); `--direction long\|short` for one leg of a dual strategy (per-side bands, S6-B3270) with the Step-1 artifact recording the leg; `--survival` when T1 restricted the fires (reproduction is then measured on the surviving subset, as T4 requires); `--derive <module.py>` for a band whose level is a DERIVED key of persisted geometry (a `derive(sig) -> dict` module, its path and sha256 recorded in the artifact - a holdout read refuses when that sha moved, S6-B3294). **A persisted value ROUNDED coarser than the cut breaks a strict reproduction (S6-B3249):** a `< 1.0` ceiling on the 2-dp `vol_ratio_20d` reproduced 0.9896 of the fires and the sweep refused - every miss was stored at exactly 1.00. Read the cut inclusively (`le`) only after confirming every miss sits exactly at the boundary, and say so in the band ruling; the reproduction refusal is the mechanism. **A best cell is a preregistration_candidate only when it is worth the one-shot read (S6-B3293, B3139q-r110): the sweep VOIDS the candidate and records `preregistration_refusal` when the best cell's IS sharpe is not positive or its null p is above the S6-B3206 noise bar (`producer_variant_table.DEPTH_NULL_P_MAX`); Table D prints NO PREREGISTRATION CANDIDATE; the holdout read re-evaluates the same rule on any artifact it is handed and refuses, so an artifact written before the rule is refused too - say so in the row and spend nothing** | the ranked artifact, carrying `trials_searched` and `preregistration_candidate`, PLUS **Table D (offline form)** written unconditionally beside it as `<out>.md` (B2643, owner directive 2026-09-08: the ranked producer-combination view does not wait for an engine run; pinned by test_b2643) |
 | F4 | PRE-REGISTER the single cell BEFORE any holdout code path runs, in a COMMITTED artifact. The ordering IS the pre-registration. **Mechanism (S6-B3395):** the read refuses an uncommitted Step-1 artifact (`holdout_reads.step1_uncommitted`, test_b3395a) | the artifact + the commit | the commit hash in the queue row |
 | F5 | Owner-gated Step 2 (owner ruling 2026-09-08): compute the holdout for ALL cells x exits IN ONE READ - offline, one artifact, every cell's six-gate line rendered. The PRE-REGISTERED cell's numbers CARRY ADMISSION against the six LIVE_GATES; every OTHER cell's holdout figure is DIAGNOSTIC / PEEKED BY CONSTRUCTION and is labelled so in the artifact - it can never pick a different winner, because the pre-registration is spent the moment the read runs. **S6-B3294 (L912): the read takes its SUBJECT from the Step-1 artifact - the leg, the survival filter, the derive module (sha-checked) - never from a flag; a per-side campaign's read passes the sibling leg's Step-1 artifact as `--coverage-artifact` so the band-coverage gate sees both legs' graded levels. A generic sweep's in-sample SURFACE counts toward band coverage with the same standing as a free-level evaluation (S6-B3139o) - the owner's ruling S6-B3295 (a), 2026-10-26: the gate reports the surface's graded levels per param and counts them, so a sweep-based campaign reaches F5 once its sweeps grade every approved band level** **The read grades on the P&L basis the Step-1 artifact RECORDED (S6-B3314) - an artifact from before S6-B3314 records none and reads gross, and the read writes where its basis came from (`basis_source`).** | `scripts/offline_holdout_read.py` (built B2644, closing S6-B2638b; the pre-B3096 table still said PROPOSED-NOT-BUILT, stale since B2644) | the Step-2 grid with peeked cells LABELLED |
 
@@ -1062,10 +1104,13 @@ meaning. ENFORCED by validate_spec: a formula carries the PRODUCER LAYER and STR
    as an `unindexed` bucket, a mixed bag that is never a cluster (cluster() leaves it out and the artifact lists it with no representative, test_b3394a; S6-B3394).** **Per leg, on the surviving fires:
    `--direction long|short` screens one leg of a dual (S6-B3247), and `--survival` keeps the fires the
    CURRENT gate keeps - the depth sweep's T1 definition (S6-B3320). The screen refuses a subject whose
-   gate changed since R5 without it, and the consistent set refuses two populations or two legs.** **On the basis its grid grades: `--basis` is REQUIRED, as on the grids (S6-B3314, S6-B3139ag) - `net` scores the effects through `roster_core.net_pnl` (winsorized at +/-300, the round-trip cost charged), and `gross` is the raw cube pnl every screen before it scored by omission; one bogus print can set a companion's sign on gross. A run directory's own fires take `--cube-dir` (S6-B3335), and the consistent set refuses two bases or two sources (S6-B3382).**
+   gate changed since R5 without it, and the consistent set refuses two populations or two legs.** **On the basis its grid grades: `--basis` is REQUIRED, as on the grids (S6-B3314, S6-B3139ag) - `net` scores the effects through `roster_core.net_pnl` (winsorized at +/-300, the round-trip cost charged), and `gross` is the raw cube pnl every screen before it scored by omission; one bogus print can set a companion's sign on gross. A run directory's own fires take `--cube-dir` (S6-B3335), and the consistent set refuses two bases or two sources (S6-B3382).** **The screen REFUSES fewer than 500 in-window entries as underpowered** (its entry check in `institutional_companion_screen.py`): a subject below it gets no B-row candidates, recorded on its row, and a screen written before the subject's gate changed is superseded by the change, never reused (S6-B3249).
 2. **CLUSTER -> REPRESENTATIVES** - group consistent survivors by producer family (momentum /
    compression / volume-profile / volatility / candlestick-pattern / gap ...); pick ONE representative per cluster
-   with the criterion stated (#165). Collinearity with an existing depth axis is flagged on the row.
+   with the criterion stated (#165). Collinearity with an existing depth axis is flagged on the row;
+   a cluster member that IS a depth axis's own key is not taken as a B-row - it duplicates the depth
+   search - and two keys of one producer quantity are flagged on both rows (S6-B3373; JUDGMENT-ONLY:
+   the screen does not know the depth axes).
 3. **TABLE A MEMBERSHIP (owner ruling 2026-09-12)** - each chosen axis becomes a B<n> row in the
    strategy's SPECS entry: producer named, effect sizes from the screen as evidence (both ENFORCED non-empty by validate_spec, test_b3393d; S6-B3393), band = retention
    quantiles (QUANTS, `breadth_step1_grid.py` - a CHOSEN convention) derived on the SUBJECT'S OWN FIRES
@@ -1079,6 +1124,11 @@ meaning. ENFORCED by validate_spec: a formula carries the PRODUCER LAYER and STR
    never covers the other leg's row (a pooled grid counts for both); per-leg depth params carry the
    same field, and `validate_spec` refuses a param whose label names a side (an upper-case LONG or
    SHORT) without it, or with any other side (S6-B3325). ENFORCED for the B-rows: validate_spec refuses a legless B-row on a DUAL strategy's registry entry; the 9 rows that predate the rule are frozen in DUAL_BROW_LEGS_GRANDFATHERED (test_b3393c; S6-B3393).
+   **Registering B-rows rewrites a registry block - prove the rewrite before relying on it
+   (S6-B3249):** round-trip each block through its printer with a control that re-renders every
+   untouched block byte-identically BEFORE a row is added; then `validate_spec` and
+   `step1_gates.require_valid_spec` must read the new BREADTH LAYER clean. The rows go in the
+   strategy's `SPECS_PHASE0` entry (§2.2 Step 0.6).
 4. **BAND REVIEW** - the owner reviews the full band (depth + breadth rows) before Step 1 (§0.6).
    Nothing runs earlier.
 5. **THE IN-SAMPLE GRID** (Step 3's search; the tool's name predates the renumbering) -
@@ -1382,6 +1432,23 @@ having run nothing). Identity = `wave_identity.spec_digest` of the authored spec
 reporter is §8.9's peer reporter (S6-B2573f.c) - the pre-B3096 text called it PROPOSED-NOT-BUILT, stale
 since B2618.
 
+**HOLDING a chain between its specs - on the owner's word only (S6-B3432 (b), ruled 2026-11-05T22:06:47Z).**
+`scripts/run_serial_chain.py` has no hold switch: it reads each spec only after the previous
+`run_wave` returns, and `wave_identity.decide` launches a spec with no summary. The executed hold, in
+order: (1) stop ONLY the chain's own interpreter - the venv python whose command line runs
+`run_serial_chain.py` for that task, its identity (command line and parent) checked before
+`Stop-Process -Id`; its stub, its cmd and its Task Scheduler task end with it (state Ready), while
+`run_wave`, `launch_sweep`, the engine and its pool keep running - PROBED first on a throwaway task of
+the same shape, built by `launch_detached._hidden_action` / `_register_and_start`: the grandchild's
+heartbeat stayed 1.3-2.0 s old after the stop and 1.4 s old after the task was unregistered; (2)
+unregister the task (`launch_detached.py --cleanup`) so nothing restarts it; (3) append an operator
+line to `serial_chain.log` in its own format, matching neither `LAUNCH` nor `<wave> finished`; (4) move
+the monitor onto the run's own heartbeat (Step 2.5) - a prompt reading the deleted task reports a dead
+chain; (5) at the landing, append the line the stopped chain would have written, `<UTC> <wave>
+finished: ...` - `pyramid_gate._chain_inflight` and `scan_chain_running_close` read a `LAUNCH` with no
+finished line as in flight forever; (6) the held spec launches only on the owner's word, through a
+fresh `launch_detached.py --chain` (CHECKLIST #120). A hold the chain reads itself is S6-B3436.
+
 ### 4.6 Step 1 grading (formerly §11 STEP 2 GRADE)
 
 **Grading is family-dispatched.** The battery runs the family grader (`tools.grade`) on every landing
@@ -1585,6 +1652,12 @@ wave, all of them apply.
 6. **Arm the cadence monitor BEFORE the launch, in the same turn - `scan_unmonitored_launch` now reads the arm's POSITION, so an arm after the launch does not cover it (test_b3399a; S6-B3399)** (#185; §8.9).
 7. **Confirm zero pre-existing engine processes**, or two runs share an output path and corrupt both.
 
+Items 3 and 7, the workers-versus-cores limit (Step 1.4), the generated spec (Step 2.2) and the
+detached chain path (§4.5 Step 1.3) are not yet refusals at this door: check each by hand and record
+it in the launch row until S6-B3398 mechanizes them - the five launch-path rules that bound the last
+Step-2 launch (S6-B3398's re-weigh; `pyramid_gate._engine_inflight` reads the process table for item
+7).
+
 #### Step 2.2 - THE SPEC, and the one field that is easy to get wrong
 
 This is the FAMILY-NEUTRAL shape the launch gates accept. Copy the SHAPE; take every value from your
@@ -1608,7 +1681,7 @@ instance is recorded in the campaign log).
 
 - **Generate it; do not type it (S6-B3154a).** `scripts/make_spec.py --step 2` (the Step-1 arguments:
   `--strategy`, `--param`, `--levels`, `--with`, `--wave-prefix`; and, unless `--dry`, the owner's
-  launch word, `--owner-word` and `--owner-word-ticket`, section 0.6; and the breadth leg, `--breadth-leg` ran / waived / not_run with its evidence, words or ticket, which the arm carries and the launch gate requires - S6-B3367) writes this spec SIZED from the
+  launch word, `--owner-word` and `--owner-word-ticket`, section 0.6; and the breadth leg, `--breadth-leg` ran / waived / not_run with its evidence, words or ticket, which the arm carries and the launch gate requires - S6-B3367; a programme with no breadth step of its own, a gate-budget arm (§4.10), declares `not_run` under a ticket that decides the leg at the arm's landing, S6-B3430) writes this spec SIZED from the
   config's own COMPLETE Step-1 cube: `max_legs` = ceil(that cube's engine hours x the family's largest
   measured Step-2/Step-1 ratio x `STEP2_LEG_MARGIN` / `leg_cap_hours`), the arm's `preregistered_exit` =
   that cube's grid `step1_ranking[0]` exit (the B2612 record `run_postconfig.preregistered_exit` reads
@@ -1684,6 +1757,13 @@ that resumed from an older checkpoint. A leg launched with `--resume-from-checkp
 record prints `[B3099 WARN]`; for that leg, compute the rate as leg seconds / sim-days it advanced. Each campaign's measured rate and memory readings are recorded in
 `STRATEGY_CAMPAIGN_LOG.md`.
 
+**The decision that asks for a run carries its price (S6-B3431, L1013).** A decision row that puts an
+engine launch to the owner states the run's hours from the SUBJECT'S OWN record - for a Step-2 arm,
+`make_spec.step2_sizing` over that arm's own Step-1 elapsed - never a figure from another strategy's
+run (L964) and never none: `scan_launch_decision_without_price` refuses a close whose decision table
+names an engine run with no duration. A release word given without the price is re-priced at the
+launch and the price written beside it in the launch row.
+
 #### Step 2.4 - THE MEMORY CEILING - three rules, each of which cost something to learn
 
 - **A pyramid alongside a live wave is not free.** A pooled engine alone has run at tens of GB of
@@ -1700,6 +1780,17 @@ record prints `[B3099 WARN]`; for that leg, compute the rate as leg seconds / si
   which a direct run_wave launch never writes (L865). A fresh heartbeat whose pid is gone is recorded
   separately as `engine_dead_within_window` - the B3091 heartbeat-age reading named a dead wave as
   in flight for an hour.
+- **ANY test run competes with a live Step-2 run for commit, not only the full suite (MEASURED
+  S6-B3432, 2026-11-05/06, the engine's 4 pool workers at about 5.2 GB of commit each):** a targeted
+  pre-gate drove commit headroom to 1.42 GB and preflight C16's 92 queue readers to 1.21 GB before
+  they were stopped, and the status-view builder (`scripts/build_strategy_status.py`) failed out of
+  memory parsing the R5 trade log (S6-B3434). So while a Step-2 run is live, every commit that needs tests - a
+  pre-gate ride included - and every regeneration of the status view waits for the landing; the
+  owner-ruled way to make that window is to HOLD the chain's next spec at the landing (S6-B3432 (b);
+  §4.5's hold), then the pre-gate, the pyramid and the commit. `scripts/commit_free.py` reads the
+  headroom, but a sampled reading cannot catch an allocation spike: a guard polling every 3 s saw
+  no lower than 3.78 GB while the builder's own allocation failed, so a memory-heavy helper does not
+  run beside the engine at all - it waits for the landing too.
 - **Full-gate cadence (S6-B3410 (a), owner 2026-10-31, verbatim 'A but one full pyramid per 3 turns'):** one FULL pyramid per 3 turns; the turns between commit on a green stamp ridden by a PASSING targeted pre-gate on the exact tree (`scripts/pregate_select.py --run`; preflight C6 `_pregate_ride`, ledger `.pyramid_rides`, pinned by `test_b3410`). And (b): a miss's new enforcement mechanism may batch to one enforcement batch per full-pyramid cycle - one per 3 turns, the (a) cadence (owner correction sent 2026-11-01) - under a named ticket (`Mechanism: BATCHED (S6-xxxx)`, read by `scan_miss_capture_complete`), owner-visible misses excepted.
 - **Editing the spec does NOT affect a running wave.** `run_wave.py` reads the spec ONCE at startup
   (`run_wave.main`) and the leg loop reads `max_legs` from that in-memory dict (`run_arm`'s
@@ -1745,8 +1836,57 @@ The monitor contract is §8.9. Wave-specific rules:
   every engine_state writer - cash, positions, the equity and benchmark curves and the drawdown peak -
   so portfolio accounting resumes where it stood (inert in an isolation cube either way, where the
   portfolio holds nothing; §8.6).
+- **A run whose chain was stopped (§4.5's hold) is watched on its OWN heartbeat** - the
+  `sim_day_index` diff and `pid` in `run_heartbeat.json`, a new pid after a planned leg end being the
+  next leg - and its monitor's prompt carries the landing remainder (the hand-written finished line,
+  the `LANDING REPORT`, then the pre-gate, the pyramid and the commit) and forbids launching the held
+  spec (S6-B3432; `scan_monitor_trips_on_planned_leg_end` applies to it as to any chain monitor).
+- **Measure a slowdown before naming its cause.** When the sim-day pace falls while the heartbeat
+  stays fresh, check machine sleep first - the heartbeat's `suspended_hours`, and Kernel-Power events
+  42 / 107 (L731) - then paging: each pool worker's CPU seconds over a 30 s window beside the paging
+  rate and free physical memory. Workers well under one core each with heavy paging is memory
+  starvation, not a stall; the measured instance is in the campaign log (S6-B3432; JUDGMENT-ONLY: an
+  order of diagnosis, read by the person).
 - **Retire the monitor in the same turn the run lands or stops** (CHECKLIST #320) - a monitor that
   outlives its subject keeps re-asserting a frozen state on a timer.
+
+### 4.10 GATE BUDGETS - a k-of-m loosening of a condition-stacked gate (LEVER4; S6-B1248-LEVER4-GATE-BUDGET; new at S6-B3433)
+
+A GATE BUDGET makes a strategy's long side fire when at least k of its m AND-legs hold, every
+MANDATORY leg required; with no budget the side is the plain AND, in the same order and with the same
+short-circuit (`screener._gate_budget`, its budget an env JSON that is empty by default). It LOOSENS
+the gate - it admits bars no cube recorded - so it is W-L work: one engine run per arm, never an
+offline grade. The sequence the programme executed, class-level:
+
+1. **CENSUS** - count each long side's AND legs (`scripts/lever4_condition_census.py`, pinned by
+   test_b1248_lever4_census_counts_each_long_sides_and_legs); the slice is picked on IN-SAMPLE evidence
+   only - never a holdout field - and is the owner's to rule.
+2. **THE READING OF k = m-1 IS THE OWNER'S** - ruled 2026-10-21: the THESIS leg (the condition the
+   strategy is named for) is MANDATORY and k = m-1 counts the rest, because "any m-1 of the m legs"
+   lets a strategy fire without the event its name describes (reading R2).
+3. **PRODUCTION UNCHANGED, PROVEN** - with the budget empty each strategy's full outputs, hashed over
+   the R5 signal dicts, are identical before and after, and each strategy's full leg truth table is
+   pinned (`test_b1248_lever4_gate_budget_is_the_and_by_default_and_k_of_m_when_set`).
+4. **ON-RAMP** - R1-R9 per strategy (§2.1; S6-B3240), the budget level registered as a resim level of a
+   generated SPECS entry that holds the engine-facing budget row alone (offline B-rows go in the
+   PHASE0 entry, §2.2 Step 0.6); then the owner's T3 word and launch word per strategy.
+5. **STEP 1 - one engine run per arm**, within the Step-1 cap (§1.3).
+6. **THE STEP-1 READ IS LIKE FOR LIKE** - each budget arm against the PRODUCTION-GATE SUBSET OF ITS OWN
+   CUBE: the live production function replayed on each fire's persisted signals
+   (`build_table_a.surviving_fires`), same engine, window, tickers and grader, with a control that the
+   full-cube grade reproduces the landed grid's best cell - never against R5, whose window and
+   universe differ. Step 1 has no gates (B1608): every arm whose best in-sample bound is positive is a
+   candidate, ranked on it.
+7. **STEP 2 - per arm, in rank order, each on the owner's word at its OWN price** (§4.9 Step 2.3;
+   `make_spec.step2_sizing`; L964). The programme's grader carries the Step-2 leg (`lever4_step1`,
+   S6-B3331), and `launch_refusals` refuses a Step-2 spec whose family grader has none (S6-B3332, L974).
+8. **THE LEGS ARE NAMED AT THE READ (#299)** - DEPTH is the budget itself, read once; BREADTH is
+   declared `not_run` on the spec under a ticket that decides it at the landing (§4.9 Step 2.2;
+   S6-B3430): an in-sample screen of the arm's own run directory (`institutional_companion_screen.py
+   --cube-dir`), the owner's B-row words, then the per-leg grid with its permutation null - and any
+   holdout read after that is a DISCLOSED-RE-READ, since the arm's one read is spent (S6-B3335).
+
+Each arm's slice, prices, landings and verdicts are recorded in the campaign log.
 
 ---
 
@@ -2724,7 +2864,9 @@ block, the #237 sweep, the compliance statement, and - while a chain runs - the 
 the compliance statement binds EVERY observable turn-close, not only commit turns -
 `check_compliance_marker`'s commit condition dropped; and a close while `serial_chain.log` shows a
 wave in flight must name the chain with a liveness reading - `scan_chain_running_close`; both pinned
-both directions by test_b3399c.
+both directions by test_b3399c. A chain stopped on the owner's word (§4.5's hold) keeps that line owed
+until its wave's `finished` line is written at the landing, because the scan reads `serial_chain.log`
+alone (S6-B3432).
 
 ---
 

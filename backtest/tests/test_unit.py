@@ -75353,3 +75353,81 @@ def test_b3428_no_strategy_gate_reads_a_number_for_truth():
     kinds = {"adx": ["num"], "vol_above_avg": ["bool"]}
     got = {(f, k) for f, k, _ in tnr.numeric_truthy(tnr.truthy_reads(src), kinds)}
     assert got == {("strat_x", "adx")}, got
+
+
+def test_b3431_a_launch_decision_carries_its_price():
+    """S6-B3431 (B3139q-r205c, L1013, #295): an engine run put to the owner in a
+    decision table carries its own price. (1) The verbatim B3139q-r203d rows
+    fire, on the launch row only, naming it; (2) the same row with the runs'
+    prices is quiet; (3) a decision row naming no engine run is quiet; (4) the
+    same launch words in a table with no Recommend column are quiet; (5)
+    'launch rules' alone is not a launch; (6) the corpus incident fires and its
+    must-quiet twin does not (test_b1760's reading)."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import gate_incident_corpus as gic
+    import verify_turn_compliance as vtc
+    scan = vtc.scan_launch_decision_without_price
+    head = "| # | Ticket | Question | Recommend |\n|---|---|---|---|\n"
+    row = ("| 5 | S6-B1248-LEVER4-GATE-BUDGET | Lift the pause for two engine runs "
+           "(this also brings back S6-B3398's launch rules) | Yes |\n")
+    hits = scan([], text=head + "| 4 | S6-B3335 | pivot's 14 B-rows | Yes |\n" + row)
+    # _response_text lowercases what a gate reads, so the quoted row is lowercase
+    assert len(hits) == 1 and "s6-b1248-lever4-gate-budget" in hits[0].lower(), hits
+    assert "s6-b3335" not in hits[0].lower(), hits
+    priced = row.replace("two engine runs", "two engine runs, 24.8-84.0 h then 27.3-92.4 h")
+    assert scan([], text=head + priced) == []
+    other = "| 2 | S6-B3249 | Approve the 6 strategies' settings plus 34 B-rows | Yes |\n"
+    assert scan([], text=head + other) == []
+    plain = "| Ticket | Result |\n|---|---|\n| S6-B1248 | two engine runs launched |\n"
+    assert scan([], text=plain) == []
+    assert scan([], text=head + "| 6 | S6-B3398 | Build the launch rules | Yes |\n") == []
+    text, fire, state = gic.INCIDENTS["scan_launch_decision_without_price"]
+    assert fire and scan([], text=text, **state)
+    for t2, f2, s2 in gic.EXTRA_INCIDENTS["scan_launch_decision_without_price"]:
+        assert bool(scan([], text=t2, **s2)) == f2, t2
+
+
+def test_b3437_a_quoted_script_path_names_the_program():
+    """S6-B3437 (B3139q-r205f): the launch classifier blanked every quoted span
+    before it tokenized, so a script path QUOTED where the interpreter takes its
+    script disappeared and the next token read as the program. MEASURED
+    2026-11-06 with the gate's own _segment_is_launch on the live transcript: a
+    read-only closure check, `python "$SP/closure_has.py" run_serial_chain.py`,
+    read as a chain launch and blocked a close, while `python.exe
+    "scripts/run_wave.py" --spec s.json` read as no launch - B2028b's accepted
+    residual, the other direction of the same defect. A quoted script path in the
+    script position now names the program either way; a -c payload, a quoted
+    message and a reader's quoted argument stay data."""
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    from verify_turn_compliance import _segment_is_launch as seg, _unquote_script_paths
+    quiet = [
+        'PYTHONIOENCODING=utf-8 timeout 120 python "$SP/closure_has.py" '
+        'run_serial_chain.py wave_identity.py build_strategy_status.py',
+        ".venv/Scripts/python.exe 'scripts/closure_has.py' scripts/run_wave.py",
+        "python $SP/closure_has.py run_serial_chain.py",
+        'python -c "run_wave.py"',
+        'python -m "run_wave.py"',
+        'git commit -q -F msg.txt -m "run_wave.py"',
+        'cat "scripts/run_wave.py"',
+        'copy "scripts/run_wave.py" b.py',
+    ]
+    fire = [
+        '.venv/Scripts/python.exe "scripts/run_wave.py" --spec s.json',
+        '"C:/x/.venv/Scripts/python.exe" -u "scripts/run_wave.py" --spec s.json',
+        "PYTHONPATH=. timeout 600 python -X utf8 'scripts/run_wave.py' --spec s.json",
+        ".venv/Scripts/python.exe scripts/run_wave.py --spec s.json",
+    ]
+    assert [c for c in quiet if seg(c)] == [], "a quoted script's argument read as a launch"
+    assert [c for c in fire if not seg(c)] == [], "a launch through a quoted path read as quiet"
+    # the rewrite touches only the script position
+    assert _unquote_script_paths('python "a/b.py" "c.py"') == 'python a/b.py "c.py"'
+    assert _unquote_script_paths('python -c "x.py"') == 'python -c "x.py"'
+    assert _unquote_script_paths('echo "a.py"') == 'echo "a.py"'

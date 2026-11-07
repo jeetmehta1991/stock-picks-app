@@ -486,6 +486,15 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
                        "| _reason:_ BLOCKED - needs an owner decision "
                        "between per-leg keying and per-leg cubes. |"},
     ),
+    # S6-B3431 (B3139q-r205c, L1013): VERBATIM rows 4-5 of the B3139q-r203d
+    # close's decision table (2026-11-05T11:25:49Z); row 5 asked for two
+    # engine runs with no price and was approved.
+    "scan_launch_decision_without_price": (
+        "| # | Ticket | Question | Recommend |\n|---|---|---|---|\n| 4 | S6-B3335 | pivot's 14 B-rows | Yes |\n"
+        "| 5 | S6-B1248-LEVER4-GATE-BUDGET | Lift the pause for two engine runs (this also brings back S6-B3398's launch rules) | Yes |\n",
+        True,
+        {},
+    ),
     # S6-B3233 (B3139q-r77, L944): VERBATIM from the 2026-10-20 14:51Z close.
     # Four items named live tickets by fragment or id; 'which long campaigns
     # to start' named none, carried no recommendation, and no ledger reader
@@ -1550,6 +1559,11 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
     "scan_unmeasured_quantity": [
         ("Costs nothing - same runtime.", True, {}),
     ],
+    # S6-B3431: must-QUIET - the same row once it carries the runs' prices
+    "scan_launch_decision_without_price": [
+        ("| # | Ticket | Question | Recommend |\n|---|---|---|---|\n| 5 | S6-B1248-LEVER4-GATE-BUDGET | Lift the pause for two engine runs, 24.8-84.0 h then 27.3-92.4 h (this also brings back S6-B3398's launch rules) | Yes |\n",
+         False, {}),
+    ],
     "scan_decision_without_ticket": [
         # must-QUIET: the same list once the decision has its ticket
         ("Still waiting on you: LEVER10 (rec c), SHORT-REGIME (rec a), LEVER4 "
@@ -1678,6 +1692,11 @@ NEUTRAL: dict[str, dict] = {
     # the negative control red, which is L517's shape for the fourth time
     # and is why B1762c added this dict. Neutralise the queue.
     "scan_owner_decision_taken": {"queue_text": "", "rows": []},
+    # B3139q-r205c: reads the LIVE chain record (pyramid_gate._chain_inflight on
+    # serial_chain.log) by default - MEASURED: with the b3139q_lv4s2b chain live,
+    # test_b1760's negative control tripped on bare prose. Neutralised so the
+    # control measures the text alone (the L517 shape this dict exists for).
+    "scan_chain_running_close": {"inflight": "none"},
     # S6-B3233: reads the LIVE ledger for ticket ids by default;
     # neutralised so the control measures the text alone.
     "scan_decision_without_ticket": {"ticket_ids": []},

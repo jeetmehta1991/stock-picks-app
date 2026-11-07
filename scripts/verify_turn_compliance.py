@@ -4173,6 +4173,56 @@ def scan_decision_without_ticket(entries, *, text=None, ticket_ids=None) -> list
             "recommendation, and name its id."]
 
 
+def scan_launch_decision_without_price(entries, *, text=None) -> list[str]:
+    """S6-B3431 (B3139q-r205c, L1013): an engine run put to the owner carries
+    its own price.
+
+    MEASURED 2026-11-05: the B3139q-r203d close's decision table carried the
+    row '| 5 | S6-B1248-LEVER4-GATE-BUDGET | Lift the pause for two engine runs
+    (this also brings back S6-B3398's launch rules) | Yes |' with no duration,
+    and the owner approved it, while that ticket's own rule reads 'each launch
+    is the owner's word at its own price (make_spec.step2_sizing)'. The runs'
+    own prices, 24.8-84.0 h and 27.3-92.4 h, were first stated at the launch.
+    L964 was a price from the wrong record; this was no price - the same class
+    (#295: a run's cost reaches the owner from the subject's own record).
+
+    The mechanizable slice: a row of a DECISION table - a markdown table whose
+    header row (the row above its separator) has a cell starting 'rec'
+    (Recommend, Recommendation, Rec) - that names an engine run (engine
+    run(s), a Step-2 run, or launching a run, wave, chain or arm) and carries
+    no duration (a number followed by h, hr, hrs, hour or hours). A lower
+    bound (L757): a launch asked for in prose, outside such a table, is not
+    read here, and a duration is not checked for being the run's own."""
+    import re
+    t = _response_text(entries, text, keep_code=True)
+    if not t:
+        return []
+    launch = re.compile(r"\bengine runs?\b|\bstep[- ]?2 runs?\b|\blaunch(?:es|ing)?\s+"
+                        r"(?:the\s+|a\s+|an\s+|two\s+|both\s+|its\s+|their\s+)?"
+                        r"(?:runs?|waves?|chains?|arms?)\b", re.I)
+    price = re.compile(r"\d+(?:\.\d+)?\s*(?:h|hrs?|hours?)\b", re.I)
+    sep = re.compile(r"^\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)*\|?\s*$")
+    lines = t.splitlines()
+    rows, in_table = {}, False
+    for i, ln in enumerate(lines):
+        s = ln.strip()
+        if not s.startswith("|"):
+            in_table = False
+            continue
+        if sep.match(s):
+            head = lines[i - 1].strip() if i else ""
+            cells = [c.strip().strip("*_ ").lower() for c in head.strip("|").split("|")]
+            in_table = any(c.startswith("rec") for c in cells)
+            continue
+        if in_table and launch.search(s):
+            rows[f"row {len(rows) + 1} {s[:120]!r}"] = bool(price.search(s))
+    return require_each(
+        "LAUNCH DECISION WITHOUT ITS PRICE (S6-B3431 / L1013, #295)", rows,
+        why=("A decision row put an engine run to the owner with no duration. "
+             "State each run's own price from make_spec.step2_sizing (L964) in "
+             "the row, e.g. '24.8-84.0 h'."))
+
+
 def scan_findings_vs_tickets(entries, *, text=None, rows=None,
                              diff_text=None) -> list[str]:
     """B1739: EVERY finding owes a ticket, not just the first one.
@@ -5172,7 +5222,7 @@ def _segment_is_launch(cmd: str) -> bool:
     # gate the very batch after the reader-head fix. Blank quoted spans in
     # place (B1906: never rebuild a haystack) before tokenizing. Residual
     # accepted: a runner invoked THROUGH a quoted path would be missed here;
-    # no launch in this repo's history is written that way.
+    # no launch in this repo's history is written that way. S6-B3437 reads one now (_unquote_script_paths).
     # B2875: the double-quoted span may SPAN NEWLINES. B2028b excluded \n from
     # both character classes, so a MULTI-LINE `git commit -m "..."` message was
     # never blanked and every runner name inside it tokenized as a launch -
@@ -5189,7 +5239,7 @@ def _segment_is_launch(cmd: str) -> bool:
     # the verification probes for its OWN previous fix. Same class as
     # B2875 one commit earlier (L814): the blanker was written for the
     # simple shape in front of its author and inherits nothing else.
-    cmd = _re3.sub(r'"(?:[^"\\]|\\.)*"|\'[^\'\n]*\'', " ", cmd)
+    cmd = _re3.sub(r'"(?:[^"\\]|\\.)*"|\'[^\'\n]*\'', " ", _unquote_script_paths(cmd))
     for seg in _re3.split(r"&&|\|\||[;|\n]", cmd):
         toks = seg.split()
         if not toks:
@@ -7482,6 +7532,9 @@ def main(argv: list[str] | None = None) -> int:
                 # S6-B3233 (B3139q-r77, L944): a decision put to the
                 # owner names its ticket.
                 scan_decision_without_ticket,
+                # S6-B3431 (B3139q-r205c, L1013): an engine run put to
+                # the owner carries its own price.
+                scan_launch_decision_without_price,
                 # S6-B2993 (owner approved 2026-09-22): a registered
                 # deferral trigger that NEWLY fires blocks one close.
                 scan_deferral_trigger_fired,
@@ -7716,6 +7769,30 @@ def run_guarded(argv: list[str] | None = None) -> int:
               file=sys.stderr)
         _tb.print_exc(file=sys.stderr)
         return 2
+
+
+# S6-B3437 (B3139q-r205f): _segment_is_launch blanks every quoted span before it
+# tokenizes, so a script path QUOTED in an interpreter's script position vanished
+# and the token after it read as the program. MEASURED with the gate's own
+# functions on this session's transcript: `timeout 120 python "$SP/closure_has.py"
+# run_serial_chain.py wave_identity.py` - a read-only closure check - read as a
+# chain launch and blocked a close, while `python.exe "scripts/run_wave.py" --spec
+# s.json` read as no launch at all (B2028b's accepted residual, both directions of
+# one defect). A path quoted where the interpreter takes its script - after its
+# own flags, never after -c or -m - is unquoted before the blanker runs, so the
+# segment names the script it runs either way; every other quoted span is still
+# blanked as data. Pinned by test_b3437_a_quoted_script_path_names_the_program.
+_QUOTED_SCRIPT = re.compile(
+    r"""(?<![^\s;|&(])(?P<interp>(?P<iq>["']?)(?:[^\s"';|&]*[\\/])?"""
+    r"""(?:python(?:\d+(?:\.\d+)*)?w?|py)(?:\.exe)?(?P=iq))"""
+    r"""(?P<flags>(?:\s+-[XW]\s+[^\s"']+|\s+-(?![cm](?:\s|$))[A-Za-z0-9][^\s"']*)*)"""
+    r"""\s+(?P<q>["'])(?P<path>[^\s"']+\.py)(?P=q)""",
+    re.IGNORECASE)
+
+
+def _unquote_script_paths(cmd: str) -> str:
+    """S6-B3437: drop the quotes around a script path an interpreter runs."""
+    return _QUOTED_SCRIPT.sub(r"\g<interp>\g<flags> \g<path>", cmd)
 
 
 if __name__ == "__main__":

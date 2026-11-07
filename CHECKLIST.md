@@ -6069,6 +6069,8 @@ feedback_strategy_scope_no_zoom_out.
 
 **INSTANCE (B3139q-r155 / L1001) - A FAMILY NAMED IN THE CLASS-LEVEL RUNBOOK.** r155's runbook paragraph named a family; test_b3096 refused it before the commit.
 
+**INSTANCE (B3139q-r205c / L1013) - AN ENGINE LAUNCH PUT TO THE OWNER WITH NO PRICE.** The r203d decision row 'Lift the pause for two engine runs' carried no duration and was approved; the runs' own prices by make_spec.step2_sizing, 24.8-84.0 h and 27.3-92.4 h, were first stated at the launch. Mechanism: scan_launch_decision_without_price (S6-B3431), pinned by test_b3431.
+
 ### #296 - PRICE AN OPTION FROM THE PLAN ROW THAT DEFINES IT (B2612 / L767)
 
 **Before stating any option's cost** ("free", "nearly free", "just discipline", "only a re-grade",

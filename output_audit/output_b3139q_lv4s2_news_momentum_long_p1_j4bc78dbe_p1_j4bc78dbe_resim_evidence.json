@@ -1,0 +1,12 @@
+{
+ "strategy": "news_momentum_long",
+ "cube": "output_b3139q_lv4s2_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe",
+ "generator": "scripts/run_postconfig.py register_resim_evidence (S6-B3397)",
+ "graded_by": "output_b3139q_lv4s2_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe_grid_auto.json",
+ "resim_configs": [
+  {
+   "gate_budget": "{\"news_momentum_long\": {\"k\": 5, \"mandatory\": [\"news_sentiment_5d\"]}}"
+  }
+ ],
+ "basis": "the landed arm's values (params_from_manifest) through grade_knob_config.knob_rows + resim_configs"
+}

@@ -6992,5 +6992,43 @@
    "status": "DONE",
    "evidence": "AUTO (B2520) VERDICT (denominators from output_b3248sq_p2_1p5_p2_1p5_grid_auto.json): 0 combinations enumerated: ; rank-1 [breakeven_plus_trail] is_ci_lo 0.279 is_sharpe 0.522 full_n 726 - Step-1: ranking only, no admission (B1608)"
   }
+ },
+ "output_b3139q_lv4s2_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe": {
+  "1_cube_sanity": {
+   "status": "DONE",
+   "evidence": "run_postconfig: cube_exists=PASS(95112 rows); one_strategy=PASS(1 strategies); graded_strategy_present=PASS(graded leg news_momentum_long; the cube carries 1 strategy ...); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ...); megacaps_present=PASS(NVDA, MSFT, GOOGL, META, TSLA, AAPL); M1_content_sha=PASS(a6420e6815015744); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2022-05-05 .. 2026-05-04); M4_holdout_touch=SKIP(24648 entries past 2025-05-05 (not declared a Step-1 cube; ...); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is ...); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ...); M10_gate_receipt=PASS(receipt matches manifest sha 156fbacd89c1); M11_closed_fires_in_cube=PASS(3963 of 3963 closed trade-log fires have exit-cube rows; 0 ...); step_derivation=PASS(Step-2: manifest window.end 2026-05-05 > HO_START ...); M9_universe_artifact=PASS(exit 0 on output_audit/r5_universe_544.txt (verifier is ...); family_dispatch=PASS(news_momentum_long: manifest arms[0] gate_budget={\"news_mome ...); step2_grade_auto=PASS(exit 0; gate_budget={\"news_momentum_long\": {\"k\": 5, ...); step2_legs=PASS(STEP-2 LEG NEGATIVE; BREADTH LEG NOT RUN - NO STRATEGY ...); step2_holdout_ledger=PASS(output_audit/output_b3139q_lv4s2_news_momentum_long_p1_j4bc7 ...); step2_grid_contract=PASS(B2505 contract holds: config, strategy, instrument, cube / ...); step2_resim_evidence=PASS(registered output_b3139q_lv4s2_news_momentum_long_p1_j4bc78d ...); step4_spot_check_auto=PASS(exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 ...); step4_coverage=WARN(NOT CERTIFIED for news ['news_sentiment_5d', ...); step7_engine_implemented=PASS(1 of 1 declared knobs read from the environment + consumer ...); M12_entries_vs_grid_fires=PASS(grid is_n 2936, full_n_count_only 3963 = the cube's 2936 ...); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence) | run_wave verified 95112 cube rows across 10 leg(s); M6 boundary drops (B1076 caveat, measured): [{'leg': 1, 'sim_date': '2022-11-14', 'open_trades_carried': 310}, {'leg': 2, 'sim_date': '2023-04-06', 'open_trades_carried': 242}, {'leg': 3, 'sim_date': '2023-09-26', 'open_trades_carried': 281}, {'leg': 4, 'sim_date': '2024-03-18', 'open_trades_carried': 395}, {'leg': 5, 'sim_date': '2024-08-15', 'open_trades_carried': 276}, {'leg': 6, 'sim_date': '2025-01-14', 'open_trades_carried': 268}, {'leg': 7, 'sim_date': '2025-04-30', 'open_trades_carried': 90}, {'leg': 8, 'sim_date': '2025-09-26', 'open_trades_carried': 258}, {'leg': 9, 'sim_date': '2026-02-05', 'open_trades_carried': 344}]"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "DONE",
+   "evidence": "AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=SKIP; M5_pnl_integrity=PASS; M7_degraded_exits=PASS; M12_entries_vs_grid_fires=PASS"
+  },
+  "2_grade_with_config_params": {
+   "status": "DONE",
+   "evidence": "AUTO (S6-B3240); legs x exits at the cube's gate budget; Step 2 (S6-B3331): the long leg's holdout read once: lever4_step1 at manifest gate_budget={\"news_momentum_long\": {\"k\": 5, \"mandatory\": [\"news_sentiment_5d\"]}} -> output_b3139q_lv4s2_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe_grid_auto.json; Step-2 gate verdict present: step2 block: FAIL on breakeven_plus_trail"
+  },
+  "4_three_leg_spot_check": {
+   "status": "DONE",
+   "evidence": "HAND DISPOSITION (S6-B3415 (a), B3139q-r206): the six gate keys the replay took as persisted - close_above_open, close_in_top_40pct_of_range, dc20_breakout_up, vol_above_avg, news_sentiment_5d, news_volume_zscore_5d - re-derived from source for the spot check's 50 sampled trades: 300 of 300 comparisons agree, each key 50 of 50. Price keys by direct arithmetic on backtest/data/cache/ohlcv bars (the technical.py formulas); news keys through news_sentiment.compute_news_sentiment_signals on the raw article files. Controls: persisted False on 30 of 50 (dc20_breakout_up), 4 (vol_above_avg) and 2 (close_in_top_40pct_of_range), all matched; the news keys take 32 and 39 distinct values; on the previous bar the price keys agree only 24 to 31 of 50, so the comparison discriminates. Evidence output_audit/b3139q_lv4s2_news_momentum_long_step4_hand_disposition.json | prior: NOT CERTIFIED - hand disposition owed (S6-B3415 (a)): AUTO (S6-B3240); the live strategy replayed on the cube's signals under the arm's budget: spot_check_replay at manifest gate_budget={\"news_momentum_long\": {\"k\": 5, \"mandatory\": [\"news_sentiment_5d\"]}}; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skipped; execution failures 0; artifact output_b3139q_lv4s2_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe_spot_check.json; coverage NOT CERTIFIED for news ['news_sentiment_5d', 'news_volume_zscore_5d']; ohlcv ['close_above_open', 'close_in_top_40pct_of_"
+  },
+  "5_adversarial_lens_review": {
+   "status": "DONE",
+   "evidence": "AUTO (B2520): lenses 16 run: 0 WARN / 0 FAIL / 16 INFO -> output_b3139q_lv4s2_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe_lenses.json"
+  },
+  "6_post_fix_recheck": {
+   "status": "N/A",
+   "evidence": "no lens finding (16 lenses, 0 WARN / 0 FAIL) -> nothing to recheck; N/A on evidence"
+  },
+  "6b_equivalence_class_check": {
+   "status": "DONE",
+   "evidence": "AUTO (B2192): the grader collapses identical outcomes - 23 ranked outcome classes carry None parameter combinations; None distinct outcome classes among 0 combinations enumerated in output_b3139q_lv4s2_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe_grid_auto.json"
+  },
+  "7_implement_in_engine": {
+   "status": "DONE",
+   "evidence": "engine check PASS on a Step-2 cube: 1 of 1 declared knobs read from the environment + consumer lists match the tree; verify_lever4_anchors.py exit 0"
+  },
+  "8_verdict_with_denominators": {
+   "status": "DONE",
+   "evidence": "AUTO (B2520) VERDICT (denominators from output_b3139q_lv4s2_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe_grid_auto.json): 24 of 24 cell-exit lines graded across 1 cell(s) ['base:long']; rank-1 [breakeven_plus_trail] is_ci_lo 0.467 is_sharpe 0.563 full_n 3963 - Step-2 admission on the IS-selected exit breakeven_plus_trail: holdout n 1027 of full-period 3963, holdout sharpe 0.604, gates 5 of 6 PASS -> FAIL; pre-registered exit breakeven_plus_trail matches (S6-B2409: clearing the six live gates IS qualification); producers varied 1 of 1 (params ['P1'] of 1; arm-moved ['P1'], swept in-grid none); exits_effective 22 of 24 registered at the cube's SHA; no PASS row, so no PASS ci_lo"
+  }
  }
 }
