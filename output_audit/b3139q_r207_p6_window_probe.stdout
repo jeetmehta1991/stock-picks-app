@@ -1,0 +1,11 @@
+fires (distinct ticker, entry_date): 113
+reproduced (as_of found, all three keys match): 113 of 113
+own recomputation equals persisted z: 113 of 113
+as_of offset (entry - as_of) days: {0: 113}
+z_persisted: 113 of 113 clear >= 0.90909
+z_5date_window: 107 of 113 clear >= 0.90909
+z_6day_expectation: 103 of 113 clear >= 0.90909
+z inflation from the extra day (mu / (sqrt5*sd)) - median, min, max: 0.253 0.089 0.903
+uses_polygon_score on fires: {False: 93, True: 20}
+news_source on fires: {'polygon': 108, 'finnhub_fallback': 5}
+wrote C:\Users\jeetm\AppData\Local\Temp\claude\c--Users-jeetm-Github-stock-picks-app\433f0dcd-be9f-40ae-8e1a-d85ed86ac2e0\scratchpad\r207_p5p6\p6_window_probe.json
