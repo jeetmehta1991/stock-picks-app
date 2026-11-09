@@ -1,0 +1,71 @@
+B3139q-r208 read-only probes of news_momentum_long's P5 and P6 producers (scripts in the session scratchpad)
+
+== audit.py - fire distributions, data checks, P6 weekday mix, P5 word anatomy ==
+fires loaded: 113
+A weekday {'Thu': 25, 'Mon': 9, 'Fri': 34, 'Wed': 23, 'Tue': 22}
+A year {'2022': 53, '2023': 30, '2024': 6, '2025': 17, '2026': 7}
+A uses_polygon (fires, labelled) by year {'2022': [53, 0], '2023': [30, 0], '2024': [6, 1], '2025': [17, 16], '2026': [7, 3]}
+A news_source {'polygon': 108, 'finnhub_fallback': 5}
+unique fire tickers: 101
+B label coverage by year (fire tickers): {2021: {'articles': 27233, 'labelled': 0, 'pct': 0.0}, 2022: {'articles': 39962, 'labelled': 0, 'pct': 0.0}, 2023: {'articles': 41704, 'labelled': 0, 'pct': 0.0}, 2024: {'articles': 24977, 'labelled': 5613, 'pct': 22.5}, 2025: {'articles': 10650, 'labelled': 10642, 'pct': 99.9}, 2026: {'articles': 5326, 'labelled': 5321, 'pct': 99.9}}
+B tickers without a sentiment column: ['BF-B']
+B max rows: 21626 (cap 50,000)
+B tickers with dup ids: 0 total dup ids: 0
+B tickers with dup title same day: 81 total: 396
+B fires within 35d of the ticker's first article: 0 []
+C vectorised z6 reproduces persisted z on 108 of 113 fires
+C mean articles per calendar day by weekday: {'Mon': 0.84, 'Tue': 0.94, 'Wed': 0.96, 'Thu': 0.96, 'Fri': 0.87, 'Sat': 0.33, 'Sun': 0.24}
+C weekday pass rates (share of ticker-weekdays with z >= 0.90909):
+   Mon  days  21109  6-date z pass 0.246  7-date z pass 0.217  mean z6 +963.341  mean z7 +1401.983
+   Tue  days  21109  6-date z pass 0.231  7-date z pass 0.211  mean z6 +1257.545  mean z7 +1062.773
+   Wed  days  21008  6-date z pass 0.216  7-date z pass 0.201  mean z6 +510.853  mean z7 +1067.824
+   Thu  days  21109  6-date z pass 0.228  7-date z pass 0.189  mean z6 +909.756  mean z7 +768.729
+   Fri  days  21109  6-date z pass 0.281  7-date z pass 0.188  mean z6 +1097.288  mean z7 +926.995
+D {'articles_in_5d_windows': 1135, 'word_list_scored': 1052, 'word_list_no_hit': 316, 'word_list_single_hit': 243, 'listing_5plus_tickers': 405, 'positive_hits': 2302, 'positive_hits_price_move_verbs': 1000, 'negative_hits': 519, 'negative_hits_price_move_verbs': 186}
+D top positive: [('rose', 205), ('gained', 192), ('growth', 154), ('beat', 142), ('upgraded', 133), ('ahead', 123), ('strong', 113), ('jumped', 111), ('gains', 85), ('outperform', 71), ('climbed', 69), ('surged', 63)]
+D top negative: [('fell', 67), ('downgraded', 50), ('bearish', 41), ('below', 33), ('decline', 28), ('cut', 26), ('miss', 22), ('underperform', 20), ('drop', 19), ('dropped', 17), ('drops', 15), ('declined', 11)]
+E word list vs Polygon label: {'labelled_articles': 21552, 'word_list_sign_agrees': 11595, 'word_list_zero': 5521}
+F candidates: [('PFE', '2025-06-10', 8, True, 1.7024, 0.9091), ('BAC', '2025-07-02', 9, True, 4.2525, 0.4643), ('AMD', '2025-05-13', 17, True, 1.3453, 0.6111), ('AMT', '2023-01-13', 8, False, 2.4133, 0.511), ('ARE', '2022-07-27', 8, False, 2.4857, 0.5577), ('BBWI', '2023-05-18', 8, False, 4.5637, 0.6768), ('NDAQ', '2022-07-20', 8, False, 1.7974, 0.6012), ('NSC', '2022-07-20', 8, False, 3.0984, 0.3929), ('UDR', '2022-07-28', 9, False, 3.1648, 0.8387), ('GEN', '2024-05-10', 9, False, 5.538, 0.3)]
+written C:\Users\jeetm\AppData\Local\Temp\claude\c--Users-jeetm-Github-stock-picks-app\433f0dcd-be9f-40ae-8e1a-d85ed86ac2e0\scratchpad\r208_p5p6\audit_out.json
+
+== audit2.py - word list vs Polygon label, P5 pass rates in-sample and holdout ==
+P5 vectorised reproduces the persisted value on 108 of 108 polygon-source fires
+ticker-weekdays with >=1 article in the 5-day window: 66492 of 105444
+
+Label vs word list (rows = Polygon label, cols = word-list sign -1/0/+1):
+  label +1: n  11441  word-list -1    677 (  5.9%)  0   2812 ( 24.6%)  +1   7952 ( 69.5%)
+  label +0: n   7109  word-list -1    967 ( 13.6%)  0   2043 ( 28.7%)  +1   4099 ( 57.7%)
+  label -1: n   3002  word-list -1   1600 ( 53.3%)  0    666 ( 22.2%)  +1    736 ( 24.5%)
+
+P5 >= 0.3 pass rate on days with news (producer as built | word list on every article):
+  2022                         days  13878  producer  45.1%  word list  45.1%  median producer +0.250  median word list +0.250
+  2023                         days  21607  producer  47.7%  word list  47.7%  median producer +0.276  median word list +0.276
+  2024                         days  16620  producer  60.5%  word list  57.1%  median producer +0.429  median word list +0.381
+  2025                         days  10306  producer  60.4%  word list  60.4%  median producer +0.553  median word list +0.500
+  2026                         days   4081  producer  62.1%  word list  66.3%  median producer +0.571  median word list +0.525
+  HO 2025-05-05..2026-05-05    days  10822  producer  57.9%  word list  61.9%  median producer +0.484  median word list +0.500
+  IS 2022-05-05..2025-05-04    days  55670  producer  52.3%  word list  50.8%  median producer +0.333  median word list +0.308
+
+== example.py AMT 2023-01-13 - worked example, stored values reproduced ==
+AMT signal day 2023-01-13 (Fri); stored P5 0.511 P6 2.4133 count 8
+  2023-01-09 Mon age 4 w 0.2 score +1.000 tickers  1 | words +['gains'] -[] | American Tower (AMT) Gains As Market Dips: What You Should Know
+  2023-01-10 Tue age 3 w 0.4 score +1.000 tickers  3 | words +['growth', 'growth', 'growth'] -[] | 3 Delicious Dividend Growth REITs
+  2023-01-10 Tue age 3 w 0.4 score +0.810 tickers 98 | words +['upgraded', 'upgraded', 'upgraded', 'upgraded', 'upgraded', 'upgraded', 'upgraded', 'upgraded', 'upgraded', 'outperform', 'upgraded', 'upgraded', 'upgraded', 'upgraded', 'upgraded', 'upgraded', 'outperform', 'upgraded', 'upgraded'] -['underperform', 'underperform'] | Benzinga's Top Ratings Upgrades, Downgrades For January 10, 2023
+  2023-01-10 Tue age 3 w 0.4 score +1.000 tickers  5 | words +['growth', 'ahead'] -[] | Here's Why American Tower Can Keep Increasing Its Dividend
+  2023-01-10 Tue age 3 w 0.4 score -0.200 tickers  1 | words +['bullish', 'bullish'] -['bearish', 'bearish', 'below'] | The Latest Analyst Ratings for American Tower
+  2023-01-11 Wed age 2 w 0.6 score +0.000 tickers  3 | words +[] -[] | Here's Why Crown Castle Can Keep Raising Its Dividend
+  2023-01-12 Thu age 1 w 0.8 score +0.000 tickers  5 | words +[] -[] | Dividends Matter - Don't Get Duped (Part 1)
+  2023-01-12 Thu age 1 w 0.8 score +1.000 tickers  1 | words +['gains'] -[] | American Tower (AMT) Outpaces Stock Market Gains: What You Should Know
+P5 = sum(w*score)/sum(w) = 2.0438/4.0 = 0.5110  (stored 0.511)
+baseline daily counts 2022-12-14 to 2023-01-07 : [np.int64(2), np.int64(0), np.int64(1), np.int64(0), np.int64(3), np.int64(0), np.int64(1), np.int64(0), np.int64(1), np.int64(0), np.int64(2), np.int64(0), np.int64(2), np.int64(0), np.int64(1), np.int64(1), np.int64(1), np.int64(0), np.int64(1), np.int64(0), np.int64(0), np.int64(0), np.int64(1), np.int64(0), np.int64(0)] sum 17
+mu 0.6800 sd 0.8524
+P6 as built: (8 - 5*0.68) / (sqrt5*0.852) = 2.4133  (stored 2.4133)
+  5 dates:   (8 - 5*0.68) / (sqrt5*0.852) = 2.4133
+  6-day exp: (8 - 6*0.68) / (sqrt6*0.852) = 1.8773
+  7 dates:   (8 - 7*0.68) / (sqrt7*0.852) = 1.4366
+
+== fires_z7.py - the 113 fires re-scored with a 7-date P6 window ==
+as-built z reproduced on 113 of 113 fires (each on the source the producer used)
+7-date window vs 7-day expectation: clear >= 0.90909 on 101 of 113
+failing: [('DVN', '2022-05-06', 'Fri', 0.869), ('DELL', '2026-02-27', 'Fri', 0.77), ('KMX', '2022-11-10', 'Thu', 0.555), ('FTNT', '2023-12-14', 'Thu', 0.37), ('MSI', '2022-10-28', 'Fri', 0.0), ('ILMN', '2025-10-31', 'Fri', 0.555), ('EMR', '2026-04-17', 'Fri', 0.437), ('UPS', '2022-06-03', 'Fri', 0.611), ('TEL', '2022-07-27', 'Wed', 0.58), ('PRU', '2022-07-28', 'Thu', 0.891), ('UHS', '2023-12-11', 'Mon', 0.889), ('PFE', '2025-06-10', 'Tue', 0.576)]
+failing by weekday: {'Fri': 6, 'Thu': 3, 'Wed': 1, 'Mon': 1, 'Tue': 1}

@@ -1,0 +1,1074 @@
+{
+ "audit": {
+  "A": {
+   "weekday": {
+    "Thu": 25,
+    "Mon": 9,
+    "Fri": 34,
+    "Wed": 23,
+    "Tue": 22
+   },
+   "year": {
+    "2022": 53,
+    "2023": 30,
+    "2025": 17,
+    "2024": 6,
+    "2026": 7
+   },
+   "uses_polygon_by_year": {
+    "2022": [
+     53,
+     0
+    ],
+    "2023": [
+     30,
+     0
+    ],
+    "2024": [
+     6,
+     1
+    ],
+    "2025": [
+     17,
+     16
+    ],
+    "2026": [
+     7,
+     3
+    ]
+   },
+   "news_source": {
+    "polygon": 108,
+    "finnhub_fallback": 5
+   }
+  },
+  "B": {
+   "A": {
+    "rows": 892,
+    "has_sentiment_col": true,
+    "first": "2021-05-04",
+    "last": "2026-05-06",
+    "dup_id": 0,
+    "dup_title_same_day": 2
+   },
+   "AAPL": {
+    "rows": 21626,
+    "has_sentiment_col": true,
+    "first": "2021-04-09",
+    "last": "2026-05-08",
+    "dup_id": 0,
+    "dup_title_same_day": 48
+   },
+   "ABT": {
+    "rows": 1757,
+    "has_sentiment_col": true,
+    "first": "2021-04-20",
+    "last": "2026-05-08",
+    "dup_id": 0,
+    "dup_title_same_day": 2
+   },
+   "ACN": {
+    "rows": 1180,
+    "has_sentiment_col": true,
+    "first": "2021-04-28",
+    "last": "2026-05-04",
+    "dup_id": 0,
+    "dup_title_same_day": 2
+   },
+   "ADI": {
+    "rows": 1057,
+    "has_sentiment_col": true,
+    "first": "2021-04-23",
+    "last": "2026-05-05",
+    "dup_id": 0,
+    "dup_title_same_day": 3
+   },
+   "AES": {
+    "rows": 354,
+    "has_sentiment_col": true,
+    "first": "2021-04-29",
+    "last": "2026-04-06",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "ALB": {
+    "rows": 1345,
+    "has_sentiment_col": true,
+    "first": "2021-04-28",
+    "last": "2026-05-05",
+    "dup_id": 0,
+    "dup_title_same_day": 3
+   },
+   "ALL": {
+    "rows": 560,
+    "has_sentiment_col": true,
+    "first": "2021-04-23",
+    "last": "2026-05-02",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "AMD": {
+    "rows": 7511,
+    "has_sentiment_col": true,
+    "first": "2021-04-22",
+    "last": "2026-05-08",
+    "dup_id": 0,
+    "dup_title_same_day": 10
+   },
+   "AMGN": {
+    "rows": 1823,
+    "has_sentiment_col": true,
+    "first": "2021-04-20",
+    "last": "2026-05-08",
+    "dup_id": 0,
+    "dup_title_same_day": 5
+   },
+   "AMP": {
+    "rows": 410,
+    "has_sentiment_col": true,
+    "first": "2021-04-23",
+    "last": "2025-10-20",
+    "dup_id": 0,
+    "dup_title_same_day": 2
+   },
+   "AMT": {
+    "rows": 1009,
+    "has_sentiment_col": true,
+    "first": "2021-04-21",
+    "last": "2026-03-20",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "ANET": {
+    "rows": 2526,
+    "has_sentiment_col": true,
+    "first": "2021-04-24",
+    "last": "2026-05-08",
+    "dup_id": 0,
+    "dup_title_same_day": 4
+   },
+   "APTV": {
+    "rows": 456,
+    "has_sentiment_col": true,
+    "first": "2021-04-29",
+    "last": "2026-03-07",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "ARE": {
+    "rows": 803,
+    "has_sentiment_col": true,
+    "first": "2021-04-23",
+    "last": "2026-03-20",
+    "dup_id": 0,
+    "dup_title_same_day": 0
+   },
+   "AVB": {
+    "rows": 411,
+    "has_sentiment_col": true,
+    "first": "2021-04-24",
+    "last": "2026-03-01",
+    "dup_id": 0,
+    "dup_title_same_day": 0
+   },
+   "BAC": {
+    "rows": 4542,
+    "has_sentiment_col": true,
+    "first": "2021-04-10",
+    "last": "2026-05-08",
+    "dup_id": 0,
+    "dup_title_same_day": 19
+   },
+   "BAX": {
+    "rows": 433,
+    "has_sentiment_col": true,
+    "first": "2021-04-26",
+    "last": "2026-05-07",
+    "dup_id": 0,
+    "dup_title_same_day": 2
+   },
+   "BBWI": {
+    "rows": 418,
+    "has_sentiment_col": true,
+    "first": "2021-08-04",
+    "last": "2026-05-03",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "BF-B": {
+    "rows": 206,
+    "has_sentiment_col": false,
+    "first": "2021-06-02",
+    "last": "2026-04-29",
+    "dup_id": 0,
+    "dup_title_same_day": 0
+   },
+   "BKR": {
+    "rows": 972,
+    "has_sentiment_col": true,
+    "first": "2021-04-21",
+    "last": "2026-05-08",
+    "dup_id": 0,
+    "dup_title_same_day": 4
+   },
+   "BRO": {
+    "rows": 631,
+    "has_sentiment_col": true,
+    "first": "2021-04-25",
+    "last": "2026-05-03",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "C": {
+    "rows": 2962,
+    "has_sentiment_col": true,
+    "first": "2021-04-10",
+    "last": "2026-05-06",
+    "dup_id": 0,
+    "dup_title_same_day": 22
+   },
+   "CB": {
+    "rows": 767,
+    "has_sentiment_col": true,
+    "first": "2021-04-23",
+    "last": "2026-04-24",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "CDNS": {
+    "rows": 1035,
+    "has_sentiment_col": true,
+    "first": "2021-04-26",
+    "last": "2026-04-23",
+    "dup_id": 0,
+    "dup_title_same_day": 5
+   },
+   "CHTR": {
+    "rows": 645,
+    "has_sentiment_col": true,
+    "first": "2021-04-27",
+    "last": "2026-05-07",
+    "dup_id": 0,
+    "dup_title_same_day": 0
+   },
+   "CINF": {
+    "rows": 645,
+    "has_sentiment_col": true,
+    "first": "2021-04-23",
+    "last": "2026-05-04",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "COP": {
+    "rows": 1687,
+    "has_sentiment_col": true,
+    "first": "2021-04-13",
+    "last": "2026-05-08",
+    "dup_id": 0,
+    "dup_title_same_day": 7
+   },
+   "CRM": {
+    "rows": 3758,
+    "has_sentiment_col": true,
+    "first": "2021-04-24",
+    "last": "2026-05-08",
+    "dup_id": 0,
+    "dup_title_same_day": 9
+   },
+   "CSX": {
+    "rows": 774,
+    "has_sentiment_col": true,
+    "first": "2021-04-26",
+    "last": "2026-05-06",
+    "dup_id": 0,
+    "dup_title_same_day": 2
+   },
+   "DAL": {
+    "rows": 2481,
+    "has_sentiment_col": true,
+    "first": "2021-04-23",
+    "last": "2026-05-07",
+    "dup_id": 0,
+    "dup_title_same_day": 6
+   },
+   "DELL": {
+    "rows": 1582,
+    "has_sentiment_col": true,
+    "first": "2021-04-22",
+    "last": "2026-05-08",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "DFS": {
+    "rows": 608,
+    "has_sentiment_col": true,
+    "first": "2021-04-27",
+    "last": "2025-05-16",
+    "dup_id": 0,
+    "dup_title_same_day": 0
+   },
+   "DHR": {
+    "rows": 772,
+    "has_sentiment_col": true,
+    "first": "2021-04-22",
+    "last": "2026-05-08",
+    "dup_id": 0,
+    "dup_title_same_day": 4
+   },
+   "DOC": {
+    "rows": 243,
+    "has_sentiment_col": true,
+    "first": "2021-05-05",
+    "last": "2026-04-29",
+    "dup_id": 0,
+    "dup_title_same_day": 0
+   },
+   "DOV": {
+    "rows": 380,
+    "has_sentiment_col": true,
+    "first": "2021-04-23",
+    "last": "2026-05-08",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "DVN": {
+    "rows": 1609,
+    "has_sentiment_col": true,
+    "first": "2021-04-09",
+    "last": "2026-05-07",
+    "dup_id": 0,
+    "dup_title_same_day": 4
+   },
+   "ELV": {
+    "rows": 661,
+    "has_sentiment_col": true,
+    "first": "2022-07-04",
+    "last": "2026-04-23",
+    "dup_id": 0,
+    "dup_title_same_day": 2
+   },
+   "EMR": {
+    "rows": 766,
+    "has_sentiment_col": true,
+    "first": "2021-04-27",
+    "last": "2026-05-02",
+    "dup_id": 0,
+    "dup_title_same_day": 2
+   },
+   "ENPH": {
+    "rows": 1707,
+    "has_sentiment_col": true,
+    "first": "2021-04-22",
+    "last": "2026-05-08",
+    "dup_id": 0,
+    "dup_title_same_day": 2
+   },
+   "EOG": {
+    "rows": 1128,
+    "has_sentiment_col": true,
+    "first": "2021-04-23",
+    "last": "2026-04-27",
+    "dup_id": 0,
+    "dup_title_same_day": 3
+   },
+   "ETR": {
+    "rows": 395,
+    "has_sentiment_col": true,
+    "first": "2021-04-25",
+    "last": "2026-05-07",
+    "dup_id": 0,
+    "dup_title_same_day": 0
+   },
+   "ETSY": {
+    "rows": 1799,
+    "has_sentiment_col": true,
+    "first": "2021-04-22",
+    "last": "2026-05-01",
+    "dup_id": 0,
+    "dup_title_same_day": 6
+   },
+   "EXPE": {
+    "rows": 778,
+    "has_sentiment_col": true,
+    "first": "2021-04-29",
+    "last": "2026-05-08",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "EXR": {
+    "rows": 595,
+    "has_sentiment_col": true,
+    "first": "2021-04-28",
+    "last": "2026-03-02",
+    "dup_id": 0,
+    "dup_title_same_day": 2
+   },
+   "FCX": {
+    "rows": 866,
+    "has_sentiment_col": true,
+    "first": "2021-04-23",
+    "last": "2026-04-26",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "FIS": {
+    "rows": 467,
+    "has_sentiment_col": true,
+    "first": "2021-04-25",
+    "last": "2026-04-22",
+    "dup_id": 0,
+    "dup_title_same_day": 2
+   },
+   "FTNT": {
+    "rows": 1185,
+    "has_sentiment_col": true,
+    "first": "2021-04-27",
+    "last": "2026-05-07",
+    "dup_id": 0,
+    "dup_title_same_day": 0
+   },
+   "GEN": {
+    "rows": 228,
+    "has_sentiment_col": true,
+    "first": "2022-11-09",
+    "last": "2026-04-20",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "GLW": {
+    "rows": 415,
+    "has_sentiment_col": true,
+    "first": "2021-04-27",
+    "last": "2026-05-07",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "HAS": {
+    "rows": 675,
+    "has_sentiment_col": true,
+    "first": "2021-04-23",
+    "last": "2026-05-05",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "HBAN": {
+    "rows": 409,
+    "has_sentiment_col": true,
+    "first": "2021-04-23",
+    "last": "2026-05-07",
+    "dup_id": 0,
+    "dup_title_same_day": 0
+   },
+   "HST": {
+    "rows": 426,
+    "has_sentiment_col": true,
+    "first": "2021-05-03",
+    "last": "2025-08-01",
+    "dup_id": 0,
+    "dup_title_same_day": 0
+   },
+   "IBM": {
+    "rows": 2824,
+    "has_sentiment_col": true,
+    "first": "2021-04-20",
+    "last": "2026-05-08",
+    "dup_id": 0,
+    "dup_title_same_day": 2
+   },
+   "ICE": {
+    "rows": 488,
+    "has_sentiment_col": true,
+    "first": "2021-04-23",
+    "last": "2026-05-05",
+    "dup_id": 0,
+    "dup_title_same_day": 0
+   },
+   "ILMN": {
+    "rows": 633,
+    "has_sentiment_col": true,
+    "first": "2021-04-14",
+    "last": "2026-05-06",
+    "dup_id": 0,
+    "dup_title_same_day": 0
+   },
+   "ISRG": {
+    "rows": 1596,
+    "has_sentiment_col": true,
+    "first": "2021-04-24",
+    "last": "2026-05-08",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "J": {
+    "rows": 402,
+    "has_sentiment_col": true,
+    "first": "2021-04-30",
+    "last": "2026-01-29",
+    "dup_id": 0,
+    "dup_title_same_day": 2
+   },
+   "JNJ": {
+    "rows": 4544,
+    "has_sentiment_col": true,
+    "first": "2021-04-13",
+    "last": "2026-05-06",
+    "dup_id": 0,
+    "dup_title_same_day": 7
+   },
+   "KEY": {
+    "rows": 596,
+    "has_sentiment_col": true,
+    "first": "2021-04-23",
+    "last": "2026-01-22",
+    "dup_id": 0,
+    "dup_title_same_day": 2
+   },
+   "KMX": {
+    "rows": 755,
+    "has_sentiment_col": true,
+    "first": "2021-04-29",
+    "last": "2026-05-07",
+    "dup_id": 0,
+    "dup_title_same_day": 0
+   },
+   "LHX": {
+    "rows": 553,
+    "has_sentiment_col": true,
+    "first": "2021-04-28",
+    "last": "2026-05-05",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "LKQ": {
+    "rows": 302,
+    "has_sentiment_col": true,
+    "first": "2021-04-23",
+    "last": "2026-05-08",
+    "dup_id": 0,
+    "dup_title_same_day": 5
+   },
+   "MCD": {
+    "rows": 2395,
+    "has_sentiment_col": true,
+    "first": "2021-04-18",
+    "last": "2026-05-07",
+    "dup_id": 0,
+    "dup_title_same_day": 6
+   },
+   "META": {
+    "rows": 9802,
+    "has_sentiment_col": true,
+    "first": "2021-07-04",
+    "last": "2026-05-08",
+    "dup_id": 0,
+    "dup_title_same_day": 32
+   },
+   "MSI": {
+    "rows": 530,
+    "has_sentiment_col": true,
+    "first": "2021-04-29",
+    "last": "2026-05-08",
+    "dup_id": 0,
+    "dup_title_same_day": 2
+   },
+   "NDAQ": {
+    "rows": 940,
+    "has_sentiment_col": true,
+    "first": "2021-04-17",
+    "last": "2026-05-08",
+    "dup_id": 0,
+    "dup_title_same_day": 2
+   },
+   "NOC": {
+    "rows": 1525,
+    "has_sentiment_col": true,
+    "first": "2021-04-23",
+    "last": "2026-05-05",
+    "dup_id": 0,
+    "dup_title_same_day": 2
+   },
+   "NSC": {
+    "rows": 486,
+    "has_sentiment_col": true,
+    "first": "2021-04-26",
+    "last": "2026-05-04",
+    "dup_id": 0,
+    "dup_title_same_day": 4
+   },
+   "NUE": {
+    "rows": 1457,
+    "has_sentiment_col": true,
+    "first": "2021-04-21",
+    "last": "2026-04-27",
+    "dup_id": 0,
+    "dup_title_same_day": 11
+   },
+   "NWL": {
+    "rows": 248,
+    "has_sentiment_col": true,
+    "first": "2021-04-25",
+    "last": "2026-04-08",
+    "dup_id": 0,
+    "dup_title_same_day": 0
+   },
+   "NXPI": {
+    "rows": 759,
+    "has_sentiment_col": true,
+    "first": "2021-04-23",
+    "last": "2026-05-05",
+    "dup_id": 0,
+    "dup_title_same_day": 3
+   },
+   "OKE": {
+    "rows": 644,
+    "has_sentiment_col": true,
+    "first": "2021-04-22",
+    "last": "2026-05-01",
+    "dup_id": 0,
+    "dup_title_same_day": 2
+   },
+   "ORCL": {
+    "rows": 2907,
+    "has_sentiment_col": true,
+    "first": "2021-04-23",
+    "last": "2026-05-08",
+    "dup_id": 0,
+    "dup_title_same_day": 21
+   },
+   "OTIS": {
+    "rows": 300,
+    "has_sentiment_col": true,
+    "first": "2021-04-23",
+    "last": "2026-05-07",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "OXY": {
+    "rows": 2204,
+    "has_sentiment_col": true,
+    "first": "2021-04-21",
+    "last": "2026-05-06",
+    "dup_id": 0,
+    "dup_title_same_day": 7
+   },
+   "PAYC": {
+    "rows": 489,
+    "has_sentiment_col": true,
+    "first": "2021-04-24",
+    "last": "2026-03-11",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "PAYX": {
+    "rows": 482,
+    "has_sentiment_col": true,
+    "first": "2021-04-26",
+    "last": "2026-05-07",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "PFE": {
+    "rows": 6212,
+    "has_sentiment_col": true,
+    "first": "2021-04-22",
+    "last": "2026-05-08",
+    "dup_id": 0,
+    "dup_title_same_day": 17
+   },
+   "PNR": {
+    "rows": 280,
+    "has_sentiment_col": true,
+    "first": "2021-04-22",
+    "last": "2026-05-06",
+    "dup_id": 0,
+    "dup_title_same_day": 0
+   },
+   "PRU": {
+    "rows": 672,
+    "has_sentiment_col": true,
+    "first": "2021-04-18",
+    "last": "2026-05-01",
+    "dup_id": 0,
+    "dup_title_same_day": 4
+   },
+   "PYPL": {
+    "rows": 4228,
+    "has_sentiment_col": true,
+    "first": "2021-04-20",
+    "last": "2026-05-07",
+    "dup_id": 0,
+    "dup_title_same_day": 4
+   },
+   "QRVO": {
+    "rows": 434,
+    "has_sentiment_col": true,
+    "first": "2021-04-26",
+    "last": "2026-05-06",
+    "dup_id": 0,
+    "dup_title_same_day": 0
+   },
+   "SBAC": {
+    "rows": 328,
+    "has_sentiment_col": true,
+    "first": "2021-04-23",
+    "last": "2026-04-05",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "SEDG": {
+    "rows": 867,
+    "has_sentiment_col": true,
+    "first": "2021-04-21",
+    "last": "2026-03-24",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "STX": {
+    "rows": 541,
+    "has_sentiment_col": true,
+    "first": "2021-04-23",
+    "last": "2026-05-06",
+    "dup_id": 0,
+    "dup_title_same_day": 0
+   },
+   "TEL": {
+    "rows": 304,
+    "has_sentiment_col": true,
+    "first": "2021-05-10",
+    "last": "2026-04-26",
+    "dup_id": 0,
+    "dup_title_same_day": 0
+   },
+   "TMO": {
+    "rows": 1220,
+    "has_sentiment_col": true,
+    "first": "2021-04-23",
+    "last": "2026-05-06",
+    "dup_id": 0,
+    "dup_title_same_day": 5
+   },
+   "TXN": {
+    "rows": 1502,
+    "has_sentiment_col": true,
+    "first": "2021-04-20",
+    "last": "2026-05-07",
+    "dup_id": 0,
+    "dup_title_same_day": 4
+   },
+   "UDR": {
+    "rows": 230,
+    "has_sentiment_col": true,
+    "first": "2021-04-26",
+    "last": "2025-10-18",
+    "dup_id": 0,
+    "dup_title_same_day": 0
+   },
+   "UHS": {
+    "rows": 492,
+    "has_sentiment_col": true,
+    "first": "2021-04-26",
+    "last": "2026-04-24",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "ULTA": {
+    "rows": 1292,
+    "has_sentiment_col": true,
+    "first": "2021-04-27",
+    "last": "2026-05-07",
+    "dup_id": 0,
+    "dup_title_same_day": 5
+   },
+   "UNH": {
+    "rows": 2410,
+    "has_sentiment_col": true,
+    "first": "2021-04-16",
+    "last": "2026-05-06",
+    "dup_id": 0,
+    "dup_title_same_day": 10
+   },
+   "UNP": {
+    "rows": 814,
+    "has_sentiment_col": true,
+    "first": "2021-04-22",
+    "last": "2026-05-04",
+    "dup_id": 0,
+    "dup_title_same_day": 2
+   },
+   "UPS": {
+    "rows": 1808,
+    "has_sentiment_col": true,
+    "first": "2021-04-21",
+    "last": "2026-05-07",
+    "dup_id": 0,
+    "dup_title_same_day": 6
+   },
+   "VFC": {
+    "rows": 573,
+    "has_sentiment_col": true,
+    "first": "2021-04-26",
+    "last": "2026-03-03",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "WAB": {
+    "rows": 349,
+    "has_sentiment_col": true,
+    "first": "2021-04-23",
+    "last": "2026-02-10",
+    "dup_id": 0,
+    "dup_title_same_day": 0
+   },
+   "WDC": {
+    "rows": 637,
+    "has_sentiment_col": true,
+    "first": "2021-04-23",
+    "last": "2026-05-08",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "WFC": {
+    "rows": 2618,
+    "has_sentiment_col": true,
+    "first": "2021-04-10",
+    "last": "2026-05-08",
+    "dup_id": 0,
+    "dup_title_same_day": 15
+   },
+   "WTW": {
+    "rows": 432,
+    "has_sentiment_col": true,
+    "first": "2022-01-12",
+    "last": "2026-05-06",
+    "dup_id": 0,
+    "dup_title_same_day": 1
+   },
+   "XYL": {
+    "rows": 378,
+    "has_sentiment_col": true,
+    "first": "2021-04-26",
+    "last": "2026-05-01",
+    "dup_id": 0,
+    "dup_title_same_day": 4
+   }
+  },
+  "B_label_coverage_by_year": {
+   "2021": {
+    "articles": 27233,
+    "labelled": 0,
+    "pct": 0.0
+   },
+   "2022": {
+    "articles": 39962,
+    "labelled": 0,
+    "pct": 0.0
+   },
+   "2023": {
+    "articles": 41704,
+    "labelled": 0,
+    "pct": 0.0
+   },
+   "2024": {
+    "articles": 24977,
+    "labelled": 5613,
+    "pct": 22.5
+   },
+   "2025": {
+    "articles": 10650,
+    "labelled": 10642,
+    "pct": 99.9
+   },
+   "2026": {
+    "articles": 5326,
+    "labelled": 5321,
+    "pct": 99.9
+   }
+  },
+  "B_fires_within_35d_of_coverage_start": [],
+  "C": {
+   "repro": [
+    108,
+    113
+   ],
+   "articles_per_day_by_weekday": {
+    "Mon": 0.84,
+    "Tue": 0.94,
+    "Wed": 0.96,
+    "Thu": 0.96,
+    "Fri": 0.87,
+    "Sat": 0.33,
+    "Sun": 0.24
+   },
+   "weekday_table": {
+    "Mon": {
+     "days": 21109.0,
+     "pass6": 0.2456,
+     "pass7": 0.2172,
+     "mean_z6": 963.341,
+     "mean_z7": 1401.9833
+    },
+    "Tue": {
+     "days": 21109.0,
+     "pass6": 0.2306,
+     "pass7": 0.2111,
+     "mean_z6": 1257.5446,
+     "mean_z7": 1062.7728
+    },
+    "Wed": {
+     "days": 21008.0,
+     "pass6": 0.2164,
+     "pass7": 0.2006,
+     "mean_z6": 510.8526,
+     "mean_z7": 1067.8241
+    },
+    "Thu": {
+     "days": 21109.0,
+     "pass6": 0.228,
+     "pass7": 0.1886,
+     "mean_z6": 909.7561,
+     "mean_z7": 768.7291
+    },
+    "Fri": {
+     "days": 21109.0,
+     "pass6": 0.2807,
+     "pass7": 0.1876,
+     "mean_z6": 1097.2884,
+     "mean_z7": 926.9947
+    }
+   }
+  },
+  "D": {
+   "articles_in_5d_windows": 1135,
+   "word_list_scored": 1052,
+   "word_list_no_hit": 316,
+   "word_list_single_hit": 243,
+   "listing_5plus_tickers": 405,
+   "positive_hits": 2302,
+   "positive_hits_price_move_verbs": 1000,
+   "negative_hits": 519,
+   "negative_hits_price_move_verbs": 186,
+   "top_positive": [
+    [
+     "rose",
+     205
+    ],
+    [
+     "gained",
+     192
+    ],
+    [
+     "growth",
+     154
+    ],
+    [
+     "beat",
+     142
+    ],
+    [
+     "upgraded",
+     133
+    ],
+    [
+     "ahead",
+     123
+    ],
+    [
+     "strong",
+     113
+    ],
+    [
+     "jumped",
+     111
+    ],
+    [
+     "gains",
+     85
+    ],
+    [
+     "outperform",
+     71
+    ],
+    [
+     "climbed",
+     69
+    ],
+    [
+     "surged",
+     63
+    ]
+   ],
+   "top_negative": [
+    [
+     "fell",
+     67
+    ],
+    [
+     "downgraded",
+     50
+    ],
+    [
+     "bearish",
+     41
+    ],
+    [
+     "below",
+     33
+    ],
+    [
+     "decline",
+     28
+    ],
+    [
+     "cut",
+     26
+    ],
+    [
+     "miss",
+     22
+    ],
+    [
+     "underperform",
+     20
+    ],
+    [
+     "drop",
+     19
+    ],
+    [
+     "dropped",
+     17
+    ],
+    [
+     "drops",
+     15
+    ],
+    [
+     "declined",
+     11
+    ]
+   ]
+  },
+  "E": {
+   "labelled_articles": 21552,
+   "word_list_sign_agrees": 11595,
+   "word_list_zero": 5521
+  }
+ },
+ "audit2": {
+  "repro": [
+   108,
+   108
+  ],
+  "confusion": {
+   "1|0": 2812,
+   "0|1": 4099,
+   "1|-1": 677,
+   "1|1": 7952,
+   "0|-1": 967,
+   "0|0": 2043,
+   "-1|-1": 1600,
+   "-1|1": 736,
+   "-1|0": 666
+  }
+ }
+}
