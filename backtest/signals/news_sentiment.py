@@ -28,6 +28,7 @@ reads pre-computed scores when available + falls back to rule-based.
 from __future__ import annotations
 
 import logging
+import re
 from datetime import date, timedelta
 from pathlib import Path
 from typing import Optional
@@ -157,7 +158,7 @@ def _load_finnhub_news_parquet(ticker: str) -> pd.DataFrame:
         # No sentiment field - rule-based scorer will be used
         df["sentiment"] = None
         # Pre-score articles (same as Polygon path)
-        df = _precompute_article_scores(df)
+        df = _precompute_article_scores(df, ticker)
         _FINNHUB_NEWS_BY_TICKER[safe_ticker] = df
         return df
     except Exception:
@@ -165,7 +166,46 @@ def _load_finnhub_news_parquet(ticker: str) -> pd.DataFrame:
         return _FINNHUB_NEWS_BY_TICKER[safe_ticker]
 
 
-def _precompute_article_scores(df: pd.DataFrame) -> pd.DataFrame:
+# S6-B3441 (a) (B3139q-r214): an article listing ROUNDUP_MIN_TICKERS or more
+# tickers, scored by the word list, counts toward a ticker's sentiment only
+# when that ticker is a token in its title. A ratings roundup's positive words
+# are about other companies, yet every listed ticker took the whole article's
+# score (MEASURED B3139q-r208: 405 of 1,135 articles in news_momentum_long's
+# fire windows list 5 or more tickers; AMT 2023-01-13's P5 0.511 carried a
+# 98-ticker roundup scored +0.81). A labelled article is kept - Polygon's label
+# is per ticker. An excluded article still counts in every article count and
+# in the volume z-score; it carries no weight in any sentiment mean.
+ROUNDUP_MIN_TICKERS = 5
+
+# S6-B3440 (d) (B3139q-r214): news_volume_zscore_5d counts the articles on
+# this many calendar dates ending at as_of, against the same number of days
+# of the adjacent baseline of NEWS_VOLUME_Z_BASELINE_DATES dates (see the
+# z-score block in compute_news_sentiment_signals).
+NEWS_VOLUME_Z_WINDOW_DATES = 7
+NEWS_VOLUME_Z_BASELINE_DATES = 25
+
+
+def _sentiment_excluded(df: pd.DataFrame, ticker: Optional[str],
+                        uses_polygon: pd.Series) -> pd.Series:
+    """S6-B3441 (a): True where a word-list-scored article lists
+    ROUNDUP_MIN_TICKERS or more tickers and `ticker` is not a token in its
+    title. All False when the ticker or the ticker list is unknown (the
+    Finnhub frame carries no ticker list)."""
+    none = pd.Series(False, index=df.index)
+    if not ticker or "all_tickers" not in df.columns:
+        return none
+    listed = df["all_tickers"].fillna("").astype(str).map(
+        lambda s: sum(1 for x in s.split(",") if x.strip()))
+    forms = sorted({ticker, ticker.replace(".", "-"), ticker.replace("-", ".")})
+    pat = re.compile(r"(?<![A-Z0-9])(?:" + "|".join(re.escape(f) for f in forms)
+                     + r")(?![A-Z0-9])")
+    title = (df["title"] if "title" in df.columns else none.map(lambda _: ""))
+    in_title = title.fillna("").astype(str).map(lambda s: bool(pat.search(s)))
+    return (~uses_polygon.astype(bool)) & (listed >= ROUNDUP_MIN_TICKERS) & (~in_title)
+
+
+def _precompute_article_scores(df: pd.DataFrame,
+                               ticker: Optional[str] = None) -> pd.DataFrame:
     """Batch 552 OPT-C: pre-compute per-article _article_score + _uses_polygon
     columns once at cache fill time. _score_window then becomes a vectorized
     aggregation (mean / >0 count / <0 count) over numeric columns instead of
@@ -175,6 +215,8 @@ def _precompute_article_scores(df: pd.DataFrame) -> pd.DataFrame:
       - Polygon `sentiment` field, when populated, maps positive/bullish=+1,
         negative/bearish=-1, neutral=0 via _polygon_sentiment_to_score
       - Otherwise fall back to _rule_based_sentiment on title + ". " + description
+
+    S6-B3441 (a): also `_sentiment_excluded` for `ticker` (_sentiment_excluded).
     """
     if df.empty:
         return df
@@ -211,6 +253,7 @@ def _precompute_article_scores(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     df["_article_score"] = final
     df["_uses_polygon"] = uses_polygon
+    df["_sentiment_excluded"] = _sentiment_excluded(df, ticker, uses_polygon)
     return df
 
 
@@ -245,7 +288,7 @@ def _load_news_parquet(ticker: str) -> pd.DataFrame:
             df = df.dropna(subset=["published_dt"])
             df["published_date"] = df["published_dt"].dt.date
             # B552 OPT-C: pre-score articles
-            df = _precompute_article_scores(df)
+            df = _precompute_article_scores(df, ticker)
         _NEWS_BY_TICKER[safe_ticker] = df
         return df
     except Exception:
@@ -255,27 +298,47 @@ def _load_news_parquet(ticker: str) -> pd.DataFrame:
 # Lightweight finance-domain sentiment lexicons. Not as accurate as
 # FinBERT but reproducible and offline. Loughran-McDonald 2011 JF
 # financial dictionary subset.
+#
+# S6-B3441 (a) (B3139q-r214; owner rulings sent 2026-11-09T22:58:41Z, '(a)
+# first (clean the word list / use the label)', and this batch's scope answer
+# 'All 9'): these 25 positive words are removed. 24 are price-move verbs -
+# 'rose', 'jumped', 'surged' - which report that the price moved, not what
+# happened, so an article about the breakout a gate already requires scored as
+# good news (MEASURED B3139q-r208: 1,000 of 2,302 positive hits in
+# news_momentum_long's fire windows); 'ahead' scored 'ahead of earnings' as
+# good news (123 hits). The lists feed every sentiment field this module emits.
+# The 18 negative price-move verbs go too (REMOVED_NEGATIVE_WORDS; owner answer
+# this batch, 'Yes, both sides'): a positive-only clean tilted the scorer
+# bearish - P5 <= -0.3 passed on 8.4 pct of in-sample ticker-weekdays against
+# 5.8 before, 6.6 with both sides cleaned (B3139q-r214 sizing, 520 tickers).
+REMOVED_POSITIVE_WORDS = frozenset({
+    "rally", "rallies", "rallied", "surge", "surges", "surged",
+    "soar", "soars", "soared", "jump", "jumps", "jumped",
+    "gain", "gains", "gained", "rise", "rises", "rose",
+    "climb", "climbs", "climbed", "advance", "advances", "advanced",
+    "ahead",
+})
 POSITIVE_WORDS = frozenset({
     "beat", "beats", "exceeded", "surpasses", "surpassed", "outperform",
     "upgrade", "upgraded", "raised", "raises", "strong", "stronger",
     "growth", "growing", "expansion", "expand", "expanded", "boost",
-    "boosts", "boosted", "rally", "rallies", "rallied", "surge", "surges",
-    "surged", "soar", "soars", "soared", "jump", "jumps", "jumped",
-    "gain", "gains", "gained", "rise", "rises", "rose", "climb", "climbs",
-    "climbed", "advance", "advances", "advanced", "positive", "profit",
+    "boosts", "boosted", "positive", "profit",
     "profitable", "profitability", "record", "milestone", "breakthrough",
     "innovation", "leadership", "leader", "winning", "won", "wins",
     "approval", "approved", "successful", "success", "exceed", "exceeds",
     "exceeding", "premium", "robust", "solid", "improved", "improvement",
-    "improving", "improves", "above", "ahead", "bullish",
+    "improving", "improves", "above", "bullish",
 })
 
+REMOVED_NEGATIVE_WORDS = frozenset({
+    "decline", "declines", "declined", "fall", "falls", "fell",
+    "drop", "drops", "dropped", "plunge", "plunges", "plunged",
+    "tumble", "tumbles", "tumbled", "slump", "slumps", "slumped",
+})
 NEGATIVE_WORDS = frozenset({
     "miss", "missed", "misses", "missing", "underperform", "underperforms",
     "underperformed", "downgrade", "downgraded", "cut", "cuts", "slashed",
-    "weak", "weakness", "decline", "declines", "declined", "fall", "falls",
-    "fell", "drop", "drops", "dropped", "plunge", "plunges", "plunged",
-    "tumble", "tumbles", "tumbled", "slump", "slumps", "slumped",
+    "weak", "weakness",
     "loss", "losses", "lost", "deficit", "shortfall", "negative",
     "downgrade", "warning", "warns", "warned", "concern", "concerns",
     "concerning", "worry", "worried", "worries", "risk", "risks",
@@ -327,6 +390,19 @@ def _score_article(row) -> tuple:
     return _rule_based_sentiment(f"{title}. {desc}"), False
 
 
+def _excluded_mask(sub: pd.DataFrame):
+    """S6-B3441 (a): the `_sentiment_excluded` column as a bool array, all
+    False when the frame carries none (a frame not filled by the loaders)."""
+    if "_sentiment_excluded" in sub.columns:
+        return sub["_sentiment_excluded"].fillna(False).astype(bool).to_numpy()
+    return pd.Series(False, index=sub.index).to_numpy()
+
+
+def _n_scored(sub: pd.DataFrame) -> int:
+    """S6-B3441 (a): the articles in `sub` that carry sentiment weight."""
+    return int(len(sub) - _excluded_mask(sub).sum())
+
+
 def _score_window(sub: pd.DataFrame) -> tuple:
     """Score every article in a window. Returns (mean, n, n_pos, n_neg,
     used_polygon_any). Empty window returns (0.0, 0, 0, 0, False).
@@ -340,8 +416,10 @@ def _score_window(sub: pd.DataFrame) -> tuple:
     if n == 0:
         return 0.0, 0, 0, 0, False
     if "_article_score" in sub.columns:
-        scores = sub["_article_score"].to_numpy()
-        avg = float(scores.mean())
+        # S6-B3441 (a): n counts every article; the mean and the sign counts
+        # read the scored ones only (_sentiment_excluded), 0.0 when none is.
+        scores = sub["_article_score"].to_numpy()[~_excluded_mask(sub)]
+        avg = float(scores.mean()) if len(scores) else 0.0
         n_pos = int((scores > 0).sum())
         n_neg = int((scores < 0).sum())
         uses_polygon = bool(sub["_uses_polygon"].any()) if "_uses_polygon" in sub.columns else False
@@ -472,6 +550,8 @@ def compute_news_sentiment_signals(
         s_scores = []
         weights = []
         for _, row in sub.iterrows():
+            if bool(row.get("_sentiment_excluded", False)):
+                continue  # S6-B3441 (a): an excluded roundup carries no weight
             sc, _ = _score_article(row)
             age = (as_of - row["published_date"]).days
             w = max(0.0, 1.0 - (age / 5.0))
@@ -488,14 +568,29 @@ def compute_news_sentiment_signals(
     sentiment_5d = _recency_weighted_mean(five_d)
     avg_30d, _n30, _, _, _ = _score_window(thirty_d)
 
-    # Volume z-score: count_5d vs trailing 30-day daily-count distribution
-    # (exclude the last 5 days from baseline so the z-score is "5d count
-    # relative to its own prior 25 days"). Cohen-Frazzini-Malloy news-
-    # volume papers use a similar normalisation.
-    baseline_end = as_of - timedelta(days=5)
-    baseline_start = as_of - timedelta(days=30)
+    # Volume z-score: the article count over NEWS_VOLUME_Z_WINDOW_DATES
+    # calendar dates ending at as_of, against the same number of days of the
+    # adjacent NEWS_VOLUME_Z_BASELINE_DATES-date baseline (expected w * mu,
+    # sd sqrt(w) * sd for independent daily counts). Cohen-Frazzini-Malloy
+    # news-volume papers use a similar normalisation.
+    #
+    # S6-B3440 (d) (B3139q-r214; owner answer this batch, '(d) 7-day
+    # window'): the count window is 7 dates, as_of-6 through as_of, and the
+    # baseline the 25 dates before it, as_of-31 through as_of-7. Until now the
+    # z-score counted 6 dates (as_of-5 through as_of) against a 5-day
+    # expectation, which lifted every z by mu / (sqrt(5) * sd) - median 0.253
+    # over news_momentum_long's 113 R5 fires - and a 6-date window holds 5
+    # weekdays when as_of is a Friday and 4 on any other weekday, so Fridays
+    # passed more often (28.1 pct against 21.6-24.6 pct; B3139q-r207/r208).
+    # Every 7-date window holds 5 weekdays and 2 weekend days. The field keeps
+    # its name; news_count_5d keeps its own 6-date window (S6-B3445).
+    zw = NEWS_VOLUME_Z_WINDOW_DATES
+    z_count = int(((df["published_date"] >= as_of - timedelta(days=zw - 1))
+                   & (df["published_date"] <= as_of)).sum())
+    baseline_start = as_of - timedelta(days=zw + NEWS_VOLUME_Z_BASELINE_DATES - 1)
+    baseline_end = as_of - timedelta(days=zw)  # inclusive
     baseline = df[(df["published_date"] >= baseline_start)
-                  & (df["published_date"] < baseline_end)]
+                  & (df["published_date"] <= baseline_end)]
     count_5d = int(len(five_d))
     # Per-day counts in baseline:
     if baseline.empty:
@@ -503,16 +598,13 @@ def compute_news_sentiment_signals(
     else:
         daily = baseline.groupby("published_date").size()
         # Reindex to fill missing days as 0:
-        full_idx = pd.date_range(baseline_start, baseline_end - timedelta(days=1),
-                                  freq="D").date
+        full_idx = pd.date_range(baseline_start, baseline_end, freq="D").date
         daily = daily.reindex(full_idx, fill_value=0)
         mu = float(daily.mean())
         sd = float(daily.std(ddof=1)) if len(daily) > 1 else 0.0
-        # Compare count_5d (5-day total) to expected 5 * mu with std
-        # sqrt(5)*sd (variance of independent daily counts).
-        expected = 5.0 * mu
-        sd_5 = (5 ** 0.5) * sd
-        vol_zscore_5d = ((count_5d - expected) / sd_5) if sd_5 > 0 else 0.0
+        expected = zw * mu
+        sd_w = (zw ** 0.5) * sd
+        vol_zscore_5d = ((z_count - expected) / sd_w) if sd_w > 0 else 0.0
 
     if cur_n == 0:
         _spof_record("empty")  # B832 SPOF SENTINEL: no current-window articles
@@ -528,7 +620,12 @@ def compute_news_sentiment_signals(
                 "news_count_5d": count_5d}
 
     # Shift only meaningful when prior window has articles to compare against.
-    shift = (cur_avg - prior_avg) if prior_n > 0 else 0.0
+    # S6-B3441 (a): both windows need a SCORED article - a window holding only
+    # excluded roundups has no sentiment to compare (with none excluded this
+    # is the old 'prior_n > 0', since cur_n > 0 here).
+    cur_scored = _n_scored(cur)
+    shift = ((cur_avg - prior_avg)
+             if (_n_scored(prior) > 0 and cur_scored > 0) else 0.0)
 
     avg_r = round(float(cur_avg), 4)
 
@@ -543,8 +640,10 @@ def compute_news_sentiment_signals(
         "news_article_count":        int(cur_n),
         "news_sentiment_score":      avg_r,
         "news_sentiment_mean":       avg_r,
-        "news_bullish_pct":          round(n_pos / cur_n, 4),
-        "news_bearish_pct":          round(n_neg / cur_n, 4),
+        # S6-B3441 (a): shares of the SCORED articles (cur_scored == cur_n
+        # when none is excluded), 0.0 when none is scored.
+        "news_bullish_pct":          round(n_pos / cur_scored, 4) if cur_scored else 0.0,
+        "news_bearish_pct":          round(n_neg / cur_scored, 4) if cur_scored else 0.0,
         "news_sentiment_shift":      round(float(shift), 4),
         "news_prior_article_count":  int(prior_n),
         "news_uses_polygon_score":   bool(uses_polygon),

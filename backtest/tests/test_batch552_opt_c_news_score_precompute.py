@@ -80,12 +80,17 @@ def test_batch552_cache_has_article_score_column():
 @pytest.mark.skipif(not _have_news("AAPL"), reason="AAPL news cache absent")
 def test_batch552_known_signal_outcome_aapl():
     """Pre-B552 baseline: AAPL 2024-06-14 -> count=110, sent_score=0.4121,
-    bullish_pct=0.5091, bearish_pct=0.0455."""
+    bullish_pct=0.5091, bearish_pct=0.0455.
+
+    S6-B3441 (a) (B3139q-r214): the cleaned word lists and the roundup
+    exclusion move the sentiment values - sent_score 0.4121 -> 0.2443,
+    bullish_pct 0.5091 -> 0.322 (now a share of the scored articles) - while
+    the article count stays 110: an excluded roundup still counts."""
     from backtest.signals.news_sentiment import compute_news_sentiment_signals
     out = compute_news_sentiment_signals("AAPL", date(2024, 6, 14))
     assert out["news_count_7d"] == 110
-    assert abs(out["news_sentiment_score"] - 0.4121) < 0.001
-    assert abs(out["news_bullish_pct"] - 0.5091) < 0.001
+    assert abs(out["news_sentiment_score"] - 0.2443) < 0.001
+    assert abs(out["news_bullish_pct"] - 0.322) < 0.001
 
 
 def test_batch552_score_window_vectorized_matches_reference():

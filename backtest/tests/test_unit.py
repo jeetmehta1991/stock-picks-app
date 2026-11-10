@@ -75619,3 +75619,149 @@ def test_b3414_letter_suffixed_lane_label_is_not_a_batch_number():
     v = pf.find_unbacked_batch_claims(
         [("EXECUTION_QUEUE.md", "BATCH 8 PASS all green")], lambda n: False)
     assert v and "C10" in v[0]
+
+
+def test_b3441_word_list_and_roundups_reach_every_sentiment_field(tmp_path, monkeypatch):
+    """S6-B3441 (a) (B3139q-r214; owner rulings sent 2026-11-09T22:58:41Z and
+    this batch's answers 'All 9' and 'Yes, both sides'): the shared word list
+    drops 24 positive price-move verbs and 'ahead' and 18 negative price-move
+    verbs, and a word-list-scored article listing 5 or
+    more tickers counts toward a ticker's sentiment only when the ticker is a
+    token in its title. Both reach EVERY sentiment field - P5, the 7d mean,
+    the shift - and never an article count. Each arm fails if its rule goes:
+    the price-move sentence scores +1.0 on the old list, the roundup would
+    pull P5 and the 7d mean from -1.0 to 0.0, and the prior-window roundup
+    would give a shift of -1.0. Synthetic fixtures - the STRUCTURE is the
+    evidence, not the values (L470)."""
+    from datetime import date
+    import pandas as pd
+    import backtest.signals.news_sentiment as ns
+    assert len(ns.POSITIVE_WORDS) == 49 and len(ns.REMOVED_POSITIVE_WORDS) == 25
+    assert not (ns.POSITIVE_WORDS & ns.REMOVED_POSITIVE_WORDS)
+    assert "ahead" in ns.REMOVED_POSITIVE_WORDS
+    assert len(ns.NEGATIVE_WORDS) == 58 and len(ns.REMOVED_NEGATIVE_WORDS) == 18
+    assert not (ns.NEGATIVE_WORDS & ns.REMOVED_NEGATIVE_WORDS)
+    assert ns._rule_based_sentiment("shares rose and jumped ahead of earnings") == 0.0
+    assert ns._rule_based_sentiment("shares fell, dropped and plunged") == 0.0
+    assert ns._rule_based_sentiment("Q3 beat expectations") == 1.0  # control
+    assert ns._rule_based_sentiment("Q3 missed and the company warned") == -1.0  # control
+    fr = pd.DataFrame({
+        "title": ["Ratings roundup: upgrades and strong beats",
+                  "TST and peers: upgrades and strong beats",
+                  "Ratings roundup: upgrades and strong beats",
+                  "TST and XYZ beat"],
+        "description": [""] * 4,
+        "sentiment": [None, None, "positive", None],
+        "all_tickers": ["AAA,BBB,CCC,DDD,TST,EEE", "AAA,BBB,CCC,DDD,TST,EEE",
+                        "AAA,BBB,CCC,DDD,TST,EEE", "TST,XYZ"],
+    })
+    flags = ns._precompute_article_scores(fr, "TST")["_sentiment_excluded"]
+    assert list(flags) == [True, False, False, False], list(flags)
+    ns._NEWS_BY_TICKER.clear()
+    fake = pd.DataFrame({
+        "ticker": ["TST"] * 3,
+        "published_utc": pd.to_datetime(["2024-03-25", "2024-04-04", "2024-04-04"]),
+        "title": ["Ratings roundup: upgrades and strong beats",
+                  "TST misses and warns",
+                  "Ratings roundup: upgrades and strong beats"],
+        "description": [""] * 3,
+        "sentiment": [None] * 3,
+        "all_tickers": ["AAA,BBB,CCC,DDD,TST,EEE", "TST", "AAA,BBB,CCC,DDD,TST,EEE"],
+    })
+    fake.to_parquet(tmp_path / "TST.parquet")
+    monkeypatch.setattr(ns, "_NEWS_DIR", tmp_path)
+    try:
+        out = ns.compute_news_sentiment_signals("TST", date(2024, 4, 4))
+    finally:
+        ns._NEWS_BY_TICKER.clear()
+    assert out["news_sentiment_5d"] == -1.0, out
+    assert out["news_sentiment_mean"] == -1.0, out
+    assert out["news_count_5d"] == 2 and out["news_article_count"] == 2, out
+    assert out["news_sentiment_shift"] == 0.0, out
+    assert out["news_prior_article_count"] == 1, out
+
+
+def test_b3440_volume_zscore_counts_seven_dates_against_seven_days(tmp_path, monkeypatch):
+    """S6-B3440 (d) (B3139q-r214; owner answer this batch, '(d) 7-day
+    window'): news_volume_zscore_5d counts the articles on the 7 dates
+    as_of-6..as_of against 7 days of the adjacent 25-date baseline,
+    as_of-31..as_of-7, and every 7-date window ending on a weekday holds 5
+    weekdays. news_count_5d keeps its 6-date window (S6-B3445). The fixture
+    gives the old definition (6 dates against 5 days of as_of-30..as_of-6) a
+    different value, so the pin fails on either old window."""
+    import math
+    from datetime import date, timedelta
+    import pandas as pd
+    import backtest.signals.news_sentiment as ns
+    assert ns.NEWS_VOLUME_Z_WINDOW_DATES == 7 and ns.NEWS_VOLUME_Z_BASELINE_DATES == 25
+    a = date(2024, 4, 5)
+    for k in range(5):
+        end = a - timedelta(days=k)
+        assert sum((end - timedelta(days=j)).weekday() < 5 for j in range(7)) == 5
+    days = []
+    for j in range(7, 32):
+        days += [a - timedelta(days=j)] * (2 if j % 5 == 0 else 1)
+    for j in range(0, 7):
+        days += [a - timedelta(days=j)] * 3
+    ns._NEWS_BY_TICKER.clear()
+    fake = pd.DataFrame({"ticker": ["TST"] * len(days),
+                         "published_utc": pd.to_datetime([d.isoformat() for d in days]),
+                         "title": ["neutral coverage"] * len(days),
+                         "description": [""] * len(days),
+                         "sentiment": [None] * len(days)})
+    fake.to_parquet(tmp_path / "TST.parquet")
+    monkeypatch.setattr(ns, "_NEWS_DIR", tmp_path)
+    try:
+        out = ns.compute_news_sentiment_signals("TST", a)
+    finally:
+        ns._NEWS_BY_TICKER.clear()
+
+    def z(count, base, w):
+        mu = sum(base) / len(base)
+        sd = math.sqrt(sum((x - mu) ** 2 for x in base) / (len(base) - 1))
+        return (count - w * mu) / (math.sqrt(w) * sd)
+    new = z(21, [2 if j % 5 == 0 else 1 for j in range(7, 32)], 7)
+    old = z(18, [3] + [2 if j % 5 == 0 else 1 for j in range(7, 31)], 5)
+    assert abs(new - old) > 1.0, (new, old)
+    assert abs(out["news_volume_zscore_5d"] - round(new, 4)) < 1e-4, (out, new)
+    assert out["news_count_5d"] == 18, out
+
+
+def test_b3446_key_readers_measures_a_producer_changes_reach():
+    """S6-B3446 (B3139q-r214, L1015): scripts/key_readers.py maps a signal key
+    to the registered strategies whose gates read it - the reach a decision to
+    change a producer quotes (#164 read with L945). Pinned on the news
+    producer's measured reach: news_sentiment_5d 5 strategies, the 7
+    sentiment fields the word list feeds 9, news_volume_zscore_5d 2; on a read
+    reached only through a helper call (days_to_cover inside
+    _short_borrow_trap_active), which a direct-read scan misses; and on a
+    dynamic read, which is counted, never guessed. A change to these reader
+    sets is a deliberate update here."""
+    import ast
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import key_readers as kr
+    sent = ["news_sentiment_5d", "news_sentiment_30d", "news_sentiment_score",
+            "news_sentiment_mean", "news_sentiment_shift", "news_bullish_pct",
+            "news_bearish_pct"]
+    r = kr.readers(sent + ["news_volume_zscore_5d", "days_to_cover"])
+    assert r["news_sentiment_5d"] == [
+        "ichimoku_tk_cross", "news_momentum_long", "news_momentum_short",
+        "news_reversal_long", "news_reversal_short"], r["news_sentiment_5d"]
+    union = sorted(set().union(*(r[k] for k in sent)))
+    assert union == [
+        "ichimoku_tk_cross", "news_momentum_long", "news_momentum_short",
+        "news_reversal_long", "news_reversal_short", "news_sentiment_long",
+        "news_sentiment_shift_long", "news_sentiment_short",
+        "squeeze_setup_long"], union
+    assert r["news_volume_zscore_5d"] == ["news_momentum_long", "news_momentum_short"]
+    assert "news_sentiment_short" in r["days_to_cover"]
+    reads, _calls, _dyn = kr._function_reads(
+        ast.parse(kr.SCREENER.read_text(encoding="utf-8")))
+    assert "days_to_cover" not in reads["strat_news_sentiment_short"]
+    keys, dyn = kr.closure_reads(
+        "def strat_x(s):\n    k = 'a'\n    return s.get(k) and s.get('b')\n")
+    assert keys["strat_x"] == {"b"} and dyn["strat_x"] == 1, (keys, dyn)
