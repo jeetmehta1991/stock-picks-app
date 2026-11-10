@@ -926,10 +926,34 @@ def run_family(fam_name: str, cube_dir: Path, p: dict,
         notes["4_three_leg_spot_check"] = (
             "FAIL", f"{Path(sb['script']).stem} exit {sc.returncode}: {tail[:200]}")
     elif cov_st != "PASS":
-        notes["4_three_leg_spot_check"] = (
-            "OPEN", f"NOT CERTIFIED - hand disposition owed (S6-B3415 (a)): "
-                    f"{sb.get('note', 'AUTO')}: {Path(sb['script']).stem} at "
-                    f"manifest {label}; {tail[:300]}")
+        # S6-B3427 (B3139q-r212c): before owing a HAND disposition, run the
+        # re-derivation checker over the spot check's own sampled gate keys -
+        # keyed by SIGNAL KEY, never by strategy (#291). Exit 0 = every
+        # sampled key re-derived from source with a live previous-bar
+        # control; step 4 is then DONE with its artifact. Uncovered keys,
+        # disagreement or a vacuous control keep step 4 OPEN naming them.
+        rd_out = ROOT / "output_audit" / f"{_key}_rederive.json"
+        rd = _run([sys.executable, str(ROOT / "scripts" / "spot_check_rederive.py"),
+                   "--cube", str(cube_dir), "--strategy", fam_name,
+                   "--spot", str(spot_out), "--out", str(rd_out)],
+                  _sub_env(arm_env, sb))
+        # DONE is earned by the checker's own [PASS] verdict line, never by
+        # an exit code alone (L655: a status is not a finding; the b3415
+        # fixtures proved an rc-0 with no verdict would have certified)
+        okr = (rd.returncode == 0 and rd_out.exists()
+               and _verdict_line(rd).startswith("[PASS]"))
+        results.append(("step4_rederive", "PASS" if okr else "FAIL",
+                        f"exit {rd.returncode}; {_verdict_line(rd)[:160]}"))
+        if okr:
+            notes["4_three_leg_spot_check"] = (
+                "DONE", f"S6-B3427 re-derivation leg: {_verdict_line(rd)[:220]} "
+                        f"-> {rd_out.name}")
+        else:
+            notes["4_three_leg_spot_check"] = (
+                "OPEN", f"NOT CERTIFIED - hand disposition owed (S6-B3415 (a)): "
+                        f"{sb.get('note', 'AUTO')}: {Path(sb['script']).stem} at "
+                        f"manifest {label}; rederive exit {rd.returncode}: "
+                        f"{_verdict_line(rd)[:200]}; {tail[:200]}")
     else:
         notes["4_three_leg_spot_check"] = (
             "DONE", f"{sb.get('note', 'AUTO')}: {Path(sb['script']).stem} at "

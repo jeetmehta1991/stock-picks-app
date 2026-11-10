@@ -75457,6 +75457,56 @@ def test_b3437_a_quoted_script_path_names_the_program():
     assert _unquote_script_paths('echo "a.py"') == 'echo "a.py"'
 
 
+def test_b3427_rederive_leg_certifies_by_key():
+    """S6-B3427 (B3139q-r212c): the step-4 re-derivation leg. Keyed by SIGNAL
+    KEY, never by strategy (#291); its sampled-key population is the spot
+    check's own gate_keys_by_side (the first draft fell back to the whole
+    signals_at_entry dict and demanded routes for ~400 keys - caught by the
+    validation run before any commit); an unroutable key FAILS CLOSED naming
+    itself. Validated live on the news Step-2 cube: 6 keys x 50 trades, 300
+    of 300 agree, previous-bar control disagreeing on 91 row-keys
+    (output_audit/b3139q_r212c_rederive_validation.json)."""
+    import json
+    import subprocess
+    import sys
+    from pathlib import Path
+    import pandas as _pd
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import spot_check_rederive as scr
+    # registry behaviour on a SYNTHETIC two-bar window (structure is the
+    # evidence, the values are not - L470): the last bar closes above its
+    # open, the previous-bar control path reads w.iloc[:-1] and disagrees
+    w = _pd.DataFrame({"open": [10.0, 10.0], "high": [11.0, 12.0],
+                       "low": [9.0, 9.5], "close": [9.5, 11.5],
+                       "volume": [100.0, 200.0]})
+    assert scr.KEY_DERIVERS["close_above_open"](w) is True
+    assert scr.KEY_DERIVERS["close_above_open"](w.iloc[:-1]) is False
+    assert scr.KEY_DERIVERS["close_in_top_40pct_of_range"](w) is True
+    # fail-closed on an unroutable key: a tmp cube + spot json naming a key
+    # with no derivation route exits 2 and NAMES it
+    import tempfile
+    tmp = Path(tempfile.mkdtemp(prefix="b3427_"))
+    (tmp / "cube").mkdir()
+    _pd.DataFrame({"ticker": ["ZZQTEST"], "entry_date": ["2024-01-02"],
+                   "strategy": ["x"], "signals_at_entry": ['{"no_route_key": 1}']}
+                  ).to_csv(tmp / "cube" / "trade_log.csv", index=False)
+    (tmp / "spot.json").write_text(json.dumps(
+        {"gate_keys_by_side": {"long": ["no_route_key"]},
+         "rows": [{"ticker": "ZZQTEST", "entry_date": "2024-01-02"}]}),
+        encoding="utf-8")
+    r = subprocess.run([sys.executable, str(root / "scripts" / "spot_check_rederive.py"),
+                        "--cube", str(tmp / "cube"), "--strategy", "x",
+                        "--spot", str(tmp / "spot.json"),
+                        "--out", str(tmp / "out.json")],
+                       capture_output=True, text=True, cwd=str(root))
+    assert r.returncode == 2 and "no_route_key" in r.stdout, (r.returncode, r.stdout[-300:])
+    # wiring: the battery's NOT-CERTIFIED branch runs this checker
+    rp = (root / "scripts" / "run_postconfig.py").read_text(encoding="utf-8")
+    assert "spot_check_rederive.py" in rp and "step4_rederive" in rp
+
+
 def test_b3429_or_composite_thresholds_reach_table_a():
     """S6-B3429 (B3139q-r212b): a threshold inside an `or` reaches Table A.
     rsi_oversold's gate (rsi_2 < 7 OR rsi_14 < 40) carried no
