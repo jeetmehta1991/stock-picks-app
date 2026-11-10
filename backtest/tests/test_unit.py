@@ -75457,6 +75457,100 @@ def test_b3437_a_quoted_script_path_names_the_program():
     assert _unquote_script_paths('echo "a.py"') == 'echo "a.py"'
 
 
+def test_b3429_or_composite_thresholds_reach_table_a():
+    """S6-B3429 (B3139q-r212b): a threshold inside an `or` reaches Table A.
+    rsi_oversold's gate (rsi_2 < 7 OR rsi_14 < 40) carried no
+    EXISTING-THRESHOLD row because the comparisons sit on LOCALS assigned
+    from s.get, invisible to the s.get-adjacent regex. Detector validated
+    BEFORE this pin was written: exactly the ticket's 11-strategy class, 0
+    beyond it (probe at B3139q-r212)."""
+    import sys
+    from pathlib import Path
+    import pandas as _pd
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import build_table_a as bta
+    src = (root / "backtest" / "signals" / "screener.py").read_text(
+        encoding="utf-8", errors="replace")
+    oc = bta.or_composites(src)
+    arms = [a for g in oc.get("rsi_oversold", []) for a in g["arms"]]
+    assert ("rsi_2", "<", 7.0) in arms and ("rsi_14", "<", 40.0) in arms, arms
+    assert ("rsi_2", ">", 93.0) in arms and ("rsi_14", ">", 60.0) in arms, arms
+    # the ticket's class, by name (L747: a backlog names its members)
+    assert set(oc) >= {"bollinger_lower", "bollinger_tight", "hull_rsi",
+                       "insider_cluster_long", "insider_cluster_with_director_long",
+                       "institutional_committed_growth_long",
+                       "institutional_with_officers_long", "rsi_oversold",
+                       "squeeze_setup_long", "ultimate_oscillator",
+                       "williams_r_oversold"}, set(oc)
+    # and the render emits the row, through the live renderer (9 cells)
+    sigs = [{"rsi_2": v, "rsi_14": 30.0} for v in (2.0, 3.0, 4.0)]
+    frame = _pd.DataFrame({"strategy": ["rsi_oversold"] * 3,
+                           "ticker": ["A", "B", "C"],
+                           "entry_date": ["2024-01-02"] * 3,
+                           "direction": ["long"] * 3,
+                           "signals_at_entry": [str(s) for s in sigs]})
+    md = bta.render("rsi_oversold",
+                    {"stream": "TIGHTEN", "family": "meanrev",
+                     "status": "NOT-STARTED", "r5_fires": 3,
+                     "survives_pct": 1.0, "changed_since_r5": False},
+                    frame, sigs, False, [], ([], []), [], set(), "STAMP",
+                    body="fl = ...", or_groups=oc["rsi_oversold"])
+    rows = [ln for ln in md.splitlines()
+            if ln.startswith("| P") and "OR-composite `(" in ln]
+    assert len(rows) == len(oc["rsi_oversold"]), (len(rows), md[-500:])
+    assert rows[0].count("|") == 10, rows[0]   # 9 cells + edges (test_b3224 shape)
+    assert "rsi_2 < 7" in rows[0] and "rsi_14 < 40" in rows[0], rows[0]
+
+
+def test_b3420_runbook_cites_pvt_by_symbol():
+    """S6-B3420 (B3139q-r212b): a line-number citation of
+    producer_variant_table.py in the runbook decays with every edit above it
+    (L901; the ticket's 4 citations drifted twice between r199 and r212, and
+    at r212 all 4 pointed into data literals). Zero ratchet: the runbook
+    cites that file by SYMBOL only."""
+    import re
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    rb = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+    hits = re.findall(r"producer_variant_table\.py:\d+", rb)
+    assert hits == [], hits
+    # the replacements name real symbols (an address is checkable, L595)
+    src = (root / "scripts" / "producer_variant_table.py").read_text(encoding="utf-8")
+    for sym in ("def launch_refusals", "def table_c", "def producer_bands"):
+        assert sym in src, sym
+    assert "launch_refusals" in rb and "producer_bands" in rb
+
+
+def test_b3418_pairs_grader_confines_production_writes():
+    """S6-B3418 (B3139q-r212b): a non-battery run of the pairs free-levels
+    grader must not touch the tracked status views - at B3139q-r189 a
+    validation run with --out in the scratchpad rewrote both (the L1001
+    addendum). production_view_writes decides BOTH writes from the ONE
+    battery marker run_postconfig sets on its grader children."""
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import grade_free_levels_pairs as g
+    regen, out = g.production_view_writes(r"C:/tmp/v/grid.json", "cubeX", env={})
+    assert regen is False and out.name == "cubeX_breadth_grid_long.json"
+    assert "output_audit" not in str(out)
+    regen2, out2 = g.production_view_writes(
+        r"C:/tmp/v/grid.json", "cubeX", env={"POSTCONFIG_BATTERY": "1"})
+    assert regen2 is True
+    assert str(out2).replace(chr(92), "/").endswith(
+        "output_audit/cubeX_breadth_grid_long.json")
+    # wiring, both sides: main routes through the helper (def + call), and
+    # the battery sets the marker on its grader invocation
+    src = (root / "scripts" / "grade_free_levels_pairs.py").read_text(encoding="utf-8")
+    assert src.count("production_view_writes(") >= 2, "main does not call the helper"
+    rp = (root / "scripts" / "run_postconfig.py").read_text(encoding="utf-8")
+    assert '"POSTCONFIG_BATTERY": "1"' in rp, "the battery no longer sets the marker"
+
+
 def test_b3414_letter_suffixed_lane_label_is_not_a_batch_number():
     """S6-B3414 (B3139q-r212) two-arm pin: preflight C10's batch-claim regex
     takes a word boundary after the digits, so the incident line ("Lane 2

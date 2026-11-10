@@ -63,6 +63,7 @@ import argparse
 import ast
 import itertools
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -191,6 +192,26 @@ def parse_signals(raw):
         except Exception:                               # noqa: BLE001
             return None
     return d if isinstance(d, dict) and d else None
+
+
+def production_view_writes(out_arg, cube_name: str, env=None):
+    """S6-B3418 (B3139q-r212b): ONE decision for both production writes.
+
+    Returns (regenerate_status, breadth_out). A BATTERY run - run_postconfig
+    sets POSTCONFIG_BATTERY=1 on every free-levels grader it launches -
+    regenerates the production status view (the S6-B2848b freshness gate's
+    REGENERATE FIRST) and writes the breadth grid to output_audit, as every
+    landing has. Any OTHER run writes the breadth grid beside its own --out
+    and does NOT touch the tracked status views: a validation run with --out
+    in the scratchpad rewrote both tracked views at B3139q-r189 (the L1001
+    addendum, compliance failure against #327). Outside the battery a stale
+    production status is breadth_step1_grid's own fail-closed refusal
+    (step1_gates.require_fresh_status), never a silent rewrite here."""
+    battery = (os.environ if env is None else env).get("POSTCONFIG_BATTERY") == "1"
+    if battery:
+        return True, ROOT / "output_audit" / f"{cube_name}_breadth_grid_long.json"
+    side = Path(out_arg).resolve().parent if out_arg else ROOT / "output_audit"
+    return False, side / f"{cube_name}_breadth_grid_long.json"
 
 
 def main() -> int:
@@ -380,17 +401,22 @@ def main() -> int:
               f"{reg_path} - the T3-registered breadth leg cannot run "
               "(fail closed, L642)")
         return 2
-    rs = subprocess.run([sys.executable,
-                         str(ROOT / "scripts" / "build_strategy_status.py")],
-                        cwd=ROOT, capture_output=True, text=True)
-    if rs.returncode != 0:
-        print("[FAIL] status-view regenerate exit "
-              f"{rs.returncode} - the breadth leg's freshness gate "
-              f"(S6-B2848b) cannot be satisfied: {rs.stderr[-300:]}")
-        return 2
+    regen, breadth_out = production_view_writes(a.out, cube_dir.name)
+    if regen:
+        rs = subprocess.run([sys.executable,
+                             str(ROOT / "scripts" / "build_strategy_status.py")],
+                            cwd=ROOT, capture_output=True, text=True)
+        if rs.returncode != 0:
+            print("[FAIL] status-view regenerate exit "
+                  f"{rs.returncode} - the breadth leg's freshness gate "
+                  f"(S6-B2848b) cannot be satisfied: {rs.stderr[-300:]}")
+            return 2
+    else:
+        print("[CONFINED] non-battery run (S6-B3418): the production status "
+              "view is NOT regenerated and the breadth grid goes beside "
+              f"--out: {breadth_out}")
     axes_arg = ",".join([f"{k}:ge" for k in reg["axes"]]
                         + [f"{k}:le" for k in reg["axes"]])
-    breadth_out = ROOT / "output_audit" / f"{cube_dir.name}_breadth_grid_long.json"
     ruling = ("owner verbatim 2026-10-08: 'also register b breadth axes at "
               "T3' (with 'proceed with step 1'); registration "
               "output_audit/b3140_pairs_breadth_axes_t3.json")

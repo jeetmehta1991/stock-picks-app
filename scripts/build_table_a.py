@@ -147,6 +147,72 @@ def depth_comparisons(src: str) -> dict:
     return out
 
 
+def or_composites(src: str) -> dict:
+    """S6-B3429 (B3139q-r212b): (strategy) -> [{"arms": [(key, op, literal),
+    ...], "expr": verbatim}, ...] for every numeric comparison nested inside
+    an `or` of the gate body. The class depth_comparisons' s.get-adjacent
+    regex cannot see: rsi_oversold reads rsi_2 = s.get('rsi_2', 50) then
+    tests rsi_2 < 7 or rsi_14 < 40, so Table A showed the owner neither cut
+    (output_audit/b3423_rsi_oversold_table_a.md held no STRATEGY-layer
+    threshold row). Local names resolve through their s.get assignment; the
+    (s.get(k, 0.0) or 0.0) coalescing idiom resolves through its first
+    value; an unresolvable left side is skipped (a lower bound, like every
+    extraction here). MEASURED at landing: exactly the ticket's 11-strategy
+    class, 0 strategies beyond it."""
+    out = {}
+    for fn in ast.walk(ast.parse(src)):
+        if not (isinstance(fn, ast.FunctionDef) and fn.name.startswith("strat_")):
+            continue
+        local = {}
+        for n in ast.walk(fn):
+            if isinstance(n, ast.Assign) and len(n.targets) == 1 \
+                    and isinstance(n.targets[0], ast.Name) \
+                    and isinstance(n.value, ast.Call) \
+                    and isinstance(n.value.func, ast.Attribute) \
+                    and n.value.func.attr == "get" and n.value.args \
+                    and isinstance(n.value.args[0], ast.Constant):
+                local[n.targets[0].id] = str(n.value.args[0].value)
+        groups = []
+        for n in ast.walk(fn):
+            if not (isinstance(n, ast.BoolOp) and isinstance(n.op, ast.Or)):
+                continue
+            arms = []
+            for v in n.values:
+                if not (isinstance(v, ast.Compare) and len(v.ops) == 1
+                        and isinstance(v.comparators[0], ast.Constant)
+                        and isinstance(v.comparators[0].value, (int, float))
+                        and not isinstance(v.comparators[0].value, bool)):
+                    continue
+                left = v.left
+                key = None
+                if isinstance(left, ast.Name):
+                    key = local.get(left.id)
+                elif isinstance(left, ast.Call) and isinstance(left.func, ast.Attribute) \
+                        and left.func.attr == "get" and left.args \
+                        and isinstance(left.args[0], ast.Constant):
+                    key = str(left.args[0].value)
+                elif isinstance(left, ast.BoolOp) and isinstance(left.op, ast.Or) \
+                        and left.values:
+                    # the None-coalescing idiom: (s.get('k', 0.0) or 0.0) > x
+                    v0 = left.values[0]
+                    if isinstance(v0, ast.Call) and isinstance(v0.func, ast.Attribute) \
+                            and v0.func.attr == "get" and v0.args \
+                            and isinstance(v0.args[0], ast.Constant):
+                        key = str(v0.args[0].value)
+                if key is None:
+                    continue
+                op = {ast.Lt: "<", ast.LtE: "<=",
+                      ast.Gt: ">", ast.GtE: ">="}.get(type(v.ops[0]))
+                if op is None:
+                    continue
+                arms.append((key, op, float(v.comparators[0].value)))
+            if arms:
+                groups.append({"arms": arms, "expr": ast.unparse(n)})
+        if groups:
+            out[fn.name[len("strat_"):]] = groups
+    return out
+
+
 def _dead_reads(fn) -> set:
     """S6-B3374: keys a gate reads ONLY into local names it never uses - a
     filter a later batch dropped while keeping the read. MEASURED at
@@ -679,7 +745,7 @@ def _exit_cube_txt(row: dict) -> str:
 
 def render(name: str, row: dict, frame, sigs, filtered: bool,
            comparisons, legs_helpers, idx, specs_names, stamp: str,
-           body: str = "", specs_bands=None) -> str:
+           body: str = "", specs_bands=None, or_groups=None) -> str:
     n_all = len(frame)
     # B2845 zero-survivor guard: smc_order_block_bounce survives 0.0 - the T1
     # filter keeps NOTHING, so no offline level is measurable and every
@@ -829,6 +895,27 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
                  f" | looser side "
                  f"- band at R1 | MEASURED-PRE-R1 |")
         L += _band_rows(pid, key, PRODUCER_BANDS.get(key, []), axes, reads=_reads)
+    # S6-B3429: a threshold inside an `or` is an axis too - one row per OR
+    # group, arms resolved through their s.get locals (or_composites); the
+    # sweep grades the arms arm-conditioned as @group axes (S6-B3290).
+    for grp in (or_groups or []):
+        pid += 1
+        arms_txt = " OR ".join(f"{k} {op} {_fmt(v)}" for k, op, v in grp["arms"])
+        axes.append(_axis(f"P{pid}", f"OR-composite ({arms_txt})", 1,
+                          False, True, None, (1, 0, 0)))
+        L.append(
+            f"| P{pid} | STRATEGY | OR-composite `({arms_txt})` "
+            f"[EXISTING-THRESHOLD, OR-composite - S6-B3429] | an `or` of "
+            f"numeric cuts: tightening either arm keeps a subset of the "
+            f"recorded fires, and per-arm retention needs the gate's arm | "
+            f"`{grp['expr']}` | production arms as written | "
+            + _offline_cell([(1, 1, 0, 0)],
+                            "arm-conditioned tighter levels are measured at "
+                            "grid time - the sweep takes the arms as @group "
+                            "axes (S6-B3290, the williams_r_oversold "
+                            "precedent)")
+            + " | - (the arms' magnitudes are persisted on the fires) | "
+              "OR-COMPOSITE-REGISTERED |")
     for h in helpers:
         pid += 1
         if h == "_short_borrow_trap_active":
@@ -1179,6 +1266,7 @@ def main() -> int:
     src = (ROOT / "backtest" / "signals" / "screener.py").read_text(
         encoding="utf-8", errors="replace")
     comps = depth_comparisons(src)
+    orc = or_composites(src)   # S6-B3429
     legs = gate_legs(src)
     bodies = gate_bodies(src)
     idx = _module_index()
@@ -1203,7 +1291,8 @@ def main() -> int:
                                                r.get("unmeasured_gate_keys"))
         md = render(name, r, kept, sigs, filtered, comps.get(name, []),
                     legs.get(name, ([], [])), idx, specs_names, stamp,
-                    body=bodies.get(name, ""), specs_bands=specs_bands)
+                    body=bodies.get(name, ""), specs_bands=specs_bands,
+                    or_groups=orc.get(name, []))
         p = Path(a.out) if a.strategy else sub / f"{name}.md"
         p.write_text(md, encoding="utf-8", newline="\n")
         written.append(p)

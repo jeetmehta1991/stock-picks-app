@@ -727,7 +727,7 @@ Table A transcription plus one producer read per depth knob.
 `run_wave.main` BEFORE any arm and in `prelaunch_gate.check` for every LOCAL manifest, refusing R1 (no
 SPECS entry), R3 (not in `run_postconfig.FAMILIES`), an undeclared or off-band env knob, a resim level
 with no knob (the S6-B2569a class), and a tagged-precompute dir with no parquet (R9 - wired today for
-ONE family's persistence tag only, `producer_variant_table.py:3289`; any other family's tagged
+ONE family's persistence tag only, `producer_variant_table.launch_refusals`, its tagged-precompute branch; any other family's tagged
 precompute is checked by hand until a generic check exists). B2579 added R8's
 consumer half: every knob's consumer list is MEASURED from the tree
 (`producer_variant_table.knob_consumers`) and drift from the declaration is a refusal at launch and a
@@ -813,7 +813,7 @@ PYTHONPATH=. python scripts/producer_variant_table.py --strategy <STRATEGY> --fa
 This BLOCKS if the formula and Table A disagree, and prints the factorial and the engine-run count.
 Step 0 must leave the SPECS entry and that printed formula + factorial, with R1-R9 all green (§2.1)
 before Step 1. (The pre-B3096 row said Step 0 leaves `PRODUCER_VARIANT_TABLE_<strategy>.md` via
-`--factorial`; that flag only PRINTS and returns - `producer_variant_table.py:4340` - and the file is
+`--factorial`; that flag only PRINTS and returns - the `--factorial` branch of `producer_variant_table.main`, which prints and returns - and the file is
 written after grading, from `--results` with `--out`, §4.6.)
 
 **0.7 BAND COMPLETENESS (B2569 / #290 - every level must have a path to a measurement).** Free grading
@@ -2431,13 +2431,13 @@ and where did the rest stop?
   must remove its cell, which a hardcoded list would survive.
 - **Cell format - band VALUES, not counts (B2138 / B2141; its hardcoded six-parameter list gave way to
   B2585's all-bands row above, which is why the pre-B3096 text kept this paragraph as superseded lineage -
-  the rules below survive in the code, `producer_variant_table.py:4117`):** two configs that searched DIFFERENT grids of
+  the rules below survive in the code, `producer_variant_table.table_c`, the band cells it builds via `producer_bands`):** two configs that searched DIFFERENT grids of
   the same width are indistinguishable by count; values are delimited by SEMICOLONS (a pipe splits the
   markdown cell into columns and destroyed the first render) and sort numerically through ONE shared
   helper used by this column and the block below (L593: two sorts of the same values diverge on the
   first edit). The cross-config axes are read from the artifact's own `config` block - recorded by the
   first family's grader since B2138, and for other families as `P<N>_<name>` keys since B2542
-  (`producer_variant_table.py:4109`); before that they were written NOWHERE, which is how a cube could be re-graded at the wrong
+  (`producer_variant_table.table_c`'s B2560 `P<N>_<name>` branch); before that they were written NOWHERE, which is how a cube could be re-graded at the wrong
   config value (S6-B2136), and older artifacts read `?` there.
 - **Two properties that make it honest.** `best` ranks on **`is_ci_lo` - the IN-SAMPLE lower bound -
   never Sharpe and never the holdout** (L455 for the Sharpe half; B2136 for the holdout half, where the

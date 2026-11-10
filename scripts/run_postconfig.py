@@ -821,9 +821,12 @@ def run_family(fam_name: str, cube_dir: Path, p: dict,
     okf, free_out, fl = True, None, None
     if fb:
         free_out = ROOT / "output_audit" / f"{_key}_free_levels.json"
+        # S6-B3418: the battery marks its grader children so a grader with
+        # production-view writes (the pairs breadth leg) takes them ONLY here;
+        # a hand/validation run stays confined to its own --out.
         fl = _run([sys.executable, str(ROOT / "scripts" / fb["script"]),
                    "--cube", str(cube_dir), "--out", str(free_out)],
-                  _sub_env(arm_env, fb))
+                  {**_sub_env(arm_env, fb), "POSTCONFIG_BATTERY": "1"})
         okf = fl.returncode == 0 and free_out.exists()
         # B2576: the grader's verdict line, not whatever stderr printed last
         results.append(("step2_free_levels", "PASS" if okf else "FAIL",
