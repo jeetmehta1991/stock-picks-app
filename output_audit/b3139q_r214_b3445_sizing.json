@@ -1,0 +1,823 @@
+{
+ "ticket": "S6-B3445",
+ "part1": {
+  "news_reversal_long": {
+   "fires": 1,
+   "repro": 1,
+   "gate_now": 1,
+   "kept6": 1,
+   "kept7": 1,
+   "kept5": 1
+  },
+  "news_reversal_short": {
+   "fires": 60,
+   "repro": 60,
+   "gate_now": 31,
+   "kept6": 31,
+   "kept7": 31,
+   "kept5": 28
+  }
+ },
+ "fires": [
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "AVGO",
+   "as_of": "2022-05-31",
+   "repro": true,
+   "count5": 11,
+   "count6": 20,
+   "count7": 21,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "CAT",
+   "as_of": "2023-08-02",
+   "repro": true,
+   "count5": 29,
+   "count6": 32,
+   "count7": 36,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "CAT",
+   "as_of": "2025-10-31",
+   "repro": true,
+   "count5": 6,
+   "count6": 6,
+   "count7": 6,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "AVGO",
+   "as_of": "2025-12-01",
+   "repro": true,
+   "count5": 11,
+   "count6": 14,
+   "count7": 17,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "UNH",
+   "as_of": "2026-04-21",
+   "repro": true,
+   "count5": 8,
+   "count6": 8,
+   "count7": 8,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "ALB",
+   "as_of": "2022-07-22",
+   "repro": true,
+   "count5": 29,
+   "count6": 29,
+   "count7": 29,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "AES",
+   "as_of": "2023-12-14",
+   "repro": true,
+   "count5": 3,
+   "count6": 3,
+   "count7": 5,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "DIS",
+   "as_of": "2024-11-14",
+   "repro": true,
+   "count5": 3,
+   "count6": 3,
+   "count7": 4,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "BA",
+   "as_of": "2023-01-09",
+   "repro": true,
+   "count5": 7,
+   "count6": 10,
+   "count7": 10,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "CDNS",
+   "as_of": "2024-01-22",
+   "repro": true,
+   "count5": 5,
+   "count6": 5,
+   "count7": 5,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "CEG",
+   "as_of": "2024-03-05",
+   "repro": true,
+   "count5": 7,
+   "count6": 8,
+   "count7": 9,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "CCL",
+   "as_of": "2024-07-01",
+   "repro": true,
+   "count5": 13,
+   "count6": 16,
+   "count7": 26,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "NFLX",
+   "as_of": "2024-10-22",
+   "repro": true,
+   "count5": 8,
+   "count6": 11,
+   "count7": 14,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_long",
+   "ticker": "BAC",
+   "as_of": "2025-03-07",
+   "repro": true,
+   "count5": 9,
+   "count6": 12,
+   "count7": 16,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "AXP",
+   "as_of": "2025-05-14",
+   "repro": true,
+   "count5": 3,
+   "count6": 4,
+   "count7": 6,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "AMAT",
+   "as_of": "2026-01-15",
+   "repro": true,
+   "count5": 4,
+   "count6": 4,
+   "count7": 4,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "AMD",
+   "as_of": "2026-01-23",
+   "repro": true,
+   "count5": 26,
+   "count6": 31,
+   "count7": 33,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "CHD",
+   "as_of": "2026-02-05",
+   "repro": true,
+   "count5": 16,
+   "count6": 18,
+   "count7": 44,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "BMY",
+   "as_of": "2026-02-09",
+   "repro": true,
+   "count5": 2,
+   "count6": 4,
+   "count7": 5,
+   "fires6": true,
+   "fires7": true,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "IFF",
+   "as_of": "2026-02-17",
+   "repro": true,
+   "count5": 9,
+   "count6": 22,
+   "count7": 32,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "CTLT",
+   "as_of": "2022-05-05",
+   "repro": true,
+   "count5": 5,
+   "count6": 5,
+   "count7": 5,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "GM",
+   "as_of": "2022-08-02",
+   "repro": true,
+   "count5": 8,
+   "count6": 10,
+   "count7": 15,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "CRM",
+   "as_of": "2023-03-02",
+   "repro": true,
+   "count5": 52,
+   "count6": 53,
+   "count7": 57,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "CVS",
+   "as_of": "2025-02-14",
+   "repro": true,
+   "count5": 5,
+   "count6": 5,
+   "count7": 5,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "CE",
+   "as_of": "2026-03-13",
+   "repro": true,
+   "count5": 14,
+   "count6": 14,
+   "count7": 14,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "EMN",
+   "as_of": "2026-02-05",
+   "repro": true,
+   "count5": 8,
+   "count6": 8,
+   "count7": 14,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "ALK",
+   "as_of": "2026-04-20",
+   "repro": true,
+   "count5": 3,
+   "count6": 3,
+   "count7": 3,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "ENPH",
+   "as_of": "2022-06-06",
+   "repro": true,
+   "count5": 6,
+   "count6": 9,
+   "count7": 10,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "NCLH",
+   "as_of": "2022-10-27",
+   "repro": true,
+   "count5": 4,
+   "count6": 4,
+   "count7": 6,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "IQV",
+   "as_of": "2022-10-27",
+   "repro": true,
+   "count5": 7,
+   "count6": 7,
+   "count7": 7,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "FTNT",
+   "as_of": "2022-10-27",
+   "repro": true,
+   "count5": 19,
+   "count6": 19,
+   "count7": 23,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "ETSY",
+   "as_of": "2022-11-16",
+   "repro": true,
+   "count5": 3,
+   "count6": 4,
+   "count7": 8,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "MGM",
+   "as_of": "2023-01-11",
+   "repro": true,
+   "count5": 5,
+   "count6": 5,
+   "count7": 6,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "DXCM",
+   "as_of": "2022-11-01",
+   "repro": true,
+   "count5": 8,
+   "count6": 10,
+   "count7": 12,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "VMC",
+   "as_of": "2023-05-08",
+   "repro": true,
+   "count5": 4,
+   "count6": 4,
+   "count7": 4,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "MAR",
+   "as_of": "2023-05-03",
+   "repro": true,
+   "count5": 22,
+   "count6": 24,
+   "count7": 27,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "MPWR",
+   "as_of": "2023-05-30",
+   "repro": true,
+   "count5": 4,
+   "count6": 7,
+   "count7": 7,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "MGM",
+   "as_of": "2023-07-14",
+   "repro": true,
+   "count5": 3,
+   "count6": 3,
+   "count7": 3,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "GPS",
+   "as_of": "2023-11-06",
+   "repro": true,
+   "count5": 7,
+   "count6": 11,
+   "count7": 12,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "MPWR",
+   "as_of": "2024-02-12",
+   "repro": true,
+   "count5": 9,
+   "count6": 13,
+   "count7": 13,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "HWM",
+   "as_of": "2024-05-07",
+   "repro": true,
+   "count5": 3,
+   "count6": 6,
+   "count7": 7,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "NCLH",
+   "as_of": "2024-06-06",
+   "repro": true,
+   "count5": 5,
+   "count6": 5,
+   "count7": 7,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "GPC",
+   "as_of": "2024-04-24",
+   "repro": true,
+   "count5": 5,
+   "count6": 6,
+   "count7": 10,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "COF",
+   "as_of": "2025-04-25",
+   "repro": true,
+   "count5": 3,
+   "count6": 3,
+   "count7": 3,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "MHK",
+   "as_of": "2026-01-14",
+   "repro": true,
+   "count5": 2,
+   "count6": 3,
+   "count7": 4,
+   "fires6": true,
+   "fires7": true,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "LHX",
+   "as_of": "2026-01-13",
+   "repro": true,
+   "count5": 3,
+   "count6": 5,
+   "count7": 6,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "SEDG",
+   "as_of": "2022-07-28",
+   "repro": true,
+   "count5": 8,
+   "count6": 8,
+   "count7": 8,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "NOW",
+   "as_of": "2022-10-27",
+   "repro": true,
+   "count5": 27,
+   "count6": 27,
+   "count7": 30,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "PYPL",
+   "as_of": "2022-11-14",
+   "repro": true,
+   "count5": 5,
+   "count6": 8,
+   "count7": 10,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "PHM",
+   "as_of": "2022-11-14",
+   "repro": true,
+   "count5": 3,
+   "count6": 3,
+   "count7": 3,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "ON",
+   "as_of": "2023-05-02",
+   "repro": true,
+   "count5": 16,
+   "count6": 17,
+   "count7": 18,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "VFC",
+   "as_of": "2023-10-19",
+   "repro": true,
+   "count5": 5,
+   "count6": 5,
+   "count7": 5,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "QCOM",
+   "as_of": "2024-05-03",
+   "repro": true,
+   "count5": 34,
+   "count6": 36,
+   "count7": 37,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "UAL",
+   "as_of": "2024-04-24",
+   "repro": true,
+   "count5": 9,
+   "count6": 11,
+   "count7": 17,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "ORCL",
+   "as_of": "2024-06-13",
+   "repro": true,
+   "count5": 33,
+   "count6": 33,
+   "count7": 36,
+   "fires6": false,
+   "fires7": false,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "ULTA",
+   "as_of": "2024-09-19",
+   "repro": true,
+   "count5": 2,
+   "count6": 3,
+   "count7": 4,
+   "fires6": true,
+   "fires7": true,
+   "fires5": false
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "ORCL",
+   "as_of": "2024-11-11",
+   "repro": true,
+   "count5": 3,
+   "count6": 3,
+   "count7": 4,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "UBER",
+   "as_of": "2025-02-11",
+   "repro": true,
+   "count5": 9,
+   "count6": 11,
+   "count7": 12,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "UBER",
+   "as_of": "2025-05-14",
+   "repro": true,
+   "count5": 9,
+   "count6": 11,
+   "count7": 12,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "SBUX",
+   "as_of": "2025-06-12",
+   "repro": true,
+   "count5": 3,
+   "count6": 3,
+   "count7": 3,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  },
+  {
+   "strategy": "news_reversal_short",
+   "ticker": "Q",
+   "as_of": "2026-04-14",
+   "repro": true,
+   "count5": 4,
+   "count6": 5,
+   "count7": 7,
+   "fires6": true,
+   "fires7": true,
+   "fires5": true
+  }
+ ],
+ "part2_pct_count_ge3": {
+  "5": {
+   "Mon": [
+    4241,
+    8424
+   ],
+   "Tue": [
+    4236,
+    8424
+   ],
+   "Wed": [
+    4254,
+    8424
+   ],
+   "Thu": [
+    4688,
+    8478
+   ],
+   "Fri": [
+    4998,
+    8478
+   ]
+  },
+  "6": {
+   "Mon": [
+    4793,
+    8424
+   ],
+   "Tue": [
+    4794,
+    8424
+   ],
+   "Wed": [
+    4785,
+    8424
+   ],
+   "Thu": [
+    4829,
+    8478
+   ],
+   "Fri": [
+    5090,
+    8478
+   ]
+  },
+  "7": {
+   "Mon": [
+    5220,
+    8424
+   ],
+   "Tue": [
+    5196,
+    8424
+   ],
+   "Wed": [
+    5198,
+    8424
+   ],
+   "Thu": [
+    5238,
+    8478
+   ],
+   "Fri": [
+    5217,
+    8478
+   ]
+  }
+ }
+}
