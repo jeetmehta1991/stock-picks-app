@@ -919,8 +919,8 @@ def signal_plain_translation(signal: str) -> str:
         # News sentiment (Polygon news feed + Loughran-McDonald lexicon fallback)
         "news_sentiment_shift":     "(current 7d mean sentiment score) MINUS (prior 7d mean sentiment score). Range [-2, +2]. Positive value = sentiment IMPROVING. Strategies check thresholds like > 0.4 (strong positive shift) or < -0.4 (strong negative shift) inline.",
         "news_article_count":       "number of articles published about this ticker in the current 7-day window (coverage gate)",
-        "news_sentiment_5d":        "5-day recency-weighted mean sentiment score (weight = 1 - age/5; more-recent articles weighted heavier)",
-        "news_volume_zscore_5d":    "5-day article-count vs trailing 25-day baseline article-count, expressed as a z-score (Cohen-Frazzini-Malloy news-attention normalisation)",
+        "news_sentiment_5d":        "5-day recency-weighted mean sentiment score (weight = 1 - age/5; more-recent articles weighted heavier), over scored articles - a pure price report and an unlisted 5+-ticker word-list roundup carry no sentiment (S6-B3441 / S6-B3443)",
+        "news_volume_zscore_5d":    "article count on the 7 dates ending at the bar vs 7 days of the adjacent 25-date baseline, expressed as a z-score (Cohen-Frazzini-Malloy news-attention normalisation; S6-B3440)",
         # Donchian (canonical N-bar channel; B584 fix excludes today from rolling window)
         "dc10_breakout_up":    "today's close >= 99.8% of the highest HIGH over the PRIOR 10 trading days (B584 fix excludes today). 0.2% slack permits 'almost a breakout'.",
         "dc10_breakout_dn":    "today's close <= 100.2% of the lowest LOW over the PRIOR 10 trading days (B584 fix). 0.2% slack permits 'almost a breakdown'.",
@@ -1096,14 +1096,16 @@ def load_signal_definitions() -> list:
         ("week_open_gap_down_15pct", "Monday opened with gap <= -1.5% vs prior Friday close.",
                                 "ict_producers.py:compute_week_opening_gap_signals"),
         # === News sentiment ===
-        ("news_sentiment_shift", "Current 7d mean sentiment minus prior 7d mean. Range [-2, +2]. Polygon native or Loughran-McDonald lexicon.",
-                                "backtest/signals/news_sentiment.py:380"),
-        ("news_article_count",  "Article count in current 7d window.",
-                                "backtest/signals/news_sentiment.py:385"),
-        ("news_sentiment_5d",   "5-day recency-weighted mean sentiment (weight = 1 - age/5).",
-                                "backtest/signals/news_sentiment.py:319"),
-        ("news_volume_zscore_5d", "5d article count vs trailing 25d daily baseline (z-score).",
-                                "backtest/signals/news_sentiment.py:345"),
+        ("news_sentiment_shift", "Current 7d mean sentiment minus prior 7d mean, over scored articles (a 5+-ticker word-list roundup without the ticker in its title and a pure price report carry no sentiment, S6-B3441 / S6-B3443). Range [-2, +2]. Polygon label or the cleaned Loughran-McDonald lexicon.",
+                                "backtest/signals/news_sentiment.py:compute_news_sentiment_signals"),
+        ("news_article_count",  "Article count in current 7d window (every article counts).",
+                                "backtest/signals/news_sentiment.py:compute_news_sentiment_signals"),
+        ("news_sentiment_5d",   "5-day recency-weighted mean sentiment (weight = 1 - age/5), over scored articles.",
+                                "backtest/signals/news_sentiment.py:compute_news_sentiment_signals"),
+        ("news_volume_zscore_5d", "Article count on the 7 dates ending at the bar vs 7 days of the adjacent 25-date baseline (z-score; S6-B3440).",
+                                "backtest/signals/news_sentiment.py:compute_news_sentiment_signals"),
+        ("news_count_5d",       "Article count on the 7 dates ending at the bar (S6-B3445; every article counts).",
+                                "backtest/signals/news_sentiment.py:compute_news_sentiment_signals"),
     ]
 
 

@@ -26021,3 +26021,13 @@ MEASURED: scripts/squeeze_derived_landed.py, which I added at B3139q-r163 for th
 **Rule.** None - **record-of-fact**: #164's L945 extension stands as written ('every reader of what it changes, by name across the tree').
 
 **Mechanism.** scripts/key_readers.py maps signal keys to the registered strategies whose gates read them (AST over screener.py, module-level helper calls followed, dynamic reads counted, never guessed), pinned by test_b3446 on the news producer's measured reach (news_sentiment_5d 5, the 7 sentiment fields 9, news_volume_zscore_5d 2) and on a read reached only through a helper (days_to_cover inside _short_borrow_trap_active); its mutation probe killed 2 of 2. Which keys a change feeds stays a reading of the producer: JUDGMENT-ONLY for that half - no detection mechanism, since a decision row names an object in prose and no scan can tell which outputs the object feeds. Recorded as S6-B3446.
+
+### L1016 - A MEASURED COUNT WAS TYPED AS 'EVERY' IN A COMMITTED ROW, AND THE CLOSE THAT FOUND IT CALLED IT A ROUNDING (B3139q-r214b / r215, 2026-11-10)
+
+**MEASURED** (B3139q-r215: the B3139q-r214b row on S6-B3443, commit d4ded5984, printed by scripts/ticket_history.py; the counts are the B3139q-r208 row's on S6-B3441; the close read from the session transcript, posted 2026-11-10T19:10:48Z): the r214b row recommends e2 because it drops price reports 'that Polygon's label still scores - every article from 2025 on is labelled'. Measured at B3139q-r208 over the 101 news_momentum_long tickers' articles, 10,642 of 10,650 carry a label in 2025 and 5,321 of 5,326 in 2026 - 13 without one. The turn's close gave the 2025 count, said the committed row 'rounds that to' the universal and that the ticket's next row gives the measured count; no lesson was written. The counts land in S6-B3443's B3139q-r215 row.
+
+**Why.** Compliance failure against #201 - a quantity is computed, never asserted, and a universal over a counted population is a quantity: the row typed the claim the count rounds to, not the count. And against #228's second-order rule - acknowledging a miss is not recording it: the close named the slip a rounding and the turn ended without the record.
+
+**Rule.** None - **record-of-fact**: #201 and #228 stand as written.
+
+**Mechanism.** JUDGMENT-ONLY - no detection mechanism: a universal in a ticket row can describe data ('every article from 2025 on is labelled') or the code's rule ('every article still counts'), and only a reading tells the two apart; the process diet builds no gate for a wording slip (S6-B3424). Recorded as S6-B3447.

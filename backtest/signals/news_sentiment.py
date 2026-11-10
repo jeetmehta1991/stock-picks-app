@@ -184,24 +184,87 @@ ROUNDUP_MIN_TICKERS = 5
 NEWS_VOLUME_Z_WINDOW_DATES = 7
 NEWS_VOLUME_Z_BASELINE_DATES = 25
 
+# S6-B3445 (a) (B3139q-r215; owner 'Approve your recommendations'):
+# news_count_5d - the 3-article floor of news_reversal_long / _short - counts
+# the articles on these 7 calendar dates ending at as_of, the window S6-B3440
+# (d) gave the volume z-score. It counted 6 dates, which hold 5 weekdays when
+# as_of is a Friday and 4 otherwise: 60.0 pct of Fridays cleared the floor
+# against 56.8-57.0 pct of other weekdays, and 61.5-62.0 pct on every weekday
+# over 7 dates (B3139q-r214b, the pair's 54 tickers). The field keeps its name.
+NEWS_COUNT_WINDOW_DATES = 7
+
+# S6-B3443 (e2) (B3139q-r215; owner 'Approve your recommendations'): a PURE
+# PRICE REPORT - a title reporting a stock's or the market's price move with no
+# stated cause ('Why AMD Stock Is Jumping Today', '(PFE) Stock Sinks As Market
+# Gains') - carries no sentiment weight, whoever scored it: the owner's point
+# that 'the stock went up or down by xx%' alone is lagged context, and Polygon's
+# label scores such articles by the move itself. A move WITH a cause clause
+# ('Shares Up on Strong Q3 View') keeps its weight, and forward-looking or
+# buy-list titles ('Could Soar', 'Stocks to Buy') are not price reports. Hand
+# read of a seeded sample of 25 flagged titles (B3139q-r214): 16 pure price
+# reports, 5 a move with a stated cause, 4 not price reports ('8% drop in
+# operating earnings'); among 25 unflagged, 0 clear misses. Flags 2.8-4.1 pct
+# of articles a year as pure reports on 6 tickers. Like the roundup rule, an
+# excluded article still counts in every article count and the z-score.
+_PA_MOVE = (r"(?:up|down|higher|lower|rise[sn]?|rising|rose|fall[sn]?|falling|fell|jump(?:s|ed|ing)?|"
+            r"surg(?:e|es|ed|ing)|soar(?:s|ed|ing)?|plung(?:e|es|ed|ing)|tumbl(?:e|es|ed|ing)|"
+            r"slid(?:e|es|ing)?|sink(?:s|ing)?|sank|climb(?:s|ed|ing)?|gain(?:s|ed|ing)?|"
+            r"drop(?:s|ped|ping)?|rall(?:y|ies|ied|ying)|slump(?:s|ed|ing)?|spik(?:e|es|ed|ing)|"
+            r"skyrocket(?:s|ed|ing)?|crater(?:s|ed|ing)?|sl(?:ip|ips|ipped|ipping)|dip(?:s|ped|ping)?|"
+            r"trad(?:e|es|ing) (?:higher|lower|up|down)|mov(?:e|es|ing) (?:higher|lower))")
+_PA_SUBJ = r"(?:stock|stocks|shares|share price|stock price)"
+_PA_RECAP_VERB = (r"(?:rises|falls|sinks|gains|dips|climbs|slides|jumps|drops|moves|outpaces|lags|"
+                  r"underperforms|outperforms|surpasses|trails|increases|decreases|advances|declines|"
+                  r"tumbles|soars|plunges|ascends|descends|rallies|slips|edges)")
+_PA_PATTERNS = (
+    re.compile(r"\b" + _PA_SUBJ + r"\b(?:\s+\w+){0,4}?\s+(?:are\s+|is\s+)?" + _PA_MOVE + r"\b", re.I),
+    re.compile(r"\bwhy\b.{0,60}\b" + _PA_SUBJ + r"\b.{0,40}\b" + _PA_MOVE + r"\b", re.I),
+    re.compile(r"\([A-Z][A-Z.\-]{0,6}\)\s+(?:stock\s+)?" + _PA_RECAP_VERB + r"\b", re.I),
+    re.compile(r"^(?:u\.s\.\s+)?(?:stocks?|markets?|wall street|dow|s&p 500|nasdaq|futures)\b.{0,40}\b"
+               r"(?:fall|falls|fell|rise|rises|rose|rally|rallies|slide|slides|sink|sinks|tumble|tumbles|"
+               r"gain|gains|drop|drops|climb|climbs|jump|jumps|surge|surges|plunge|plunges|slump|slumps|"
+               r"retreat|retreats|rebound|rebounds)\b", re.I),
+    re.compile(r"what'?s driving markets|\btop movers\b|\bbiggest movers\b|\bmarket movers\b|"
+               r"stocks moving (?:higher|lower)|\b(?:premarket|pre-market|after-hours|midday|mid-day)\s+"
+               r"(?:movers|gainers|losers)\b|\b(?:top|biggest)\s+(?:gainers|losers)\b", re.I),
+    re.compile(r"\b\d+(?:\.\d+)?\s?%\s+(?:gain|jump|drop|decline|rise|fall|surge|plunge|rally|slide)\b", re.I),
+)
+_PA_FORWARD = re.compile(r"\b(?:could|will|might|may|would|should|can this|can it|before they|before it|"
+                         r"prediction|predict(?:s|ed)?|poised|set to|likely to|to buy|buy now|buying|"
+                         r"keep climbing|you'll|regret)\b", re.I)
+_PA_CAUSE = re.compile(r"\b(?:on|as|after|following|amid|due to|thanks to)\b", re.I)
+
+
+def _is_pure_price_report(title) -> bool:
+    """S6-B3443 (e2): the title reports a price move (forward-looking and
+    buy-list titles excluded) and states no cause clause."""
+    t = title if isinstance(title, str) else ""
+    if not any(p.search(t) for p in _PA_PATTERNS) or _PA_FORWARD.search(t):
+        return False
+    return not _PA_CAUSE.search(t)
+
 
 def _sentiment_excluded(df: pd.DataFrame, ticker: Optional[str],
                         uses_polygon: pd.Series) -> pd.Series:
-    """S6-B3441 (a): True where a word-list-scored article lists
-    ROUNDUP_MIN_TICKERS or more tickers and `ticker` is not a token in its
-    title. All False when the ticker or the ticker list is unknown (the
-    Finnhub frame carries no ticker list)."""
+    """True where an article carries no sentiment weight for `ticker`:
+    S6-B3443 (e2) a pure price report, whoever scored it (needs a title), OR
+    S6-B3441 (a) a word-list-scored article that lists ROUNDUP_MIN_TICKERS or
+    more tickers while `ticker` is not a token in its title (needs the ticker
+    and the ticker list - the Finnhub frame carries no ticker list)."""
     none = pd.Series(False, index=df.index)
+    title = (df["title"] if "title" in df.columns else none.map(lambda _: ""))
+    title = title.fillna("").astype(str)
+    price_report = title.map(_is_pure_price_report).astype(bool)
     if not ticker or "all_tickers" not in df.columns:
-        return none
+        return price_report
     listed = df["all_tickers"].fillna("").astype(str).map(
         lambda s: sum(1 for x in s.split(",") if x.strip()))
     forms = sorted({ticker, ticker.replace(".", "-"), ticker.replace("-", ".")})
     pat = re.compile(r"(?<![A-Z0-9])(?:" + "|".join(re.escape(f) for f in forms)
                      + r")(?![A-Z0-9])")
-    title = (df["title"] if "title" in df.columns else none.map(lambda _: ""))
-    in_title = title.fillna("").astype(str).map(lambda s: bool(pat.search(s)))
-    return (~uses_polygon.astype(bool)) & (listed >= ROUNDUP_MIN_TICKERS) & (~in_title)
+    in_title = title.map(lambda s: bool(pat.search(s)))
+    roundup = (~uses_polygon.astype(bool)) & (listed >= ROUNDUP_MIN_TICKERS) & (~in_title)
+    return roundup | price_report
 
 
 def _precompute_article_scores(df: pd.DataFrame,
@@ -583,7 +646,8 @@ def compute_news_sentiment_signals(
     # weekdays when as_of is a Friday and 4 on any other weekday, so Fridays
     # passed more often (28.1 pct against 21.6-24.6 pct; B3139q-r207/r208).
     # Every 7-date window holds 5 weekdays and 2 weekend days. The field keeps
-    # its name; news_count_5d keeps its own 6-date window (S6-B3445).
+    # its name; news_count_5d counts its own NEWS_COUNT_WINDOW_DATES dates
+    # (S6-B3445 (a) - 7 since B3139q-r215).
     zw = NEWS_VOLUME_Z_WINDOW_DATES
     z_count = int(((df["published_date"] >= as_of - timedelta(days=zw - 1))
                    & (df["published_date"] <= as_of)).sum())
@@ -591,7 +655,8 @@ def compute_news_sentiment_signals(
     baseline_end = as_of - timedelta(days=zw)  # inclusive
     baseline = df[(df["published_date"] >= baseline_start)
                   & (df["published_date"] <= baseline_end)]
-    count_5d = int(len(five_d))
+    count_5d = int(((df["published_date"] >= as_of - timedelta(days=NEWS_COUNT_WINDOW_DATES - 1))
+                    & (df["published_date"] <= as_of)).sum())
     # Per-day counts in baseline:
     if baseline.empty:
         vol_zscore_5d = 0.0

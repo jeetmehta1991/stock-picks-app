@@ -3192,3 +3192,13 @@ of the measurement (the M7 degraded map is empty there); and it recommended clos
   worker at 6.4 to 6.9 CPU seconds per 30 s, 1,115 pages a second, 1.13 GB of physical memory free - a
   slowdown, not a stall. **Waits on:** the landing, then S6-B3432's remainder and the one read on the
   owner's word.
+- **LANDED AND READ ONCE (r206):** news_momentum_long's Step-2 run landed 2026-11-07 (COMPLETE, 10
+  legs) and its holdout was read once - breakeven_plus_trail, Sharpe 0.604 against the 1.0 gate, 5 of
+  6 live gates (S6-B1248-LEVER4-GATE-BUDGET's r206 row); depth ran, breadth not run (S6-B3430).
+  smc_bos_continuation's run waits on the owner's word.
+- **NEWS PRODUCER CHANGED AFTER THE READ (r214, r215; the owner's rulings on S6-B3441, S6-B3440,
+  S6-B3445 and S6-B3443):** the word list drops 42 price-move verbs and 'ahead'; a 5+-ticker
+  word-list roundup without the ticker in its title and a pure price report carry no sentiment; the
+  volume z-score and news_count_5d count 7 dates. The arm's cube and its one read describe the old
+  scorer; the breadth leg runs on the next news run on this producer (S6-B3430, DEFERRED), whose
+  launch is the owner's word.

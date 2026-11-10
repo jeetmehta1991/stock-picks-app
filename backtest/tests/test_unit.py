@@ -53798,7 +53798,7 @@ _B3139BB_LINE_CITATIONS = {
     "scripts/aws_chunk_launch.py": 1,
     "scripts/b974_classify_signal_orphan_17.py": 17,
     "scripts/b987_tranche_2_stage5_candidates.py": 1,
-    "scripts/build_strategy_roster.py": 28,
+    "scripts/build_strategy_roster.py": 24,
     "scripts/gate_incident_corpus.py": 1,
     "scripts/phase_1_add_investigation_columns.py": 2,
     "scripts/phase_1_analysis_turn_3.py": 1,
@@ -75686,9 +75686,10 @@ def test_b3440_volume_zscore_counts_seven_dates_against_seven_days(tmp_path, mon
     window'): news_volume_zscore_5d counts the articles on the 7 dates
     as_of-6..as_of against 7 days of the adjacent 25-date baseline,
     as_of-31..as_of-7, and every 7-date window ending on a weekday holds 5
-    weekdays. news_count_5d keeps its 6-date window (S6-B3445). The fixture
-    gives the old definition (6 dates against 5 days of as_of-30..as_of-6) a
-    different value, so the pin fails on either old window."""
+    weekdays. news_count_5d counts the same 7 dates since S6-B3445 (a)
+    (B3139q-r215). The fixture gives the old definition (6 dates against 5
+    days of as_of-30..as_of-6) a different value, so the pin fails on either
+    old window."""
     import math
     from datetime import date, timedelta
     import pandas as pd
@@ -75724,7 +75725,7 @@ def test_b3440_volume_zscore_counts_seven_dates_against_seven_days(tmp_path, mon
     old = z(18, [3] + [2 if j % 5 == 0 else 1 for j in range(7, 31)], 5)
     assert abs(new - old) > 1.0, (new, old)
     assert abs(out["news_volume_zscore_5d"] - round(new, 4)) < 1e-4, (out, new)
-    assert out["news_count_5d"] == 18, out
+    assert out["news_count_5d"] == 21, out  # 7 dates x 3 (S6-B3445 (a)); 18 over 6
 
 
 def test_b3446_key_readers_measures_a_producer_changes_reach():
@@ -75765,3 +75766,46 @@ def test_b3446_key_readers_measures_a_producer_changes_reach():
     keys, dyn = kr.closure_reads(
         "def strat_x(s):\n    k = 'a'\n    return s.get(k) and s.get('b')\n")
     assert keys["strat_x"] == {"b"} and dyn["strat_x"] == 1, (keys, dyn)
+
+
+def test_b3443_e2_price_report_has_no_sentiment_weight_and_count_spans_7_dates(tmp_path, monkeypatch):
+    """S6-B3443 (e2) and S6-B3445 (a) (B3139q-r215; owner 'Approve your
+    recommendations'): a PURE PRICE REPORT - a price-move title with no cause
+    clause - carries no sentiment weight whoever scored it, a Polygon label
+    included, while a move WITH a cause, a forward-looking title and a plain
+    news title keep theirs, and every article still counts; news_count_5d
+    counts the 7 dates as_of-6..as_of. Synthetic fixture - the STRUCTURE is the
+    evidence, not the values (L470). It fails on either rule's absence: with
+    the labelled price report weighted, P5 is 0.0 and the 7-day mean 0.0; over
+    6 dates the count is 2."""
+    from datetime import date
+    import pandas as pd
+    import backtest.signals.news_sentiment as ns
+    assert ns.NEWS_COUNT_WINDOW_DATES == 7
+    assert ns._is_pure_price_report("Why AMD Stock Is Jumping Today") is True
+    assert ns._is_pure_price_report("AMD Shares Up on Strong Q3 View") is False
+    assert ns._is_pure_price_report("Prediction: AMD Stock Will Soar") is False
+    assert ns._is_pure_price_report("AMD launches a new data-center chip") is False
+    assert ns._is_pure_price_report(None) is False
+    ns._NEWS_BY_TICKER.clear()
+    fake = pd.DataFrame({
+        "ticker": ["TST"] * 3,
+        "published_utc": pd.to_datetime(["2024-03-29", "2024-04-04", "2024-04-04"]),
+        "title": ["TST unveils a new product line",
+                  "Why TST Stock Is Jumping Today",
+                  "TST misses estimates and warns"],
+        "description": [""] * 3,
+        "sentiment": [None, "positive", None],
+        "all_tickers": ["TST"] * 3,
+    })
+    fake.to_parquet(tmp_path / "TST.parquet")
+    monkeypatch.setattr(ns, "_NEWS_DIR", tmp_path)
+    try:
+        out = ns.compute_news_sentiment_signals("TST", date(2024, 4, 4))
+    finally:
+        ns._NEWS_BY_TICKER.clear()
+    assert out["news_sentiment_5d"] == -1.0, out
+    assert out["news_sentiment_mean"] == -0.5, out
+    assert out["news_bullish_pct"] == 0.0 and out["news_bearish_pct"] == 0.5, out
+    assert out["news_article_count"] == 3, out
+    assert out["news_count_5d"] == 3, out

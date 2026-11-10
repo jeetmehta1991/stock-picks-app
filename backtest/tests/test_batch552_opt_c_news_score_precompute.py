@@ -85,12 +85,15 @@ def test_batch552_known_signal_outcome_aapl():
     S6-B3441 (a) (B3139q-r214): the cleaned word lists and the roundup
     exclusion move the sentiment values - sent_score 0.4121 -> 0.2443,
     bullish_pct 0.5091 -> 0.322 (now a share of the scored articles) - while
-    the article count stays 110: an excluded roundup still counts."""
+    the article count stays 110: an excluded roundup still counts.
+    S6-B3443 (e2) (B3139q-r215): pure price reports carry no sentiment weight
+    either - sent_score 0.2443 -> 0.2353, bullish_pct 0.322 -> 0.3158; the
+    count still 110."""
     from backtest.signals.news_sentiment import compute_news_sentiment_signals
     out = compute_news_sentiment_signals("AAPL", date(2024, 6, 14))
     assert out["news_count_7d"] == 110
-    assert abs(out["news_sentiment_score"] - 0.2443) < 0.001
-    assert abs(out["news_bullish_pct"] - 0.322) < 0.001
+    assert abs(out["news_sentiment_score"] - 0.2353) < 0.001
+    assert abs(out["news_bullish_pct"] - 0.3158) < 0.001
 
 
 def test_batch552_score_window_vectorized_matches_reference():

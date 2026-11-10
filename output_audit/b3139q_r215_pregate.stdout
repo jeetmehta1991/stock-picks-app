@@ -1,0 +1,76 @@
+........................................................................ [ 30%]
+........................................................................ [ 60%]
+....F.....................F............................................. [ 90%]
+......................                                                   [100%]
+================================== FAILURES ===================================
+______ test_b3106_open_ticket_calling_a_closed_ticket_unfixed_is_flagged ______
+
+    def test_b3106_open_ticket_calling_a_closed_ticket_unfixed_is_flagged():
+        """S6-B3042 (B3106): an OPEN ticket's body can say another ticket is
+        unfixed / still open / owed after that ticket CLOSED - nothing checked it
+        (S6-B2922 said 'S6-B2918 keying ... remain unfixed' while S6-B2918 read
+        EXECUTED). audit_ticket_staleness.unfixed_claims() is the join: sentences
+        of NON-terminal rows naming a TERMINAL id beside an unfixed-marker, with
+        quoted spans stripped so a row DOCUMENTING an old claim does not fire.
+        Must-fire on the S6-B2922 shape; must-quiet on a quotation, a citation of
+        a shipped mechanism, a negation and a self-reference; and the LIVE ledger
+        carries none (MEASURED B3106: 0 across the non-terminal set, with the
+        known instance as the positive control)."""
+        import sys
+        from pathlib import Path
+        root = Path(__file__).resolve().parents[2]
+        if str(root / "scripts") not in sys.path:
+            sys.path.insert(0, str(root / "scripts"))
+        import audit_ticket_staleness as ats
+        states = {"S6-X1": "OPEN", "S6-B2918": "EXECUTED", "S6-B2620a": "EXECUTED"}
+    
+        def rows(body):
+            return {"S6-X1": ["", " **S6-X1** ", " **OPEN** ", " P1 ", " " + body + " ",
+                              " _reason:_ OPEN - x. ", ""]}
+    
+        fire = "STILL OPEN: S6-B2918 keying and the below-power disposition remain unfixed."
+        assert [h[2] for h in ats.unfixed_claims(states, rows(fire))] == ["S6-B2918"]
+        for quiet in (
+                "S6-B2922's body read 'S6-B2918 keying remain unfixed' while S6-B2918 reads EXECUTED.",
+                "The S6-B2620a sweep already exists and covers this.",
+                "S6-B2918 is no longer open.",
+                "S6-X1 remains open until the run lands."):
+            assert ats.unfixed_claims(states, rows(quiet)) == [], quiet
+        live = ats.unfixed_claims()
+>       assert live == [], live
+E       AssertionError: [('S6-B3443', 'OPEN', 'S6-B3441', 'EXECUTED', "STILL OPEN, unruled: this ticket's own (a) SURPRISE - today's tone minus the ticker's trailing tone, the r209 row's (a), not the S6-B3441 (a) the r211")]
+E       assert [('S6-B3443',...a) the r211')] == []
+E         
+E         Left contains one more item: ('S6-B3443', 'OPEN', 'S6-B3441', 'EXECUTED', "STILL OPEN, unruled: this ticket's own (a) SURPRISE - today's tone minus the ticker's trailing tone, the r209 row's (a), not the S6-B3441 (a) the r211")
+E         Use -v to get more diff
+
+backtest\tests\test_unit.py:47249: AssertionError
+_______________ test_b3139bb_line_citations_in_code_only_shrink _______________
+
+tmp_path = WindowsPath('C:/Users/jeetm/AppData/Local/Temp/pytest-of-jeetm/pytest-5615/test_b3139bb_line_citations_in0')
+
+    def test_b3139bb_line_citations_in_code_only_shrink(tmp_path):
+        """S6-B3139bb: no file gains a line-number citation, and no file not in
+        the freeze starts citing lines. MEASURED at B3139q-r35: 570 citations in
+        105 files; the hand-read sample error rate is in the freeze's comment.
+        A file whose count fell is reported so the dict can be lowered (shrink-only
+        means the freeze follows the cleanup, never the other way)."""
+        from pathlib import Path as _P
+        root = _P(__file__).resolve().parents[2]
+        now = _b3139bb_line_citation_counts(root)
+        grew = {f: (n, _B3139BB_LINE_CITATIONS.get(f, 0)) for f, n in now.items()
+                if n > _B3139BB_LINE_CITATIONS.get(f, 0)}
+        assert not grew, ("a NEW line-number citation in code - cite the symbol "
+                          f"(function, constant) instead; file: (now, frozen) = {grew}")
+        shrank = sorted(f for f, n in _B3139BB_LINE_CITATIONS.items() if now.get(f, 0) < n)
+>       assert not shrank, f"citations were cleaned up - lower the freeze for: {shrank}"
+E       AssertionError: citations were cleaned up - lower the freeze for: ['scripts/build_strategy_roster.py']
+E       assert not ['scripts/build_strategy_roster.py']
+
+backtest\tests\test_unit.py:53848: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b3106_open_ticket_calling_a_closed_ticket_unfixed_is_flagged
+FAILED backtest/tests/test_unit.py::test_b3139bb_line_citations_in_code_only_shrink
+2 failed, 236 passed in 1444.12s (0:24:04)
+pregate_select: 13 changed path(s) -> 238 test(s) (R1 2, R2 143, R3 41, R4 2, R5 17, R6 85, R7 15) - a LOWER bound; the full gate stays the authority
+pregate_select: stamped .pregate_stamp - FAILED on this tree (pytest exit 1, 238 tests, 2026-11-10T20:36:42Z)
