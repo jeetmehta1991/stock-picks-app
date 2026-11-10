@@ -414,11 +414,25 @@ def _diag(stderr: str, stdout: str = "") -> str:
     else the LAST 200 characters - a diagnostic that truncates away the
     diagnosis is worse than none (the icg_mult1.25 landing recorded 200
     chars of CRLF warning and hid both the error and whether the
-    index.lock retry was taken)."""
+    index.lock retry was taken).
+
+    S6-B3439 (B3139q-r212): prefer the line that NAMES the failure - a
+    check label (`C<n> ...`), else a line carrying FAIL - over the first
+    non-warning line, which on a preflight refusal is the
+    'preflight: checking N file(s)...' header: the news-landing commit was
+    refused 5 of 5 and the record kept only that header, the B2620 class
+    one layer up."""
+    import re
     text = (stderr or stdout or "").strip()
-    for line in text.splitlines():
-        line = line.strip()
-        if line and not line.startswith("warning:"):
+    lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
+    for line in lines:
+        if re.match(r"C\d+\b", line):
+            return line[:200]
+    for line in lines:
+        if "FAIL" in line:
+            return line[:200]
+    for line in lines:
+        if not line.startswith("warning:"):
             return line[:200]
     return text[-200:]
 

@@ -222,6 +222,8 @@ def engine_path_hash() -> tuple[str, int]:
 # the over-tight gate that trains people to bypass it (L586). Recording
 # makes the drift ANSWERABLE after the fact, which is the thing that was
 # missing; tightening to a refusal is a separate owner decision.
+# S6-B3416: since B3139q-r212 this hand list is the FALLBACK only -
+# battery_path_hash walks run_wave.grading_surface_files(), one definition.
 BATTERY_PATHS = (
     "scripts/run_postconfig.py",
     "scripts/postconfig_landing.py",
@@ -235,14 +237,36 @@ BATTERY_PATHS = (
 
 def battery_path_hash() -> tuple[str, int]:
     """Content hash of the GRADING path - the scripts the post-config
-    battery loads at every landing (BATTERY_PATHS). Recorded beside
-    engine_hash in each per-wave record from the next chain onward;
-    recorded, never gated (L844).
+    battery loads at every landing. Recorded beside engine_hash in each
+    per-wave record; recorded, never gated (L844).
+
+    S6-B3416 (B3139q-r212, L593 one definition): the file SET comes from
+    run_wave.grading_surface_files() - the same 47-file set the wave's
+    grading_sha256 walks - while the HASHING stays byte-level here (the
+    wave digest normalises whitespace, so the two digests still differ by
+    construction). Before this, a hand list of 7 files (BATTERY_PATHS)
+    meant a landing whose grader was another family's adapter recorded
+    the same battery_hash. If run_wave cannot be imported, the hash
+    DEGRADES to BATTERY_PATHS and announces it on stderr (#122).
     """
     import hashlib
+    try:
+        sp = str(ROOT / "scripts")
+        if sp not in sys.path:
+            sys.path.insert(0, sp)
+        import run_wave as _rw
+        rels, note = _rw.grading_surface_files()
+        if note:
+            print(f"battery_path_hash: degraded surface scan - {note}",
+                  file=sys.stderr)
+    except Exception as exc:                            # noqa: BLE001
+        print(f"battery_path_hash: run_wave unavailable "
+              f"({type(exc).__name__}: {exc}) - hashing the legacy "
+              f"7-file BATTERY_PATHS only", file=sys.stderr)
+        rels = list(BATTERY_PATHS)
     h = hashlib.sha256()
     n = 0
-    for rel in sorted(BATTERY_PATHS):
+    for rel in sorted(rels):
         f = ROOT / rel
         if not f.exists():
             continue

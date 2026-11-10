@@ -467,8 +467,11 @@ def check_banned_patterns_in_staged_diff() -> list[str]:
     return violations
 
 
+# S6-B3414: (?![A-Za-z]) after the digits so a letter-suffixed Lane label
+# ("Batch 8a") is not read as a run-batch number; a bare "BATCH 8 PASS" still is.
 _BATCH_CLAIM_RX = re.compile(
-    r"BATCH[ _-]?(\d+)[^\n]{0,60}?(COMPLETE|PASS\b|SUCCESS)", re.IGNORECASE)
+    r"BATCH[ _-]?(\d+)(?![A-Za-z])[^\n]{0,60}?(COMPLETE|PASS\b|SUCCESS)",
+    re.IGNORECASE)
 
 
 def find_unbacked_batch_claims(added_lines, has_outputs_fn) -> list[str]:

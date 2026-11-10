@@ -35554,6 +35554,17 @@ def test_b2620_diag_keeps_the_diagnosis_not_the_warning():
     only_warn = "warning: aaa" + chr(10) + "warning: bbb ending-tail"
     assert pl._diag(only_warn).endswith("ending-tail")
     assert pl._diag("", "error: from stdout") == "error: from stdout"
+    # S6-B3439 (B3139q-r212): a preflight-shaped refusal keeps the line that
+    # NAMES the check, not the 'checking N file(s)' header the news landing
+    # recorded 5 of 5; with no C-line, the FAIL summary line wins.
+    pre = ("warning: LF will be replaced by CRLF" + chr(10)
+           + "preflight: checking 7 file(s)..." + chr(10)
+           + "preflight: FAIL - 2 violation(s) BLOCK this commit:" + chr(10)
+           + "C16 QUEUE-TESTS | stale status register")
+    assert pl._diag(pre) == "C16 QUEUE-TESTS | stale status register"
+    no_c = ("preflight: checking 7 file(s)..." + chr(10)
+            + "preflight: FAIL - 1 violation(s) BLOCK this commit:")
+    assert pl._diag(no_c).startswith("preflight: FAIL"), pl._diag(no_c)
 
 
 def test_b2620_commit_skipped_when_queue_row_cannot_append(monkeypatch):
@@ -43203,9 +43214,8 @@ def test_b2985_battery_path_is_fingerprinted_beside_the_engine():
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
 
-    # S6-B2994: the set is enumerable, so the pin names EVERY member
-    # (L747) - dropping any one of the seven now fails here, where the
-    # original three-name floor let four members vanish unpinned.
+    # S6-B2994: the FALLBACK set is enumerable, so the pin names EVERY member
+    # (L747) - dropping any one of the seven still fails here.
     assert set(mod.BATTERY_PATHS) == {
         "scripts/run_postconfig.py",
         "scripts/postconfig_landing.py",
@@ -43216,10 +43226,24 @@ def test_b2985_battery_path_is_fingerprinted_beside_the_engine():
         "scripts/roster_core.py",
     }, mod.BATTERY_PATHS
 
-    # it hashes real files and reports how many it walked
+    # S6-B3416 (one definition, L593): the LIVE set battery_path_hash walks
+    # equals run_wave.grading_surface_files() - the wave digest's own set -
+    # the legacy 7 are a subset of it, and the sampler stays outside it.
+    import sys as _sys
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import run_wave as _rw
+    surface, note = _rw.grading_surface_files()
+    assert note == "", note
+    assert set(mod.BATTERY_PATHS) <= set(surface), (
+        set(mod.BATTERY_PATHS) - set(surface))
+    assert "scripts/resource_sampler.py" not in surface
+
+    # it hashes real files and reports how many it walked - every file of
+    # run_wave's set, not the 7-file fallback
     digest, n = mod.battery_path_hash()
     assert isinstance(digest, str) and len(digest) == 16, digest
-    assert n >= 5, n
+    assert n == len(surface) and n > len(mod.BATTERY_PATHS), (n, len(surface))
 
     # the two hashes are DIFFERENT functions over DIFFERENT trees - if they
     # ever agreed, one of them would be walking the wrong thing
@@ -75431,3 +75455,23 @@ def test_b3437_a_quoted_script_path_names_the_program():
     assert _unquote_script_paths('python "a/b.py" "c.py"') == 'python a/b.py "c.py"'
     assert _unquote_script_paths('python -c "x.py"') == 'python -c "x.py"'
     assert _unquote_script_paths('echo "a.py"') == 'echo "a.py"'
+
+
+def test_b3414_letter_suffixed_lane_label_is_not_a_batch_number():
+    """S6-B3414 (B3139q-r212) two-arm pin: preflight C10's batch-claim regex
+    takes a word boundary after the digits, so the incident line ("Lane 2
+    Batch 8a: context pass DONE" - "8a" a Lane 2 label, "pass" the ordinary
+    word) is not read as a run-batch claim, while a real "BATCH 8 PASS" with
+    the same digits still is."""
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import preflight as pf
+    assert pf.find_unbacked_batch_claims(
+        [("EXECUTION_QUEUE.md", "Lane 2 Batch 8a: context pass DONE")],
+        lambda n: False) == []
+    v = pf.find_unbacked_batch_claims(
+        [("EXECUTION_QUEUE.md", "BATCH 8 PASS all green")], lambda n: False)
+    assert v and "C10" in v[0]

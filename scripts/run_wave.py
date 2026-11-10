@@ -269,11 +269,14 @@ def battery_imports(entry: str = "scripts/run_postconfig.py") -> set:
     return out
 
 
-def grading_surface_sha256() -> dict:
-    """Digest of the fixed battery core plus every SPECS adapter script.
-    A failed adapter scan DEGRADES to the fixed core and SAYS SO in the
-    returned dict (#122: a fallback that looks like success is served
-    forever) - never a silent pass."""
+def grading_surface_files() -> tuple[list, str]:
+    """S6-B3416 (L593 one definition): THE file set of the grading path -
+    the fixed battery core, the battery's direct scripts/ imports, and
+    every SPECS adapter script. Both digests read it: this module's
+    grading_surface_sha256 and run_serial_chain.battery_path_hash, which
+    before B3139q-r212 hashed a hand list of 7 of these files. A failed
+    scan DEGRADES and SAYS SO in the returned note (#122) - never a
+    silent pass."""
     files = set(GRADING_SURFACE)
     note = ""
     try:
@@ -296,7 +299,13 @@ def grading_surface_sha256() -> dict:
     except Exception as exc:                            # noqa: BLE001
         note += (f"adapter scan unavailable ({type(exc).__name__}: {exc}) - "
                  "digest covers the fixed core only")
-    ordered = sorted(f for f in files if (ROOT / f).exists())
+    return sorted(f for f in files if (ROOT / f).exists()), note
+
+
+def grading_surface_sha256() -> dict:
+    """Digest of the fixed battery core plus every SPECS adapter script.
+    File set from grading_surface_files (S6-B3416, one definition)."""
+    ordered, note = grading_surface_files()
     h = hashlib.sha256()
     for rel in ordered:
         h.update(rel.encode())
