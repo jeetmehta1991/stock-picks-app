@@ -1,0 +1,1840 @@
+{
+ "cube": "output_b3139q_lv4s2_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe",
+ "strategy": "news_momentum_long",
+ "sampled_rows": 50,
+ "trades_checked": 50,
+ "agree": {
+  "close_above_open": 50,
+  "close_in_top_40pct_of_range": 50,
+  "dc20_breakout_up": 50,
+  "news_sentiment_5d": 50,
+  "news_volume_zscore_5d": 50,
+  "vol_above_avg": 50
+ },
+ "checked": {
+  "close_above_open": 50,
+  "close_in_top_40pct_of_range": 50,
+  "dc20_breakout_up": 50,
+  "news_sentiment_5d": 50,
+  "news_volume_zscore_5d": 50,
+  "vol_above_avg": 50
+ },
+ "uncovered_keys": [],
+ "previous_bar_agreement": {
+  "close_above_open": 26,
+  "close_in_top_40pct_of_range": 24,
+  "dc20_breakout_up": 31,
+  "vol_above_avg": 28
+ },
+ "previous_bar_checked": {
+  "close_above_open": 50,
+  "close_in_top_40pct_of_range": 50,
+  "dc20_breakout_up": 50,
+  "vol_above_avg": 50
+ },
+ "vacuous_controls": [],
+ "problems": [],
+ "rows": [
+  {
+   "ticker": "ILMN",
+   "entry_date": "2022-10-04",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.4725,
+     "rederived": 0.4725,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 4.9247,
+     "rederived": 4.9247,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "KIM",
+   "entry_date": "2025-10-20",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.5556,
+     "rederived": 0.5556,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 0.0,
+     "rederived": 0.0,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "PEP",
+   "entry_date": "2022-07-08",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.4792,
+     "rederived": 0.4792,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 4.9193,
+     "rederived": 4.9193,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "CTVA",
+   "entry_date": "2025-08-07",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 1.0,
+     "rederived": 1.0,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 1.7889,
+     "rederived": 1.7889,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "EA",
+   "entry_date": "2025-05-30",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 1.0,
+     "rederived": 1.0,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 1.7889,
+     "rederived": 1.7889,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "DECK",
+   "entry_date": "2026-01-30",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.75,
+     "rederived": 0.75,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 1.7889,
+     "rederived": 1.7889,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "INTC",
+   "entry_date": "2026-03-25",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.6286,
+     "rederived": 0.6286,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 1.4013,
+     "rederived": 1.4013,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "CTAS",
+   "entry_date": "2025-01-08",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 1.0,
+     "rederived": 1.0,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 1.4239,
+     "rederived": 1.4239,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "WDAY",
+   "entry_date": "2025-08-21",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 1.0,
+     "rederived": 1.0,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 1.0954,
+     "rederived": 1.0954,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "APH",
+   "entry_date": "2025-07-17",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 1.0,
+     "rederived": 1.0,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 1.7889,
+     "rederived": 1.7889,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "MOS",
+   "entry_date": "2023-01-04",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.6923,
+     "rederived": 0.6923,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 4.5846,
+     "rederived": 4.5846,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "FMC",
+   "entry_date": "2024-05-02",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 1.0,
+     "rederived": 1.0,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 1.7889,
+     "rederived": 1.7889,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "ALLE",
+   "entry_date": "2025-10-21",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.7895,
+     "rederived": 0.7895,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 2.071,
+     "rederived": 2.071,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "TROW",
+   "entry_date": "2022-08-10",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.625,
+     "rederived": 0.625,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": -0.4,
+     "rederived": -0.4,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "IEX",
+   "entry_date": "2025-10-29",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.5149,
+     "rederived": 0.5149,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 7.621,
+     "rederived": 7.621,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "TFC",
+   "entry_date": "2023-07-06",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.7167,
+     "rederived": 0.7167,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 0.9571,
+     "rederived": 0.9571,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "TRGP",
+   "entry_date": "2025-02-28",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 1.0,
+     "rederived": 1.0,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 0.9691,
+     "rederived": 0.9691,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "ORCL",
+   "entry_date": "2022-06-16",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.3095,
+     "rederived": 0.3095,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 12.9089,
+     "rederived": 12.9089,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "MAA",
+   "entry_date": "2025-07-02",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 1.0,
+     "rederived": 1.0,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 0.9691,
+     "rederived": 0.9691,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "RTX",
+   "entry_date": "2022-09-28",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.56,
+     "rederived": 0.56,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 0.9295,
+     "rederived": 0.9295,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "UAL",
+   "entry_date": "2023-12-01",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.5833,
+     "rederived": 0.5833,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 0.9632,
+     "rederived": 0.9632,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "HRL",
+   "entry_date": "2026-04-02",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 1.0,
+     "rederived": 1.0,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 0.9691,
+     "rederived": 0.9691,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "CAT",
+   "entry_date": "2023-11-02",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.4021,
+     "rederived": 0.4021,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 2.694,
+     "rederived": 2.694,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "AMZN",
+   "entry_date": "2026-01-06",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.4685,
+     "rederived": 0.4685,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 1.3296,
+     "rederived": 1.3296,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "RTX",
+   "entry_date": "2025-05-15",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 1.0,
+     "rederived": 1.0,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 2.1909,
+     "rederived": 2.1909,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "COP",
+   "entry_date": "2023-02-10",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.3077,
+     "rederived": 0.3077,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 1.1175,
+     "rederived": 1.1175,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "VST",
+   "entry_date": "2026-03-31",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 1.0,
+     "rederived": 1.0,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 0.9691,
+     "rederived": 0.9691,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "VRTX",
+   "entry_date": "2025-05-12",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.6667,
+     "rederived": 0.6667,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 1.9277,
+     "rederived": 1.9277,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "NTRS",
+   "entry_date": "2022-07-15",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.6364,
+     "rederived": 0.6364,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 6.261,
+     "rederived": 6.261,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "XRAY",
+   "entry_date": "2022-11-09",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.4444,
+     "rederived": 0.4444,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 2.5842,
+     "rederived": 2.5842,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "ANET",
+   "entry_date": "2023-08-01",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.6673,
+     "rederived": 0.6673,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 5.3501,
+     "rederived": 5.3501,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "AMZN",
+   "entry_date": "2025-03-21",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.6,
+     "rederived": 0.6,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 1.7556,
+     "rederived": 1.7556,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "ALLE",
+   "entry_date": "2022-10-25",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 1.0,
+     "rederived": 1.0,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 2.6833,
+     "rederived": 2.6833,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "SCHW",
+   "entry_date": "2024-07-11",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 1.0,
+     "rederived": 1.0,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 0.1893,
+     "rederived": 0.1893,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "BX",
+   "entry_date": "2025-02-14",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 1.0,
+     "rederived": 1.0,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 1.4239,
+     "rederived": 1.4239,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "APTV",
+   "entry_date": "2024-06-28",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.55,
+     "rederived": 0.55,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 1.3401,
+     "rederived": 1.3401,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "INTC",
+   "entry_date": "2023-07-28",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.398,
+     "rederived": 0.398,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 6.7046,
+     "rederived": 6.7046,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "PTC",
+   "entry_date": "2025-12-19",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.3455,
+     "rederived": 0.3455,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 2.1473,
+     "rederived": 2.1473,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "PODD",
+   "entry_date": "2024-02-12",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.4444,
+     "rederived": 0.4444,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 1.0954,
+     "rederived": 1.0954,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "NXPI",
+   "entry_date": "2026-02-11",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 1.0,
+     "rederived": 1.0,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 0.5855,
+     "rederived": 0.5855,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "CMG",
+   "entry_date": "2024-10-15",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.7857,
+     "rederived": 0.7857,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 1.6302,
+     "rederived": 1.6302,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "XEL",
+   "entry_date": "2024-02-01",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.625,
+     "rederived": 0.625,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 1.048,
+     "rederived": 1.048,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "DHR",
+   "entry_date": "2025-01-06",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.3333,
+     "rederived": 0.3333,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 1.8878,
+     "rederived": 1.8878,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "AES",
+   "entry_date": "2022-09-29",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.5882,
+     "rederived": 0.5882,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 2.8727,
+     "rederived": 2.8727,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "STX",
+   "entry_date": "2023-01-23",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.8997,
+     "rederived": 0.8997,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 8.6056,
+     "rederived": 8.6056,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "LYV",
+   "entry_date": "2025-12-24",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 1.0,
+     "rederived": 1.0,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 1.7889,
+     "rederived": 1.7889,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "GM",
+   "entry_date": "2023-06-02",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.6391,
+     "rederived": 0.6391,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 0.4258,
+     "rederived": 0.4258,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "XRAY",
+   "entry_date": "2024-01-09",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.3056,
+     "rederived": 0.3056,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 4.0249,
+     "rederived": 4.0249,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "HRL",
+   "entry_date": "2026-01-09",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 1.0,
+     "rederived": 1.0,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 2.5842,
+     "rederived": 2.5842,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "VZ",
+   "entry_date": "2023-06-02",
+   "keys": {
+    "close_above_open": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "close_in_top_40pct_of_range": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "dc20_breakout_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "news_sentiment_5d": {
+     "persisted": 0.4198,
+     "rederived": 0.4198,
+     "agree": true
+    },
+    "news_volume_zscore_5d": {
+     "persisted": 2.3745,
+     "rederived": 2.3745,
+     "agree": true
+    },
+    "vol_above_avg": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  }
+ ],
+ "method": "S6-B3427 (B3139q-r212c): the certification checker leg for families whose\nspot check re-derives no input family (spot_check_replay's four).\n\nRe-derives each GATE KEY the spot check sampled, from its SOURCE, and compares\nwith the trade log's signals_at_entry - the method the news_momentum_long hand\ndisposition proved (output_audit/b3139q_lv4s2_news_momentum_long_step4_hand_disposition.json:\n300 of 300 agree; previous-bar control 24-31 of 50 agree, so the formulas can\ndisagree and the agreement is informative).\n\nKEYED BY SIGNAL KEY, never by strategy (#291): KEY_DERIVERS maps a persisted\nkey to a derivation over the cached bars; news keys route through the producer\non the raw article files. A sampled key with NO route is UNCOVERED - exit 2\nwith the residue NAMED, and the battery keeps step 4 OPEN for a hand\ndisposition of exactly those keys. The previous-bar control must DISAGREE on\nevery derived price key (a derivation that agrees on every bar proves nothing\n- L686: mutate toward the useless version).\n\nWrites --out only (no production path; S6-B3418's confinement rule applies\nfrom birth).\n"
+}

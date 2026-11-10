@@ -1,0 +1,142 @@
+........................................................................ [ 24%]
+.........................................................F.............. [ 49%]
+........................................................................ [ 73%]
+...........................F............................................ [ 98%]
+....                                                                     [100%]
+================================== FAILURES ===================================
+_________ test_b3096_runbook_is_class_level_and_numbered_consistently _________
+
+    def test_b3096_runbook_is_class_level_and_numbered_consistently():
+        """B3096 (owner directive 2026-09-24, verbatim): "Update the strategy
+        optimization doc to ensure numbering is correct and there are no references
+        to any specific strategy but the runbook is at a class level. The runbook is
+        intended to be broad for each strategy. Tightening and loosening are
+        separate workflows."
+    
+        Four properties, each checked by a helper run on the REAL runbook (must be
+        clean) and on a MUTATED copy (must flag) - a pin that cannot fail pins
+        nothing (L686):
+          1. CLASS-LEVEL - no registered strategy name (the live registry is the
+             defining source, L697) and no family knob / config tag / family word,
+             outside a short allow-list of ENGINE identifiers;
+          2. NUMBERING - top sections 0..N consecutive, subsections consecutive
+             inside their section, and the section-0.1 step table agrees with the
+             parsed phase table step-for-step (the Step 2 / Step 3 confusion the
+             owner asked about);
+          3. REFERENCES - every section reference outside a "(formerly ...)" tag
+             and APPENDIX M resolves to a heading;
+          4. THE MAP - APPENDIX M has one row per heading of the archived
+             pre-B3096 runbook, so every old citation resolves.
+        """
+        import re
+        import sys
+        from pathlib import Path
+    
+        root = Path(__file__).resolve().parents[2]
+        if str(root / "scripts") not in sys.path:
+            sys.path.insert(0, str(root / "scripts"))
+        import phase_table as pt
+        from backtest.signals.screener import ALL_STRATEGIES
+    
+        plan_p = root / "STRATEGY_OPTIMISATION_PLAN.md"
+        text = plan_p.read_text(encoding="utf-8")
+        arch = (root / "archive" / "2026-09-24-strategy-optimisation-plan-pre-B3096"
+                / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+        names = sorted({k[len("strat_"):] if k.startswith("strat_") else k
+                        for k in ALL_STRATEGIES}, key=len, reverse=True)
+        assert len(names) >= 200, len(names)
+    
+        family = re.compile(
+            r"\bsw\d+sp\d+\b|\bSMC_[A-Z_]+|\bSTRAT_EMA_SPAN\b|\bCANDLE_[A-Z_]+"
+            r"|\bINST_[A-Z_]+|\bPEAD_[A-Z_]+|\bb2399\b|\bb2197\b|\bb2527\b|\bc14\b"
+            r"|\bicg\b|\bpead\b|\bsmc\b|\btop_decile\b|\bbreaker\b|\bsoldiers\b"
+            r"|\bcrows\b|\bhub-1\b|\binstitutional\b|\bcandle\b|\bswing_length\b", re.I)
+        # ONE definition (L561, S6-B3392): shared with test_b3392d at module level
+        ALLOW = _RUNBOOK_ENGINE_ALLOW
+    
+        registry = re.compile(r"(?<![A-Za-z0-9_])(?:strat_)?(?:%s)(?![A-Za-z0-9_])"
+                              % "|".join(re.escape(nm) for nm in names))
+    
+        def named(doc):
+            out = []
+            for n, line in enumerate(doc.split(chr(10)), 1):
+                ln = line
+                for a in ALLOW:
+                    ln = ln.replace(a, "")
+                hit = family.search(ln) or registry.search(ln)
+                if hit:
+                    out.append((n, hit.group(0)))
+            return out
+    
+>       assert named(text) == [], named(text)[:5]
+E       AssertionError: [(730, 'INST_PERSIST_CACHE_TAG')]
+E       assert [(730, 'INST_...T_CACHE_TAG')] == []
+E         
+E         Left contains one more item: (730, 'INST_PERSIST_CACHE_TAG')
+E         Use -v to get more diff
+
+backtest\tests\test_unit.py:45307: AssertionError
+____________ test_b3392d_the_runbook_names_no_registry_identifier _____________
+
+    def test_b3392d_the_runbook_names_no_registry_identifier():
+        """S6-B3392 part 2 (B3139q-r168), runbook line 11 at the census (S6-B3344's
+        sort, cluster M-REG): the runbook names no strategy, family, config or
+        campaign. test_b3096 holds it with the live strategy registry plus 21
+        TYPED family tokens, and the typed half went stale as families were
+        added: MEASURED 2026-10-31 (scratchpad r168/fixed_token_reach.py), the
+        tokens matched 15 of the 28 registry env knobs and missed 13 - the
+        squeeze, naked-POC, pairs and camarilla knobs and the LEVER4 budget. This
+        pin DERIVES the rest from the records that define them (L697): every
+        SPECS / SPECS_PHASE0 entry, env knob, env actuator and config key, and
+        the wave name of every committed spec, so a new family's knob or a new
+        campaign's wave is denied the day it is registered. test_b3096 keeps its
+        typed tokens for the family words and older campaign tags no registry
+        holds. The derived set flagged one runbook line when first run - runbook
+        line 680 named the LEVER4 budget knob as its JSON example - reworded in
+        place in this batch. Must-fire: one member of each derived class, chosen
+        from the live records at run time, and the reworded line in its old form;
+        must-quiet: the live runbook, and a knob inside a longer identifier."""
+        import json as _j
+        import subprocess as _sp
+        import sys as _s
+        from pathlib import Path as _P
+        root = _P(__file__).resolve().parents[2]
+        for p in (str(root), str(root / "scripts")):
+            if p not in _s.path:
+                _s.path.insert(0, p)
+        import producer_variant_table as pvt
+        regs = [pvt.SPECS, getattr(pvt, "SPECS_PHASE0", {}) or {}]
+        specs = _sp.run(["git", "ls-files", "output_audit/*_spec.json"], cwd=root,
+                        capture_output=True, text=True, check=True).stdout.split()
+        waves = set()
+        for rel in specs:
+            f = root / rel
+            if not f.exists():
+                continue
+            d = _j.loads(f.read_text(encoding="utf-8"))
+            if isinstance(d, dict) and isinstance(d.get("wave"), str) and d["wave"]:
+                waves.add(d["wave"])
+        assert len(waves) >= 100, ("the committed specs' wave names are never vacuously few (#226)",
+                                   len(specs), len(waves))
+        knobs = {q["env"] for r in regs for e in r.values() for q in e.get("params") or []
+                 if isinstance(q.get("env"), str) and q["env"]}
+        assert len(knobs) >= 20, ("the registry env knobs are never vacuously few", len(knobs))
+        toks = _b3392d_registry_tokens(regs, waves)
+        assert knobs <= toks and waves <= toks
+        text = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+        hits = _b3392d_named(text, toks, _RUNBOOK_ENGINE_ALLOW)
+>       assert hits == [], ("runbook line 11: the runbook names no family, config or campaign - "
+                            "an open instance is a queue ticket", hits[:5])
+E       AssertionError: ('runbook line 11: the runbook names no family, config or campaign - an open instance is a queue ticket', [(730, 'INST_PERSIST_CACHE_TAG')])
+E       assert [(730, 'INST_...T_CACHE_TAG')] == []
+E         
+E         Left contains one more item: (730, 'INST_PERSIST_CACHE_TAG')
+E         Use -v to get more diff
+
+backtest\tests\test_unit.py:72794: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b3096_runbook_is_class_level_and_numbered_consistently
+FAILED backtest/tests/test_unit.py::test_b3392d_the_runbook_names_no_registry_identifier
+2 failed, 290 passed in 1484.56s (0:24:44)
+pregate_select: 7 changed path(s) -> 292 test(s) (R1 0, R2 208, R3 41, R4 3, R5 17, R6 77, R7 0) - a LOWER bound; the full gate stays the authority
+pregate_select: stamped .pregate_stamp - FAILED on this tree (pytest exit 1, 292 tests, 2026-11-10T03:47:02Z)

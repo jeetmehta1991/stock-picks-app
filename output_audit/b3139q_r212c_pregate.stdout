@@ -1,0 +1,121 @@
+........................................................................ [ 32%]
+........................................................................ [ 64%]
+...........................................................F............ [ 96%]
+...F....                                                                 [100%]
+================================== FAILURES ===================================
+__________ test_b3397d_step4_carries_the_coverage_and_is_not_refused __________
+
+tmp_path = WindowsPath('C:/Users/jeetm/AppData/Local/Temp/pytest-of-jeetm/pytest-5586/test_b3397d_step4_carries_the_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002AB5144AF90>
+
+    def test_b3397d_step4_carries_the_coverage_and_is_not_refused(tmp_path, monkeypatch):
+        """S6-B3397 (L654 - the wiring): run_family records step4_coverage and
+        appends the coverage clause to step 4's evidence; the row is a grader
+        check, never a step-1 FAIL. Since S6-B3415 (a) (the owner's 'Do',
+        2026-11-05) NOT CERTIFIED holds step 4 OPEN - test_b3415 pins the hold."""
+        import json
+        import os
+        import types
+        from pathlib import Path
+        rp = _rp_b3397a()
+        monkeypatch.setattr(rp, "ROOT", tmp_path)
+        monkeypatch.setattr(rp, "knob_is_read", lambda env, root: True)
+        monkeypatch.setattr(rp, "knob_consumers", lambda env: ())
+        monkeypatch.setattr(rp, "declared_consumers", lambda spec, env: ())
+        (tmp_path / "output_audit").mkdir()
+    
+        def run_for(fam):
+            def fake_run(cmd, env_extra=None):
+                cmd = [str(c) for c in cmd]
+                body = "{}"
+                if os.path.basename(cmd[1]) == "grade_knob_config.py":
+                    body = json.dumps({"config": {}, "strategy": fam,
+                                       "generator": "scripts/grade_knob_config.py",
+                                       "cube_rows": 48, "is_rows": 48, "holdout_rows": 0,
+                                       "rows": [{"cell": "base:long"}]})
+                for i, c in enumerate(cmd):
+                    if c == "--out":
+                        Path(cmd[i + 1]).write_text(body, encoding="utf-8")
+                return types.SimpleNamespace(returncode=0, stdout="", stderr="")
+            monkeypatch.setattr(rp, "_run", fake_run)
+            cube = tmp_path / f"cube_{fam}"
+            cube.mkdir(exist_ok=True)
+            p = {k: 1 for k in rp.SPECS[fam]["tools"]["keys"].values()}
+            res, notes, _, _ = rp.run_family(fam, cube, p, {"window": {}}, step=1)
+            return {n: (s, e) for n, s, e in res}, notes
+    
+        by, notes = run_for("squeeze_breakout")
+        assert by["step4_coverage"][0] == "PASS", by["step4_coverage"]
+        assert notes["4_three_leg_spot_check"][0] == "DONE"
+        assert "coverage CERTIFIED" in notes["4_three_leg_spot_check"][1], notes
+        by, notes = run_for("camarilla_r4_breakout")
+        assert by["step4_coverage"][0] == "WARN" and "borrow_ok" in by["step4_coverage"][1]
+>       assert notes["4_three_leg_spot_check"][0] == "OPEN", notes      # S6-B3415 (a)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: {'2_grade_with_config_params': ('DONE', 'AUTO (S6-B3304, B3139q-r162); the registry-driven knob grader - both legs x e...json'), '4_three_leg_spot_check': ('DONE', 'S6-B3427 re-derivation leg:  -> cube_camarilla_r4_breakout_rederive.json')}
+E       assert 'DONE' == 'OPEN'
+E         
+E         - OPEN
+E         + DONE
+
+backtest\tests\test_unit.py:73574: AssertionError
+___________ test_b3415_a_not_certified_spot_check_holds_step_4_open ___________
+
+tmp_path = WindowsPath('C:/Users/jeetm/AppData/Local/Temp/pytest-of-jeetm/pytest-5586/test_b3415_a_not_certified_spo0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002AB51449860>
+
+    def test_b3415_a_not_certified_spot_check_holds_step_4_open(tmp_path, monkeypatch):
+        """S6-B3415 (a), the owner's 'Do' sent 2026-11-05T04:46:01Z: runbook 5.3
+        step 4 says the spot check must not certify a strategy until its
+        coverage audit passes; the battery measured that and still wrote step 4
+        DONE (10 of 17 families NOT CERTIFIED, MEASURED at B3139q-r202). Now a
+        NOT CERTIFIED step 4 stays OPEN for a hand disposition, a CERTIFIED one
+        is DONE, a failed spot check is FAIL - and a hand DONE survives a
+        re-run, because merge_row never downgrades a terminal row."""
+        import json
+        import os
+        import types
+        from pathlib import Path
+        rp = _rp_b3397a()
+        monkeypatch.setattr(rp, "ROOT", tmp_path)
+        monkeypatch.setattr(rp, "knob_is_read", lambda env, root: True)
+        monkeypatch.setattr(rp, "knob_consumers", lambda env: ())
+        monkeypatch.setattr(rp, "declared_consumers", lambda spec, env: ())
+        (tmp_path / "output_audit").mkdir()
+    
+        def run_for(fam, spot_rc=0):
+            def fake_run(cmd, env_extra=None):
+                cmd = [str(c) for c in cmd]
+                body = "{}"
+                if os.path.basename(cmd[1]) == "grade_knob_config.py":
+                    body = json.dumps({"config": {}, "strategy": fam,
+                                       "generator": "scripts/grade_knob_config.py",
+                                       "cube_rows": 48, "is_rows": 48, "holdout_rows": 0,
+                                       "rows": [{"cell": "base:long"}]})
+                for i, c in enumerate(cmd):
+                    if c == "--out":
+                        Path(cmd[i + 1]).write_text(body, encoding="utf-8")
+                is_spot = "spot_check" in os.path.basename(cmd[1])
+                return types.SimpleNamespace(returncode=spot_rc if is_spot else 0,
+                                             stdout="", stderr="")
+            monkeypatch.setattr(rp, "_run", fake_run)
+            cube = tmp_path / f"cube_{fam}_{spot_rc}"
+            cube.mkdir(exist_ok=True)
+            p = {k: 1 for k in rp.SPECS[fam]["tools"]["keys"].values()}
+            _res, notes, _, _ = rp.run_family(fam, cube, p, {"window": {}}, step=1)
+            return notes["4_three_leg_spot_check"]
+        st, ev = run_for("camarilla_r4_breakout")
+>       assert st == "OPEN" and ev.startswith("NOT CERTIFIED - hand disposition owed"), (st, ev)
+E       AssertionError: ('DONE', 'S6-B3427 re-derivation leg:  -> cube_camarilla_r4_breakout_0_rederive.json')
+E       assert ('DONE' == 'OPEN'
+E         
+E         - OPEN
+E         + DONE)
+
+backtest\tests\test_unit.py:75249: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b3397d_step4_carries_the_coverage_and_is_not_refused
+FAILED backtest/tests/test_unit.py::test_b3415_a_not_certified_spot_check_holds_step_4_open
+2 failed, 222 passed in 1604.33s (0:26:44)
+pregate_select: 4 changed path(s) -> 224 test(s) (R1 0, R2 140, R3 41, R4 1, R5 17, R6 38, R7 0) - a LOWER bound; the full gate stays the authority
+pregate_select: stamped .pregate_stamp - FAILED on this tree (pytest exit 1, 224 tests, 2026-11-10T05:09:57Z)
