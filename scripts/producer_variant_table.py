@@ -12533,6 +12533,31 @@ def _step2_breadth_leg_refusals(doc: dict) -> list:
     return out
 
 
+def _spec_shape_refusals(doc: dict) -> list[str]:
+    """S6-B3398 (B3139q-r217), runbook census 1223 ('Write one spec per
+    fire-adding config') and 1226 ('Declare step 1 and leave step1_cube at its
+    default TRUE'), on a WAVE spec (keyed on `wave`; a run manifest carries
+    `sequence` and is not judged here). MEASURED before shipping over the 152
+    tracked specs: 1 carries more than one arm - output_audit/b2118_pilot_spec
+    .json, a 5-arm pilot from before one-config-per-spec - and 0 declare step 1
+    with step1_cube False; the 2 that carry it False declare no step at all
+    (Step-2 specs from before the field) and are left alone, as the rule
+    names a DECLARED step 1."""
+    if "wave" not in doc:
+        return []
+    errs = []
+    arms = doc.get("arms") or []
+    if len(arms) > 1:
+        errs.append(f"spec carries {len(arms)} arms - one spec per fire-adding "
+                    "config (runbook census 1223, S6-B3398): generate one spec per "
+                    "level with scripts/make_spec.py")
+    if doc.get("step") == 1 and doc.get("step1_cube") is False:
+        errs.append("spec declares step 1 with step1_cube False - a Step-1 spec "
+                    "leaves step1_cube at its default TRUE (runbook census 1226, "
+                    "S6-B3398)")
+    return errs
+
+
 def launch_refusals(doc: dict, root: Path | None = None,
                     require_subset: bool = True,
                     subset_override: tuple | list | None = None,
@@ -12604,6 +12629,9 @@ def launch_refusals(doc: dict, root: Path | None = None,
     errs += _depth_null_refusals(doc, strats)
     # B2711: the ruled Step-1 search shape (holdout reach is absolute)
     errs += _step1_shape_refusals(doc)
+    # S6-B3398 census 1223 / 1226: one arm per spec; a Step-1 spec keeps
+    # step1_cube TRUE
+    errs += _spec_shape_refusals(doc)
     # S6-B2945 (L835): enforce at SPEC time what prelaunch_gate enforces
     # at LAUNCH time. A wave spec (keyed on `wave`; manifests carry
     # `sequence`) in the MODERN shape (`step` declared, window and

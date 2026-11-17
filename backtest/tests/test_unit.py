@@ -77299,6 +77299,81 @@ def test_b3453_guard_refusals_link_by_rule_id_not_by_path():
         assert "guard_refused_ids(entries)" in _insp.getsource(getattr(vtc, name)), name
 
 
+def test_b3398a_make_spec_discloses_the_stream_lane_and_survival(monkeypatch, capsys, tmp_path):
+    """S6-B3398a (b) and S6-B3398 census 841 (B3139q-r217; the owner's 'Approve
+    all your recommendations execute fable mode be extremely thorough', sent
+    2026-11-17T16:13:49Z, on 'make_spec states the lane and refuses nothing'):
+    every spec carries the status view's stream, the lane census 108 says it
+    implies and survives_pct, as a DISCLOSURE. (1) The mapping on an injected
+    view: TIGHTEN -> W-T, LOOSEN -> W-L, BOTH -> W-T first, NONE -> breadth, a
+    terminal '-' -> no lane with its reason, an unknown stream -> no lane, an
+    absent strategy -> no lane; the build stamp rides the source. (2) An
+    unreadable view is WRITTEN as such, never guessed. (3) Through make_spec.main
+    --dry on the live registry, the draft the consumer's gate judged carries the
+    block equal to status_disclosure(strategy) and its arm note the LANE
+    sentence, the console prints it, and the gate refuses nothing for it."""
+    import json as _jsn
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import make_spec as ms
+    import producer_variant_table as pvt
+    view = {"build": {"source_commit": "abc1234", "generated_at": "2026-11-17 00:00:00"},
+            "rows": [{"strategy": "t_t", "stream": "TIGHTEN", "status": "NOT-STARTED", "survives_pct": 0.9},
+                     {"strategy": "t_l", "stream": "LOOSEN", "status": "NOT-STARTED", "survives_pct": 1.0},
+                     {"strategy": "t_b", "stream": "BOTH", "status": "IN-CAMPAIGN", "survives_pct": 0.5},
+                     {"strategy": "t_n", "stream": "NONE", "status": "IN-CAMPAIGN", "survives_pct": 1.0},
+                     {"strategy": "t_x", "stream": "-", "status": "DONE-OWNER-CLOSED", "survives_pct": 1.0},
+                     {"strategy": "t_q", "stream": "ODD", "status": "NOT-STARTED", "survives_pct": 1.0}]}
+    # (1)
+    got = {s: ms.status_disclosure(s, view) for s in
+           ("t_t", "t_l", "t_b", "t_n", "t_x", "t_q", "t_absent")}
+    assert got["t_t"]["lane"] == "W-T" and got["t_l"]["lane"] == "W-L"
+    assert got["t_b"]["lane"].startswith("W-T first") and "W-L only if" in got["t_b"]["lane"]
+    assert "breadth" in got["t_n"]["lane"]
+    assert got["t_x"]["lane"] is None and "terminal" in got["t_x"]["note"]
+    assert got["t_q"]["lane"] is None and "'ODD'" in got["t_q"]["note"]
+    assert got["t_absent"]["lane"] is None and "not in the status view" in got["t_absent"]["note"]
+    assert all("abc1234" in d["source"] for k, d in got.items()), got
+    assert got["t_t"]["survives_pct"] == 0.9 and got["t_b"]["status"] == "IN-CAMPAIGN"
+    assert all(d["refuses"].startswith("nothing") for d in got.values())
+    assert "W-T" in ms._disclosure_sentence(got["t_t"])
+    # (2)
+    monkeypatch.setattr(ms, "STATUS", tmp_path / "missing_status.json")
+    gone = ms.status_disclosure("t_t")
+    assert gone["lane"] is None and "unreadable" in gone["note"], gone
+    monkeypatch.undo()
+    # (3)
+    real = pvt.launch_refusals
+    seen = []
+
+    def _capture(doc, *a, **k):
+        errs = real(doc, *a, **k)
+        seen.append((doc, errs))
+        return errs
+    monkeypatch.setattr(pvt, "launch_refusals", _capture)
+    strat = "naked_poc_retest_long"
+    nf = tmp_path / f"{strat}_depth_null.json"
+    nf.write_text(_jsn.dumps({"strategy": strat, "permutation_null": {
+        "p_value_best": 0.05, "provenance": "TEST FIXTURE (S6-B3206)"}}), encoding="utf-8")
+    monkeypatch.setattr(sys, "argv", ["make_spec.py", "--strategy", strat, "--param", "P3",
+                                      "--levels", "8", "--wave-prefix", "t_b3398a",
+                                      "--depth-null", str(nf), "--dry"])
+    capsys.readouterr()
+    rc = ms.main()
+    out = capsys.readouterr().out
+    assert rc == 0, out
+    assert len(seen) == 1 and seen[0][1] == [], seen
+    doc = seen[0][0]
+    want = ms.status_disclosure(strat)
+    assert doc["status_disclosure"] == want, (doc.get("status_disclosure"), want)
+    assert want["stream"] is not None, want
+    assert "LANE (S6-B3398a (b)" in doc["arms"][0]["note"], doc["arms"][0]["note"]
+    assert "STATUS DISCLOSURE:" in out and str(want["stream"]) in out, out
+
+
 def test_b3454_holdout_read_packet_is_generated_and_gated():
     """S6-B3454 (B3139q-r217, L1019): a holdout read put to the owner comes from
     the generated packet. (1) The verbatim B3139q-r216 decision rows fire with
@@ -77388,3 +77463,80 @@ def test_b3454_holdout_read_packet_is_generated_and_gated():
     assert "8 survivors" in md and md.count(nl + "| ") >= 12, md[:400]
     # (6)
     assert "scan_holdout_read_decision_unpacketed," in _insp.getsource(vtc.main)
+
+
+def test_b3398b_one_arm_step1_cube_and_a_stated_factorial(monkeypatch, capsys, tmp_path):
+    """S6-B3398 census 1223, 1226 and 1138 (B3139q-r217). (1) launch_refusals
+    refuses a wave spec carrying more than one arm (1223) and one DECLARING
+    step 1 with step1_cube False (1226); a manifest (no 'wave') and a spec that
+    declares no step are not judged by this rule. (2) The population it would
+    refuse, measured: 1 of the tracked specs carries more than one arm - the
+    B2118 pilot - and 0 declare step 1 with step1_cube False. (3) make_spec
+    --with makes a factorial cell (1138): a --dry draft prints the NOTE and is
+    written, a real run without --factorial-reason refuses before any spec is
+    written, and the reason rides the draft when given."""
+    import json as _jsn
+    import subprocess
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import make_spec as ms
+    import producer_variant_table as pvt
+    # (1)
+    sr = pvt._spec_shape_refusals
+    one = {"wave": "w", "step": 1, "arms": [{"tag": "a"}]}
+    assert sr(one) == []
+    assert any("census 1223" in e for e in sr(dict(one, arms=[{"tag": "a"}, {"tag": "b"}])))
+    assert any("census 1226" in e for e in sr(dict(one, step1_cube=False)))
+    assert sr(dict(one, step1_cube=True)) == []
+    assert sr({"wave": "w", "arms": [{}], "step1_cube": False}) == [], "no declared step"
+    assert sr({"sequence": [], "arms": [{}, {}]}) == [], "a manifest is not judged here"
+    assert "_spec_shape_refusals(doc)" in __import__("inspect").getsource(pvt.launch_refusals)
+    # (2)
+    tracked = subprocess.run(["git", "-C", str(root), "ls-files", "output_audit/*_spec.json"],
+                             capture_output=True, text=True, check=True).stdout.split()
+    hit = {}
+    for rel in tracked:
+        d = _jsn.loads((root / rel).read_text(encoding="utf-8"))
+        if sr(d):
+            hit[rel] = sr(d)
+    assert set(hit) == {"output_audit/b2118_pilot_spec.json"}, sorted(hit)
+    # (3)
+    seen = []
+    real = pvt.launch_refusals
+
+    def _capture(doc, *a, **k):
+        errs = real(doc, *a, **k)
+        seen.append(doc)
+        return errs
+    monkeypatch.setattr(pvt, "launch_refusals", _capture)
+    strat = "naked_poc_retest_long"
+    nf = tmp_path / f"{strat}_depth_null.json"
+    nf.write_text(_jsn.dumps({"strategy": strat, "permutation_null": {
+        "p_value_best": 0.05, "provenance": "TEST FIXTURE (S6-B3206)"}}), encoding="utf-8")
+    entry = pvt.SPECS[strat]
+    comp = next(p for p in entry["params"] if p["id"] != "P3" and p.get("env")
+                and (p.get("resim_band") or []))
+    lev = comp["resim_band"][0]
+    base = ["make_spec.py", "--strategy", strat, "--param", "P3", "--levels", "8",
+            "--wave-prefix", "t_b3398b", "--depth-null", str(nf),
+            "--with", f"{comp['id']}={_jsn.dumps(lev)}"]
+    monkeypatch.setattr(sys, "argv", base + ["--dry"])
+    capsys.readouterr()
+    assert ms.main() == 0
+    out = capsys.readouterr().out
+    assert "census 1138" in out and "--factorial-reason" in out, out
+    assert seen and "factorial_reason" not in seen[-1]
+    monkeypatch.setattr(sys, "argv", base + ["--dry", "--factorial-reason", "pins the pair"])
+    assert ms.main() == 0
+    assert seen[-1].get("factorial_reason") == "pins the pair", seen[-1].get("factorial_reason")
+    n_seen = len(seen)
+    monkeypatch.setattr(sys, "argv", base + ["--owner-word", "x", "--owner-word-ticket", "S6-B3398"])
+    monkeypatch.setattr(__import__("owner_word"), "refusals", lambda *a, **k: [])
+    capsys.readouterr()
+    assert ms.main() == 2
+    out = capsys.readouterr().out
+    assert "census 1138" in out and "REFUSED" in out, out
+    assert len(seen) == n_seen, "the real run refuses before any draft reaches the gate"

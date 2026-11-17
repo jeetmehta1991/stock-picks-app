@@ -119,6 +119,76 @@ def fires_at_production(strategy: str):
     return int(round(float(fires))), basis
 
 
+# S6-B3398a (b) (B3139q-r217; the owner's 'Approve all your recommendations
+# execute fable mode be extremely thorough', sent 2026-11-17T16:13:49Z, on the
+# r216 close's recommendation 'make_spec states the lane and refuses nothing')
+# and S6-B3398 census 841: the runbook's census 108 - 'A strategy's lane is the
+# STREAM column of the status view' - could not be checked at launch, because
+# no spec declared a lane (0 of 154 tracked specs, MEASURED at B3139q-r216d).
+# Every spec now carries the view's stream and the lane it implies, and census
+# 841's survives_pct (the share of the R5 fires the CURRENT gate keeps), as a
+# DISCLOSURE: it refuses nothing, and the population it builds is the evidence
+# a refusal (S6-B3398a option (a)) would be ruled on (L721).
+LANE_OF_STREAM = {
+    "TIGHTEN": "W-T",
+    "LOOSEN": "W-L",
+    "BOTH": "W-T first; W-L only if its tighten leg (T4) graded nothing rankable",
+    "NONE": "a breadth candidate - neither W-T nor W-L",
+}
+
+
+def status_disclosure(strategy: str, doc=None) -> dict:
+    """The status view's stream for `strategy`, the lane census 108 says it
+    implies, its status and survives_pct - written into the spec, refusing
+    nothing (S6-B3398a (b)). `doc` is the parsed view (seam, #241); None reads
+    STATUS. An unreadable view, an absent strategy or a stream the census
+    names no lane for is WRITTEN as such - lane None with the reason - never
+    guessed (L642: the absent case is named, not filled)."""
+    base = {"census": "runbook census 108 (lane follows stream) and 841 "
+                      "(survives_pct)",
+            "refuses": "nothing - a disclosure (S6-B3398a (b))"}
+    if doc is None:
+        try:
+            doc = json.loads(STATUS.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            return dict(base, stream=None, lane=None, status=None,
+                        survives_pct=None, source=STATUS.name,
+                        note=f"{STATUS.name} unreadable ({type(exc).__name__}) "
+                             "- no lane stated")
+    build = doc.get("build") or {}
+    source = (f"{STATUS.name} (build {build.get('source_commit', '?')}, "
+              f"{build.get('generated_at', '?')})")
+    row = next((r for r in doc.get("rows") or [] if r.get("strategy") == strategy),
+               None)
+    if row is None:
+        return dict(base, stream=None, lane=None, status=None, survives_pct=None,
+                    source=source,
+                    note=f"{strategy} is not in the status view - no lane stated")
+    stream = row.get("stream")
+    if stream == "-":
+        lane, note = None, ("a terminal status carries no stream lane - it "
+                            "launches only on the owner's reopen word")
+    elif stream in LANE_OF_STREAM:
+        lane, note = LANE_OF_STREAM[stream], None
+    else:
+        lane, note = None, f"stream {stream!r} has no lane in census 108"
+    out = dict(base, stream=stream, lane=lane, status=row.get("status"),
+               survives_pct=row.get("survives_pct"), source=source)
+    if note:
+        out["note"] = note
+    return out
+
+
+def _disclosure_sentence(d: dict) -> str:
+    """One sentence for the arm note and the console - the block's fields,
+    never re-derived."""
+    lane = d.get("lane") or ("none - " + str(d.get("note") or "not stated"))
+    return (f" LANE (S6-B3398a (b), a disclosure that refuses nothing): status "
+            f"{d.get('status')}, stream {d.get('stream')} -> {lane}; survives_pct "
+            f"{d.get('survives_pct')} of its R5 fires (census 841); from "
+            f"{d.get('source')}.")
+
+
 def _match_level(x, allowed: list):
     """S6-B3240: a level parsed to an object or array is a JSON-typed knob's
     level - matched to the allowed level of equal PARSED value, whose own
@@ -464,6 +534,11 @@ def main() -> int:
                     metavar="PARAM=LEVEL",
                     help="pin a companion knob of the same entry "
                          "(S6-B3141a; repeatable)")
+    # S6-B3398 census 1138 (B3139q-r217): coordinate descent is the default; a
+    # companion knob off production makes a FACTORIAL cell, which states why
+    ap.add_argument("--factorial-reason", default=None,
+                    help="why this --with factorial cell is run instead of "
+                         "coordinate descent (required with --with on a real run)")
     # S6-B3338: a WRITTEN spec cites the owner's word for its launch - the
     # T3 band word for a Step-1 run, the launch word for a Step-2 run -
     # quoted in a row of its ticket (scripts/owner_word.py); --dry drafts
@@ -546,6 +621,18 @@ def main() -> int:
     knob_name = ((spec_entry.get("tools") or {}).get("keys") or {}) \
         .get(a.param, a.param.lower())
 
+    # S6-B3398 census 1138: a --with cell is a factorial cell; a real run
+    # states why, a --dry draft notes the missing reason (door-4 pattern)
+    factorial_reason = (a.factorial_reason or "").strip()
+    if a.with_ and not factorial_reason:
+        if a.dry:
+            print("NOTE (S6-B3398 census 1138, --dry draft): --with makes a factorial "
+                  "cell - the real run needs --factorial-reason (coordinate descent "
+                  "is the default)")
+        else:
+            return refuse("--with makes a factorial cell, and a full factorial needs "
+                          "a stated reason (runbook census 1138; coordinate descent is "
+                          "the default) - pass --factorial-reason")
     companions = []          # (pid, env, level, arm key)
     for item in a.with_:
         cpid, _, craw = item.partition("=")
@@ -582,6 +669,7 @@ def main() -> int:
     fires, basis = fires_at_production(a.strategy)
     if fires is None:
         return refuse(basis)
+    disclosure = status_disclosure(a.strategy)          # S6-B3398a (b)
 
     subset = ROOT / "output_audit" / f"_subset_{a.strategy}.txt"
     if not a.dry:
@@ -630,8 +718,11 @@ def main() -> int:
                             "battery reads every declared knob): "
                             + ", ".join(f"{p_}={l_!r}" for p_, _e, l_, _k
                                         in auto_pins) + "."
-                            if auto_pins else "")),
+                            if auto_pins else "")
+                         + _disclosure_sentence(disclosure)),
             }],
+            "status_disclosure": disclosure,
+            **({"factorial_reason": factorial_reason} if factorial_reason else {}),
             "fires_at_production": fires,
             "_fires_basis": basis,
             "_window_note": ("DELIBERATELY ABSENT. phase_table.resolve "
@@ -677,6 +768,7 @@ def main() -> int:
         if not a.dry:
             out.write_text(json.dumps(spec, indent=1), encoding="utf-8")
         written.append(out.name)
+        print("STATUS DISCLOSURE:" + _disclosure_sentence(spec["status_disclosure"]))
         print(f"[OK] {out.name}: {env}={level} "
               f"(launch_refusals clean; fires_at_production {fires})"
               + (f"; auto-pinned at production: "
