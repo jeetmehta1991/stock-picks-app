@@ -1,0 +1,51 @@
+  NOTE (S6-B3360/L984): no passing pre-gate selection on this tree - STALE (11 of 11 changed path(s) differ from the run at 2026-11-17T02:09:58Z, first .claude/skills/execution-discipline/SKILL.md). scripts/pregate_select.py --run runs the tests that read what the tree changed, before this gate (S6-B3269, #315).
+  NOTE (S6-B3343/#67): tickets 4, not named in the runbook 2 (S6-B3361, S6-B3424); lessons 0, not cited 0. Does each change the optimisation workflow or a report? If so, this batch edits the runbook and cites the id; nothing is refused.
+  S6-B3361 (b): running the pre-gate selection now (the stamp was 'STALE (11 of 11 changed path(s) differ from the run at 2026-11-17T02:09:58Z, first .claude/skills/execution-discipline/SKILL.md)'); a FAILED selection stops this gate RED before the full run.
+........................................................................ [  4%]
+........................................................................ [  9%]
+................s....................................................... [ 14%]
+........................................................................ [ 19%]
+........................................................................ [ 24%]
+........................................................................ [ 29%]
+........................................................................ [ 34%]
+........................................................................ [ 39%]
+........................................................................ [ 44%]
+........................................................................ [ 49%]
+........................................................................ [ 54%]
+........................................................................ [ 59%]
+...............................................................s.......s [ 64%]
+........................................................................ [ 69%]
+........................................................................ [ 74%]
+........................................................................ [ 79%]
+........................................................................ [ 84%]
+........................................................................ [ 89%]
+........................................................................ [ 94%]
+........................................................................ [ 99%]
+............                                                             [100%]
+1449 passed, 3 skipped in 1355.61s (0:22:35)
+pregate_select: 11 changed path(s) -> 1452 test(s) (R1 0, R2 1384, R3 41, R4 4, R5 17, R6 132, R7 15) - a LOWER bound; the full gate stays the authority
+pregate_select: stamped .pregate_stamp - PASSED on this tree (1452 tests, 2026-11-17T02:46:07Z)
+pytest_exit=0 tree=SAME exit=0
+  pytest: 2047 passed, 3 skipped, 2 warnings in 2063.95s (0:34:23)
+  elapsed_s=2097
+  chain_inflight=none
+  chain_inflight_start=none
+  chain_inflight_end=none
+  power_start=ac
+  power_end=ac
+  engine_inflight=none
+  engine_inflight_start=none
+  engine_inflight_end=none
+  engine_dead_within_window=none
+  beside_wave_override=none
+  output_audit_created=none
+  output_audit_modified_tracked=none
+  output_audit_modified_untracked=none
+  readset=CLEAN
+  readset_rerun=none
+  readset_suite_writes=2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
+  moved_line_citations=none
+  pregate=PASSED on this tree (1452 tests, 2026-11-17T02:46:07Z)
+  runbook_drift=tickets 4, not named in the runbook 2 (S6-B3361, S6-B3424); lessons 0, not cited 0
+  stamp_binding=kept-green
+  NOTE (S6-B3130a/L689): test(s) WROTE under the production output_audit in-process: 2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways

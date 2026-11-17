@@ -1,0 +1,1847 @@
+{
+ "cube": "output_b3139q_lv4_smc_bos_continuation_p1_j213420ef_p1_j213420ef",
+ "strategy": "smc_bos_continuation",
+ "sampled_rows": 50,
+ "trades_checked": 50,
+ "agree": {
+  "below_ema_200": 50,
+  "force_index_cross_dn": 50,
+  "force_index_cross_up": 50,
+  "price_above_ema_200": 50,
+  "rsi_14": 50,
+  "vol_spike_2x": 50
+ },
+ "checked": {
+  "below_ema_200": 50,
+  "force_index_cross_dn": 50,
+  "force_index_cross_up": 50,
+  "price_above_ema_200": 50,
+  "rsi_14": 50,
+  "vol_spike_2x": 50
+ },
+ "uncovered_keys": [
+  "smc_bos_bearish",
+  "smc_bos_bullish"
+ ],
+ "previous_bar_agreement": {
+  "below_ema_200": 46,
+  "force_index_cross_dn": 34,
+  "force_index_cross_up": 35,
+  "price_above_ema_200": 46,
+  "rsi_14": 0,
+  "vol_spike_2x": 40
+ },
+ "previous_bar_checked": {
+  "below_ema_200": 50,
+  "force_index_cross_dn": 50,
+  "force_index_cross_up": 50,
+  "price_above_ema_200": 50,
+  "rsi_14": 50,
+  "vol_spike_2x": 50
+ },
+ "vacuous_controls": [],
+ "problems": [],
+ "rows": [
+  {
+   "ticker": "DHR",
+   "entry_date": "2025-03-10",
+   "keys": {
+    "below_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 39.9,
+     "rederived": 39.9,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "SPY",
+   "entry_date": "2024-05-17",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 68.7,
+     "rederived": 68.7,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "EPAM",
+   "entry_date": "2025-01-21",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 55.65,
+     "rederived": 55.65,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "CME",
+   "entry_date": "2025-02-19",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 66.54,
+     "rederived": 66.54,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "GOOGL",
+   "entry_date": "2024-05-06",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 63.94,
+     "rederived": 63.94,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "PLTR",
+   "entry_date": "2025-04-02",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 48.77,
+     "rederived": 48.77,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "T",
+   "entry_date": "2025-04-14",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 52.68,
+     "rederived": 52.68,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "FTNT",
+   "entry_date": "2025-02-12",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 70.77,
+     "rederived": 70.77,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "OXY",
+   "entry_date": "2025-04-03",
+   "keys": {
+    "below_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 31.79,
+     "rederived": 31.79,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "ADSK",
+   "entry_date": "2025-03-28",
+   "keys": {
+    "below_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 40.86,
+     "rederived": 40.86,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "DG",
+   "entry_date": "2024-12-13",
+   "keys": {
+    "below_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 44.51,
+     "rederived": 44.51,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "CCI",
+   "entry_date": "2024-07-30",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 75.24,
+     "rederived": 75.24,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "HD",
+   "entry_date": "2025-01-10",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 40.12,
+     "rederived": 40.12,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "TXN",
+   "entry_date": "2024-05-06",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 64.53,
+     "rederived": 64.53,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "GILD",
+   "entry_date": "2025-03-21",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 44.62,
+     "rederived": 44.62,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "KR",
+   "entry_date": "2025-04-07",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 51.21,
+     "rederived": 51.21,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "NKE",
+   "entry_date": "2024-06-28",
+   "keys": {
+    "below_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 18.26,
+     "rederived": 18.26,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "AMGN",
+   "entry_date": "2024-07-16",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 74.71,
+     "rederived": 74.71,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "PANW",
+   "entry_date": "2024-09-20",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 49.41,
+     "rederived": 49.41,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "GM",
+   "entry_date": "2024-08-15",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 52.51,
+     "rederived": 52.51,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "DIS",
+   "entry_date": "2025-04-04",
+   "keys": {
+    "below_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 18.46,
+     "rederived": 18.46,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "SCHW",
+   "entry_date": "2025-03-14",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 49.38,
+     "rederived": 49.38,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "SPGI",
+   "entry_date": "2024-07-02",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 65.42,
+     "rederived": 65.42,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "MU",
+   "entry_date": "2025-04-10",
+   "keys": {
+    "below_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 37.29,
+     "rederived": 37.29,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "QCOM",
+   "entry_date": "2025-04-10",
+   "keys": {
+    "below_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 38.72,
+     "rederived": 38.72,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "V",
+   "entry_date": "2024-08-12",
+   "keys": {
+    "below_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 44.95,
+     "rederived": 44.95,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "UAL",
+   "entry_date": "2024-05-06",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 66.38,
+     "rederived": 66.38,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "UAL",
+   "entry_date": "2025-01-24",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 55.6,
+     "rederived": 55.6,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "KO",
+   "entry_date": "2024-05-15",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 68.97,
+     "rederived": 68.97,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "BBY",
+   "entry_date": "2024-09-24",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 63.44,
+     "rederived": 63.44,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "LUV",
+   "entry_date": "2024-11-21",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 54.32,
+     "rederived": 54.32,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "GPN",
+   "entry_date": "2024-11-25",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 70.57,
+     "rederived": 70.57,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "TSLA",
+   "entry_date": "2024-08-15",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 50.23,
+     "rederived": 50.23,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "TMUS",
+   "entry_date": "2025-02-10",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 79.15,
+     "rederived": 79.15,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "NEE",
+   "entry_date": "2024-08-26",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 65.8,
+     "rederived": 65.8,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "NFLX",
+   "entry_date": "2025-04-09",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 52.1,
+     "rederived": 52.1,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "ENPH",
+   "entry_date": "2025-04-03",
+   "keys": {
+    "below_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 42.69,
+     "rederived": 42.69,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "BLK",
+   "entry_date": "2024-07-11",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 70.56,
+     "rederived": 70.56,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "CB",
+   "entry_date": "2025-01-10",
+   "keys": {
+    "below_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 24.11,
+     "rederived": 24.11,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "WYNN",
+   "entry_date": "2025-02-03",
+   "keys": {
+    "below_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 44.05,
+     "rederived": 44.05,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "FCX",
+   "entry_date": "2024-08-22",
+   "keys": {
+    "below_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 46.03,
+     "rederived": 46.03,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "QCOM",
+   "entry_date": "2025-05-01",
+   "keys": {
+    "below_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 40.59,
+     "rederived": 40.59,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "AMAT",
+   "entry_date": "2024-05-20",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 63.36,
+     "rederived": 63.36,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "NOC",
+   "entry_date": "2025-04-22",
+   "keys": {
+    "below_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 35.97,
+     "rederived": 35.97,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "MRK",
+   "entry_date": "2024-10-16",
+   "keys": {
+    "below_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 41.28,
+     "rederived": 41.28,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "AMZN",
+   "entry_date": "2025-03-24",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 47.1,
+     "rederived": 47.1,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "NFLX",
+   "entry_date": "2024-05-28",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 65.79,
+     "rederived": 65.79,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "NFLX",
+   "entry_date": "2025-03-17",
+   "keys": {
+    "below_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 50.14,
+     "rederived": 50.14,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "CVS",
+   "entry_date": "2024-09-24",
+   "keys": {
+    "below_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 51.27,
+     "rederived": 51.27,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "INTC",
+   "entry_date": "2024-09-03",
+   "keys": {
+    "below_ema_200": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_dn": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "force_index_cross_up": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "price_above_ema_200": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "rsi_14": {
+     "persisted": 38.85,
+     "rederived": 38.85,
+     "agree": true
+    },
+    "vol_spike_2x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  }
+ ],
+ "method": "S6-B3427 (B3139q-r212c): the certification checker leg for families whose\nspot check re-derives no input family (spot_check_replay's four).\n\nRe-derives each GATE KEY the spot check sampled, from its SOURCE, and compares\nwith the trade log's signals_at_entry - the method the news_momentum_long hand\ndisposition proved (output_audit/b3139q_lv4s2_news_momentum_long_step4_hand_disposition.json:\n300 of 300 agree; previous-bar control 24-31 of 50 agree, so the formulas can\ndisagree and the agreement is informative).\n\nKEYED BY SIGNAL KEY, never by strategy (#291): KEY_DERIVERS maps a persisted\nkey to a derivation over the cached bars; news keys route through the producer\non the raw article files. A sampled key with NO route is UNCOVERED - exit 2\nwith the residue NAMED, and the battery keeps step 4 OPEN for a hand\ndisposition of exactly those keys. The previous-bar control must DISAGREE on\nevery derived price key (a derivation that agrees on every bar proves nothing\n- L686: mutate toward the useless version).\n\nWrites --out only (no production path; S6-B3418's confinement rule applies\nfrom birth).\n"
+}

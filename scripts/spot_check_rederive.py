@@ -84,6 +84,43 @@ KEY_DERIVERS = {
 # keys served by a PRODUCER call rather than bar arithmetic: key -> producer
 NEWS_KEYS = ("news_sentiment_5d", "news_volume_zscore_5d")
 
+# S6-B3427 key routes (B3139q-r216, on the owner's 'Address and impletement all
+# open tickets' 2026-11-16): the TECHNICAL gate keys the other replay families
+# sample - pivot_r1_breakout's floor pivots, AVWAP and MACD flags, orb's gap
+# and volume spike, smc_bos_continuation's EMA, RSI and force-index flags -
+# are re-derived through the PRODUCER that writes them, technical.
+# compute_all_signals on the cached bars as of the entry date (the news route's
+# shape), with the previous-bar window as the control. The smc_* keys stay
+# UNCOVERED: their producer reads the SMC panel cache, which this checker does
+# not build - they fail closed by name, as before.
+TECH_PRODUCER_KEYS = frozenset({
+    "gap_up_pct", "vol_spike_2x", "vol_spike_15x",
+    "price_above_ema_200", "below_ema_200", "rsi_14",
+    "above_r1", "below_s1", "above_avwap_50low", "below_avwap_50low",
+    "macd_12_26_9_bullish", "macd_12_26_9_bearish",
+    "force_index_cross_up", "force_index_cross_dn",
+})
+
+
+def _same(pv, dv) -> bool:
+    """Persisted and re-derived agree: by truth for a boolean on either side,
+    by value within 1e-4 otherwise (a None never agrees)."""
+    if isinstance(dv, bool) or isinstance(pv, bool):
+        return bool(pv) == bool(dv)
+    try:
+        return pv is not None and dv is not None and abs(float(pv) - float(dv)) <= 1e-4
+    except (TypeError, ValueError):
+        return False
+
+
+def _tech_signals(cache: dict, key, w):
+    """compute_all_signals over the window, once per (ticker, date, control)."""
+    if key not in cache:
+        from backtest.signals.technical import compute_all_signals
+        cache[key] = compute_all_signals(w) or {}
+    return cache[key]
+
+
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
@@ -113,6 +150,7 @@ def main() -> int:
               "sampled-key population is unreadable (fail closed, L642)")
         return 2
     bars_cache: dict = {}
+    tech_cache: dict = {}             # S6-B3427 key routes: compute_all_signals per (ticker, date, window)
     agree, checked = {}, {}
     problems, out_rows = [], []
     prev_agree, prev_checked = {}, {}
@@ -146,7 +184,19 @@ def main() -> int:
                 if len(w) > 1:
                     pdv = KEY_DERIVERS[k](w.iloc[:-1])
                     prev_checked[k] = prev_checked.get(k, 0) + 1
-                    prev_agree[k] = prev_agree.get(k, 0) + int(bool(pdv) == bool(pv))
+                    prev_agree[k] = prev_agree.get(k, 0) + int(_same(pv, pdv))
+            elif k in TECH_PRODUCER_KEYS:
+                # S6-B3427 key routes (B3139q-r216): through the producer that writes
+                # the key, on the bars as of the entry date; the previous-bar window
+                # is the control, as for the arithmetic routes
+                if w is None:
+                    problems.append(f"{t} {d} {k}: no bar window")
+                    continue
+                dv = _tech_signals(tech_cache, (t, d, "full"), w).get(k)
+                if len(w) > 1:
+                    pdv = _tech_signals(tech_cache, (t, d, "prev"), w.iloc[:-1]).get(k)
+                    prev_checked[k] = prev_checked.get(k, 0) + 1
+                    prev_agree[k] = prev_agree.get(k, 0) + int(_same(pv, pdv))
             elif k in NEWS_KEYS:
                 if nk is None:
                     nk = compute_news_sentiment_signals(t, date.fromisoformat(d))
@@ -158,10 +208,7 @@ def main() -> int:
                 problems.append(f"{t} {d} {k}: producer returned none")
                 continue
             checked[k] = checked.get(k, 0) + 1
-            if isinstance(dv, bool) or isinstance(pv, bool):
-                ok = bool(pv) == bool(dv)
-            else:
-                ok = pv is not None and abs(float(pv) - float(dv)) <= 1e-4
+            ok = _same(pv, dv)
             agree[k] = agree.get(k, 0) + int(ok)
             row["keys"][k] = {"persisted": pv, "rederived": dv, "agree": ok}
             if not ok:

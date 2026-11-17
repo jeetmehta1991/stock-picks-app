@@ -1349,7 +1349,7 @@ PYTHONPATH=.:scripts python scripts/launch_detached.py --chain --batch <bNNNN> \
 # -> Task Scheduler task stockpicks_chain_<bNNNN>_<ts> (observe it Running - S6-B2529a);
 #    per spec: run_wave.py -> launch_sweep.py -> prelaunch_gate.py -> run_phase1a.py, gate_receipt.json
 ```
-`launch_detached.py --chain` is the ONLY sanctioned chain launch path (B2575): `chain_task_running`
+`launch_detached.py --chain` is the ONLY sanctioned chain launch path (B2575; since B3139q-r216 `run_serial_chain.py` REFUSES a chain with no task name unless `--console <reason>` declares it, S6-B3398): `chain_task_running`
 refuses a second chain, the task unregisters ITSELF at CHAIN DONE (B2577), and it wraps
 `scripts/run_serial_chain.py`. **One INDEPENDENT detached invocation per arm, never a shared
 shell-function wrapper** (S6-B1535b, anchored B2051): a shared wrapper once turned one process kill into
@@ -1389,7 +1389,7 @@ PYTHONPATH=. python backtest/run_phase1a.py \
 | `--start` / `--end`, `--tickers-file` | **injected by `phase_table.resolve` from the step table (§1.2), never typed in a spec** - the 1-year SEARCH window ends AT the holdout boundary (`S6-B1605c`), and the universe is `_sweep_200.txt` (200 not 100: halving the window alone kept only 50-56 pct of entries, B1817) |
 
 **Step 1.4 - Concurrency.** Run configs as SEPARATE processes rather than widening the pool: in-run
-parallelism caps at ~1.6x (Amdahl, ~62 pct serial). Keep total workers <= physical cores, and watch
+parallelism caps at ~1.6x (Amdahl, ~62 pct serial). Keep total workers <= physical cores (prelaunch_gate.check_workers_within_cores refuses a manifest whose pool_workers x arms exceed the box's cores, S6-B3398), and watch
 for `MemoryError` in the log - a 182-strategy pilot hit it during cube replay; a single-strategy cube is
 ~1/182 the size, which is what makes concurrency viable. The memory ceiling for concurrency is the
 Step 1.0 (b) reading.
@@ -1447,7 +1447,7 @@ the monitor onto the run's own heartbeat (Step 2.5) - a prompt reading the delet
 chain; (5) at the landing, append the line the stopped chain would have written, `<UTC> <wave>
 finished: ...` - `pyramid_gate._chain_inflight` and `scan_chain_running_close` read a `LAUNCH` with no
 finished line as in flight forever; (6) the held spec launches only on the owner's word, through a
-fresh `launch_detached.py --chain` (CHECKLIST #120). A hold the chain reads itself is S6-B3436.
+fresh `launch_detached.py --chain` (CHECKLIST #120). SINCE B3139q-r216 THE CHAIN READS A HOLD ITSELF (S6-B3436): a file `output_audit/chain_hold_ALL.txt`, `chain_hold_<task name>.txt` or `chain_hold_<batch>.txt` stops it through halt() before the next spec is decided - nothing launched, a HALT record the Stop hook reports, the relaunch the owner's word; steps (1)-(5) above are the hand procedure for a chain already inside a spec (test_b3436).
 
 ### 4.6 Step 1 grading (formerly §11 STEP 2 GRADE)
 
@@ -1650,7 +1650,7 @@ wave, all of them apply.
    B1704 hand-run-only era - the pre-B3096 text still said "HAND-RUN - nothing calls it
    automatically"), so the hand run is the in-turn EVIDENCE the gate passes, not the only gate.
 6. **Arm the cadence monitor BEFORE the launch, in the same turn - `scan_unmonitored_launch` now reads the arm's POSITION, so an arm after the launch does not cover it (test_b3399a; S6-B3399)** (#185; §8.9).
-7. **Confirm zero pre-existing engine processes**, or two runs share an output path and corrupt both.
+7. **Confirm zero pre-existing engine processes**, or two runs share an output path and corrupt both - launch_detached and run_wave refuse while one is live, and launch_detached refuses an unpushed HEAD (S6-B3398, test_b3398).
 
 Items 3 and 7, the workers-versus-cores limit (Step 1.4), the generated spec (Step 2.2) and the
 detached chain path (§4.5 Step 1.3) are not yet refusals at this door: check each by hand and record
@@ -1679,7 +1679,7 @@ instance is recorded in the campaign log).
            "preregistered_exit": "<this config's Step-1 step1_ranking[0] exit>"}]}
 ```
 
-- **Generate it; do not type it (S6-B3154a).** `scripts/make_spec.py --step 2` (the Step-1 arguments:
+- **Generate it; do not type it (S6-B3154a; run_wave refuses a Step-2 spec without make_spec's `_generated_by` stamp, S6-B3398).** `scripts/make_spec.py --step 2` (the Step-1 arguments:
   `--strategy`, `--param`, `--levels`, `--with`, `--wave-prefix`; and, unless `--dry`, the owner's
   launch word, `--owner-word` and `--owner-word-ticket`, section 0.6; and the breadth leg, `--breadth-leg` ran / waived / not_run with its evidence, words or ticket, which the arm carries and the launch gate requires - S6-B3367; a programme with no breadth step of its own, a gate-budget arm (§4.10), declares `not_run` under a ticket that decides the leg at the arm's landing, S6-B3430) writes this spec SIZED from the
   config's own COMPLETE Step-1 cube: `max_legs` = ceil(that cube's engine hours x the family's largest
@@ -1791,7 +1791,7 @@ launch and the price written beside it in the launch row.
   headroom, but a sampled reading cannot catch an allocation spike: a guard polling every 3 s saw
   no lower than 3.78 GB while the builder's own allocation failed, so a memory-heavy helper does not
   run beside the engine at all - it waits for the landing too.
-- **Full-gate cadence (S6-B3410 (a), owner 2026-10-31, verbatim 'A but one full pyramid per 3 turns'):** one FULL pyramid per 3 turns; the turns between commit on a green stamp ridden by a PASSING targeted pre-gate on the exact tree (`scripts/pregate_select.py --run`; preflight C6 `_pregate_ride`, ledger `.pyramid_rides`, pinned by `test_b3410`). And (b): a miss's new enforcement mechanism may batch to one enforcement batch per full-pyramid cycle - one per 3 turns, the (a) cadence (owner correction sent 2026-11-01) - under a named ticket (`Mechanism: BATCHED (S6-xxxx)`, read by `scan_miss_capture_complete`), owner-visible misses excepted.
+- **Full-gate cadence (S6-B3410 (a), owner 2026-10-31, verbatim 'A but one full pyramid per 3 turns'):** one FULL pyramid per 3 turns; the turns between commit on a green stamp ridden by a PASSING targeted pre-gate on the exact tree (`scripts/pregate_select.py --run`; preflight C6 `_pregate_ride`, ledger `.pyramid_rides`, pinned by `test_b3410`). And (b): a miss's new enforcement mechanism may batch to one enforcement batch per full-pyramid cycle - one per 3 turns, the (a) cadence (owner correction sent 2026-11-01) - under a named ticket (`Mechanism: BATCHED (S6-xxxx)`, read by `scan_miss_capture_complete`), owner-visible misses excepted. Since B3139q-r216: a commit staging no engine or script .py spends no ride, its passing pre-gate still required (S6-B3425 (b), `_pregate_ride(record=False)`); and a full gate whose tree has no passing selection runs `scripts/pregate_select.py --run` itself first and stops RED at a failure (S6-B3361 (b), `EXIT_PREGATE_RED`, `test_b3361`).
 - **Editing the spec does NOT affect a running wave.** `run_wave.py` reads the spec ONCE at startup
   (`run_wave.main`) and the leg loop reads `max_legs` from that in-memory dict (`run_arm`'s
   `while legs < int(spec.get("max_legs", 4))`);
@@ -2664,7 +2664,7 @@ per run  =  tickers x sim-days x 0.2613      <- a CANONICAL rate; a campaign's o
   (main 311 MB + 10 workers at 468-584 MB), so N=2 pooled would fit RAM but split the same cores.
 - **Run configs CONCURRENTLY rather than widening the pool** - in-run parallelism caps at ~1.6x
   (Amdahl, ~62 pct serial), and separate processes scale far better (B1558 measured 2.24x throughput at
-  3-way). **Never let total workers exceed physical cores** - pool=60 on one ticker ran 11.6x SLOWER
+  3-way). **Never let total workers exceed physical cores** (refused per manifest by prelaunch_gate since B3139q-r216, S6-B3398) - pool=60 on one ticker ran 11.6x SLOWER
   than sequential (L-pool).
 - **COMMIT, not physical RAM, is the binding memory quantity** (B2229 / L670; §4.5 Step 1.0 b).
 - **Do NOT run a pyramid or any other CPU work during a timing A/B** - it inflates the arm in flight and

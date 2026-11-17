@@ -434,6 +434,8 @@ def build_manifest(spec: dict, arm: dict, out_dir: Path, sha: str) -> Path:
         "owner_word": spec.get("owner_word"),
         "owner_override_reopen": spec.get("owner_override_reopen"),
         "window": spec["window"], "arms": [arm],
+        # S6-B3398 (B3139q-r216): the bound prelaunch_gate.check_workers_within_cores reads
+        "pool_workers": int(spec.get("pool_workers", 0) or 0),
         "concurrency": "orchestrated legs, solo per arm",
         "budget_cap_usd": 0, "spent_usd": 0, "projected_batch_usd": 0,
         "wall_clock_projection_hours": proj_h,
@@ -791,6 +793,72 @@ def archive_stale_summary(wave: str):
     return dest
 
 
+# ---------------------------------------------------------------------------
+# S6-B3398 (B3139q-r216): two launch-path rules at the wave's own door -
+# census 1540 'generate the Step-2 spec with make_spec.py --step 2; never type
+# it by hand (S6-B3154a)' and census 1517 'zero pre-existing engine processes
+# before launch'. run_wave is itself a RUN_PROCESSES member and is launched by
+# run_serial_chain, another - and on Windows each venv launch is a launcher
+# stub plus the real interpreter - so the live-runner read excludes this
+# process's whole ANCESTRY (each step a parent that started before its child,
+# the pyramid gate's pid-reuse guard) and the runners the test suite spawned.
+# An unreadable process table, or an unreadable python process with no
+# identified runner, reads as in flight: fail closed, the gate's convention.
+# ---------------------------------------------------------------------------
+def step2_generated_refusal(spec: dict) -> list:
+    """A Step-2 spec carries make_spec's _generated_by stamp, or is refused."""
+    if spec.get("step") == 2 and not str(spec.get("_generated_by") or "").startswith(
+            "scripts/make_spec.py"):
+        return ["a Step-2 spec with no _generated_by from scripts/make_spec.py - generate "
+                "it with scripts/make_spec.py --step 2, never type it by hand (S6-B3154a)"]
+    return []
+
+
+def own_ancestry(me: int, parents: dict, start) -> set:
+    """`me` and every ancestor, walking parent pids while each parent started
+    before its child (pid reuse stops the walk); `start(pid)` is a start time
+    or None, and a None stops the walk too."""
+    out, child, cur, steps = {me}, me, parents.get(me), 0
+    while cur and steps < 64:
+        steps += 1
+        tc, tp = start(child), start(cur)
+        if tc is None or tp is None or tp > tc:
+            break
+        out.add(cur)
+        child, cur = cur, parents.get(cur)
+    return out
+
+
+def engine_live_refusal(inflight=None, rows=None, parents=None, starts=None, me=None) -> list:
+    """[] when no engine runner outside this process's own ancestry is live.
+    `inflight` short-circuits the read (a label, 'none' or 'unknown...');
+    `rows` ([(pid, argv)]), `parents` ({pid: ppid}), `starts` ({pid: start})
+    and `me` are the test seams."""
+    if inflight is None:
+        try:
+            import pyramid_gate as _pg
+            rows = _pg._python_argvs() if rows is None else rows
+            if rows is None:
+                inflight = "unknown(process table unreadable)"
+            else:
+                parents = _pg._parent_pids() if parents is None else parents
+                start = starts.get if starts is not None else _pg._start_time
+                mine = own_ancestry(os.getpid() if me is None else me, parents or {}, start)
+                suite = _pg._suite_spawned(rows, parents, starts)
+                others = [(p, a) for p, a in rows if p not in mine and p not in suite]
+                live = sorted({lbl for _p, a in others if a is not None
+                               and (lbl := _pg._runner_label(a))})
+                unread = [p for p, a in others if a is None]
+                inflight = (",".join(live) if live else
+                            (f"unknown(unreadable python pid {unread[0]})" if unread else "none"))
+        except Exception as exc:  # noqa: BLE001 - unreadable is in flight
+            inflight = f"unknown({type(exc).__name__})"
+    if str(inflight).strip() != "none":
+        return [f"an engine runner is already live - {inflight}; two runs must never share "
+                "an output path (runbook: confirm zero pre-existing engine processes)"]
+    return []
+
+
 def main() -> int:
     # B3100 (S6-B3094f item 1): [B2127 rate] / [B3100 leg-end] lines reach the
     # log as they are printed, not at exit - a block-buffered log is silent for
@@ -832,6 +900,13 @@ def main() -> int:
     if _reread:
         for r in _reread:
             print(r)
+        return 3
+    # S6-B3398 (B3139q-r216): a Step-2 spec typed by hand, or another engine
+    # runner live, is refused HERE - before anything is archived or written
+    _launch_path = step2_generated_refusal(spec) + engine_live_refusal()
+    if _launch_path:
+        for _r in _launch_path:
+            print(f"LAUNCH REFUSED (S6-B3398): {_r}")
         return 3
     stale = archive_stale_summary(spec["wave"])
     lineage = None

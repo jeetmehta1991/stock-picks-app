@@ -1,0 +1,2098 @@
+{
+ "cube": "output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45",
+ "strategy": "pivot_r1_breakout",
+ "sampled_rows": 50,
+ "trades_checked": 50,
+ "agree": {
+  "above_avwap_50low": 50,
+  "above_r1": 50,
+  "below_avwap_50low": 50,
+  "below_s1": 50,
+  "macd_12_26_9_bearish": 50,
+  "macd_12_26_9_bullish": 50,
+  "vol_spike_15x": 50
+ },
+ "checked": {
+  "above_avwap_50low": 50,
+  "above_r1": 50,
+  "below_avwap_50low": 50,
+  "below_s1": 50,
+  "macd_12_26_9_bearish": 50,
+  "macd_12_26_9_bullish": 50,
+  "vol_spike_15x": 50
+ },
+ "uncovered_keys": [],
+ "previous_bar_agreement": {
+  "above_avwap_50low": 33,
+  "above_r1": 21,
+  "below_avwap_50low": 33,
+  "below_s1": 41,
+  "macd_12_26_9_bearish": 31,
+  "macd_12_26_9_bullish": 31,
+  "vol_spike_15x": 35
+ },
+ "previous_bar_checked": {
+  "above_avwap_50low": 50,
+  "above_r1": 50,
+  "below_avwap_50low": 50,
+  "below_s1": 50,
+  "macd_12_26_9_bearish": 50,
+  "macd_12_26_9_bullish": 50,
+  "vol_spike_15x": 50
+ },
+ "vacuous_controls": [],
+ "problems": [],
+ "rows": [
+  {
+   "ticker": "HES",
+   "entry_date": "2024-09-17",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "MPC",
+   "entry_date": "2025-03-05",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "LEN",
+   "entry_date": "2024-07-11",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "MAA",
+   "entry_date": "2023-12-14",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "JBHT",
+   "entry_date": "2025-04-09",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "EFX",
+   "entry_date": "2025-09-11",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "AMCR",
+   "entry_date": "2022-10-04",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "AMAT",
+   "entry_date": "2024-09-19",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "VLO",
+   "entry_date": "2024-08-20",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "SBAC",
+   "entry_date": "2022-11-07",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "UDR",
+   "entry_date": "2025-01-27",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "MTB",
+   "entry_date": "2023-04-19",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "CMCSA",
+   "entry_date": "2024-04-22",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "MU",
+   "entry_date": "2022-05-13",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "CZR",
+   "entry_date": "2023-03-13",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "VRSN",
+   "entry_date": "2024-11-27",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "OGN",
+   "entry_date": "2022-11-11",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "MS",
+   "entry_date": "2022-10-14",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "FDX",
+   "entry_date": "2025-05-02",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "BMY",
+   "entry_date": "2022-06-17",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "INCY",
+   "entry_date": "2023-05-23",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "TAP",
+   "entry_date": "2025-02-13",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "MAS",
+   "entry_date": "2022-09-12",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "VLO",
+   "entry_date": "2025-04-09",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "TEL",
+   "entry_date": "2023-10-06",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "AKAM",
+   "entry_date": "2024-05-06",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "GPN",
+   "entry_date": "2025-04-04",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "MGM",
+   "entry_date": "2022-06-13",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "SEDG",
+   "entry_date": "2023-04-11",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "SLB",
+   "entry_date": "2024-01-03",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "MU",
+   "entry_date": "2022-10-21",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "UPS",
+   "entry_date": "2025-05-08",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "COST",
+   "entry_date": "2022-05-18",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "MHK",
+   "entry_date": "2025-10-21",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "HBAN",
+   "entry_date": "2023-05-02",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "LKQ",
+   "entry_date": "2024-08-16",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "CLX",
+   "entry_date": "2025-04-22",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "DIS",
+   "entry_date": "2026-04-08",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "TEL",
+   "entry_date": "2025-04-03",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "LKQ",
+   "entry_date": "2025-05-12",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "SWK",
+   "entry_date": "2022-11-11",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "EFX",
+   "entry_date": "2023-03-21",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "DD",
+   "entry_date": "2025-04-22",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "LUMN",
+   "entry_date": "2022-12-29",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "CSX",
+   "entry_date": "2023-03-29",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "ED",
+   "entry_date": "2022-10-18",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "HAS",
+   "entry_date": "2022-05-13",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "ARES",
+   "entry_date": "2026-01-26",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "DELL",
+   "entry_date": "2025-04-07",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    }
+   }
+  },
+  {
+   "ticker": "APTV",
+   "entry_date": "2022-07-15",
+   "keys": {
+    "above_avwap_50low": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "above_r1": {
+     "persisted": true,
+     "rederived": "True",
+     "agree": true
+    },
+    "below_avwap_50low": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "below_s1": {
+     "persisted": false,
+     "rederived": "False",
+     "agree": true
+    },
+    "macd_12_26_9_bearish": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    },
+    "macd_12_26_9_bullish": {
+     "persisted": true,
+     "rederived": true,
+     "agree": true
+    },
+    "vol_spike_15x": {
+     "persisted": false,
+     "rederived": false,
+     "agree": true
+    }
+   }
+  }
+ ],
+ "method": "S6-B3427 (B3139q-r212c): the certification checker leg for families whose\nspot check re-derives no input family (spot_check_replay's four).\n\nRe-derives each GATE KEY the spot check sampled, from its SOURCE, and compares\nwith the trade log's signals_at_entry - the method the news_momentum_long hand\ndisposition proved (output_audit/b3139q_lv4s2_news_momentum_long_step4_hand_disposition.json:\n300 of 300 agree; previous-bar control 24-31 of 50 agree, so the formulas can\ndisagree and the agreement is informative).\n\nKEYED BY SIGNAL KEY, never by strategy (#291): KEY_DERIVERS maps a persisted\nkey to a derivation over the cached bars; news keys route through the producer\non the raw article files. A sampled key with NO route is UNCOVERED - exit 2\nwith the residue NAMED, and the battery keeps step 4 OPEN for a hand\ndisposition of exactly those keys. The previous-bar control must DISAGREE on\nevery derived price key (a derivation that agrees on every bar proves nothing\n- L686: mutate toward the useless version).\n\nWrites --out only (no production path; S6-B3418's confinement rule applies\nfrom birth).\n"
+}

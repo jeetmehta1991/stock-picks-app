@@ -306,6 +306,55 @@ def engine_hash_gate(wave: str, prev: dict | None, accepted: bool) -> tuple[bool
     return True, rec
 
 
+# ---------------------------------------------------------------------------
+# S6-B3436 (B3139q-r216, on the owner's 'Address and impletement all open
+# tickets' 2026-11-16): a HOLD the chain reads ITSELF, between specs. Before
+# each spec is decided the chain looks for a hold file in output_audit -
+# chain_hold_ALL.txt (every chain), chain_hold_<chain run id>.txt or
+# chain_hold_<batch>.txt (this chain; the batch is the middle of a
+# stockpicks_chain_<batch>_<epoch> task name) - and when one exists it stops
+# through halt(): the live wave has already landed, nothing is launched, the
+# record reaches the owner as a HALT does (scan_chain_halt), and the relaunch
+# is the owner's word (CHECKLIST #120), as after any HALT. Before this the
+# S6-B3432 (b) hold needed the chain's interpreter stopped by hand (runbook
+# 4.5). A switch, not a gate: it changes no verdict and no graded cell.
+# ---------------------------------------------------------------------------
+HOLD_DIR_NAME = "output_audit"
+HOLD_PREFIX = "chain_hold_"
+
+
+def hold_batch_of(chain_run_id) -> str | None:
+    """stockpicks_chain_<batch>_<epoch> -> <batch>; None for any other id
+    (a console chain's id has no batch)."""
+    parts = str(chain_run_id or "").split("_")
+    if (len(parts) >= 4 and parts[0] == "stockpicks" and parts[1] == "chain"
+            and parts[-1].isdigit()):
+        return "_".join(parts[2:-1])
+    return None
+
+
+def hold_candidates(chain_run_id, root=None) -> list:
+    """The hold files this chain reads, in the order they are checked."""
+    root = ROOT if root is None else Path(root)
+    names = ["ALL", str(chain_run_id or "").strip()]
+    batch = hold_batch_of(chain_run_id)
+    if batch:
+        names.append(batch)
+    return [root / HOLD_DIR_NAME / f"{HOLD_PREFIX}{n}.txt" for n in names if n]
+
+
+def held_by(chain_run_id, root=None) -> str | None:
+    """'<file>: <note>' for the first hold file that exists, else None."""
+    for p in hold_candidates(chain_run_id, root):
+        if p.is_file():
+            try:
+                note = p.read_text(encoding="utf-8", errors="replace").strip()
+            except OSError:
+                note = "(unreadable)"
+            return f"{p.name}: {note[:200] or '(empty)'}"
+    return None
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--wait-for", default=None,
@@ -318,7 +367,21 @@ def main() -> int:
     ap.add_argument("--task-name", default=None,
                     help="B2577: the Task Scheduler task running this chain; "
                          "unregistered by the chain itself at CHAIN DONE")
+    ap.add_argument("--console", default=None, metavar="REASON",
+                    help="S6-B3398: run a CONSOLE chain (no Task Scheduler task) "
+                         "knowingly, with the reason logged; without it a chain "
+                         "that launch_detached.py --chain did not register is refused")
     a = ap.parse_args()
+    # S6-B3398 (B3139q-r216; runbook: launch_detached.py --chain is the ONLY
+    # sanctioned chain path, census 1227): a chain with no task name was not
+    # registered by it. Refused before anything is read or written, unless
+    # the console run is declared with its reason.
+    if not a.task_name and not a.console:
+        print("CHAIN REFUSED (S6-B3398 / runbook: launch_detached.py --chain is the only "
+              "sanctioned chain path): no --task-name, so launch_detached.py --chain did "
+              "not register this chain. Launch it there, or pass --console <reason> to "
+              "run a console chain knowingly (the reason is logged).", flush=True)
+        return 2
     prev_hash: dict | None = None
     # B3104 (S6-B3102a): THIS chain run's id - the Task Scheduler task name,
     # which a reboot restart re-executes unchanged, or a fresh id for a
@@ -356,8 +419,21 @@ def main() -> int:
                         f"predecessor read {pred.get('status')}, not COMPLETE; "
                         "nothing launched (the no-relaunch rule)", a.specs)
 
+    if a.console:
+        log(f"CONSOLE CHAIN accepted with reason: {a.console} (S6-B3398; the sanctioned "
+            "path is launch_detached.py --chain)")
     for spec_path in a.specs:
         spec = json.loads((ROOT / spec_path).read_text(encoding="utf-8"))
+        # S6-B3436 (B3139q-r216): a HOLD the chain reads itself, before this
+        # spec is decided - the previous wave has landed, nothing launches,
+        # the record reaches the owner as a HALT does
+        _held = held_by(chain_run_id)
+        if _held:
+            return halt(spec["wave"],
+                        f"HOLD (S6-B3436) {_held} - held before this spec was decided; "
+                        "delete the hold file and relaunch on the owner's word "
+                        "(CHECKLIST #120)",
+                        a.specs[a.specs.index(spec_path):])
         action, why = _wi.decide(spec, read_summary(spec),
                                  chain_run_id=chain_run_id)
         if action == _wi.SKIP:

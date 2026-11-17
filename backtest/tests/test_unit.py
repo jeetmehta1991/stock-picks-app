@@ -33544,7 +33544,8 @@ def test_b2577_chain_halts_are_reported_cleanup_is_self_and_kill_finds_the_root(
     monkeypatch.setattr(rsc, "ENGINE_HASH_RECORD", oa / "hash.json")
     (tmp_path / "spec_a.json").write_text(_json.dumps({"wave": "wa"}), encoding="utf-8")
     (oa / "wa_wave_summary.json").write_text(_json.dumps({"results": [{"status": "FAILED"}]}), encoding="utf-8")
-    monkeypatch.setattr(_sys, "argv", ["run_serial_chain.py", "--specs", "spec_a.json"])
+    # S6-B3398 (B3139q-r216): a console chain declares itself, else it is refused
+    monkeypatch.setattr(_sys, "argv", ["run_serial_chain.py", "--console", "b2577 fixture", "--specs", "spec_a.json"])
     assert rsc.main() == 1
     assert [e["wave"] for e in rsc.undelivered_halts(halts)] == ["icg_w2", "wa"]
     cleaned = []
@@ -33556,7 +33557,7 @@ def test_b2577_chain_halts_are_reported_cleanup_is_self_and_kill_finds_the_root(
     monkeypatch.setattr(_sys, "argv", ["run_serial_chain.py", "--task-name", "stockpicks_chain_x_1", "--specs", "spec_a.json"])
     assert rsc.main() == 0 and cleaned == ["stockpicks_chain_x_1"]
     assert "CHAIN DONE" in (tmp_path / "chain.log").read_text(encoding="utf-8")
-    monkeypatch.setattr(_sys, "argv", ["run_serial_chain.py", "--specs", "spec_a.json"])
+    monkeypatch.setattr(_sys, "argv", ["run_serial_chain.py", "--console", "b2577 fixture", "--specs", "spec_a.json"])
     assert rsc.main() == 1 and cleaned == ["stockpicks_chain_x_1"], (
         "a console chain is a NEW run: it halts on another run's summary "
         "(B3104), and with no --task-name there is no cleanup")
@@ -33581,6 +33582,7 @@ def test_b2577_chain_halts_are_reported_cleanup_is_self_and_kill_finds_the_root(
     monkeypatch.setattr(ld, "ROOT", tmp_path)
     monkeypatch.setattr(ld, "_register_and_start", fake_register)
     monkeypatch.setattr(ld, "chain_task_running", lambda b: None)
+    monkeypatch.setattr(ld, "launch_path_refusals", lambda **k: [])  # S6-B3398: no git / process read in a fixture
     (oa / "s.json").write_text(_json.dumps({"wave": "wz"}), encoding="utf-8")
     assert ld.launch_chain("b2577t", ["output_audit/s.json"], None, 48) == 0
     cmd_text = (oa / "_b2577t_chain.cmd").read_text(encoding="utf-8")
@@ -46910,7 +46912,8 @@ def test_b3104_run_wave_stamps_identity_and_refuses_a_second_step2_read(
     assert wi.summary_digest(legacy) == j["spec_sha256"], "rebuilt == recorded"
 
     # Step 2: a COMPLETE summary is a spent holdout read
-    s2 = {"wave": "w2", "step": 2, "arms": [{"tag": "b", "env": {}}]}
+    s2 = {"wave": "w2", "step": 2, "arms": [{"tag": "b", "env": {}}],
+          "_generated_by": "scripts/make_spec.py (fixture; S6-B3398 stamps a Step-2 spec)"}
     assert run(s2, "s2.json") == 0
     out2 = oa / "w2_wave_summary.json"
     before = out2.read_bytes()
@@ -55419,6 +55422,7 @@ def test_b3153_detached_tasks_run_hidden(tmp_path, monkeypatch):
     monkeypatch.setattr(ld, "_register_and_start", fake_register)
     monkeypatch.setattr(ld, "chain_task_running", lambda batch: None)
     monkeypatch.setattr(ld, "_run_ps", lambda script: _Done())
+    monkeypatch.setattr(ld, "launch_path_refusals", lambda **k: [])  # S6-B3398: no git / process read in a fixture
     assert ld.launch_chain("bt", ["output_audit/s1_spec.json"], None, 30) == 0
     assert ld.launch("output_audit/s1_spec.json") == 0
     assert ld.selftest() == 1        # the fake scheduler never writes the proof
@@ -76372,3 +76376,276 @@ def test_b3392f_the_engine_refuses_an_explicit_live_fetch_override(monkeypatch):
             rel, word, fetch)
         later = [n.lineno for n in calls if _ast.unparse(n.func) in ("self.load_data", "BacktestEngine")]
         assert later and min(fetch)[0] < min(later), (rel, fetch, later)
+
+
+
+
+# ================================================================ B3139q-r216 S6-B3436: a hold the chain reads itself
+def test_b3436_the_chain_reads_a_hold_file_between_specs_and_launches_nothing(tmp_path, monkeypatch):
+    """S6-B3436 (B3139q-r216, on the owner's 'Address and impletement all open
+    tickets' 2026-11-16): scripts/run_serial_chain.py reads a hold file before
+    deciding each spec - chain_hold_ALL.txt, chain_hold_<chain run id>.txt or
+    chain_hold_<batch>.txt under output_audit - and when one exists it stops
+    through halt(): nothing launched, a HALT record the Stop hook reports, the
+    relaunch the owner's word (CHECKLIST #120). (1) the batch of a task name;
+    (2) the candidates and the first existing one; (3) main() on a fixture
+    chain: with a hold file it launches nothing and records 'HOLD (S6-B3436)'
+    with the held spec; without one the same chain reaches decide (and halts
+    on its FAILED summary, the control). (4) wiring: the read precedes decide
+    in the loop."""
+    import ast as _ast
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import run_serial_chain as rsc
+    import postconfig_landing as pl
+    assert rsc.hold_batch_of("stockpicks_chain_b3139q_lv4s2b_1793899550") == "b3139q_lv4s2b"
+    assert rsc.hold_batch_of("stockpicks_chain_b2574_1") == "b2574"
+    assert rsc.hold_batch_of("console_ab12cd34ef56") is None and rsc.hold_batch_of("") is None
+    c = rsc.hold_candidates("stockpicks_chain_b2574_1", tmp_path)
+    assert [p.name for p in c] == ["chain_hold_ALL.txt", "chain_hold_stockpicks_chain_b2574_1.txt",
+                                   "chain_hold_b2574.txt"]
+    assert all(p.parent == tmp_path / "output_audit" for p in c)
+    assert [p.name for p in rsc.hold_candidates("console_x", tmp_path)] == ["chain_hold_ALL.txt",
+                                                                          "chain_hold_console_x.txt"]
+    oa = tmp_path / "output_audit"
+    oa.mkdir()
+    assert rsc.held_by("stockpicks_chain_b2574_1", tmp_path) is None
+    (oa / "chain_hold_b2574.txt").write_text("owner: hold after wave 2 (sent 2026-11-16T08:22Z)", encoding="utf-8")
+    h = rsc.held_by("stockpicks_chain_b2574_1", tmp_path)
+    assert h.startswith("chain_hold_b2574.txt: owner: hold after wave 2"), h
+    assert rsc.held_by("stockpicks_chain_other_9", tmp_path) is None            # another batch is not held
+    (oa / "chain_hold_ALL.txt").write_text("", encoding="utf-8")
+    assert rsc.held_by("stockpicks_chain_other_9", tmp_path) == "chain_hold_ALL.txt: (empty)"
+    (oa / "chain_hold_ALL.txt").unlink()
+    # (3) main() on a fixture chain
+    halts = tmp_path / "chain_halts.jsonl"
+    monkeypatch.setattr(rsc, "LOG", tmp_path / "chain.log")
+    monkeypatch.setattr(rsc, "HALTS", halts)
+    monkeypatch.setattr(rsc, "ROOT", tmp_path)
+    monkeypatch.setattr(rsc, "ENGINE_HASH_RECORD", oa / "hash.json")
+    monkeypatch.setattr(pl, "toast", lambda t, b: (True, "fake"))
+    launched = []
+
+    class _Probe:
+        returncode, stdout, stderr = 1, "", ""
+
+    def no_launch(cmd, *a, **k):
+        # rsc.subprocess IS the shared module, so other modules' read-only probes (the
+        # watchdog's schtasks /Query on the halt path) arrive here too; only the
+        # chain's own launch path - the pre-leg audit and run_wave - is a launch
+        if any("run_wave.py" in str(x) or "preleg_bar_audit.py" in str(x) for x in (cmd or [])):
+            launched.append(cmd)
+            raise AssertionError("nothing may launch under a hold")
+        return _Probe()
+    monkeypatch.setattr(rsc.subprocess, "run", no_launch)
+    (tmp_path / "spec_a.json").write_text(_j.dumps({"wave": "wa"}), encoding="utf-8")
+    (oa / "wa_wave_summary.json").write_text(_j.dumps({"results": [{"status": "FAILED"}]}), encoding="utf-8")
+    monkeypatch.setattr(_s, "argv", ["run_serial_chain.py", "--task-name", "stockpicks_chain_b2574_1",
+                                     "--specs", "spec_a.json", "spec_b.json"])
+    assert rsc.main() == 1 and launched == []
+    ev = rsc.read_halts(halts)
+    assert len(ev) == 1 and ev[0]["wave"] == "wa" and "HOLD (S6-B3436)" in ev[0]["reason"] \
+        and "chain_hold_b2574.txt" in ev[0]["reason"] and ev[0]["remaining"] == ["spec_a.json", "spec_b.json"], ev
+    assert "HOLD (S6-B3436)" in (tmp_path / "chain.log").read_text(encoding="utf-8")
+    # the control: no hold file - the same chain reaches decide and halts on the FAILED summary
+    (oa / "chain_hold_b2574.txt").unlink()
+    assert rsc.main() == 1
+    ev = rsc.read_halts(halts)
+    assert len(ev) == 2 and "HOLD" not in ev[1]["reason"] and "FAILED" in ev[1]["reason"], ev
+    # (4) wiring: held_by is read before decide, inside the spec loop
+    src = (root / "scripts" / "run_serial_chain.py").read_text(encoding="utf-8")
+    main = next(n for n in _ast.parse(src).body if isinstance(n, _ast.FunctionDef) and n.name == "main")
+    loop = next(n for n in _ast.walk(main) if isinstance(n, _ast.For) and _ast.unparse(n.target) == "spec_path")
+    calls = [n for n in _ast.walk(loop) if isinstance(n, _ast.Call)]
+    hb = [n.lineno for n in calls if _ast.unparse(n.func) == "held_by"]
+    dec = [n.lineno for n in calls if _ast.unparse(n.func) == "_wi.decide"]
+    assert hb and dec and min(hb) < min(dec), (hb, dec)
+
+
+# ================================================================ B3139q-r216 S6-B3398: five launch-path rules refused on the path
+def test_b3398_five_launch_path_rules_are_refused_on_the_launch_path(tmp_path, monkeypatch):
+    """S6-B3398 (B3139q-r216, on the owner's 'Address and impletement all open
+    tickets' 2026-11-16): the five rules the LEVER4 launch kept by hand, now
+    refused where each launch passes. (a) launch_detached: HEAD ahead of
+    origin/main, or git unable to count (fail closed), and a live engine
+    runner - launch() and launch_chain() refuse before any task is registered;
+    (b) run_wave: a Step-2 spec with no make_spec _generated_by stamp, and a
+    live engine runner OUTSIDE its own ancestry (run_wave and its chain are
+    runners themselves, and on Windows each venv launch is a stub plus the real
+    interpreter), both before the launch gate - through injected process
+    tables, never the live one (L843); (c) prelaunch_gate: pool_workers x arms
+    against the box's PHYSICAL cores, an absent pool_workers read as run_wave's
+    default 0, and run_wave.build_manifest writes pool_workers; (d)
+    run_serial_chain: a console chain (no --task-name) is refused unless
+    --console <reason> declares it, logged."""
+    import ast as _ast
+    import json as _j
+    import os as _os
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import launch_detached as ld
+    import run_wave as rw
+    import prelaunch_gate as plg
+    import run_serial_chain as rsc
+    import postconfig_landing as pl
+    # (a) launch_detached: the refusals, then the routing on a fixture tree
+    assert ld.launch_path_refusals(unpushed=0, inflight="none") == []
+    r = ld.launch_path_refusals(unpushed=2, inflight="none")
+    assert len(r) == 1 and "2 commit(s)" in r[0] and "S6-B3398" in r[0]
+    r = ld.launch_path_refusals(unpushed=None, inflight="none")
+    assert len(r) == 1 and "could not count" in r[0]
+    r = ld.launch_path_refusals(unpushed=0, inflight="run_wave:x_spec.json")
+    assert len(r) == 1 and "engine runner is live" in r[0] and "run_wave:x_spec.json" in r[0]
+    assert len(ld.launch_path_refusals(unpushed=0, inflight="unknown")) == 1          # unreadable is live
+    assert len(ld.launch_path_refusals(unpushed=1, inflight="unknown")) == 2
+    (tmp_path / "output_audit").mkdir()
+    (tmp_path / "output_audit" / "s1_spec.json").write_text(_j.dumps({"wave": "w1"}), encoding="utf-8")
+    registered = []
+    monkeypatch.setattr(ld, "ROOT", tmp_path)
+    monkeypatch.setattr(ld, "chain_task_running", lambda batch: None)
+    monkeypatch.setattr(ld, "_register_and_start", lambda *a, **k: registered.append(a))
+    monkeypatch.setattr(ld, "launch_path_refusals", lambda **k: ["LAUNCH REFUSED (S6-B3398): fixture"])
+    assert ld.launch_chain("bt", ["output_audit/s1_spec.json"], None, 30) == 2
+    assert ld.launch("output_audit/s1_spec.json") == 2
+    assert registered == [], "no task may be registered on a refused launch"
+    monkeypatch.undo()
+    src = (root / "scripts" / "launch_detached.py").read_text(encoding="utf-8")
+    tree = _ast.parse(src)
+    for fn in ("launch", "launch_chain"):
+        node = next(n for n in tree.body if isinstance(n, _ast.FunctionDef) and n.name == fn)
+        calls = [n for n in _ast.walk(node) if isinstance(n, _ast.Call)]
+        lp = [n.lineno for n in calls if _ast.unparse(n.func) == "launch_path_refusals"]
+        reg = [n.lineno for n in calls if _ast.unparse(n.func) == "_register_and_start"]
+        assert lp and reg and min(lp) < min(reg), (fn, lp, reg)
+    # (b) run_wave: the Step-2 stamp, and the live-runner read on injected tables
+    assert rw.step2_generated_refusal({"step": 1}) == []
+    assert rw.step2_generated_refusal({"step": 2, "_generated_by": "scripts/make_spec.py (S6-B3120a)"}) == []
+    bad = rw.step2_generated_refusal({"step": 2})
+    assert len(bad) == 1 and "make_spec.py --step 2" in bad[0]
+    assert rw.step2_generated_refusal({"step": 2, "_generated_by": "by hand"})
+    py = "C:/venv/Scripts/python.exe"
+    chain = [  # the chain's own processes: stub + real interpreter at each level
+        (101, [py, "scripts/run_serial_chain.py", "--task-name", "t", "--specs", "a.json"]),
+        (102, [py, "scripts/run_serial_chain.py", "--task-name", "t", "--specs", "a.json"]),
+        (103, [py, "scripts/run_wave.py", "--spec", "a.json"]),
+        (104, [py, "scripts/run_wave.py", "--spec", "a.json"]),
+        (105, [py, "scripts/unrelated.py"]),
+    ]
+    parents = {104: 103, 103: 102, 102: 101, 101: 50}
+    starts = {50: 1.0, 101: 2.0, 102: 3.0, 103: 4.0, 104: 5.0, 105: 2.5}
+    # the walk follows every parent that started before its child, the scheduler's shell (50)
+    # included; only python ROWS are excluded, so a non-python ancestor is harmless
+    assert rw.own_ancestry(104, parents, starts.get) == {104, 103, 102, 101, 50}
+    assert rw.engine_live_refusal(rows=chain, parents=parents, starts=starts, me=104) == [], \
+        "a wave's own ancestry is not another run"
+    other = chain + [(201, [py, "backtest/run_phase1a.py", "--output-dir", "out_x"])]
+    v = rw.engine_live_refusal(rows=other, parents={**parents, 201: 50}, starts={**starts, 201: 2.0}, me=104)
+    assert len(v) == 1 and "run_phase1a:out_x" in v[0], v
+    reused = {**starts, 103: 9.0}        # a 'parent' that started after its child: pid reuse
+    assert rw.own_ancestry(104, parents, reused.get) == {104}
+    assert rw.engine_live_refusal(rows=chain, parents=parents, starts=reused, me=104), \
+        "a walk stopped by pid reuse leaves the chain's processes counted (fail closed)"
+    unread = chain + [(301, None)]
+    v = rw.engine_live_refusal(rows=unread, parents={**parents, 301: 50}, starts={**starts, 301: 2.0}, me=104)
+    assert len(v) == 1 and "unknown(unreadable python pid 301)" in v[0]
+    assert rw.engine_live_refusal(inflight="none") == []
+    assert rw.engine_live_refusal(inflight="unknown(process table unreadable)")
+    rsrc = (root / "scripts" / "run_wave.py").read_text(encoding="utf-8")
+    rmain = next(n for n in _ast.parse(rsrc).body if isinstance(n, _ast.FunctionDef) and n.name == "main")
+    rcalls = [n for n in _ast.walk(rmain) if isinstance(n, _ast.Call)]
+    gen = [n.lineno for n in rcalls if _ast.unparse(n.func) == "step2_generated_refusal"]
+    liv = [n.lineno for n in rcalls if _ast.unparse(n.func) == "engine_live_refusal"]
+    gate = [n.lineno for n in rcalls if _ast.unparse(n.func) == "launch_refusals"]
+    assert gen and liv and gate and max(gen + liv) < min(gate), (gen, liv, gate)
+    # (c) prelaunch_gate + the manifest field
+    assert plg.check_workers_within_cores({"pool_workers": 4, "arms": [{}]}, cores=10) == []
+    assert plg.check_workers_within_cores({"pool_workers": 10, "arms": [{}]}, cores=10) == []
+    v = plg.check_workers_within_cores({"pool_workers": 11, "arms": [{}]}, cores=10)
+    assert len(v) == 1 and "workers 11" in v[0] and "10 given cores" in v[0], v
+    v = plg.check_workers_within_cores({"pool_workers": 6, "arms": [{}, {}]}, cores=10)
+    assert len(v) == 1 and "workers 12" in v[0]
+    assert plg.check_workers_within_cores({"arms": [{}]}, cores=10) == [], "absent = run_wave's default 0"
+    assert plg.check_workers_within_cores({"pool_workers": "x", "arms": [{}]}, cores=10)
+    v = plg.check_workers_within_cores({"pool_workers": 1, "arms": [{}]}, cores=0)
+    assert len(v) == 1 and "unreadable" in v[0], "no core count refuses, never passes (L642)"
+    pc = plg.physical_cores()
+    assert pc is None or 1 <= pc <= (_os.cpu_count() or pc), pc
+    psrc = (root / "scripts" / "prelaunch_gate.py").read_text(encoding="utf-8")
+    pchk = next(n for n in _ast.parse(psrc).body if isinstance(n, _ast.FunctionDef) and n.name == "check")
+    assert any(_ast.unparse(n.func) == "check_workers_within_cores" for n in _ast.walk(pchk) if isinstance(n, _ast.Call))
+    bm = next(n for n in _ast.parse(rsrc).body if isinstance(n, _ast.FunctionDef) and n.name == "build_manifest")
+    keys = {c.value for d in _ast.walk(bm) if isinstance(d, _ast.Dict) for c in d.keys
+            if isinstance(c, _ast.Constant) and isinstance(c.value, str)}
+    assert "pool_workers" in keys, "build_manifest must declare the bound prelaunch_gate checks"
+    # (d) run_serial_chain: a console chain needs --console
+    halts = tmp_path / "chain_halts.jsonl"
+    oa = tmp_path / "output_audit"
+    monkeypatch.setattr(rsc, "LOG", tmp_path / "chain.log")
+    monkeypatch.setattr(rsc, "HALTS", halts)
+    monkeypatch.setattr(rsc, "ROOT", tmp_path)
+    monkeypatch.setattr(rsc, "ENGINE_HASH_RECORD", oa / "hash.json")
+    monkeypatch.setattr(pl, "toast", lambda t, b: (True, "fake"))
+    (tmp_path / "spec_a.json").write_text(_j.dumps({"wave": "wa"}), encoding="utf-8")
+    (oa / "wa_wave_summary.json").write_text(_j.dumps({"results": [{"status": "FAILED"}]}), encoding="utf-8")
+    monkeypatch.setattr(_s, "argv", ["run_serial_chain.py", "--specs", "spec_a.json"])
+    assert rsc.main() == 2 and not halts.exists(), "a console chain without --console is refused before anything"
+    monkeypatch.setattr(_s, "argv", ["run_serial_chain.py", "--console", "a test chain", "--specs", "spec_a.json"])
+    assert rsc.main() == 1                                                             # reaches decide, halts on FAILED
+    log = (tmp_path / "chain.log").read_text(encoding="utf-8")
+    assert "CONSOLE CHAIN accepted" in log and "a test chain" in log
+
+
+# ================================================================ B3139q-r216 S6-B3427: technical gate keys re-derived through their producer
+def test_b3427b_technical_gate_keys_rederive_through_compute_all_signals():
+    """S6-B3427 (B3139q-r216): the spot check's re-derivation leg gains a route
+    for the TECHNICAL gate keys the other replay families sample - through
+    technical.compute_all_signals on the bar window, the previous-bar window
+    as the control - so pivot_r1_breakout's, orb's and smc_bos_continuation's
+    price keys no longer fail closed; the smc_* keys stay uncovered by name.
+    (1) the route set names every uncovered technical key of the four committed
+    LEVER4 spot checks and no smc key; (2) the producer emits each on a
+    SYNTHETIC 300-bar window - the structure is the evidence, never the values
+    - and the previous-bar control can disagree; (3) _same compares booleans by
+    truth and numbers by value; (4) wiring: the main loop routes
+    TECH_PRODUCER_KEYS through _tech_signals with a control."""
+    import ast as _ast
+    import sys as _s
+    from pathlib import Path as _P
+    import numpy as np
+    import pandas as pd
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import spot_check_rederive as scr
+    need = {"gap_up_pct", "price_above_ema_200", "vol_spike_2x", "above_avwap_50low", "above_r1",
+            "below_avwap_50low", "below_s1", "macd_12_26_9_bearish", "macd_12_26_9_bullish", "vol_spike_15x",
+            "below_ema_200", "force_index_cross_dn", "force_index_cross_up", "rsi_14"}
+    assert need <= set(scr.TECH_PRODUCER_KEYS)
+    assert not any(k.startswith("smc_") for k in scr.TECH_PRODUCER_KEYS)
+    assert not (set(scr.TECH_PRODUCER_KEYS) & set(scr.KEY_DERIVERS)) and not (set(scr.TECH_PRODUCER_KEYS) & set(scr.NEWS_KEYS))
+    n = 300
+    idx = pd.bdate_range("2024-01-02", periods=n)
+    t = np.arange(n)
+    close = 100 + 0.05 * t + 3 * np.sin(t / 7.0)
+    df = pd.DataFrame({"open": close - 0.3, "high": close + 1.0, "low": close - 1.0, "close": close,
+                       "volume": 1_000_000 + (t % 9) * 150_000}, index=idx)
+    cache = {}
+    full = scr._tech_signals(cache, ("T", "d", "full"), df)
+    prev = scr._tech_signals(cache, ("T", "d", "prev"), df.iloc[:-1])
+    assert set(scr.TECH_PRODUCER_KEYS) <= set(full), sorted(set(scr.TECH_PRODUCER_KEYS) - set(full))
+    assert len(cache) == 2 and scr._tech_signals(cache, ("T", "d", "full"), df) is full   # cached once per key
+    assert any(not scr._same(full[k], prev[k]) for k in ("rsi_14", "gap_up_pct")), "the control must be able to disagree"
+    assert scr._same(True, True) and scr._same(False, 0) and not scr._same(True, False)
+    assert scr._same(1.00001, 1.0) and not scr._same(1.1, 1.0) and not scr._same(None, 1.0) and not scr._same(1.0, None)
+    src = (root / "scripts" / "spot_check_rederive.py").read_text(encoding="utf-8")
+    main = next(nn for nn in _ast.parse(src).body if isinstance(nn, _ast.FunctionDef) and nn.name == "main")
+    text = _ast.unparse(main)
+    assert "TECH_PRODUCER_KEYS" in text and "_tech_signals(" in text and "w.iloc[:-1]" in text
+    assert "_same(" in text

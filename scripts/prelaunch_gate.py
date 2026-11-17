@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -96,9 +97,75 @@ def advisories(manifest: dict) -> list[str]:
     return out
 
 
+def physical_cores():
+    """S6-B3398 (B3139q-r216): the box's PHYSICAL core count - the runbook's
+    bound ('total workers never exceed physical cores'), read in-process with
+    no PowerShell (the pyramid gate's rule: it must still answer under commit
+    exhaustion): GetLogicalProcessorInformation, one RelationProcessorCore
+    record per core. None when it cannot be read; the caller then falls back
+    to os.cpu_count(), the LOGICAL count, and says so. MEASURED B3139q-r216 on
+    this box: 10 physical, 12 logical (Win32_Processor)."""
+    if os.name != "nt":
+        return None
+    try:
+        import ctypes
+        from ctypes import wintypes
+
+        class _SLPI(ctypes.Structure):
+            _fields_ = [("ProcessorMask", ctypes.c_size_t),
+                        ("Relationship", wintypes.DWORD),
+                        ("_union", ctypes.c_ubyte * 16)]
+        k32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        need = wintypes.DWORD(0)
+        k32.GetLogicalProcessorInformation(None, ctypes.byref(need))
+        n = need.value // ctypes.sizeof(_SLPI)
+        if n <= 0:
+            return None
+        buf = (_SLPI * n)()
+        if not k32.GetLogicalProcessorInformation(buf, ctypes.byref(need)):
+            return None
+        cores = sum(1 for e in buf if e.Relationship == 0)   # RelationProcessorCore
+        return cores or None
+    except Exception:  # noqa: BLE001 - None is the stated fallback, never a pass
+        return None
+
+
+def check_workers_within_cores(manifest: dict, cores=None) -> list[str]:
+    """S6-B3398 (B3139q-r216; runbook census lines 1275 and 2440: 'Total
+    workers never exceed the box's physical cores'): this manifest's
+    pool_workers times its arms against the box's physical cores
+    (physical_cores(), else os.cpu_count() named as the logical fallback).
+    pool_workers ABSENT reads as 0, a sequential run: run_wave passes
+    spec.get('pool_workers', 0) to the engine, so absence is the pool being
+    OFF, not an undeclared bound (L643); run_wave.build_manifest writes the
+    field since this batch. A non-integer value is refused, and so is a box
+    whose core count cannot be read at all (L642). `cores` is the test seam."""
+    if cores is None:
+        phys = physical_cores()
+        cores, basis = (phys, "physical") if phys else (os.cpu_count(), "logical (physical unreadable)")
+    else:
+        basis = "given"
+    pw = manifest.get("pool_workers", 0)
+    try:
+        pw_i = int(pw or 0)
+    except (TypeError, ValueError):
+        return [f"manifest pool_workers={pw!r} is not an integer (S6-B3398)"]
+    arms = len(manifest.get("arms") or []) or 1
+    total = max(1, pw_i) * arms
+    if not cores:
+        return ["the box's core count is unreadable (physical and logical both absent), so the "
+                "workers bound cannot be checked - refused (S6-B3398, L642)"]
+    if total > int(cores):
+        return [f"workers {total} (pool_workers {pw_i} x {arms} arm(s)) exceed the box's "
+                f"{cores} {basis} cores (S6-B3398 / runbook: total workers never exceed physical "
+                "cores; pool=60 on one ticker ran 11.6x slower, L407)"]
+    return []
+
+
 def check(manifest: dict, ledger: dict, tar_sha: str) -> list[str]:
     fails = []
     fails += check_supervisor_and_cap(manifest)   # B2149 run-safety checks
+    fails += check_workers_within_cores(manifest)  # S6-B3398 (B3139q-r216)
     local_run = str(manifest.get("execution", "")).upper() == "LOCAL"
     for k in REQUIRED:
         # B1488: a LOCAL run selects its universe through the tier loader rather than an

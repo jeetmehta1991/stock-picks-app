@@ -142,8 +142,66 @@ if ($t) {{
     return _run_ps(script)
 
 
+# ---------------------------------------------------------------------------
+# S6-B3398 (B3139q-r216, on the owner's 'Address and impletement all open
+# tickets' 2026-11-16): two launch-path rules the LEVER4 launch kept by hand
+# (S6-B1248-LEVER4-GATE-BUDGET's launch row), now refused here - census 1503
+# 'every commit that needs a pyramid is pushed before the launch' and census
+# 1517 'confirm zero pre-existing engine processes before launch, so two runs
+# never share an output path'. Both run before any task is registered.
+# ---------------------------------------------------------------------------
+def unpushed_commits(root=None):
+    """Commits on HEAD that origin/main does not hold (git rev-list --count
+    origin/main..HEAD, against the LOCAL origin ref - no fetch); None when git
+    cannot answer, which the caller reads as unpushed (L642)."""
+    try:
+        r = subprocess.run(["git", "rev-list", "--count", "origin/main..HEAD"],
+                           cwd=str(root or ROOT), capture_output=True, text=True,
+                           check=False)
+        s = (r.stdout or "").strip()
+        return int(s) if r.returncode == 0 and s.isdigit() else None
+    except Exception:  # noqa: BLE001 - an unanswerable question is a refusal
+        return None
+
+
+_LIVE = object()   # the seam's 'not injected' value; None means 'git could not count'
+
+
+def launch_path_refusals(*, unpushed=_LIVE, inflight=None) -> list:
+    """[] when HEAD is pushed and no engine runner is live; else the refusals.
+    `unpushed` (an int, or None for 'could not count') and `inflight` (the
+    pyramid gate's engine-inflight label) are the test seams."""
+    out = []
+    n = unpushed_commits() if unpushed is _LIVE else unpushed
+    if n is None:
+        out.append("LAUNCH REFUSED (S6-B3398 / runbook: every commit that needs a pyramid "
+                   "is pushed before the launch): git could not count HEAD against "
+                   "origin/main - fail closed (L642); fetch, push, and launch again")
+    elif n > 0:
+        out.append(f"LAUNCH REFUSED (S6-B3398 / runbook: every commit that needs a pyramid "
+                   f"is pushed before the launch): {n} commit(s) on HEAD are not on "
+                   "origin/main - push first, so the run's code SHA is the pushed one")
+    if inflight is None:
+        try:
+            import pyramid_gate as _pg
+            inflight = _pg._engine_inflight()
+        except Exception as exc:  # noqa: BLE001 - unreadable is in flight
+            inflight = f"unknown({type(exc).__name__})"
+    if str(inflight).strip() != "none":
+        out.append("LAUNCH REFUSED (S6-B3398 / runbook: confirm zero pre-existing engine "
+                   f"processes before launch): an engine runner is live - {inflight}; two "
+                   "runs must never share an output path")
+    return out
+
+
 def launch(spec_path: str, hardened: bool = False) -> int:
     spec = json.loads((ROOT / spec_path).read_text(encoding="utf-8"))
+    # S6-B3398 (B3139q-r216): pushed HEAD and no live engine runner, before any task
+    _refused = launch_path_refusals()
+    if _refused:
+        for _r in _refused:
+            print(_r)
+        return 2
     name = f"stockpicks_wave_{spec['wave']}_{int(time.time())}"
     log = ROOT / "output_audit" / f"{spec['wave']}_detached.log"
     # S6-B3153: the same command as before, written to a .cmd that the
@@ -225,6 +283,12 @@ def launch_chain(batch: str, specs: list[str], wait_for: str | None,
     running = chain_task_running(batch)
     if running:
         print(f"CHAIN LAUNCH REFUSED: {running} is already Running for batch {batch}")
+        return 2
+    # S6-B3398 (B3139q-r216): pushed HEAD and no live engine runner, before any task
+    _refused = launch_path_refusals()
+    if _refused:
+        for _r in _refused:
+            print(_r)
         return 2
     log = ROOT / "output_audit" / f"{batch}_chain_detached.log"
     cmd = ROOT / "output_audit" / f"_{batch}_chain.cmd"
