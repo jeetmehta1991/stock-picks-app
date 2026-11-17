@@ -1,8 +1,8 @@
 # Table A - rsi_oversold_with_smart_money_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 55a39e45e | commit 55a39e45e at 2026-11-05 11:51:33 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 8dd7d428a | commit 8dd7d428a at 2026-11-16 19:17:17 - a copy without this line, or with a stale stamp, is NOT the current band set
 
-**Lane:** BOTH | **family:** smart_money_sleeve | **status:** NOT-STARTED | **R5 fires:** 2753 (closed fires in the exit cube: 2753 of 2753, S6-B3258) | **surviving fires (T1):** 143 (survives_pct 0.0519)
+**Lane:** BOTH | **family:** smart_money_sleeve | **status:** IN-CAMPAIGN | **R5 fires:** 2753 (closed fires in the exit cube: 2753 of 2753, S6-B3258) | **surviving fires (T1):** 143 (survives_pct 0.0519)
 
 **SPECS entry:** registered in producer_variant_table
 

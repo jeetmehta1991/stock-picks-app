@@ -91,6 +91,144 @@
       "tickets": [
         "S6-B3373"
       ]
+    },
+    {
+      "strategy": "macd_fast_crossover",
+      "opened": "2026-11-05",
+      "ruling_verbatim": "1-5 approve all recs fable mode",
+      "role": "S6-B3423 step (a) offline sprint member (S6-B3249): registered (R1) and offline-graded on the owner's T3 band word - item 2 of the B3139q-r203d close, sent 2026-11-05T12:24:51Z - with its Step-1 list ranked and no holdout read; recorded under S6-B3435 (a), which reads a band word as an opening so the view never names finished work as work to start (L802)",
+      "tickets": [
+        "S6-B3249"
+      ]
+    },
+    {
+      "strategy": "macd_crossover",
+      "opened": "2026-11-05",
+      "ruling_verbatim": "1-5 approve all recs fable mode",
+      "role": "S6-B3423 step (a) offline sprint member (S6-B3249): registered (R1) and offline-graded on the owner's T3 band word - item 2 of the B3139q-r203d close, sent 2026-11-05T12:24:51Z - with its Step-1 list ranked and no holdout read; recorded under S6-B3435 (a), which reads a band word as an opening so the view never names finished work as work to start (L802)",
+      "tickets": [
+        "S6-B3249"
+      ]
+    },
+    {
+      "strategy": "force_index_breakout",
+      "opened": "2026-11-05",
+      "ruling_verbatim": "1-5 approve all recs fable mode",
+      "role": "S6-B3423 step (a) offline sprint member (S6-B3249): registered (R1) and offline-graded on the owner's T3 band word - item 2 of the B3139q-r203d close, sent 2026-11-05T12:24:51Z - with its Step-1 list ranked and no holdout read; recorded under S6-B3435 (a), which reads a band word as an opening so the view never names finished work as work to start (L802)",
+      "tickets": [
+        "S6-B3249"
+      ]
+    },
+    {
+      "strategy": "r1_break_retest",
+      "opened": "2026-11-05",
+      "ruling_verbatim": "1-5 approve all recs fable mode",
+      "role": "S6-B3423 step (a) offline sprint member (S6-B3249): registered (R1) and offline-graded on the owner's T3 band word - item 2 of the B3139q-r203d close, sent 2026-11-05T12:24:51Z - with its Step-1 list ranked and no holdout read; recorded under S6-B3435 (a), which reads a band word as an opening so the view never names finished work as work to start (L802)",
+      "tickets": [
+        "S6-B3249"
+      ]
+    },
+    {
+      "strategy": "macd_bullish_with_smart_money_long",
+      "opened": "2026-11-05",
+      "ruling_verbatim": "1-5 approve all recs fable mode",
+      "role": "S6-B3423 step (a) offline sprint member (S6-B3249): registered (R1) and offline-graded on the owner's T3 band word - item 2 of the B3139q-r203d close, sent 2026-11-05T12:24:51Z - with its Step-1 list ranked and no holdout read; recorded under S6-B3435 (a), which reads a band word as an opening so the view never names finished work as work to start (L802)",
+      "tickets": [
+        "S6-B3249"
+      ]
+    },
+    {
+      "strategy": "mmbm_long",
+      "opened": "2026-11-05",
+      "ruling_verbatim": "1-5 approve all recs fable mode",
+      "role": "S6-B3423 step (a) offline sprint member (S6-B3249): registered (R1) and offline-graded on the owner's T3 band word - item 2 of the B3139q-r203d close, sent 2026-11-05T12:24:51Z - with its Step-1 list ranked and no holdout read; recorded under S6-B3435 (a), which reads a band word as an opening so the view never names finished work as work to start (L802)",
+      "tickets": [
+        "S6-B3249"
+      ]
+    },
+    {
+      "strategy": "rsi_oversold_with_smart_money_long",
+      "opened": "2026-11-05",
+      "ruling_verbatim": "1-5 approve all recs fable mode",
+      "role": "S6-B3423 step (a) offline sprint member (S6-B3249): registered (R1) and offline-graded on the owner's T3 band word - item 2 of the B3139q-r203d close, sent 2026-11-05T12:24:51Z - with its Step-1 list ranked and no holdout read; recorded under S6-B3435 (a), which reads a band word as an opening so the view never names finished work as work to start (L802); its rsi_14 ceiling restored by S6-B3428, which it also waits on",
+      "tickets": [
+        "S6-B3249",
+        "S6-B3428"
+      ]
+    },
+    {
+      "strategy": "news_momentum_long",
+      "opened": "2026-11-05",
+      "ruling_verbatim": "1-5 approve all recs fable mode",
+      "role": "LEVER4 Step-2 arm (S6-B1248-LEVER4-GATE-BUDGET): its engine run released by the owner's word, item 5 of the B3139q-r203d close ('Lift the pause for two engine runs'), sent 2026-11-05T12:24:51Z; recorded under S6-B3435 (a), a launch word read as an opening; its Step 2 landed 2026-11-07 and was read once (FAIL, 5 of 6 live gates); the breadth leg runs on its next landing (S6-B3430)",
+      "tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET",
+        "S6-B3430"
+      ]
+    },
+    {
+      "strategy": "smc_bos_continuation",
+      "opened": "2026-11-05",
+      "ruling_verbatim": "1-5 approve all recs fable mode",
+      "role": "LEVER4 Step-2 arm (S6-B1248-LEVER4-GATE-BUDGET): its engine run released by the owner's word, item 5 of the B3139q-r203d close ('Lift the pause for two engine runs'), sent 2026-11-05T12:24:51Z; recorded under S6-B3435 (a), a launch word read as an opening; the second released run, not yet launched - its launch is the owner's explicit command (an engine run)",
+      "tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET"
+      ]
+    },
+    {
+      "strategy": "pivot_r1_breakout",
+      "opened": "2026-10-27",
+      "ruling_in_substance": "Approve all recs fable mode - the owner's 2026-10-27 re-rule at the true price (39.8-107.9 h) of the r124 close's decision row 'Step 2 at 40-108 h: launch locally now', recorded in the S6-B1248-LEVER4-GATE-BUDGET r129 row",
+      "role": "LEVER4 Step-2 arm (S6-B1248-LEVER4-GATE-BUDGET): launched 2026-10-27T16:58:19Z on that word; its depth leg (the gate budget) was read once and failed 5 of 6 live gates, its breadth leg is ranked (S6-B3335) and a re-read is the owner's word; recorded under S6-B3435 (a)",
+      "tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET",
+        "S6-B3335"
+      ]
+    },
+    {
+      "strategy": "morning_star",
+      "opened": "2026-11-16",
+      "ruling_verbatim": "except for new strategy runs. Address and impletement all open tickets. Test extensively. do not invoke fable mode",
+      "role": "S6-B3423 batch-2 member: registered (R1) at B3139q-r203d and offline-graded at B3139q-r216 on the owner's directive sent 2026-11-16T08:22:37Z, read as the r213 band packet's Yes (a general directive, not a per-strategy band word - said so in the S6-B3423 row); recorded under S6-B3435 (a)",
+      "tickets": [
+        "S6-B3423"
+      ]
+    },
+    {
+      "strategy": "stochrsi_oversold",
+      "opened": "2026-11-16",
+      "ruling_verbatim": "except for new strategy runs. Address and impletement all open tickets. Test extensively. do not invoke fable mode",
+      "role": "S6-B3423 batch-2 member: registered (R1) at B3139q-r203d and offline-graded at B3139q-r216 on the owner's directive sent 2026-11-16T08:22:37Z, read as the r213 band packet's Yes (a general directive, not a per-strategy band word - said so in the S6-B3423 row); recorded under S6-B3435 (a)",
+      "tickets": [
+        "S6-B3423"
+      ]
+    },
+    {
+      "strategy": "m_and_a_target_long",
+      "opened": "2026-11-16",
+      "ruling_verbatim": "except for new strategy runs. Address and impletement all open tickets. Test extensively. do not invoke fable mode",
+      "role": "S6-B3423 batch-2 member: registered (R1) at B3139q-r203d and offline-graded at B3139q-r216 on the owner's directive sent 2026-11-16T08:22:37Z, read as the r213 band packet's Yes (a general directive, not a per-strategy band word - said so in the S6-B3423 row); recorded under S6-B3435 (a)",
+      "tickets": [
+        "S6-B3423"
+      ]
+    },
+    {
+      "strategy": "rsi_oversold",
+      "opened": "2026-11-16",
+      "ruling_verbatim": "except for new strategy runs. Address and impletement all open tickets. Test extensively. do not invoke fable mode",
+      "role": "S6-B3423 batch-2 member: registered (R1) at B3139q-r203d and offline-graded at B3139q-r216 on the owner's directive sent 2026-11-16T08:22:37Z, read as the r213 band packet's Yes (a general directive, not a per-strategy band word - said so in the S6-B3423 row); recorded under S6-B3435 (a)",
+      "tickets": [
+        "S6-B3423"
+      ]
+    },
+    {
+      "strategy": "tema_dema",
+      "opened": "2026-11-16",
+      "ruling_verbatim": "except for new strategy runs. Address and impletement all open tickets. Test extensively. do not invoke fable mode",
+      "role": "S6-B3423 batch-2 member: registered (R1) at B3139q-r203d and offline-graded at B3139q-r216 on the owner's directive sent 2026-11-16T08:22:37Z, read as the r213 band packet's Yes (a general directive, not a per-strategy band word - said so in the S6-B3423 row); recorded under S6-B3435 (a)",
+      "tickets": [
+        "S6-B3423"
+      ]
     }
   ]
 }

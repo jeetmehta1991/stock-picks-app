@@ -1,0 +1,163 @@
+{
+  "strategy": "stochrsi_oversold",
+  "axes": [
+    {
+      "key": "stochrsi_k",
+      "op": "le",
+      "levels": [
+        20.0,
+        15.0,
+        10.0
+      ],
+      "group": null
+    }
+  ],
+  "direction": "long",
+  "basis": "net",
+  "production_levels": [
+    20.0
+  ],
+  "evidence": {
+    "landed_fires": 1050,
+    "coverage": 1.0,
+    "cube_rows": 27300,
+    "unmatched_join_rows": 0,
+    "max_fires_per_day": 14,
+    "candidate_cap": 30,
+    "cap_bypassed_evidence": false,
+    "direction": "long",
+    "basis": "net",
+    "survival_filter": {
+      "applied": true,
+      "fires_after": 1050,
+      "fires_dropped": 0
+    },
+    "truncation_note": "max fires/day 14 <= cap 30: no positive evidence the cap was bypassed. Subsetting is exact only if the cube ran under isolation (backtest.py, _cand_iter's cube_isolation branch)."
+  },
+  "reproduction": 1.0,
+  "cells_total": 3,
+  "cells_graded": 3,
+  "trials_searched": 75,
+  "window": {
+    "is": [
+      "2022-05-05",
+      "2025-05-05"
+    ]
+  },
+  "ranked": [
+    {
+      "levels": [
+        15.0
+      ],
+      "is_trades": 560,
+      "is_cube_rows": 14560,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.336,
+      "exits_evaluated": 25,
+      "npt_excluded": true,
+      "episode": {
+        "top_month": "2024-04",
+        "top_month_share": 0.084,
+        "months": 36,
+        "n": 560,
+        "n_without_top_month": 513,
+        "is_sharpe_without_top_month": 0.317
+      }
+    },
+    {
+      "levels": [
+        20.0
+      ],
+      "is_trades": 754,
+      "is_cube_rows": 19604,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.3,
+      "exits_evaluated": 25,
+      "npt_excluded": true,
+      "episode": {
+        "top_month": "2024-04",
+        "top_month_share": 0.074,
+        "months": 36,
+        "n": 754,
+        "n_without_top_month": 698,
+        "is_sharpe_without_top_month": 0.283
+      }
+    },
+    {
+      "levels": [
+        10.0
+      ],
+      "is_trades": 348,
+      "is_cube_rows": 9048,
+      "best_exit": "earnings_blackout",
+      "is_sharpe": 0.298,
+      "exits_evaluated": 25,
+      "npt_excluded": true,
+      "episode": {
+        "top_month": "2023-08",
+        "top_month_share": 0.098,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 314,
+        "is_sharpe_without_top_month": 0.415
+      }
+    }
+  ],
+  "preregistration_candidate": null,
+  "holdout_read": "NOT FIRED - owner-gated, one shot, against the preregistration_candidate named above",
+  "derive": null,
+  "permutation_null": {
+    "provenance": "SYNTHETIC - rng permutations of the magnitude block across fires; prices the search, never performance",
+    "n_perms": 100,
+    "seed": 13,
+    "null_none_count": 0,
+    "null_max_is_sharpe_quantiles": {
+      "0.5": 0.32,
+      "0.9": 0.412,
+      "0.95": 0.439,
+      "0.99": 0.467
+    },
+    "observed_best_is_sharpe": 0.336,
+    "p_value_best": 0.3564
+  },
+  "preregistration_refusal": "the search's own permutation null prices the best cell at p 0.3564 > 0.2 (the S6-B3206 noise bar) - the surface is noise, nothing to read on the holdout",
+  "multiplicity": {
+    "method": "benjamini-hochberg",
+    "q": 0.1,
+    "searched": 3,
+    "graded": 0,
+    "unpriceable": 0,
+    "no_candidate": 0,
+    "scored_unpriced": 3,
+    "unclassified": 0,
+    "rejected": 0,
+    "threshold": null,
+    "smallest_p": null,
+    "uncorrected_p05": 0,
+    "expected_best_under_null_se": null,
+    "expected_best_if_all_searched_counted_se": 0.6,
+    "report_only": true,
+    "note": "complete partition: graded + unpriceable + no_candidate + unclassified == searched. no_candidate rows produced no candidate to rank and are non-observations; unpriceable rows selected a candidate that could not be scored; scored_unpriced rows WERE graded and carry no p - their significance is established elsewhere, see significance_basis",
+    "reconciles": true,
+    "permutation_null": {
+      "provenance": "SYNTHETIC - rng permutations of the magnitude block across fires; prices the search, never performance",
+      "n_perms": 100,
+      "seed": 13,
+      "null_none_count": 0,
+      "null_max_is_sharpe_quantiles": {
+        "0.5": 0.32,
+        "0.9": 0.412,
+        "0.95": 0.439,
+        "0.99": 0.467
+      },
+      "observed_best_is_sharpe": 0.336,
+      "p_value_best": 0.3564
+    },
+    "significance_basis": "permutation_null",
+    "trials_searched": 75
+  },
+  "generator": "scripts/offline_level_sweep.py",
+  "cube": "output_r5_merged_1_7/trade_exit_detail.csv",
+  "band_ruling_verbatim": "T3-APPROVED 2026-11-16 (owner verbatim 'except for new strategy runs. Address and impletement all open tickets. Test extensively. do not invoke fable mode', sent 2026-11-16T08:22:37Z, on the B3139q-r213 close's batch-2 band packet - the 7 offline depth settings over 4 of the 5 and the 18 long-leg B-rows, recommended Yes; S6-B3423. A general directive read as the packet's Yes, not a per-strategy band word - said so in the ticket row)",
+  "status_stamp_at_run": "8dd7d428a"
+}

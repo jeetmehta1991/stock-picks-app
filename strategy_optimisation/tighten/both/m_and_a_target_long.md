@@ -1,8 +1,8 @@
 # Table A - m_and_a_target_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build ff10274b7 | commit 663067408 at 2026-11-05 07:01:20 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 8dd7d428a | commit 8dd7d428a at 2026-11-16 19:17:17 - a copy without this line, or with a stale stamp, is NOT the current band set
 
-**Lane:** BOTH | **family:** sec_edgar_sleeve | **status:** NOT-STARTED | **R5 fires:** 1023 (closed fires in the exit cube: 1023 of 1023, S6-B3258) | **surviving fires (T1):** 751 (survives_pct 0.7341)
+**Lane:** BOTH | **family:** sec_edgar_sleeve | **status:** IN-CAMPAIGN | **R5 fires:** 1023 (closed fires in the exit cube: 1023 of 1023, S6-B3258) | **surviving fires (T1):** 751 (survives_pct 0.7341)
 
 **SPECS entry:** registered in producer_variant_table
 

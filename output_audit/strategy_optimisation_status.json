@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "37ba09e03",
-    "generated_at": "2026-11-07 13:23:56"
+    "source_commit": "8dd7d428a",
+    "generated_at": "2026-11-16 11:36:21"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -71,11 +71,26 @@
     "avwap_252_breakout",
     "camarilla_r4_breakout",
     "cmf_flip",
+    "force_index_breakout",
+    "m_and_a_target_long",
+    "macd_bullish_with_smart_money_long",
+    "macd_crossover",
+    "macd_fast_crossover",
+    "mmbm_long",
+    "morning_star",
+    "news_momentum_long",
+    "pivot_r1_breakout",
+    "r1_break_retest",
+    "rsi_oversold",
+    "rsi_oversold_with_smart_money_long",
+    "smc_bos_continuation",
     "smc_equal_lows_sweep_long",
     "smc_inverse_fvg",
     "smc_liquidity_sweep_reversal",
     "smc_order_block_bounce",
     "squeeze_breakout",
+    "stochrsi_oversold",
+    "tema_dema",
     "williams_r_oversold"
   ],
   "rows": [
@@ -1951,15 +1966,19 @@
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [],
-      "live_campaign_tickets": [],
+      "tickets": [
+        "S6-B3249"
+      ],
+      "live_campaign_tickets": [
+        "S6-B3249"
+      ],
       "mention_tickets": [
         "S6-B3237",
         "S6-B3249"
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "gap_and_go_long",
@@ -2506,7 +2525,9 @@
         "S6-B2810b",
         "S6-B3221",
         "S6-B3305",
-        "S6-B3308"
+        "S6-B3308",
+        "S6-B3441",
+        "S6-B3443"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -3622,8 +3643,12 @@
       "tightenable_keys": {
         "po3_accum_range_pct": 1.0
       },
-      "tickets": [],
-      "live_campaign_tickets": [],
+      "tickets": [
+        "S6-B3423"
+      ],
+      "live_campaign_tickets": [
+        "S6-B3423"
+      ],
       "mention_tickets": [
         "S6-B3305",
         "S6-B3308",
@@ -3631,7 +3656,7 @@
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "macd_bullish_with_smart_money_long",
@@ -3658,15 +3683,19 @@
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [],
-      "live_campaign_tickets": [],
+      "tickets": [
+        "S6-B3249"
+      ],
+      "live_campaign_tickets": [
+        "S6-B3249"
+      ],
       "mention_tickets": [
         "S6-B2810b",
         "S6-B3249"
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "macd_crossover",
@@ -3695,15 +3724,19 @@
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [],
-      "live_campaign_tickets": [],
+      "tickets": [
+        "S6-B3249"
+      ],
+      "live_campaign_tickets": [
+        "S6-B3249"
+      ],
       "mention_tickets": [
         "S6-B3249",
         "S6-B3397"
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "macd_crossover_short",
@@ -3766,8 +3799,12 @@
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [],
-      "live_campaign_tickets": [],
+      "tickets": [
+        "S6-B3249"
+      ],
+      "live_campaign_tickets": [
+        "S6-B3249"
+      ],
       "mention_tickets": [
         "S6-B2418",
         "S6-B3237",
@@ -3776,7 +3813,7 @@
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "macd_ichimoku",
@@ -3948,8 +3985,12 @@
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [],
-      "live_campaign_tickets": [],
+      "tickets": [
+        "S6-B3249"
+      ],
+      "live_campaign_tickets": [
+        "S6-B3249"
+      ],
       "mention_tickets": [
         "S6-B1248-LEVER3-STATE-EVENT-SWEEP",
         "S6-B2810b",
@@ -3958,7 +3999,7 @@
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "mmsm_short",
@@ -4058,8 +4099,12 @@
         "rsi_14": 1.0,
         "squeeze_momentum": 1.0
       },
-      "tickets": [],
-      "live_campaign_tickets": [],
+      "tickets": [
+        "S6-B3423"
+      ],
+      "live_campaign_tickets": [
+        "S6-B3423"
+      ],
       "mention_tickets": [
         "S6-B1248-LEVER5-PRODUCER-TOLERANCE",
         "S6-B2822c",
@@ -4075,7 +4120,7 @@
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "naked_poc_retest_long",
@@ -4172,8 +4217,14 @@
         "news_sentiment_5d": 1.0,
         "news_volume_zscore_5d": 1.0
       },
-      "tickets": [],
-      "live_campaign_tickets": [],
+      "tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET",
+        "S6-B3430"
+      ],
+      "live_campaign_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET",
+        "S6-B3430"
+      ],
       "mention_tickets": [
         "S6-B1248-LEVER4-GATE-BUDGET",
         "S6-B3221",
@@ -4194,11 +4245,17 @@
         "S6-B3423",
         "S6-B3427",
         "S6-B3430",
-        "S6-B3432"
+        "S6-B3432",
+        "S6-B3438",
+        "S6-B3440",
+        "S6-B3441",
+        "S6-B3442",
+        "S6-B3443",
+        "S6-B3447"
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "news_momentum_short",
@@ -4231,7 +4288,10 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B3227"
+        "S6-B3227",
+        "S6-B3440",
+        "S6-B3441",
+        "S6-B3443"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -4270,7 +4330,10 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B1248-LEVER4-GATE-BUDGET"
+        "S6-B1248-LEVER4-GATE-BUDGET",
+        "S6-B3441",
+        "S6-B3443",
+        "S6-B3445"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -4310,7 +4373,10 @@
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B3221",
-        "S6-B3227"
+        "S6-B3227",
+        "S6-B3441",
+        "S6-B3443",
+        "S6-B3445"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -4349,7 +4415,9 @@
       "mention_tickets": [
         "S6-B3142",
         "S6-B3223",
-        "S6-B3253"
+        "S6-B3253",
+        "S6-B3441",
+        "S6-B3443"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -4386,7 +4454,9 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B3253"
+        "S6-B3253",
+        "S6-B3441",
+        "S6-B3443"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -4410,7 +4480,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3441"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -4975,8 +5047,14 @@
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
-      "live_campaign_tickets": [],
+      "tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET",
+        "S6-B3335"
+      ],
+      "live_campaign_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET",
+        "S6-B3335"
+      ],
       "mention_tickets": [
         "S6-B1248-LEVER4-GATE-BUDGET",
         "S6-B1250-ENG11-POOL-PANEL-PERF",
@@ -4997,7 +5075,7 @@
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "pivot_r2_continuation",
@@ -5743,8 +5821,12 @@
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [],
-      "live_campaign_tickets": [],
+      "tickets": [
+        "S6-B3249"
+      ],
+      "live_campaign_tickets": [
+        "S6-B3249"
+      ],
       "mention_tickets": [
         "S6-B1248-LEVER4-GATE-BUDGET",
         "S6-B2418",
@@ -5756,7 +5838,7 @@
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "risk_off_bond_equity_short",
@@ -5980,8 +6062,12 @@
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [],
-      "live_campaign_tickets": [],
+      "tickets": [
+        "S6-B3423"
+      ],
+      "live_campaign_tickets": [
+        "S6-B3423"
+      ],
       "mention_tickets": [
         "S6-B2383",
         "S6-B2421",
@@ -5993,7 +6079,7 @@
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "rsi_oversold_with_smart_money_long",
@@ -6022,8 +6108,13 @@
       "tightenable_keys": {
         "rsi_14": 1.0
       },
-      "tickets": [],
-      "live_campaign_tickets": [],
+      "tickets": [
+        "S6-B3249",
+        "S6-B3428"
+      ],
+      "live_campaign_tickets": [
+        "S6-B3249"
+      ],
       "mention_tickets": [
         "S6-B2418",
         "S6-B2645b",
@@ -6034,7 +6125,7 @@
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "rsi_volume_200ema",
@@ -6229,8 +6320,12 @@
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
-      "live_campaign_tickets": [],
+      "tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET"
+      ],
+      "live_campaign_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET"
+      ],
       "mention_tickets": [
         "S6-B1248-LEVER4-GATE-BUDGET",
         "S6-B2756",
@@ -6245,11 +6340,12 @@
         "S6-B3423",
         "S6-B3427",
         "S6-B3430",
-        "S6-B3432"
+        "S6-B3432",
+        "S6-B3438"
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "smc_bos_retest_entry",
@@ -7261,7 +7357,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B3429"
+        "S6-B3429",
+        "S6-B3441"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -7367,8 +7464,12 @@
       "tightenable_keys": {
         "rsi_14": 1.0
       },
-      "tickets": [],
-      "live_campaign_tickets": [],
+      "tickets": [
+        "S6-B3423"
+      ],
+      "live_campaign_tickets": [
+        "S6-B3423"
+      ],
       "mention_tickets": [
         "S6-B1248-LEVER4-GATE-BUDGET",
         "S6-B3189",
@@ -7380,7 +7481,7 @@
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "supertrend_ichimoku_adx",
@@ -7514,8 +7615,12 @@
       "tightenable_keys": {
         "ao": 1.0
       },
-      "tickets": [],
-      "live_campaign_tickets": [],
+      "tickets": [
+        "S6-B3423"
+      ],
+      "live_campaign_tickets": [
+        "S6-B3423"
+      ],
       "mention_tickets": [
         "S6-B3237",
         "S6-B3305",
@@ -7524,7 +7629,7 @@
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "three_black_crows_short",

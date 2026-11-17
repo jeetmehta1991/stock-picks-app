@@ -25260,6 +25260,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "S6-B3410 (a): one full pyramid per 3 turns; pre-gate rides between"),
         ("the new scan/pin/mechanism batches into ONE enforcement batch per",
          "S6-B3410 (b): BATCHED mechanism under a NAMED ticket; members 1-4 same-turn"),
+        # B3139q-r216 / S6-B3425 (b): a no-.py commit rides without spending a
+        # ride; its pre-gate is still required. Pins the operative clause.
+        ("a commit staging no engine or script .py spends no ride",
+         "S6-B3425 (b): a doc/test/record commit spends no ride; its pre-gate still required"),
         ("READ THE VERIFIER'S UNMAPPED OR FAILED BAND AS CAREFULLY AS ITS MATCHED ONE",
          "B3139q-r42/L902: a verdict carried past its mapped rows - the 13F Date column's second meaning sat in ay's UNMAPPED band"),
         # B2851: the L805 tripwire row - an owner catch on a locked
@@ -26454,7 +26458,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 374 -> 375 at B3139q-r166 (L1005's working-directory row; same call).
     # 375 -> 377 at B3139q-r170 (the two S6-B3410 cadence fragments).
     # 377 -> 378 at S6-B3424 (the process-diet fragment).
-    assert len(gutted) == 378, gutted
+    assert len(gutted) == 379, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -35284,6 +35288,33 @@ def test_b3410_c6_stale_stamp_rides_a_passing_pregate_three_turns(tmp_path, monk
         encoding="utf-8")
     monkeypatch.setattr(pf, "_pregate_verdict", lambda: "NONE")
     assert pf.check_pyramid_stamp([py]) == []
+
+    # (g) S6-B3425 (b) (B3139q-r216, owner 'implement all open tickets'
+    # 2026-11-16): a commit staging NO engine or script .py rides a passing
+    # pre-gate WITHOUT spending a ride - a stale stamp, the budget already
+    # exhausted, a pinned root .md staged alone -> passes and the ledger is
+    # unchanged; the same tree with a .py staged is still OWED, and a FAILED
+    # pre-gate still refuses the .md-only commit
+    (tmp_path / ".pyramid_stamp").write_text(
+        json.dumps({"green": True, "timestamp": time.time() - 9999}),
+        encoding="utf-8")
+    assert _ride("2026-11-02T00:01:00Z") == [] and _ride("2026-11-02T01:01:00Z") == []
+    doc = tmp_path / "CHECKLIST.md"
+    doc.write_text("# x\n", encoding="utf-8")
+    before = (tmp_path / ".pyramid_rides").read_text(encoding="utf-8")
+    monkeypatch.setattr(pf, "_pregate_verdict",
+                        lambda: "PASSED on this tree (5 tests, 2026-11-02T02:01:00Z)")
+    (tmp_path / ".pregate_stamp").write_text(
+        json.dumps({"utc": "2026-11-02T02:01:00Z", "selected": 5, "pytest_exit": 0}),
+        encoding="utf-8")
+    assert pf.check_pyramid_stamp([doc]) == []
+    assert (tmp_path / ".pyramid_rides").read_text(encoding="utf-8") == before
+    v = pf.check_pyramid_stamp([py])
+    assert v and "OWED" in v[0], v
+    monkeypatch.setattr(pf, "_pregate_verdict",
+                        lambda: "FAILED on this tree (pytest exit 1, 5 tests)")
+    v = pf.check_pyramid_stamp([doc])
+    assert v and "AFTER" in v[0], v
 
 
 def _b2615_synthetic_ohlcv(n_bars: int, start="2024-01-02"):
@@ -60498,7 +60529,9 @@ def test_b3232_long_shortlist_reads_in_sample_only_and_open_longs():
                 1.0 if r["long_survival_unmeasured_keys"] else r["long_survival_r5"])
             assert abs(r["projected_step1_fires_long"] - want) <= 0.1, (r, want)
             asym += r["long_survival_r5"] != v["survives_pct"]
-    assert asym >= 10, asym  # 13 at B3139q-r82: rows with R5 fires both ways (the r80 probe's 12 counted registry duals)
+    # B3139q-r216: 8 after S6-B3435 (a) moved 15 strategies out of the open population (13 at
+    # B3139q-r82); a vacuity floor on a live population, margin 3 as before
+    assert asym >= 5, asym  # 13 at B3139q-r82: rows with R5 fires both ways (the r80 probe's 12 counted registry duals)
     # the status view's per-side record agrees with its total on every fired
     # row: side denominators sum to r5_fires, and the fire-weighted mean of
     # the side survivals is survives_pct to rounding
@@ -75809,3 +75842,175 @@ def test_b3443_e2_price_report_has_no_sentiment_weight_and_count_spans_7_dates(t
     assert out["news_bullish_pct"] == 0.0 and out["news_bearish_pct"] == 0.5, out
     assert out["news_article_count"] == 3, out
     assert out["news_count_5d"] == 3, out
+
+
+
+# ================================================================ B3139q-r216 S6-B3438: the supervisor's hard kill disarms once the day loop returns
+def test_b3438_supervisor_hard_kill_disarms_once_the_day_loop_returns(tmp_path):
+    """S6-B3438 (B3139q-r216): the supervisor's hard-kill backstop checks elapsed
+    time only, and it killed news_momentum_long's last Step-2 leg 76 minutes into
+    the cube replay - the day loop had finished at 15:40Z, inside the cap, and
+    the kill landed at 4.76 h active (cap 4.5 h + 900 s grace). The backstop's
+    own comment says it exists to hard-kill a DAY that hangs, so run() marks the
+    day loop's return (_day_loop_done) and the supervisor disarms the kill from
+    there while the heartbeat continues. Arms: (a) BEHAVIOUR, the test_b2148
+    harness with the flag set - a 3 s cap, 2 s grace and an 8 s 'replay' - the
+    process survives past cap + grace and exits 0, and its heartbeat is still
+    written; test_b2148 beside it is the must-kill control (same harness, no
+    flag, exit 1); (b) WIRING, run() sets the flag after the day loop's last
+    per-day bookkeeping and before the open trades are finalized, so the replay
+    and the save are the uncapped region and the day loop is not."""
+    import inspect as _ins
+    import json as _j
+    import subprocess as _sp
+    import sys as _sys
+    import textwrap as _tw
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    out = tmp_path / "supervised_done"
+    out.mkdir()
+    prog = _tw.dedent(f"""
+        import sys, time
+        sys.path.insert(0, r"{root}")
+        from backtest.engine.backtest import BacktestEngine
+        eng = BacktestEngine.__new__(BacktestEngine)
+        eng.max_run_hours = 3.0 / 3600.0        # 3 seconds
+        eng.output_dir = r"{out}"
+        from backtest.engine.exit_manager import OpenTrade
+        from datetime import date as _d
+        eng.closed_trades = []
+        eng.open_trades = [OpenTrade(
+            ticker="AAA", entry_date=_d(2024, 6, 3), entry_price=100.0,
+            direction="long", strategy="s", category="c", sector="t",
+            initial_stop=90.0, trailing_stop=90.0, highest_close=101.0,
+            regime_at_entry="bull")]
+        eng._run_start_time = time.time()
+        eng._last_sim_day_index, eng._last_sim_date = 7, "2024-06-03"
+        eng._total_sim_days = 250
+        eng._last_universe = ["AAA", "BBB"]
+        eng.supervisor_interval_s = 0.5
+        eng.supervisor_grace_s = 2.0
+        eng._last_completed_day, eng._day_in_progress = 7, None
+        eng._day_loop_done = True               # run() sets this after the loop
+        eng._start_run_supervisor()
+        # the 'replay': longer than cap + grace (5 s) - killed before S6-B3438
+        time.sleep(8)
+        print("NOT_KILLED")
+    """)
+    r = _sp.run([_sys.executable, "-c", prog], capture_output=True, text=True,
+                timeout=90)
+    assert "NOT_KILLED" in r.stdout, (
+        "the supervisor killed a run whose day loop had RETURNED - the S6-B3438 "
+        f"shape (rc {r.returncode}): {r.stderr[-600:]}")
+    assert r.returncode == 0, r.returncode
+    hb = out / "run_heartbeat.json"
+    assert hb.exists(), "the heartbeat must continue while the kill is disarmed"
+    assert _j.loads(hb.read_text())["source"] == "supervisor_thread"
+
+    # (b) wiring: the flag is set in run() after the per-day bookkeeping and
+    # before the finalize, and the supervisor reads exactly that flag
+    from backtest.engine.backtest import BacktestEngine as _BE
+    run_src = _ins.getsource(_BE.run)
+    i_loop_end = run_src.index("self._day_in_progress = None")
+    i_flag = run_src.index("self._day_loop_done = True")
+    i_fin = run_src.index("self._finalize_open_trades()")
+    assert i_loop_end < i_flag < i_fin, (i_loop_end, i_flag, i_fin)
+    sup = _ins.getsource(_BE._start_run_supervisor)
+    assert 'getattr(self, "_day_loop_done", False)' in sup
+    # the disarm precedes the kill decision, which stays as test_b2502 pins it
+    assert sup.index('getattr(self, "_day_loop_done", False)') < sup.index(
+        "_why = self.kill_decision(_el, _cr_h, self.supervisor_kill_cap(")
+
+
+
+# ================================================================ B3139q-r216 S6-B3423: batch 2 graded offline on the owner's directive
+def test_b3423_batch2_graded_offline_and_tema_buffer_derived():
+    """S6-B3423 (B3139q-r216): the batch-2 band packet (morning_star,
+    stochrsi_oversold, m_and_a_target_long, rsi_oversold, tema_dema) graded
+    offline on the owner's 'except for new strategy runs. Address and
+    impletement all open tickets. Test extensively. do not invoke fable mode'
+    (sent 2026-11-16T08:22:37Z), read as the r213 packet's recommended Yes
+    and quoted verbatim on every artifact. tema_dema's P5 buffer has no
+    persisted key: scripts/tema_derived.py recovers the close as vwap x
+    (1 + pct_from_vwap / 100) against the persisted tema and writes
+    tema_buffer = close / tema - 1, so a long fire survives buffer b iff
+    tema_buffer > b (at b = 0.0 the production gate itself). Arms: the
+    derivation on fixtures (a bar 1.5 pct above tema clears 0.0 and 0.01 but
+    not 0.02; a bar under tema clears nothing, matching the boolean gate; None
+    on a missing input or a non-positive tema); the spec declares the derived
+    key; the 5 committed NET long breadth grids and 7 depth surfaces each
+    carry the 2026-11-16 ruling, the survival filter, a 1.0 reproduction of
+    production, every cell graded, and no holdout read; the buffer surface
+    derives through tema_derived.py."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import tema_derived as td
+    from producer_variant_table import SPECS_PHASE0, validate_spec
+    base = {"vwap": 100.0, "tema": 100.0}
+    up = td.derive({**base, "pct_from_vwap": 1.5})                 # close 101.5
+    assert up["tema_buffer"] == pytest.approx(0.015)
+    assert up["tema_buffer"] > 0.0 and up["tema_buffer"] > 0.01 and not up["tema_buffer"] > 0.02
+    for pfv in (-0.2, 0.2):                                        # just under, just over tema
+        close = 100.0 * (1 + pfv / 100.0)
+        assert (td.derive({**base, "pct_from_vwap": pfv})["tema_buffer"] > 0.0) == (close > 100.0)
+    assert td.derive({"vwap": 100.0, "pct_from_vwap": 1.0})["tema_buffer"] is None
+    assert td.derive({**base, "tema": 0.0, "pct_from_vwap": 1.0})["tema_buffer"] is None
+    assert td.derive({**base, "tema": "x", "pct_from_vwap": 1.0})["tema_buffer"] is None
+    assert td.KEYS == ("vwap", "pct_from_vwap", "tema")
+    assert "tema_buffer" not in {"vwap", "pct_from_vwap", "tema"} and up["vwap"] == 100.0  # a copy, inputs kept
+
+    e = SPECS_PHASE0["tema_dema"]
+    assert validate_spec(e) == [], validate_spec(e)
+    p = {x["id"]: x for x in e["params"]}
+    assert p["P5"]["free_band"] == p["P5"]["band"] == [0.0, 0.01, 0.02, 0.03]
+    assert p["P5"]["signal_keys"] == ["tema_buffer"] and p["P5"]["production"] == 0.0
+    assert p["P8"]["signal_keys"] == ["ao"] and p["P8"]["band"][0] == 2.866
+
+    oa = root / "output_audit"
+    ruling = "T3-APPROVED 2026-11-16 (owner verbatim 'except for new strategy runs. Address and impletement all open tickets."
+    names = ["morning_star", "stochrsi_oversold", "m_and_a_target_long", "rsi_oversold", "tema_dema"]
+    for n in names:
+        b = _j.loads((oa / f"b3423_{n}_breadth_net_long.json").read_text(encoding="utf-8"))
+        assert b["strategy"] == n and b["leg"] == "long" and b["basis"] == "net" and b["survival"] is True
+        assert b["band_ruling_verbatim"].startswith(ruling) and "S6-B3423" in b["band_ruling_verbatim"]
+        rep = b["reproduction"]                                     # the base is the leg's own production cell
+        assert isinstance(rep["base_is_sharpe"], float) and rep["base_is_n"] >= 1, (n, rep)
+        assert b["trials"] >= 1 and 1 <= len(b["step1_ranking"]) <= b["graded"] <= b["trials"]
+        assert isinstance(b["skipped_axes"], list) and b["status_stamp_at_run"], n
+        for sk in b["skipped_axes"]:            # an axis under the coverage floor is skipped by name
+            assert sk["coverage"] < b["min_coverage"], (n, sk)
+    surfaces = {
+        "b3423_morning_star_long_net_step1_rsi14_surface.json": ("morning_star", "rsi_14", None),
+        "b3423_morning_star_long_net_step1_squeeze_surface.json": ("morning_star", "squeeze_momentum", None),
+        "b3423_stochrsi_oversold_long_net_step1_k_surface.json": ("stochrsi_oversold", "stochrsi_k", None),
+        "b3423_stochrsi_oversold_long_net_step1_rsi14_surface.json": ("stochrsi_oversold", "rsi_14", None),
+        "b3423_m_and_a_target_long_net_step1_accum_surface.json": ("m_and_a_target_long", "po3_accum_range_pct", None),
+        "b3423_tema_dema_long_net_step1_buffer_surface.json": ("tema_dema", "tema_buffer", "tema_derived.py"),
+        "b3423_tema_dema_long_net_step1_ao_surface.json": ("tema_dema", "ao", None),
+    }
+    for fn, (strat, key, derive) in surfaces.items():
+        d = _j.loads((oa / fn).read_text(encoding="utf-8"))
+        # direction: the sweep records 'long' where --direction was passed; m_and_a_target_long
+        # is long-only and its sweep ran without it, recording None (the whole cube is its long leg)
+        assert d["strategy"] == strat and d["direction"] in ("long", None) and d["basis"] == "net", fn
+        if strat == "m_and_a_target_long":
+            assert d["direction"] is None, fn
+        else:
+            assert d["direction"] == "long", fn
+        assert d["band_ruling_verbatim"].startswith(ruling), fn
+        assert d["reproduction"] == 1.0, (fn, d["reproduction"])
+        assert d["cells_graded"] == d["cells_total"] >= 1, fn
+        assert [a["key"] for a in d["axes"]] == [key], fn
+        assert d["evidence"]["survival_filter"]["applied"] is True, fn
+        assert str(d["holdout_read"]).startswith("NOT FIRED"), fn
+        assert all(isinstance(c.get("episode"), dict) for c in d["ranked"]), fn
+        if derive:
+            assert d["derive"]["path"].endswith(derive) and len(d["derive"]["sha256"]) == 64, fn
+        else:
+            assert d["derive"] is None, fn

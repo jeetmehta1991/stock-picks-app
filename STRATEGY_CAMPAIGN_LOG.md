@@ -3065,7 +3065,44 @@ ticket holds a ranked Step-1 list - how the view should show that work is the ow
   m_and_a_target_long / rsi_oversold (tema_dema, morning_star and m_and_a_target_long changed since R5,
   so every grid runs --survival). stochrsi_oversold's cross-up guard (k < 80) cannot bind on the long
   leg, where k < 20 already does, so it is held, not an axis.
-- **Waits on:** the owner's T3 words on batch 2 - the band packet (S6-B3423).
+- **Waits on:** the owner's T3 words on batch 2 - the band packet (S6-B3423). RULED 2026-11-16 - see Q.5.
+
+### Q.5 Batch 2 - graded offline on the owner's 2026-11-16 word (B3139q-r216; S6-B3423)
+
+- **The word:** the owner's 'except for new strategy runs. Address and impletement all open tickets.
+  Test extensively. do not invoke fable mode' (sent 2026-11-16T08:22:37Z), read as the Yes to the
+  r213 close's batch-2 band packet (7 offline depth settings over 4 of the 5, 18 B-row candidates,
+  recommended Yes). It is a general directive, not a per-strategy band word: every artifact quotes it
+  verbatim and says so. The status view was rebuilt at HEAD 8dd7d428a before any grid ran
+  (step1_gates.require_fresh_status), and every grid ran with the survival filter.
+- **Breadth (long leg, NET, 100-permutation joint null; every base reproduces its production cell,
+  every best cell beats all 100 permutations):** morning_star - rank 1 sector_weakest_rs <= -0.0878 @
+  class_time_stop, IS Sharpe 2.021, ci_lo 1.095, n 165, top month 23.6 pct (1.517 without it);
+  stochrsi_oversold - vix_percentile >= 0.9167 @ time_stop_10d, IS 1.774, ci_lo 0.949, n 153, top
+  month 20.9 pct (1.332 without); m_and_a_target_long - rank 1 gold_silver_20d_pct_change >= 0.1035 @
+  regime_flip, IS 3.477, ci_lo 2.706, n 120, but 85.8 pct of its trades in 2025-04 (2.265 without) -
+  the one-episode case the packet stated; first row under a 30 pct month share ppo_signal <= -2.0092 @
+  regime_flip, IS 1.495, ci_lo 1.013, n 225; rsi_oversold - rank 1 is_january @ class_time_stop, IS
+  1.656, ci_lo 0.623, n 134, 85.1 pct in 2024-01 (0.462 without); first calm row
+  cot_ndx_mmoney_pctile_3y >= 0.7518 @ r_multiple_2r, IS 1.617, ci_lo 0.467, n 140; tema_dema - rank 1
+  gold_silver_20d_pct_change >= 0.0812 @ time_stop_10d, IS 2.966, ci_lo 2.088, n 147, 59.2 pct in
+  2025-04 (1.941 without); first calm row vix_value >= 24.72 @ regime_flip, IS 1.295, ci_lo 0.872,
+  n 288. Trials 416 / 208 / 520 / 234 / 312 (stochrsi_oversold's monthly_bias_bull skipped at
+  coverage 0.958).
+- **Depth (7 sweeps, reproduction 1.0 each, every cell graded):** 3 pre-registration candidates -
+  m_and_a_target_long po3_accum_range_pct >= 0.1559 @ regime_flip (IS 1.902, n 128, null p 0.0099;
+  46.9 pct of its trades in 2025-04), stochrsi_oversold rsi_14 <= 39.598 @ earnings_blackout (IS 0.625,
+  n 159, p 0.0297), tema_dema ao <= -6.71 @ class_time_stop (IS 0.868, n 196, p 0.1386); 4 refused as
+  noise by their own null above the 0.2 bar - morning_star rsi_14 (0.4158) and squeeze_momentum
+  (0.703), stochrsi_oversold stochrsi_k (0.3564), tema_dema's derived TEMA buffer (0.2871;
+  scripts/tema_derived.py recovers the close as vwap x (1 + pct_from_vwap / 100) against the persisted
+  tema, the camarilla precedent).
+- **Register:** the five opened 2026-11-16 under S6-B3423 in output_audit/owner_campaign_opens.json
+  (S6-B3435 (a)), so the view reads them IN-CAMPAIGN; no holdout read, no engine run.
+- **Waits on:** step 5, the holdout-read packet - every survivor with its pre-registered line, one
+  read per config on the owner's word. The candidates are the 3 depth lines above and, per strategy,
+  the breadth row the owner picks (the rank-1 rows of m_and_a_target_long, rsi_oversold and tema_dema
+  are one-episode; their first calm rows are listed beside them).
 
 ## R. LEVER4 GATE-BUDGET PROGRAMME (four condition-stacked long sides - S6-B1248-LEVER4-GATE-BUDGET)
 

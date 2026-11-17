@@ -9167,6 +9167,7 @@ SPECS_PHASE0.update({'stochrsi_oversold': {'formula': '\n'
                           {'id': 'P5',
                            'producer': 'technical.py compute_dema_tema',
                            'param': 'buffer above TEMA (LONG)',
+                           'signal_keys': ['tema_buffer'],   # S6-B3423: scripts/tema_derived.py
                            'production': 0.0,
                            'band': [0.0, 0.01, 0.02, 0.03],
                            'free_band': [0.0, 0.01, 0.02, 0.03],

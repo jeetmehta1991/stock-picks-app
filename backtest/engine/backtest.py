@@ -1166,6 +1166,21 @@ class BacktestEngine:
                                 self.max_run_hours, getattr(
                                     self, "supervisor_grace_s", SUPERVISOR_GRACE_S)),
                             SUPERVISOR_HARD_CEILING_H)
+                    # S6-B3438 (B3139q-r216): once run() has set _day_loop_done
+                    # the backstop has nothing left to guard - a hang inside the
+                    # day loop is the only case it exists for - so the kill is
+                    # DISARMED and the heartbeat alone continues. Before this,
+                    # the replay and the battery of a leg that finished its
+                    # 1,003 days inside the cap were killed at cap + grace.
+                    if getattr(self, "_day_loop_done", False):
+                        if not getattr(self, "_kill_disarmed_logged", False):
+                            self._kill_disarmed_logged = True
+                            logger.info(
+                                "S6-B3438 SUPERVISOR: the day loop returned - the "
+                                "hard-kill backstop is DISARMED for the cube replay "
+                                "and the save (it exists to kill a day that hangs); "
+                                "the heartbeat continues")
+                        continue
                     _why = self.kill_decision(_el, _cr_h, self.supervisor_kill_cap(
                         self.max_run_hours,
                         getattr(self, "supervisor_grace_s", SUPERVISOR_GRACE_S)))
@@ -2069,6 +2084,12 @@ class BacktestEngine:
             # cross-thread snapshot from pairing a finished day with an older one.
             self._last_completed_day = i
             self._day_in_progress = None
+        # S6-B3438 (B3139q-r216): the day loop has RETURNED - the supervisor's
+        # hard-kill backstop exists to kill a day that hangs, so it is disarmed
+        # from here; the cube replay and the save run uncapped (MEASURED on
+        # news_momentum_long's last leg: the kill landed at 4.76 h active,
+        # 76 minutes into the replay, with the day loop finished at 15:40Z).
+        self._day_loop_done = True
 
         # BUG-29 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 8 2026-05-10:
         # Force-close any remaining open trades at last available close price so

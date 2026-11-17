@@ -320,7 +320,7 @@ when 4 were (output_audit/b3194_campaign_classification.json); they now come fro
 **AN OWNER-OPENED CAMPAIGN IS RECORDED THE TURN THE OWNER OPENS IT (S6-B3194, owner 'A approved'
 2026-10-19).** Append a record to `output_audit/owner_campaign_opens.json` - `strategy`, `opened`
 (the date), `ruling_verbatim` (the owner's words) and `tickets` (the campaign's tickets, never
-empty) - then rebuild the view. Which long candidate opens next is read from the long-campaign shortlist in its order (`scripts/build_long_campaign_shortlist.py --write`, S6-B3232), whose long lane reads LONG-side tightenability (S6-B3271), regenerated with the view. The register is the ONLY source of IN-CAMPAIGN and
+empty) - then rebuild the view. **S6-B3435 (a) (B3139q-r216, owner 'Address and impletement all open tickets' 2026-11-16):** a strategy worked under a PROGRAMME ticket on an owner word - a T3 band word, a Step-2 launch word - is recorded the same way, the word quoted and its `role` saying which word it was, so the view reads it IN-CAMPAIGN under that ticket instead of NOT-STARTED and never names its finished work as work to start (L802). Which long candidate opens next is read from the long-campaign shortlist in its order (`scripts/build_long_campaign_shortlist.py --write`, S6-B3232), whose long lane reads LONG-side tightenability (S6-B3271), regenerated with the view. The register is the ONLY source of IN-CAMPAIGN and
 STALLED-CAMPAIGN: its reader RAISES on an unreadable file, a file with no `opens` list, a record
 missing its `strategy`, its `opened` date, a non-empty `tickets` list or the owner's words
 (`ruling_verbatim`, or `ruling_in_substance` where the words were not verbatim), or a strategy
@@ -2731,7 +2731,7 @@ one carries a pin.
   starts at the first day that did not finish (S6-B3094g) - a planned leg end is a clean stop at a day
   boundary, and only the supervisor's hang backstop (cap + 900 s grace; the grace never carries a
   kill past the 5 h owner cap) can leave a half-run day, which is skipped and recorded in
-  `resume_boundaries.json`. MEASURED: a
+  `resume_boundaries.json`. **S6-B3438 (B3139q-r216):** that backstop is DISARMED once the day loop returns - `run()` sets `_day_loop_done` and the supervisor skips its kill decision from there, the heartbeat continuing - so a leg that finished its days inside the cap is never killed in its cube replay or save (MEASURED on one Step-2 leg: the supervisor hard-killed it at 4.76 h active, 76 minutes after its cube replay began, with the battery running under the engine process; test_b3438, with test_b2148 as the must-kill control). MEASURED: a
   9-leg split run matched the unsplit run's cube (`output_audit/b3098_resume_equivalence.json`). STILL
   OPEN, measured by the same run: the sizing and skipped-trade logs are not carried across a resume
   (S6-B3098d) and a trade's persisted signal snapshot depends on where the legs fell (S6-B3098e).

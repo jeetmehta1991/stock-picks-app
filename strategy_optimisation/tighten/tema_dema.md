@@ -1,8 +1,8 @@
 # Table A - tema_dema
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build ff10274b7 | commit 663067408 at 2026-11-05 06:59:21 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 8dd7d428a | commit 8dd7d428a at 2026-11-16 19:15:22 - a copy without this line, or with a stale stamp, is NOT the current band set
 
-**Lane:** TIGHTEN | **family:** trend | **status:** NOT-STARTED | **R5 fires:** 1876 (closed fires in the exit cube: 1876 of 1876, S6-B3258) | **surviving fires (T1):** 1351 (survives_pct 0.7201)
+**Lane:** TIGHTEN | **family:** trend | **status:** IN-CAMPAIGN | **R5 fires:** 1876 (closed fires in the exit cube: 1876 of 1876, S6-B3258) | **surviving fires (T1):** 1351 (survives_pct 0.7201)
 
 **SPECS entry:** registered in producer_variant_table
 

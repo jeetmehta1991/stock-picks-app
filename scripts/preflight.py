@@ -327,7 +327,12 @@ def check_pyramid_stamp(paths: Iterable[Path]) -> list[str]:
     stale = [str(p.relative_to(REPO_ROOT)) for p in py_staged + doc_staged
              if p.stat().st_mtime > stamp_ts]
     if stale:
-        ok, note = _pregate_ride(stamp_ts)
+        # S6-B3425 (b) (B3139q-r216, owner 'implement all open tickets'
+        # 2026-11-16): a commit staging no engine or script .py spends no ride
+        # - the full run would newly exercise nothing beyond what the pre-gate
+        # selects for its changed paths - and its passing pre-gate is still
+        # required.
+        ok, note = _pregate_ride(stamp_ts, record=bool(py_staged))
         if ok:
             return []
         return [f"C6 PYRAMID-STAMP | staged file(s) a pin reads modified AFTER "
@@ -360,8 +365,11 @@ def _pregate_verdict() -> str:
         return f"UNREADABLE ({e.__class__.__name__})"
 
 
-def _pregate_ride(stamp_ts: float) -> tuple[bool, str]:
-    """S6-B3410 (a): may this commit ride the stale-but-green full stamp?"""
+def _pregate_ride(stamp_ts: float, record: bool = True) -> tuple[bool, str]:
+    """S6-B3410 (a): may this commit ride the stale-but-green full stamp?
+    `record=False` (S6-B3425 (b)): the ride is checked - a PASSED pre-gate on
+    this exact tree - but not spent, for a commit that stages no engine or
+    script .py; the ledger is left as it stands."""
     import json
     verdict = _pregate_verdict()
     if not verdict.startswith("PASSED"):
@@ -375,6 +383,8 @@ def _pregate_ride(stamp_ts: float) -> tuple[bool, str]:
     except Exception:
         return False, ("re-run scripts/pregate_select.py --run "
                        "(.pregate_stamp unreadable; S6-B3410 (a))")
+    if not record:
+        return True, ""
     ledger_p = REPO_ROOT / ".pyramid_rides"
     try:
         led = json.loads(ledger_p.read_text(encoding="utf-8"))

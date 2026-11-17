@@ -522,6 +522,11 @@ migration) and EVERY commit — **no doc/data carve-outs**
 PASSING targeted pre-gate on the exact tree (`scripts/pregate_select.py
 --run`, byte-bound). Enforced by preflight C6's `_pregate_ride`
 (MAX_STAMP_RIDES = 2, ledger `.pyramid_rides`), pinned by test_b3410.
+**S6-B3425 (b) (B3139q-r216, owner 'Address and impletement all open tickets'
+2026-11-16):** a commit staging no engine or script .py spends no ride - its
+passing pre-gate on the exact tree is still required - so a doc, test or record
+commit between code commits does not shorten the cycle
+(`_pregate_ride(record=False)`, pinned by test_b3410's arm (g)).
 Everything else in this phase stands: pin tests, the batch cap, the
 gate-record discipline, and the full gate still runs LAST on the tree
 it vouches for whenever it runs.

@@ -1,8 +1,8 @@
 # Table A - morning_star
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build ff10274b7 | commit 663067408 at 2026-11-05 07:01:20 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 8dd7d428a | commit 8dd7d428a at 2026-11-16 19:17:17 - a copy without this line, or with a stale stamp, is NOT the current band set
 
-**Lane:** BOTH | **family:** candle | **status:** NOT-STARTED | **R5 fires:** 2280 (closed fires in the exit cube: 2280 of 2280, S6-B3258) | **surviving fires (T1):** 1053 (survives_pct 0.4618)
+**Lane:** BOTH | **family:** candle | **status:** IN-CAMPAIGN | **R5 fires:** 2280 (closed fires in the exit cube: 2280 of 2280, S6-B3258) | **surviving fires (T1):** 1053 (survives_pct 0.4618)
 
 **SPECS entry:** registered in producer_variant_table
 
