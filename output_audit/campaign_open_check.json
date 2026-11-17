@@ -1,0 +1,532 @@
+{
+ "ticket": "S6-B3402",
+ "mode": "DISCLOSURE - never a refusal (L721)",
+ "rules": {
+  "census_535": "a family pre-gate (overlap, band clustering, median-exit holdout beside the best) runs before a campaign opens - read here as a *family_pregate*.json artifact naming the family or the strategy",
+  "census_891": "a W-T entrant is NOT-STARTED or STALLED-CAMPAIGN with stream TIGHTEN or BOTH",
+  "census_1062": "a W-L entrant is NOT-STARTED or STALLED-CAMPAIGN with stream LOOSEN or BOTH"
+ },
+ "summary": {
+  "opens": 24,
+  "without_family_pregate": 19,
+  "pregate_by_name_only": 0,
+  "lane_entry_rule_unmet": 0,
+  "lane_undeclared": 24,
+  "pregate_artifacts_in_repo": 3
+ },
+ "pregate_artifacts": [
+  "b2633_pead_pregate.json",
+  "b2667_xs_family_pregate.json",
+  "b2690_smc_pregate.json"
+ ],
+ "records": [
+  {
+   "strategy": "avwap_252_breakout",
+   "opened": "2026-10-30",
+   "tickets": [
+    "S6-B3373"
+   ],
+   "role": "S6-B3249, the second open member of the shortlist's remaining 9 offline-and-over-floor long candidates, opened in the sh",
+   "family": "vwap",
+   "family_pregate_artifacts": [],
+   "pregate_by_membership": [],
+   "pregate_by_name_only": [],
+   "status_now": "IN-CAMPAIGN",
+   "stream_now": "NONE",
+   "lane_declared": "UNDECLARED",
+   "lane_entry_rule_met": null,
+   "findings": [
+    "no family pre-gate artifact names this family or strategy (census 535)",
+    "the record names no W-T / W-L lane, so the lane entry rule cannot be checked from it; whether such an open owes a family pre-gate is the owner's question"
+   ]
+  },
+  {
+   "strategy": "camarilla_r4_breakout",
+   "opened": "2026-10-24",
+   "tickets": [
+    "S6-B3304"
+   ],
+   "role": "S6-B3249, the first open member of the shortlist's remaining 9 offline-and-over-floor long candidates, opened in the sho",
+   "family": "pivot",
+   "family_pregate_artifacts": [],
+   "pregate_by_membership": [],
+   "pregate_by_name_only": [],
+   "status_now": "IN-CAMPAIGN",
+   "stream_now": "TIGHTEN",
+   "lane_declared": "UNDECLARED",
+   "lane_entry_rule_met": null,
+   "findings": [
+    "no family pre-gate artifact names this family or strategy (census 535)",
+    "the record names no W-T / W-L lane, so the lane entry rule cannot be checked from it; whether such an open owes a family pre-gate is the owner's question"
+   ]
+  },
+  {
+   "strategy": "cmf_flip",
+   "opened": "2026-10-21",
+   "tickets": [
+    "S6-B3246"
+   ],
+   "role": "S6-B3232 (a), the r83 close's recommendation 'open campaigns on cmf_flip, williams_r_oversold and squeeze_breakout' - th",
+   "family": "mean_reversion",
+   "family_pregate_artifacts": [],
+   "pregate_by_membership": [],
+   "pregate_by_name_only": [],
+   "status_now": "CLOSED-NO-READ",
+   "stream_now": "-",
+   "lane_declared": "UNDECLARED",
+   "lane_entry_rule_met": null,
+   "findings": [
+    "no family pre-gate artifact names this family or strategy (census 535)",
+    "the record names no W-T / W-L lane, so the lane entry rule cannot be checked from it; whether such an open owes a family pre-gate is the owner's question"
+   ]
+  },
+  {
+   "strategy": "force_index_breakout",
+   "opened": "2026-11-05",
+   "tickets": [
+    "S6-B3249"
+   ],
+   "role": "S6-B3423 step (a) offline sprint member (S6-B3249): registered (R1) and offline-graded on the owner's T3 band word - ite",
+   "family": "breakout",
+   "family_pregate_artifacts": [],
+   "pregate_by_membership": [],
+   "pregate_by_name_only": [],
+   "status_now": "IN-CAMPAIGN",
+   "stream_now": "NONE",
+   "lane_declared": "UNDECLARED",
+   "lane_entry_rule_met": null,
+   "findings": [
+    "no family pre-gate artifact names this family or strategy (census 535)",
+    "the record names no W-T / W-L lane, so the lane entry rule cannot be checked from it; whether such an open owes a family pre-gate is the owner's question"
+   ]
+  },
+  {
+   "strategy": "m_and_a_target_long",
+   "opened": "2026-11-16",
+   "tickets": [
+    "S6-B3423"
+   ],
+   "role": "S6-B3423 batch-2 member: registered (R1) at B3139q-r203d and offline-graded at B3139q-r216 on the owner's directive sent",
+   "family": "sec_edgar_sleeve",
+   "family_pregate_artifacts": [],
+   "pregate_by_membership": [],
+   "pregate_by_name_only": [],
+   "status_now": "IN-CAMPAIGN",
+   "stream_now": "BOTH",
+   "lane_declared": "UNDECLARED",
+   "lane_entry_rule_met": null,
+   "findings": [
+    "no family pre-gate artifact names this family or strategy (census 535)",
+    "the record names no W-T / W-L lane, so the lane entry rule cannot be checked from it; whether such an open owes a family pre-gate is the owner's question"
+   ]
+  },
+  {
+   "strategy": "macd_bullish_with_smart_money_long",
+   "opened": "2026-11-05",
+   "tickets": [
+    "S6-B3249"
+   ],
+   "role": "S6-B3423 step (a) offline sprint member (S6-B3249): registered (R1) and offline-graded on the owner's T3 band word - ite",
+   "family": "smart_money_sleeve",
+   "family_pregate_artifacts": [],
+   "pregate_by_membership": [],
+   "pregate_by_name_only": [],
+   "status_now": "IN-CAMPAIGN",
+   "stream_now": "NONE",
+   "lane_declared": "UNDECLARED",
+   "lane_entry_rule_met": null,
+   "findings": [
+    "no family pre-gate artifact names this family or strategy (census 535)",
+    "the record names no W-T / W-L lane, so the lane entry rule cannot be checked from it; whether such an open owes a family pre-gate is the owner's question"
+   ]
+  },
+  {
+   "strategy": "macd_crossover",
+   "opened": "2026-11-05",
+   "tickets": [
+    "S6-B3249"
+   ],
+   "role": "S6-B3423 step (a) offline sprint member (S6-B3249): registered (R1) and offline-graded on the owner's T3 band word - ite",
+   "family": "momentum",
+   "family_pregate_artifacts": [],
+   "pregate_by_membership": [],
+   "pregate_by_name_only": [],
+   "status_now": "IN-CAMPAIGN",
+   "stream_now": "NONE",
+   "lane_declared": "UNDECLARED",
+   "lane_entry_rule_met": null,
+   "findings": [
+    "no family pre-gate artifact names this family or strategy (census 535)",
+    "the record names no W-T / W-L lane, so the lane entry rule cannot be checked from it; whether such an open owes a family pre-gate is the owner's question"
+   ]
+  },
+  {
+   "strategy": "macd_fast_crossover",
+   "opened": "2026-11-05",
+   "tickets": [
+    "S6-B3249"
+   ],
+   "role": "S6-B3423 step (a) offline sprint member (S6-B3249): registered (R1) and offline-graded on the owner's T3 band word - ite",
+   "family": "momentum",
+   "family_pregate_artifacts": [],
+   "pregate_by_membership": [],
+   "pregate_by_name_only": [],
+   "status_now": "IN-CAMPAIGN",
+   "stream_now": "NONE",
+   "lane_declared": "UNDECLARED",
+   "lane_entry_rule_met": null,
+   "findings": [
+    "no family pre-gate artifact names this family or strategy (census 535)",
+    "the record names no W-T / W-L lane, so the lane entry rule cannot be checked from it; whether such an open owes a family pre-gate is the owner's question"
+   ]
+  },
+  {
+   "strategy": "mmbm_long",
+   "opened": "2026-11-05",
+   "tickets": [
+    "S6-B3249"
+   ],
+   "role": "S6-B3423 step (a) offline sprint member (S6-B3249): registered (R1) and offline-graded on the owner's T3 band word - ite",
+   "family": "ict",
+   "family_pregate_artifacts": [],
+   "pregate_by_membership": [],
+   "pregate_by_name_only": [],
+   "status_now": "IN-CAMPAIGN",
+   "stream_now": "NONE",
+   "lane_declared": "UNDECLARED",
+   "lane_entry_rule_met": null,
+   "findings": [
+    "no family pre-gate artifact names this family or strategy (census 535)",
+    "the record names no W-T / W-L lane, so the lane entry rule cannot be checked from it; whether such an open owes a family pre-gate is the owner's question"
+   ]
+  },
+  {
+   "strategy": "morning_star",
+   "opened": "2026-11-16",
+   "tickets": [
+    "S6-B3423"
+   ],
+   "role": "S6-B3423 batch-2 member: registered (R1) at B3139q-r203d and offline-graded at B3139q-r216 on the owner's directive sent",
+   "family": "candle",
+   "family_pregate_artifacts": [],
+   "pregate_by_membership": [],
+   "pregate_by_name_only": [],
+   "status_now": "IN-CAMPAIGN",
+   "stream_now": "BOTH",
+   "lane_declared": "UNDECLARED",
+   "lane_entry_rule_met": null,
+   "findings": [
+    "no family pre-gate artifact names this family or strategy (census 535)",
+    "the record names no W-T / W-L lane, so the lane entry rule cannot be checked from it; whether such an open owes a family pre-gate is the owner's question"
+   ]
+  },
+  {
+   "strategy": "news_momentum_long",
+   "opened": "2026-11-05",
+   "tickets": [
+    "S6-B1248-LEVER4-GATE-BUDGET",
+    "S6-B3430"
+   ],
+   "role": "LEVER4 Step-2 arm (S6-B1248-LEVER4-GATE-BUDGET): its engine run released by the owner's word, item 5 of the B3139q-r203d",
+   "family": "news_sentiment",
+   "family_pregate_artifacts": [],
+   "pregate_by_membership": [],
+   "pregate_by_name_only": [],
+   "status_now": "IN-CAMPAIGN",
+   "stream_now": "BOTH",
+   "lane_declared": "UNDECLARED",
+   "lane_entry_rule_met": null,
+   "findings": [
+    "no family pre-gate artifact names this family or strategy (census 535)",
+    "the record names no W-T / W-L lane, so the lane entry rule cannot be checked from it; whether such an open owes a family pre-gate is the owner's question"
+   ]
+  },
+  {
+   "strategy": "pivot_r1_breakout",
+   "opened": "2026-10-27",
+   "tickets": [
+    "S6-B1248-LEVER4-GATE-BUDGET",
+    "S6-B3335"
+   ],
+   "role": "LEVER4 Step-2 arm (S6-B1248-LEVER4-GATE-BUDGET): launched 2026-10-27T16:58:19Z on that word; its depth leg (the gate bud",
+   "family": "pivot",
+   "family_pregate_artifacts": [],
+   "pregate_by_membership": [],
+   "pregate_by_name_only": [],
+   "status_now": "IN-CAMPAIGN",
+   "stream_now": "LOOSEN",
+   "lane_declared": "UNDECLARED",
+   "lane_entry_rule_met": null,
+   "findings": [
+    "no family pre-gate artifact names this family or strategy (census 535)",
+    "the record names no W-T / W-L lane, so the lane entry rule cannot be checked from it; whether such an open owes a family pre-gate is the owner's question"
+   ]
+  },
+  {
+   "strategy": "r1_break_retest",
+   "opened": "2026-11-05",
+   "tickets": [
+    "S6-B3249"
+   ],
+   "role": "S6-B3423 step (a) offline sprint member (S6-B3249): registered (R1) and offline-graded on the owner's T3 band word - ite",
+   "family": "pivot",
+   "family_pregate_artifacts": [],
+   "pregate_by_membership": [],
+   "pregate_by_name_only": [],
+   "status_now": "IN-CAMPAIGN",
+   "stream_now": "NONE",
+   "lane_declared": "UNDECLARED",
+   "lane_entry_rule_met": null,
+   "findings": [
+    "no family pre-gate artifact names this family or strategy (census 535)",
+    "the record names no W-T / W-L lane, so the lane entry rule cannot be checked from it; whether such an open owes a family pre-gate is the owner's question"
+   ]
+  },
+  {
+   "strategy": "rsi_oversold",
+   "opened": "2026-11-16",
+   "tickets": [
+    "S6-B3423"
+   ],
+   "role": "S6-B3423 batch-2 member: registered (R1) at B3139q-r203d and offline-graded at B3139q-r216 on the owner's directive sent",
+   "family": "mean_reversion",
+   "family_pregate_artifacts": [],
+   "pregate_by_membership": [],
+   "pregate_by_name_only": [],
+   "status_now": "IN-CAMPAIGN",
+   "stream_now": "NONE",
+   "lane_declared": "UNDECLARED",
+   "lane_entry_rule_met": null,
+   "findings": [
+    "no family pre-gate artifact names this family or strategy (census 535)",
+    "the record names no W-T / W-L lane, so the lane entry rule cannot be checked from it; whether such an open owes a family pre-gate is the owner's question"
+   ]
+  },
+  {
+   "strategy": "rsi_oversold_with_smart_money_long",
+   "opened": "2026-11-05",
+   "tickets": [
+    "S6-B3249",
+    "S6-B3428"
+   ],
+   "role": "S6-B3423 step (a) offline sprint member (S6-B3249): registered (R1) and offline-graded on the owner's T3 band word - ite",
+   "family": "smart_money_sleeve",
+   "family_pregate_artifacts": [],
+   "pregate_by_membership": [],
+   "pregate_by_name_only": [],
+   "status_now": "IN-CAMPAIGN",
+   "stream_now": "BOTH",
+   "lane_declared": "UNDECLARED",
+   "lane_entry_rule_met": null,
+   "findings": [
+    "no family pre-gate artifact names this family or strategy (census 535)",
+    "the record names no W-T / W-L lane, so the lane entry rule cannot be checked from it; whether such an open owes a family pre-gate is the owner's question"
+   ]
+  },
+  {
+   "strategy": "smc_bos_continuation",
+   "opened": "2026-11-05",
+   "tickets": [
+    "S6-B1248-LEVER4-GATE-BUDGET"
+   ],
+   "role": "LEVER4 Step-2 arm (S6-B1248-LEVER4-GATE-BUDGET): its engine run released by the owner's word, item 5 of the B3139q-r203d",
+   "family": "smc",
+   "family_pregate_artifacts": [
+    "b2690_smc_pregate.json"
+   ],
+   "pregate_by_membership": [
+    "b2690_smc_pregate.json"
+   ],
+   "pregate_by_name_only": [],
+   "status_now": "IN-CAMPAIGN",
+   "stream_now": "LOOSEN",
+   "lane_declared": "UNDECLARED",
+   "lane_entry_rule_met": null,
+   "findings": [
+    "the record names no W-T / W-L lane, so the lane entry rule cannot be checked from it; whether such an open owes a family pre-gate is the owner's question"
+   ]
+  },
+  {
+   "strategy": "smc_equal_lows_sweep_long",
+   "opened": "2026-09-11",
+   "tickets": [
+    "S6-B2752"
+   ],
+   "role": "wave-2 member (campaign log B.11); registered as Subject 2 under the owner's 'implement all' 2026-09-15 (S6-B2752)",
+   "family": "smc",
+   "family_pregate_artifacts": [
+    "b2690_smc_pregate.json"
+   ],
+   "pregate_by_membership": [
+    "b2690_smc_pregate.json"
+   ],
+   "pregate_by_name_only": [],
+   "status_now": "STALLED-CAMPAIGN",
+   "stream_now": "LOOSEN",
+   "lane_declared": "UNDECLARED",
+   "lane_entry_rule_met": null,
+   "findings": [
+    "the record names no W-T / W-L lane, so the lane entry rule cannot be checked from it; whether such an open owes a family pre-gate is the owner's question"
+   ]
+  },
+  {
+   "strategy": "smc_inverse_fvg",
+   "opened": "2026-09-11",
+   "tickets": [
+    "S6-B2752"
+   ],
+   "role": "wave-2 member (campaign log B.11); registered as Subject 3 under the owner's 'implement all' 2026-09-15 (S6-B2752)",
+   "family": "smc",
+   "family_pregate_artifacts": [
+    "b2690_smc_pregate.json"
+   ],
+   "pregate_by_membership": [
+    "b2690_smc_pregate.json"
+   ],
+   "pregate_by_name_only": [],
+   "status_now": "STALLED-CAMPAIGN",
+   "stream_now": "LOOSEN",
+   "lane_declared": "UNDECLARED",
+   "lane_entry_rule_met": null,
+   "findings": [
+    "the record names no W-T / W-L lane, so the lane entry rule cannot be checked from it; whether such an open owes a family pre-gate is the owner's question"
+   ]
+  },
+  {
+   "strategy": "smc_liquidity_sweep_reversal",
+   "opened": "2026-09-11",
+   "tickets": [
+    "S6-B2692",
+    "S6-B2693",
+    "S6-B2732",
+    "S6-B2732a",
+    "S6-B2910"
+   ],
+   "role": "wave-1 hub 1 of the smc family campaign (campaign log B.11)",
+   "family": "smc",
+   "family_pregate_artifacts": [
+    "b2690_smc_pregate.json"
+   ],
+   "pregate_by_membership": [
+    "b2690_smc_pregate.json"
+   ],
+   "pregate_by_name_only": [],
+   "status_now": "STALLED-CAMPAIGN",
+   "stream_now": "LOOSEN",
+   "lane_declared": "UNDECLARED",
+   "lane_entry_rule_met": null,
+   "findings": [
+    "the record names no W-T / W-L lane, so the lane entry rule cannot be checked from it; whether such an open owes a family pre-gate is the owner's question"
+   ]
+  },
+  {
+   "strategy": "smc_order_block_bounce",
+   "opened": "2026-09-11",
+   "tickets": [
+    "S6-B2692",
+    "S6-B2752",
+    "S6-B2752e"
+   ],
+   "role": "wave-1 hub 2 (campaign log B.11); registered as Subject 1 under the owner's 'implement all' 2026-09-15 (S6-B2752)",
+   "family": "smc",
+   "family_pregate_artifacts": [
+    "b2690_smc_pregate.json"
+   ],
+   "pregate_by_membership": [
+    "b2690_smc_pregate.json"
+   ],
+   "pregate_by_name_only": [],
+   "status_now": "STALLED-CAMPAIGN",
+   "stream_now": "TIGHTEN",
+   "lane_declared": "UNDECLARED",
+   "lane_entry_rule_met": null,
+   "findings": [
+    "the record names no W-T / W-L lane, so the lane entry rule cannot be checked from it; whether such an open owes a family pre-gate is the owner's question"
+   ]
+  },
+  {
+   "strategy": "squeeze_breakout",
+   "opened": "2026-10-21",
+   "tickets": [
+    "S6-B3248"
+   ],
+   "role": "S6-B3232 (a), the r83 close's recommendation 'open campaigns on cmf_flip, williams_r_oversold and squeeze_breakout' - th",
+   "family": "breakout",
+   "family_pregate_artifacts": [],
+   "pregate_by_membership": [],
+   "pregate_by_name_only": [],
+   "status_now": "IN-CAMPAIGN",
+   "stream_now": "NONE",
+   "lane_declared": "UNDECLARED",
+   "lane_entry_rule_met": null,
+   "findings": [
+    "no family pre-gate artifact names this family or strategy (census 535)",
+    "the record names no W-T / W-L lane, so the lane entry rule cannot be checked from it; whether such an open owes a family pre-gate is the owner's question"
+   ]
+  },
+  {
+   "strategy": "stochrsi_oversold",
+   "opened": "2026-11-16",
+   "tickets": [
+    "S6-B3423"
+   ],
+   "role": "S6-B3423 batch-2 member: registered (R1) at B3139q-r203d and offline-graded at B3139q-r216 on the owner's directive sent",
+   "family": "momentum",
+   "family_pregate_artifacts": [],
+   "pregate_by_membership": [],
+   "pregate_by_name_only": [],
+   "status_now": "IN-CAMPAIGN",
+   "stream_now": "TIGHTEN",
+   "lane_declared": "UNDECLARED",
+   "lane_entry_rule_met": null,
+   "findings": [
+    "no family pre-gate artifact names this family or strategy (census 535)",
+    "the record names no W-T / W-L lane, so the lane entry rule cannot be checked from it; whether such an open owes a family pre-gate is the owner's question"
+   ]
+  },
+  {
+   "strategy": "tema_dema",
+   "opened": "2026-11-16",
+   "tickets": [
+    "S6-B3423"
+   ],
+   "role": "S6-B3423 batch-2 member: registered (R1) at B3139q-r203d and offline-graded at B3139q-r216 on the owner's directive sent",
+   "family": "trend",
+   "family_pregate_artifacts": [],
+   "pregate_by_membership": [],
+   "pregate_by_name_only": [],
+   "status_now": "IN-CAMPAIGN",
+   "stream_now": "TIGHTEN",
+   "lane_declared": "UNDECLARED",
+   "lane_entry_rule_met": null,
+   "findings": [
+    "no family pre-gate artifact names this family or strategy (census 535)",
+    "the record names no W-T / W-L lane, so the lane entry rule cannot be checked from it; whether such an open owes a family pre-gate is the owner's question"
+   ]
+  },
+  {
+   "strategy": "williams_r_oversold",
+   "opened": "2026-10-21",
+   "tickets": [
+    "S6-B3247"
+   ],
+   "role": "S6-B3232 (a), the r83 close's recommendation 'open campaigns on cmf_flip, williams_r_oversold and squeeze_breakout' - th",
+   "family": "momentum",
+   "family_pregate_artifacts": [],
+   "pregate_by_membership": [],
+   "pregate_by_name_only": [],
+   "status_now": "DONE-OWNER-CLOSED",
+   "stream_now": "-",
+   "lane_declared": "UNDECLARED",
+   "lane_entry_rule_met": null,
+   "findings": [
+    "no family pre-gate artifact names this family or strategy (census 535)",
+    "the record names no W-T / W-L lane, so the lane entry rule cannot be checked from it; whether such an open owes a family pre-gate is the owner's question"
+   ]
+  }
+ ],
+ "view_build": {
+  "source_commit": "10f385df2",
+  "generated_at": "2026-11-16 23:49:34"
+ }
+}

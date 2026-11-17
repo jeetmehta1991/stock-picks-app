@@ -665,6 +665,42 @@ def registered_sets():
                              for p in e["params"]))}
 
 
+def specs_producer_row_cover(name: str, legs, strategy_keys):
+    """S6-B3442 (B3139q-r216): (backs_producer_rows, strategy_only_envs,
+    has_gate_structure) for name's SPECS entry. render() prints the entry's
+    registration on EVERY producer row, so it must hold for each of them: it
+    did while an entry covered all of its producer rows or none (11 of 11
+    entries that set it, measured this batch), and the news window (SPECS
+    news_momentum_long P2) is the first registered band that backs only
+    STRATEGY rows. A param backs the producer rows unless it is a
+    gate-structure knob (S6-B3240) or its env is one this table renders only
+    beneath its strategy-layer rows - the threshold keys and the
+    local-variable extras - and never beneath a producer leg. A param-less
+    entry keeps the credit, as in registered_sets. None when the registry
+    cannot be read: the caller keeps its reading."""
+    try:
+        from producer_variant_table import SPECS, SPECS_PHASE0
+    except Exception:
+        return None
+    params = ({**SPECS_PHASE0, **SPECS}.get(name) or {}).get("params") or []
+    if not params:
+        return (True, [], False)
+    leg_envs = {k.get("env") for lg in legs for k in PRODUCER_BANDS.get(lg, [])}
+    row_envs = ({k.get("env") for key in strategy_keys
+                 for k in PRODUCER_BANDS.get(key, [])}
+                | {k.get("env") for k in STRATEGY_EXTRAS.get(name, [])})
+    backs, only, gate = False, set(), False
+    for p in params:
+        env = p.get("env")
+        if env in GATE_STRUCTURE_KNOBS:
+            gate = True
+        elif env and env in row_envs and env not in leg_envs:
+            only.add(env)
+        else:
+            backs = True
+    return (backs, sorted(only), gate)
+
+
 # S6-B3393 (B3139q-r192, census 770 + 909 + 772): the SPECS entry is built FROM
 # the Table A file's bands, T2 never re-derives them by hand, and a stale file
 # is regenerated before a campaign reads it. table_a_file is the ONE lookup of
@@ -796,6 +832,29 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
     legs, helpers = legs_helpers
     in_specs = name in specs_names  # S6-B3240: and its bands, unless gate-structure only
     bands_in_specs = in_specs and (specs_bands is None or name in specs_bands)
+    # S6-B3442: the flag is printed on every producer row, so a registered band
+    # that backs only strategy-layer rows (the news window) must not set it
+    _cover = (specs_producer_row_cover(name, legs, depth_keys)
+              if bands_in_specs and specs_bands is not None else None)
+    _only_envs = []
+    if _cover is not None and not _cover[0]:
+        bands_in_specs, _only_envs = False, _cover[1]
+    if not in_specs:
+        _specs_txt = "NONE - build at R1 before any engine leg (W-T T0)"
+    elif bands_in_specs:
+        _specs_txt = "registered in producer_variant_table"
+    elif _only_envs:
+        _specs_txt = ("registered in producer_variant_table - its knobs "
+                      + ("are gate-structure (GATE_STRUCTURE_KNOBS) or "
+                         if _cover and _cover[2] else "")
+                      + "back only the strategy-layer rows ("
+                      + ", ".join(_only_envs) + ", the band rows beneath "
+                      "them), so none of the producer-row bands below is in "
+                      "it (S6-B3240, S6-B3442)")
+    else:
+        _specs_txt = ("registered in producer_variant_table - gate-structure "
+                      "knob(s) only (GATE_STRUCTURE_KNOBS), so none of the "
+                      "bands below is in it (S6-B3240)")
     L = [f"# Table A - {name}", "",
          stamp, "",
          f"**Lane:** {row['stream']} | **family:** {row['family']} | "
@@ -811,7 +870,7 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
              if row.get("changed_since_r5") else
              " (unchanged since R5 - filter is identity)")),
          "",
-         f"**SPECS entry:** {('registered in producer_variant_table' + ('' if bands_in_specs else ' - gate-structure knob(s) only (GATE_STRUCTURE_KNOBS), so none of the bands below is in it (S6-B3240)')) if in_specs else 'NONE - build at R1 before any engine leg (W-T T0)'}",
+         f"**SPECS entry:** {_specs_txt}",
          "",
          # B2844 (owner-caught): the SS6/#183 locked artifact is FORMULA +
          # Table A + Table B - Section 1 and Table A are two views of one

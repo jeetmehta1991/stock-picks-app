@@ -62426,9 +62426,11 @@ def test_b3240_table_a_credits_no_bands_to_a_gate_structure_entry():
     registered and NOT in specs_bands says so in its header, keeps its
     producer rows off 'SPECS-REGISTERED', and leaves the threshold's resim
     band '(to be built)'; in specs_bands it credits them. (2) Every LEVER4
-    entry's params are gate-structure knobs and no other SPECS entry's are,
-    so main()'s specs_bands drops exactly the four. (3) The committed lanes:
-    news_momentum_long says gate-structure only with no SPECS-REGISTERED row;
+    entry but news_momentum_long holds only gate-structure knobs (S6-B3442
+    gave it the news window) and no other SPECS entry's do, so main()'s
+    specs_bands drops exactly the other three. (3) The committed lanes:
+    news_momentum_long says its window backs only the strategy-layer rows,
+    with no SPECS-REGISTERED row (render derives it, test_b3442b);
     smc_order_block_bounce (SMC producer knobs) carries no gate-structure
     note - its lane takes the UNMEASURED zero-survivor branch, which renders
     no per-row labels (part (1) covers the credit branch)."""
@@ -62458,12 +62460,13 @@ def test_b3240_table_a_credits_no_bands_to_a_gate_structure_entry():
     assert "gate-structure" not in md and "SPECS-REGISTERED" in md and "(to be built)" not in md
     # (2) the population main() derives
     names, bands = bta.registered_sets()
-    assert names - bands == set(pvt._LEVER4), sorted(names - bands)
+    assert names - bands == set(pvt._LEVER4) - {"news_momentum_long"}, sorted(names - bands)
+    assert "news_momentum_long" in bands
     assert "smc_order_block_bounce" in bands and set(GATE_STRUCTURE_KNOBS) == {"LEVER4_GATE_BUDGET"}
     # (3) committed lanes
     lane = root / "strategy_optimisation" / "tighten"
     nml = (lane / "both" / "news_momentum_long.md").read_text(encoding="utf-8")
-    assert "gate-structure knob(s) only" in nml and "SPECS-REGISTERED" not in nml
+    assert "back only the strategy-layer rows (NEWS_WINDOW_DAYS" in nml and "SPECS-REGISTERED" not in nml
     obb = (lane / "smc_order_block_bounce.md").read_text(encoding="utf-8")
     assert "UNMEASURED" in obb and "gate-structure" not in obb
 
@@ -76649,3 +76652,302 @@ def test_b3427b_technical_gate_keys_rederive_through_compute_all_signals():
     text = _ast.unparse(main)
     assert "TECH_PRODUCER_KEYS" in text and "_tech_signals(" in text and "w.iloc[:-1]" in text
     assert "_same(" in text
+
+
+
+
+
+# ================================================================ B3139q-r216 S6-B3402: the campaign-open rules as a disclosure
+def test_b3402_campaign_open_check_discloses_pregate_and_lane_entry_per_record(tmp_path):
+    """S6-B3402 (B3139q-r216): scripts/campaign_open_check.py runs the three
+    campaign-open rules (S6-B3344's M-OPEN cluster: a family pre-gate before the
+    open; W-T and W-L entrants' status and stream) over every register record
+    as a DISCLOSURE - a refusal would fire on 24 of 24 records today (L721).
+    (1) check() on a fixture: an open whose family has a pre-gate artifact
+    reads present; one without reads the census-535 finding; a W-T open with
+    stream TIGHTEN meets its rule, one with NONE does not; an open naming no lane
+    has entry None and says the rule cannot be checked; the summary counts each. (2) run()
+    writes the document from a fixture register and view through the one
+    register loader. (3) wiring: build_strategy_status.main calls it after the
+    view is written, so the disclosure moves with the view."""
+    import ast as _ast
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import campaign_open_check as coc
+    opens = {
+        "xs_a": {"strategy": "xs_a", "opened": "2026-01-01", "role": "W-T lane entrant", "tickets": ["S6-B1"],
+                 "ruling_verbatim": "open it"},
+        "cand_b": {"strategy": "cand_b", "opened": "2026-01-02", "role": "W-T lane entrant", "tickets": ["S6-B2"],
+                   "ruling_verbatim": "open it"},
+        "prog_c": {"strategy": "prog_c", "opened": "2026-01-03", "role": "S6-B9 band word", "tickets": ["S6-B9"],
+                   "ruling_verbatim": "approve"},
+        "wl_d": {"strategy": "wl_d", "opened": "2026-01-04", "role": "W-L lane entrant", "tickets": ["S6-B4"],
+                 "ruling_verbatim": "open it"},
+    }
+    rows = {"xs_a": {"family": "xs", "status": "NOT-STARTED", "stream": "TIGHTEN"},
+            "cand_b": {"family": "candle", "status": "NOT-STARTED", "stream": "NONE"},
+            "prog_c": {"family": "pivot", "status": "IN-CAMPAIGN", "stream": "BOTH"},
+            "wl_d": {"family": "trend", "status": "STALLED-CAMPAIGN", "stream": "LOOSEN"}}
+    arts = ["b2667_xs_family_pregate.json"]
+    doc = coc.check(opens, rows, arts, {"b2667_xs_family_pregate.json": {"xs_a"}})
+    by = {r["strategy"]: r for r in doc["records"]}
+    assert by["xs_a"]["family_pregate_artifacts"] == arts and by["xs_a"]["lane_entry_rule_met"] is True \
+        and by["xs_a"]["findings"] == []
+    assert by["cand_b"]["family_pregate_artifacts"] == [] and by["cand_b"]["lane_entry_rule_met"] is False \
+        and any("census 535" in f for f in by["cand_b"]["findings"]) \
+        and any("census 891" in f for f in by["cand_b"]["findings"])
+    assert by["prog_c"]["lane_declared"] == "UNDECLARED" and by["prog_c"]["lane_entry_rule_met"] is None \
+        and any("names no W-T / W-L lane" in f for f in by["prog_c"]["findings"])
+    assert by["wl_d"]["lane_declared"] == "W-L" and by["wl_d"]["lane_entry_rule_met"] is True
+    # membership attributes a pre-gate the file name does not mention (the xs artifact's case)
+    doc_m = coc.check({"cand_b": opens["cand_b"]}, rows, ["b9999_other_family_pregate.json"],
+                      {"b9999_other_family_pregate.json": {"cand_b"}})
+    assert doc_m["records"][0]["family_pregate_artifacts"] == ["b9999_other_family_pregate.json"], doc_m
+    doc_n = coc.check({"cand_b": opens["cand_b"]}, rows, ["b9999_other_family_pregate.json"], {})
+    assert doc_n["records"][0]["family_pregate_artifacts"] == [], "no membership, no name match: none"
+    # a family-name match with no membership is credited by name only, with its own finding
+    doc_nm = coc.check({"xs_a": opens["xs_a"]}, rows, arts, {})
+    r0 = doc_nm["records"][0]
+    assert r0["pregate_by_name_only"] == arts and r0["pregate_by_membership"] == [] \
+        and any("name only" in f for f in r0["findings"]) and doc_nm["summary"]["pregate_by_name_only"] == 1
+    assert doc["summary"] == {"opens": 4, "without_family_pregate": 3, "pregate_by_name_only": 0,
+                              "lane_entry_rule_unmet": 1,
+                              "lane_undeclared": 1, "pregate_artifacts_in_repo": 1}, doc["summary"]
+    assert "DISCLOSURE" in doc["mode"] and set(doc["rules"]) == {"census_535", "census_891", "census_1062"}
+    assert coc.lane_of("W-T entrant") == "W-T" and coc.lane_of("W-L") == "W-L" and coc.lane_of("x") == "UNDECLARED"
+    # (2) run() through the one register loader, on a fixture tree
+    oa = tmp_path / "output_audit"
+    oa.mkdir()
+    (oa / "owner_campaign_opens.json").write_text(_j.dumps({"opens": list(opens.values())}), encoding="utf-8")
+    (oa / "b2667_xs_family_pregate.json").write_text(_j.dumps({"members": {"xs_a": {}}, "overlap": {}}),
+                                                     encoding="utf-8")
+    (oa / "b0001_decoy_pregate.json").write_text("{}", encoding="utf-8")   # no members: not a pre-gate
+    assert coc.pregate_members(tmp_path) == {"b2667_xs_family_pregate.json": {"xs_a"}}
+    assert coc.pregate_artifacts(tmp_path) == ["b2667_xs_family_pregate.json"]
+    view = oa / "strategy_optimisation_status.json"
+    view.write_text(_j.dumps({"build": {"source_commit": "fixture"},
+                              "rows": [dict(r, strategy=s) for s, r in rows.items()]}), encoding="utf-8")
+    out = coc.run(tmp_path, view=view, out=oa / "campaign_open_check.json")
+    assert out["summary"]["opens"] == 4 and out["view_build"] == {"source_commit": "fixture"}
+    assert out["summary"]["pregate_artifacts_in_repo"] == 1 and out["summary"]["without_family_pregate"] == 3
+    assert out["summary"]["pregate_by_name_only"] == 0, "xs_a is a member of the fixture pre-gate"
+    assert out["pregate_artifacts"] == ["b2667_xs_family_pregate.json"], "the decoy without members is not listed"
+    assert _j.loads((oa / "campaign_open_check.json").read_text(encoding="utf-8"))["summary"] == out["summary"]
+    # (3) wiring in the status builder's main, after the view is written
+    src = (root / "scripts" / "build_strategy_status.py").read_text(encoding="utf-8", errors="replace")
+    main = next(n for n in _ast.parse(src).body if isinstance(n, _ast.FunctionDef) and n.name == "main")
+    text = _ast.unparse(main)
+    assert "campaign_open_check" in text, "the status builder must refresh the disclosure"
+
+
+# ================================================================ B3139q-r216 S6-B3442: the news window knob (1, 2, 3 days beside production)
+def test_b3442_news_window_knob_moves_both_windows_and_is_production_when_unset(tmp_path, monkeypatch):
+    """S6-B3442 (B3139q-r216; the owner's ruling, verbatim '1,2,3 days is needed
+    along with what we have now.'): NEWS_WINDOW_DAYS, a config env knob the news
+    producer reads from config at call time (the squeeze pattern) - 0 (unset) is
+    production, each field's own window (the
+    5-day recency window of news_sentiment_5d, the 7-date count of
+    news_volume_zscore_5d); N in 1..3 makes both windows N dates. (1) the knob's
+    default is 0, a blank is 0, a negative refuses, and the producer holds no
+    from-import copy of it; (2) on the test_b3440 fixture the producer at
+    0 reproduces its production values byte-for-byte, and at 1 / 2 / 3 the
+    sentiment field reads only the last N dates and the z-score counts N dates
+    against N days of the baseline; (3) news_momentum_long's SPECS entry carries
+    P2 news_window_days as an engine-only band [0, 1, 2, 3] with the knob, its
+    tools map it to --news-window, and validate_spec is clean; (4)
+    lever4_step1.verify_arm_env refuses a window the arm did not run and passes
+    the one it did, production included; (5) the battery reads an absent
+    predating knob as production with a disclosure, never as missing."""
+    import math
+    import json as _j
+    import sys as _s
+    from datetime import date, timedelta
+    from pathlib import Path as _P
+    import pandas as pd
+    import backtest.config as cfg
+    import backtest.signals.news_sentiment as ns
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    # (1) the default
+    assert cfg.NEWS_WINDOW_DAYS == 0 or str(cfg.NEWS_WINDOW_DAYS).isdigit()
+    assert cfg._news_window_days({"NEWS_WINDOW_DAYS": ""}) == 0
+    assert cfg._news_window_days({}) == 0 and cfg._news_window_days({"NEWS_WINDOW_DAYS": " 2 "}) == 2
+    try:
+        cfg._news_window_days({"NEWS_WINDOW_DAYS": "-1"})
+        raise AssertionError("a negative window must refuse")
+    except ValueError:
+        pass
+    assert not hasattr(ns, "NEWS_WINDOW_DAYS"), "the producer reads config at call time, never a copy"
+    # (2) the producer on the b3440 fixture: 7 dates x 3 recent articles (neutral titles), a 25-day baseline
+    a = date(2024, 4, 5)
+    days, titles = [], []
+    for j in range(7, 32):
+        for _ in range(2 if j % 5 == 0 else 1):
+            days.append(a - timedelta(days=j)); titles.append("neutral coverage")
+    for j in range(0, 7):
+        for _ in range(3):
+            days.append(a - timedelta(days=j)); titles.append("record profit surge beats" if j == 0 else "neutral coverage")
+    ns._NEWS_BY_TICKER.clear()
+    fake = pd.DataFrame({"ticker": ["TST"] * len(days),
+                         "published_utc": pd.to_datetime([d.isoformat() for d in days]),
+                         "title": titles, "description": [""] * len(days), "sentiment": [None] * len(days)})
+    fake.to_parquet(tmp_path / "TST.parquet")
+    monkeypatch.setattr(ns, "_NEWS_DIR", tmp_path)
+
+    def run(win):
+        monkeypatch.setattr(cfg, "NEWS_WINDOW_DAYS", win)   # the attribute the producer reads per call
+        ns._NEWS_BY_TICKER.clear()
+        try:
+            return ns.compute_news_sentiment_signals("TST", a)
+        finally:
+            ns._NEWS_BY_TICKER.clear()
+
+    def z(count, base, w):
+        mu = sum(base) / len(base)
+        sd = math.sqrt(sum((x - mu) ** 2 for x in base) / (len(base) - 1))
+        return (count - w * mu) / (math.sqrt(w) * sd)
+    base25 = [2 if j % 5 == 0 else 1 for j in range(7, 32)]
+    prod = run(0)
+    assert abs(prod["news_volume_zscore_5d"] - round(z(21, base25, 7), 4)) < 1e-4, prod   # the b3440 value
+    assert prod["news_count_5d"] == 21
+    for n in (1, 2, 3):
+        out = run(n)
+        # the z count takes N dates (3 articles each) against N days of the baseline adjacent to them
+        # the fixture's 7 recent dates (j 0..6) carry 3 articles each, the older ones 1 or 2
+        base_n = [3 if j <= 6 else (2 if j % 5 == 0 else 1) for j in range(n, n + 25)]
+        assert abs(out["news_volume_zscore_5d"] - round(z(3 * n, base_n, n), 4)) < 1e-4, (n, out)
+        assert out["news_count_5d"] == 21, "news_count_5d keeps its own 7-date window (S6-B3445)"
+    # the sentiment window: at 1 only the as_of articles weigh (positive titles), so the score rises
+    assert run(1)["news_sentiment_5d"] > prod["news_sentiment_5d"] > 0.0
+    assert run(3)["news_sentiment_5d"] > prod["news_sentiment_5d"]
+    # (3) the SPECS entry
+    from producer_variant_table import SPECS, validate_spec
+    e = SPECS["news_momentum_long"]
+    assert validate_spec(e) == [], validate_spec(e)
+    p2 = next(p for p in e["params"] if p["id"] == "P2")
+    assert p2["env"] == "NEWS_WINDOW_DAYS" and p2["production"] == 0 and p2["band"] == [0, 1, 2, 3]
+    assert p2["free_band"] == [] and p2["resim_band"] == [0, 1, 2, 3] and p2["subset_safe"] is False
+    assert "backtest/signals/news_sentiment.py" in p2["consumers"] and "backtest/config.py" in p2["consumers"]
+    assert e["tools"]["keys"]["P2"] == "news_window_days" and e["tools"]["grade"]["flags"]["P2"] == "--news-window"
+    assert p2.get("predates_cubes_before") == "B3139q-r216"
+    for other in ("pivot_r1_breakout", "smc_bos_continuation", "orb_stocks_in_play_long"):
+        assert [p["id"] for p in SPECS[other]["params"]] == ["P1"], other
+    # (4) the grader's arm verification
+    import lever4_step1 as l4
+    cube = tmp_path / "cube"
+    cube.mkdir()
+    (cube / "run_manifest.json").write_text(_j.dumps({"arms": [{"tag": "a", "env": {"NEWS_WINDOW_DAYS": "2"}}]}), encoding="utf-8")
+    assert l4.verify_arm_env(cube, "NEWS_WINDOW_DAYS", "2", "--news-window") == ""
+    assert "REFUSED" in l4.verify_arm_env(cube, "NEWS_WINDOW_DAYS", None, "--news-window")
+    assert "REFUSED" in l4.verify_arm_env(cube, "NEWS_WINDOW_DAYS", "3", "--news-window")
+    (cube / "run_manifest.json").write_text(_j.dumps({"arms": [{"tag": "a", "env": {"LEVER4_GATE_BUDGET": "{}"}}]}), encoding="utf-8")
+    assert l4.verify_arm_env(cube, "NEWS_WINDOW_DAYS", None, "--news-window") == "", "an absent key ran production"
+    assert "REFUSED" in l4.verify_arm_env(cube, "NEWS_WINDOW_DAYS", "1", "--news-window")
+    (cube / "run_manifest.json").unlink()
+    assert "REFUSED" in l4.verify_arm_env(cube, "NEWS_WINDOW_DAYS", None, "--news-window")
+    # (5) the battery on a cube that predates the knob
+    import run_postconfig as rp
+    vals, why = rp.params_from_manifest("news_momentum_long", {"arms": [{"tag": "a", "env": {"LEVER4_GATE_BUDGET": "{}"}}]})
+    assert vals == {"gate_budget": "{}", "news_window_days": 0} and "production" in why.lower(), (vals, why)
+    vals, why = rp.params_from_manifest("news_momentum_long", {"arms": [{"tag": "a", "env": {"LEVER4_GATE_BUDGET": "{}", "NEWS_WINDOW_DAYS": "3"}}]})
+    assert vals == {"gate_budget": "{}", "news_window_days": "3"}
+    vals, why = rp.params_from_manifest("news_momentum_long", {"arms": [{"tag": "a", "env": {"NEWS_WINDOW_DAYS": "3"}}]})
+    assert vals is None and "gate_budget" in why, "a knob with no predating clause is still missing"
+
+
+def test_b3442b_table_a_shows_the_news_window_and_credits_no_producer_row_with_it(monkeypatch):
+    """S6-B3442 (B3139q-r216), the Table A step of the ruled build order: the
+    news window knob renders as a band row under BOTH fields it sets
+    (news_sentiment_5d, news_volume_zscore_5d) in every table whose gate
+    thresholds one, is counted ONCE in the factorial (one env, the S6-B3120h
+    rule), takes its fields from SPECS['news_momentum_long'] P2 rather than a
+    literal (L875), and runs all four levels on the engine, production too.
+    A registry knob that backs only STRATEGY rows must not mark the PRODUCER
+    rows registered: render() printed the per-strategy bands_in_specs flag on
+    every producer row, which held while an entry covered all of its producer
+    rows or none, so the flag is now derived from the table's own rows
+    (build_table_a.specs_producer_row_cover). (1) the registry rows; (2)
+    render at news_momentum_long's shape - the header says the window backs
+    only the strategy rows, no row reads SPECS-REGISTERED, the threshold's
+    looser band is still '(to be built)', both window rows carry the env, the
+    second shares it, ENGINE RUNS reads 4 - and with the derivation stubbed out
+    the same render credits every producer row (#226); (3) the helper both
+    ways - a full family keeps its credit, an unregistered name keeps it, and
+    with the window rows removed from the strategy keys the news entry would
+    be credited. And the on-ramp's R8 for the knob: literally read, its
+    measured consumers the declared ones."""
+    import sys as _s
+    from pathlib import Path as _P
+    import pandas as pd
+    root = _P(__file__).resolve().parents[2]
+    for p in (root, root / "scripts"):
+        if str(p) not in _s.path:
+            _s.path.insert(0, str(p))
+    import build_table_a as bta
+    import table_a_bands as tab
+    import producer_variant_table as pvt
+    from producer_variant_table import SPECS
+    p2 = next(p for p in SPECS["news_momentum_long"]["params"] if p["id"] == "P2")
+    # the on-ramp's R8: the knob is LITERALLY read from the environment by a
+    # reader module (knob_is_read) - a read through a conditional expression
+    # failed it at landing - and its measured consumers are the declared ones
+    assert pvt.knob_is_read("NEWS_WINDOW_DAYS", pvt.CODE_ROOT)
+    assert pvt.knob_consumers("NEWS_WINDOW_DAYS") == pvt.declared_consumers(
+        SPECS["news_momentum_long"], "NEWS_WINDOW_DAYS")
+    # (1) one knob under each field, every field derived from P2
+    for key in ("news_sentiment_5d", "news_volume_zscore_5d"):
+        rows = tab.PRODUCER_BANDS[key]
+        assert len(rows) == 1, (key, rows)
+        k = rows[0]
+        assert k["env"] == p2["env"] == "NEWS_WINDOW_DAYS", k
+        assert k["production"] == p2["production"] and k["band"] == list(p2["band"]), k
+        assert str(list(p2["resim_band"])) in k["resim"], k["resim"]
+        assert "producer_variant_table" in k["evidence"] and "news_sentiment.py" in k["evidence"]
+        assert tab.band_level_classes(k) == [(4, 4, 0, 0)], tab.band_level_classes(k)
+    monkeypatch.setitem(p2, "band", [0, 1, 2, 3, 5])
+    assert tab._news_window_from_specs()["band"] == [0, 1, 2, 3, 5], "derived from SPECS, never a literal"
+    monkeypatch.setitem(p2, "band", [0, 1, 2, 3])
+    # (2) render at news_momentum_long's shape
+    row = {"stream": "BOTH", "family": "news_sentiment", "status": "IN-CAMPAIGN", "r5_fires": 2,
+           "survives_pct": 1.0, "unmeasured_gate_keys": {}}
+    frame = pd.DataFrame([{"strategy": "news_momentum_long", "ticker": t, "entry_date": d,
+                           "direction": "long", "signals_at_entry": "{}"}
+                          for t, d in (("AAA", "2023-01-03"), ("BBB", "2023-02-03"))])
+    sigs = [{"close_above_open": True, "news_sentiment_5d": 0.5, "news_volume_zscore_5d": 1.2},
+            {"close_above_open": True, "news_sentiment_5d": 0.9, "news_volume_zscore_5d": 2.5}]
+    args = ("news_momentum_long", row, frame, sigs, False,
+            [("news_sentiment_5d", ">=", 0.3), ("news_volume_zscore_5d", ">=", 0.9091)],
+            (["close_above_open"], []), [], {"news_momentum_long"}, "STAMP")
+    body = "fires = s.get('close_above_open')"
+    md = bta.render(*args, body=body, specs_bands={"news_momentum_long"})
+    hdr = [ln for ln in md.splitlines() if ln.startswith("**SPECS entry:**")]
+    assert len(hdr) == 1 and "back only the strategy-layer rows (NEWS_WINDOW_DAYS" in hdr[0], hdr
+    assert "are gate-structure (GATE_STRUCTURE_KNOBS)" in hdr[0], hdr
+    assert "SPECS-REGISTERED" not in md and "(to be built)" in md
+    win = [ln for ln in md.splitlines() if ln.startswith("| P") and "| BAND | news window (dates)" in ln]
+    assert len(win) == 2 and all("env NEWS_WINDOW_DAYS" in ln for ln in win), win
+    assert "shares env NEWS_WINDOW_DAYS with" in md
+    eng = [ln for ln in md.splitlines() if ln.startswith("ENGINE RUNS")]
+    assert len(eng) == 1 and eng[0].split()[2] == "4", eng
+    real = bta.specs_producer_row_cover
+    monkeypatch.setattr(bta, "specs_producer_row_cover", lambda *a, **kw: None)
+    md2 = bta.render(*args, body=body, specs_bands={"news_momentum_long"})
+    assert "SPECS-REGISTERED" in md2, "without the derivation the window credits every producer row"
+    monkeypatch.setattr(bta, "specs_producer_row_cover", real)
+    # (3) the helper both ways
+    got = bta.specs_producer_row_cover("news_momentum_long", ["close_above_open"],
+                                       ["news_sentiment_5d", "news_volume_zscore_5d"])
+    assert got == (False, ["NEWS_WINDOW_DAYS"], True), got
+    assert bta.specs_producer_row_cover(
+        "bollinger_lower", ["below_ema_200", "price_above_ema_200"], ["rsi_14"])[0] is True
+    assert bta.specs_producer_row_cover("x_not_registered", ["close_above_open"], [])[0] is True
+    monkeypatch.setitem(tab.PRODUCER_BANDS, "news_sentiment_5d", [])
+    monkeypatch.setitem(tab.PRODUCER_BANDS, "news_volume_zscore_5d", [])
+    assert bta.specs_producer_row_cover(
+        "news_momentum_long", ["close_above_open"],
+        ["news_sentiment_5d", "news_volume_zscore_5d"])[0] is True

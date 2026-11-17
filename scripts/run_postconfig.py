@@ -601,7 +601,7 @@ def params_from_manifest(fam_name: str, manifest: dict,
     tools = _tools(fam_name)
     by_id = {p["id"]: p for p in SPECS[fam_name]["params"]}
     arm, env = _arm0(manifest)
-    vals, envs = {}, []
+    vals, envs, predated = {}, [], []
     for pid, key in dict(tools["keys"]).items():
         row = by_id[pid]
         envs.append(row["env"])
@@ -610,6 +610,13 @@ def params_from_manifest(fam_name: str, manifest: dict,
             v = arm.get(key)
         if v is None:
             v = arm.get(row["param"])
+        if v is None and row.get("predates_cubes_before"):
+            # S6-B3442: a knob registered AFTER this cube ran - its arm could not name
+            # it and the engine ran production; read as production, disclosed, never
+            # as missing (the LEVER4 news cubes predate NEWS_WINDOW_DAYS)
+            v = row.get("production")
+            predated.append(f"{key}={v} read as production: the knob postdates this arm "
+                            f"(registered {row['predates_cubes_before']})")
         vals[key] = v
     if expect is not None:
         assert set(vals) == set(expect), (fam_name, sorted(vals), expect)
@@ -618,7 +625,8 @@ def params_from_manifest(fam_name: str, manifest: dict,
         return None, (f"manifest arms[0] lacks {missing} (neither the "
                       f"{' + '.join(envs)} env keys nor the plain keys; a "
                       "pre-B2138 cube has this shape)")
-    return vals, "manifest arms[0] " + " ".join(f"{k}={v}" for k, v in vals.items())
+    return vals, ("manifest arms[0] " + " ".join(f"{k}={v}" for k, v in vals.items())
+                 + ("; " + "; ".join(predated) if predated else ""))
 
 
 def _cube_arg(cube_dir: Path, blk: dict) -> str:

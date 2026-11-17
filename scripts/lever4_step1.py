@@ -123,6 +123,34 @@ def verify_budget(cube_dir: Path, strat: str, budget) -> str:
     return ""
 
 
+def verify_arm_env(cube_dir: Path, env_key: str, expected, flag: str,
+                   production="0") -> str:
+    """S6-B3442 (B3139q-r216): '' when the landed arm's env carries `env_key`
+    equal to `expected` (a flag value, None meaning production); else the
+    refusal. The arm's env is the record run_wave writes; an env without the
+    key ran production. No manifest, an unreadable one or an arm with no env
+    block records nothing and is refused (fail closed, L642) - the
+    verify_budget shape, for any identity knob the grader records."""
+    mf = Path(cube_dir) / "run_manifest.json"
+    if not mf.exists():
+        return (f"REFUSED (S6-B3442): no run_manifest.json in {cube_dir} - the "
+                f"{env_key} the engine ran is unrecorded, so {flag} verifies nothing")
+    try:
+        arms = (json.loads(mf.read_text(encoding="utf-8")) or {}).get("arms") or []
+    except (OSError, ValueError) as exc:
+        return f"REFUSED (S6-B3442): run_manifest.json unreadable: {exc!r}"
+    env = (arms[0] or {}).get("env") if arms and isinstance(arms[0], dict) else None
+    if not isinstance(env, dict):
+        return (f"REFUSED (S6-B3442): the landed arm declares no env block - the "
+                f"{env_key} the engine ran is unrecorded (fail closed, L642)")
+    landed = str(env.get(env_key, production)).strip() or str(production)
+    want = str(production) if expected is None else str(expected).strip()
+    if landed != want:
+        return (f"REFUSED (S6-B3442): the cube ran {env_key}={landed}, {flag} says "
+                f"{want} - grading would file one cube under another config's name")
+    return ""
+
+
 def rank(graded: list) -> list:
     """Graded, non-npt rows in the RULED order: the in-sample lower bound
     is_ci_lo first (runbook 6.4b; grade_npoc_config's sort), None last,
@@ -155,6 +183,9 @@ def main(argv=None) -> int:
     ap.add_argument("--preregistered-exit", default=None,
                     help="the Step-1 pre-registered exit - recorded beside the "
                          "selection, never read (owner ruling 2(i))")
+    ap.add_argument("--news-window", default=None,
+                    help="S6-B3442: the NEWS_WINDOW_DAYS the cube was produced at (news_momentum_long) - "
+                         "identity, recorded not swept; None = production (0)")
     ap.add_argument("--survival", action="store_true",
                     help="S6-B3322: read only the R5 fires the CURRENT gate "
                          "keeps - required on R5 for a changed gate, refused "
@@ -189,6 +220,13 @@ def main(argv=None) -> int:
         why = verify_budget(cube_dir, strat, budget)        # S6-B3417
         if why:
             raise SystemExit(why)
+        if strat == "news_momentum_long":                        # S6-B3442
+            why = verify_arm_env(cube_dir, "NEWS_WINDOW_DAYS", a.news_window, "--news-window")
+            if why:
+                raise SystemExit(why)
+    if is_r5 and a.news_window not in (None, "0", ""):
+        raise SystemExit(f"REFUSED: the R5 cube ran the production news window, but "
+                         f"--news-window names {a.news_window} (fail closed)")
     m = _build(None if is_r5 else cube_dir, strat=strat, keys=[],
                survival=a.survival)
     fires = m.drop_duplicates(["ticker", "entry_date"])

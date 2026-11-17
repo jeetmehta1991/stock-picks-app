@@ -2615,6 +2615,25 @@ del _raw
 # change is needed, only a change of which emitted signal the strategy consumes.
 STRAT_EMA_SPAN: int = int(os.environ.get("STRAT_EMA_SPAN", "200"))
 
+# S6-B3442 (B3139q-r216; the owner's ruling, verbatim '1,2,3 days is needed along
+# with what we have now.'): the news producer's window knob. 0 (unset or blank) is
+# PRODUCTION - each field keeps its own window, the 5-day recency window of
+# news_sentiment_5d and the 7-date count of news_volume_zscore_5d; N in 1..3 makes
+# BOTH windows N dates. Engine-only: a different window adds fires as well as
+# removing them (SPECS news_momentum_long P2). news_count_5d keeps its own
+# NEWS_COUNT_WINDOW_DATES (S6-B3445). Blank-safe parse; a negative window
+# refuses at import (the squeeze pattern). The producer reads THIS attribute at
+# CALL time, so a set or monkeypatched value is seen without a re-import.
+def _news_window_days(environ=None) -> int:
+    raw = str((os.environ.get("NEWS_WINDOW_DAYS", "") if environ is None else environ.get("NEWS_WINDOW_DAYS", "")) or "").strip()
+    n = int(raw) if raw else 0
+    if n < 0:
+        raise ValueError(f"NEWS_WINDOW_DAYS={n}: a window is 0 (production) or a positive count of dates")
+    return n
+
+
+NEWS_WINDOW_DAYS: int = _news_window_days()
+
 # S6-B3171 (owner T3 band words 2026-10-14): the naked-POC producer's knobs
 # and the distance gate's ceiling, env-actuated for engine resim legs
 # (B2866: a band whose parameter does not exist is not a band). Defaults ARE

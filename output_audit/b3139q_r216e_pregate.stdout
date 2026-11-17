@@ -1,0 +1,43 @@
+..........................................s............................. [ 10%]
+........................................................................ [ 21%]
+........................................................................ [ 31%]
+........................................................................ [ 42%]
+........................................................................ [ 52%]
+.....................................................F.................. [ 63%]
+........................................................................ [ 73%]
+........................................................................ [ 84%]
+........................................................................ [ 94%]
+...................................                                      [100%]
+================================== FAILURES ===================================
+______________ test_b3243_a_writing_script_parses_its_arguments _______________
+
+    def test_b3243_a_writing_script_parses_its_arguments():
+        """L947 / #327 (B3139q-r81..r82): `python scripts/lever4_condition_census.py
+        --help` ran main() - the script read sys.argv by hand and ignored what it
+        did not know - and rewrote a committed artifact (restored from HEAD; the
+        census parses its arguments since r81). A script with a __main__ entry
+        that WRITES a file parses its arguments, so an unknown one - --help
+        included - refuses before any write. MEASURED with this scan after the
+        census fix: 120 legacy writers have no parser; they are frozen BY NAME
+        above, shrink-only - a new writer outside the set fails, and a member
+        that gains a parser or is deleted must leave it."""
+        from pathlib import Path as _P
+        root = _P(__file__).resolve().parents[2]
+        writers, mains = _b3243_argv_writers(root)
+        assert mains >= 400, mains
+>       assert writers - _B3243_LEGACY_WRITERS == set(), (
+            "a new script writes without parsing its arguments - give it argparse",
+            sorted(writers - _B3243_LEGACY_WRITERS))
+E       AssertionError: ('a new script writes without parsing its arguments - give it argparse', ['campaign_open_check.py'])
+E       assert {'campaign_open_check.py'} == set()
+E         
+E         Extra items in the left set:
+E         'campaign_open_check.py'
+E         Use -v to get more diff
+
+backtest\tests\test_unit.py:59500: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b3243_a_writing_script_parses_its_arguments
+1 failed, 681 passed, 1 skipped in 1256.32s (0:20:56)
+pregate_select: 21 changed path(s) -> 683 test(s) (R1 24, R2 609, R3 41, R4 4, R5 17, R6 88, R7 0) - a LOWER bound; the full gate stays the authority
+pregate_select: stamped .pregate_stamp - FAILED on this tree (pytest exit 1, 683 tests, 2026-11-17T05:11:20Z)

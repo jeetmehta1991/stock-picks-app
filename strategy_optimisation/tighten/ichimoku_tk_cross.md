@@ -1,6 +1,6 @@
 # Table A - ichimoku_tk_cross
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build ff10274b7 | commit ff10274b7 at 2026-10-30 10:39:08 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 10f385df2 | commit 10f385df2 at 2026-11-16 23:38:54 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** trend | **status:** NOT-STARTED | **R5 fires:** 1319 (closed fires in the exit cube: 1319 of 1319, S6-B3258) | **surviving fires (T1):** 1228 (survives_pct 0.931)
 
@@ -48,6 +48,7 @@ leg runs.
 | P2.1 | BAND | Tenkan / Kijun periods - backtest/signals/technical.py compute_ichimoku | BRACKET production (Hosoda 9 / 26 on six-day weeks; 7 / 22 rescales them to five-day weeks) | (9, 26) | tenkan [7, 9, 12]; kijun [22, 26, 30] | offline 0 of 3, 0 of 3 levels - none - the midpoints at other periods are unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P2.2 | BAND | cross margin - Tenkan above Kijun by m on the cross bar (t > k x (1 + m)) - backtest/signals/technical.py compute_ichimoku | MEASURED - production strict t > k; levels near the R5 fires' Tenkan-over-Kijun gap (q20 0.17pct, q40 0.36pct, q60 0.62pct, q80 1.18pct of kijun) | 0.0 | 0, 0.0025, 0.005, 0.01 | offline 3 of 4 levels - TIGHTER (0.0025, 0.005, 0.01) - subset on the persisted ichi_tenkan / ichi_kijun; the level side reproduces on 1319 of 1319 R5 fires | LOOSER - adds fires; outside the band; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P3 | STRATEGY | news_sentiment_5d `>= 0` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `>= 0` | production + 2 tighter measured levels | offline 2 of 3 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P3.1 | BAND | news window (dates) - the recency window of news_sentiment_5d and the count window of news_volume_zscore_5d, one knob - producer_variant_table.SPECS['news_momentum_long'] P2; backtest/signals/news_sentiment.py compute_news_sentiment_signals (_win, zw) | SPECS news_momentum_long P2 (owner-ruled levels, S6-B3442): production 0 = each field's own window (5-day recency, 7-date count); levels 1, 2 and 3 set both to N dates. Weekday mix and pass rates by weekday: output_audit/b3139q_r216_b3442_weekday.json | 0 | 0, 1, 2, 3 | offline 0 of 4 levels - none - a different window adds fires as well as removing them, and the per-date articles are not persisted on the fires | the whole band, production too - the arm's Step-1 cube ran the pre-r214 producer (resim_band [0, 1, 2, 3]); env NEWS_WINDOW_DAYS | T3 review before any grid |
 | P4 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | blocks SHORT fires when days_to_cover > 5.0 (B718a) | cap 5.0 (B718a owner-ruled risk guard) | - (no band ruled) | offline 0 of 1 levels (no band ruled) - tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (the short-side borrow gate the B744 lint checks for) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
 | B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (runbook section 3.6; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
@@ -803,15 +804,16 @@ breadth producers are an engine-side design act, never an offline sweep.
 | P2.1.2 | Tenkan / Kijun periods | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
 | P2.2 | cross margin - Tenkan above Kijun by m o | 4 | subset-safe | no - derives offline | 1 | 3 | 0 |
 | P3 | news_sentiment_5d >= 0 | 3 | subset-safe | no - derives offline | 1 | 2 | 0 |
+| P3.1 | news window (dates) - the recency window | 4 | **FIRE-ADDING** | **YES** | 4 | 0 | 0 |
 | P4 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 0 |
 
 ```
-FULL FACTORIAL     3 x 3 x 4 x 3 x 1 = 108
-offline gradings   11 level-combinations x 24 exits = 264 (graded from the engine runs' cubes, never run themselves)
-ENGINE RUNS        1 (per axis: the production level plus any actuated non-production level)
-PENDING ACTUATION  96 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
-TILING             1 + 11 + 96 = 108 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
-STEP-1 SERIAL COST 1 x 3.66 h = 4 h at the ruled 1y x 200-ticker shape
+FULL FACTORIAL     3 x 3 x 4 x 3 x 4 x 1 = 432
+offline gradings   44 level-combinations x 24 exits = 1056 (graded from the engine runs' cubes, never run themselves)
+ENGINE RUNS        4 (per axis: the production level plus any actuated non-production level)
+PENDING ACTUATION  384 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+TILING             4 + 44 + 384 = 432 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
+STEP-1 SERIAL COST 4 x 3.66 h = 15 h at the ruled 1y x 200-ticker shape
                    per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```
 

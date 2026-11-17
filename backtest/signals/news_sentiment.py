@@ -35,6 +35,8 @@ from typing import Optional
 
 import pandas as pd
 
+import backtest.config as _cfg  # S6-B3442: the window knob, read at call time
+
 logger = logging.getLogger(__name__)
 
 
@@ -597,7 +599,12 @@ def compute_news_sentiment_signals(
     # strategies (lookback-driven) and momentum/reversal strategies
     # (fixed-window). Tetlock 2007 / Da-Engelberg-Gao 2011 use ~5d windows;
     # 30d baseline is the canonical news-volume baseline window.
-    five_start = as_of - timedelta(days=5)
+    # S6-B3442: the window knob, read from config at CALL time (the squeeze
+    # pattern) - 0 keeps the 5-day recency window; N weighs only the last N
+    # dates (age N carries weight 0, as age 5 does today)
+    _nw = int(getattr(_cfg, "NEWS_WINDOW_DAYS", 0) or 0)
+    _win = _nw if _nw else 5
+    five_start = as_of - timedelta(days=_win)
     thirty_start = as_of - timedelta(days=30)
     five_d = df[(df["published_date"] >= five_start)
                 & (df["published_date"] <= as_of)]
@@ -617,7 +624,7 @@ def compute_news_sentiment_signals(
                 continue  # S6-B3441 (a): an excluded roundup carries no weight
             sc, _ = _score_article(row)
             age = (as_of - row["published_date"]).days
-            w = max(0.0, 1.0 - (age / 5.0))
+            w = max(0.0, 1.0 - (age / float(_win)))
             if w <= 0:
                 continue
             s_scores.append(sc)
@@ -648,7 +655,8 @@ def compute_news_sentiment_signals(
     # Every 7-date window holds 5 weekdays and 2 weekend days. The field keeps
     # its name; news_count_5d counts its own NEWS_COUNT_WINDOW_DATES dates
     # (S6-B3445 (a) - 7 since B3139q-r215).
-    zw = NEWS_VOLUME_Z_WINDOW_DATES
+    # S6-B3442: the same knob sets the count window; 0 keeps the 7 dates
+    zw = _nw if _nw else NEWS_VOLUME_Z_WINDOW_DATES
     z_count = int(((df["published_date"] >= as_of - timedelta(days=zw - 1))
                    & (df["published_date"] <= as_of)).sum())
     baseline_start = as_of - timedelta(days=zw + NEWS_VOLUME_Z_BASELINE_DATES - 1)

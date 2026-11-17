@@ -54,6 +54,47 @@ def _ema200_from_specs() -> dict:
 
 _EMA200 = _ema200_from_specs()
 
+
+def _news_window_from_specs() -> dict:
+    """S6-B3442 (B3139q-r216; the owner's ruling, verbatim '1,2,3 days is
+    needed along with what we have now.'): the news producer's window knob,
+    DERIVED from the registry of record - SPECS['news_momentum_long'] P2,
+    NEWS_WINDOW_DAYS, which sets BOTH the recency window of news_sentiment_5d
+    and the count window of news_volume_zscore_5d as ONE engine axis (the
+    factorial counts an env once) - never a literal (S6-B3120h, L875). It is a
+    band row under each field in every table whose gate thresholds one,
+    because the knob changes the shared producer every reader of the field
+    sees (the STRAT_EMA_SPAN convention); registration and runs stay with
+    news_momentum_long's entry. All four levels are engine runs: production
+    too, since the arm's Step-1 cube ran the pre-r214 producer. Fail closed:
+    if the SPECS entry cannot be read, the generator stops."""
+    import producer_variant_table as _pvt
+    p2 = next(q for q in _pvt.SPECS["news_momentum_long"]["params"]
+              if q.get("env") == "NEWS_WINDOW_DAYS")
+    assert p2["env"], "SPECS news_momentum_long P2 lost its env actuator"
+    return {"param": "news window (dates) - the recency window of "
+                     "news_sentiment_5d and the count window of "
+                     "news_volume_zscore_5d, one knob",
+            "production": p2["production"], "band": list(p2["band"]),
+            "basis": "SPECS news_momentum_long P2 (owner-ruled levels, "
+                     "S6-B3442): production 0 = each field's own window "
+                     "(5-day recency, 7-date count); levels 1, 2 and 3 set "
+                     "both to N dates. Weekday mix and pass rates by weekday: "
+                     "output_audit/b3139q_r216_b3442_weekday.json",
+            "offline": "none - a different window adds fires as well as "
+                       "removing them, and the per-date articles are not "
+                       "persisted on the fires",
+            "resim": "the whole band, production too - the arm's Step-1 cube "
+                     "ran the pre-r214 producer (resim_band "
+                     + str(list(p2["resim_band"])) + ")",
+            "env": p2["env"],
+            "evidence": "producer_variant_table.SPECS['news_momentum_long'] "
+                        "P2; backtest/signals/news_sentiment.py "
+                        "compute_news_sentiment_signals (_win, zw)"}
+
+
+_NEWS_WINDOW = _news_window_from_specs()
+
 PRODUCER_BANDS = {
     # ---- candle patterns (shared shape, strict zeros) ---------------------
     "three_black_crows": [
@@ -935,6 +976,14 @@ PRODUCER_BANDS.update({
                 "backtest/signals/technical.py compute_vwap (pct_from_avwap)"),
              free_band=[0.0, 0.25, 0.5], resim_band=[]),
     ],
+})
+
+
+# S6-B3442 (B3139q-r216): the news window under both fields it sets - two rows,
+# one env, so the factorial counts the knob once (S6-B3120h).
+PRODUCER_BANDS.update({
+    "news_sentiment_5d": [dict(_NEWS_WINDOW)],
+    "news_volume_zscore_5d": [dict(_NEWS_WINDOW)],
 })
 
 # S6-B3253 (B3139q-r86): an env knob that only SELECTS which emitted key a

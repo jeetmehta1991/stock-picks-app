@@ -1,6 +1,6 @@
 # Table A - news_reversal_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build adafdd452 | commit adafdd452 at 2026-10-25 20:59:24 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 10f385df2 | commit 10f385df2 at 2026-11-16 23:40:45 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** news_sentiment | **status:** NOT-STARTED | **R5 fires:** 1 (closed fires in the exit cube: 0 of 1 - 1 MISSING, S6-B3258) | **surviving fires (T1):** 1 (unchanged since R5 - filter is identity)
 
@@ -50,6 +50,7 @@ leg runs.
 | P2.1 | BAND | range-position cutoff - backtest/signals/technical.py:1682 | BRACKET production 0.40 | 0.4 | [0.25, 0.40, 0.50] | offline 0 of 3 levels - none - bar OHLC unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P3 | STRATEGY | news_count_5d `>= 3` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `>= 3` | production + 1 tighter measured levels | offline 1 of 2 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P4 | STRATEGY | news_sentiment_5d `<= -0.3` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `<= -0.3` | production + 1 tighter measured levels | offline 1 of 2 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P4.1 | BAND | news window (dates) - the recency window of news_sentiment_5d and the count window of news_volume_zscore_5d, one knob - producer_variant_table.SPECS['news_momentum_long'] P2; backtest/signals/news_sentiment.py compute_news_sentiment_signals (_win, zw) | SPECS news_momentum_long P2 (owner-ruled levels, S6-B3442): production 0 = each field's own window (5-day recency, 7-date count); levels 1, 2 and 3 set both to N dates. Weekday mix and pass rates by weekday: output_audit/b3139q_r216_b3442_weekday.json | 0 | 0, 1, 2, 3 | offline 0 of 4 levels - none - a different window adds fires as well as removing them, and the per-date articles are not persisted on the fires | the whole band, production too - the arm's Step-1 cube ran the pre-r214 producer (resim_band [0, 1, 2, 3]); env NEWS_WINDOW_DAYS | T3 review before any grid |
 | P5 | STRATEGY | news_sentiment_shift `> 0.2` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `> 0.2` | production + 1 tighter measured levels | offline 1 of 2 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P6 | STRATEGY | pct_change_5d `< -0.1` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `< -0.1` | production + 1 tighter measured levels | offline 1 of 2 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (runbook section 3.6; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
@@ -108,16 +109,17 @@ breadth producers are an engine-side design act, never an offline sweep.
 | P2.1 | range-position cutoff | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
 | P3 | news_count_5d >= 3 | 2 | subset-safe | no - derives offline | 1 | 1 | 0 |
 | P4 | news_sentiment_5d <= -0.3 | 2 | subset-safe | no - derives offline | 1 | 1 | 0 |
+| P4.1 | news window (dates) - the recency window | 4 | **FIRE-ADDING** | **YES** | 4 | 0 | 0 |
 | P5 | news_sentiment_shift > 0.2 | 2 | subset-safe | no - derives offline | 1 | 1 | 0 |
 | P6 | pct_change_5d < -0.1 | 2 | subset-safe | no - derives offline | 1 | 1 | 0 |
 
 ```
-FULL FACTORIAL     3 x 3 x 2 x 2 x 2 x 2 = 144
-offline gradings   15 level-combinations x 24 exits = 360 (graded from the engine runs' cubes, never run themselves)
-ENGINE RUNS        1 (per axis: the production level plus any actuated non-production level)
-PENDING ACTUATION  128 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
-TILING             1 + 15 + 128 = 144 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
-STEP-1 SERIAL COST 1 x 3.66 h = 4 h at the ruled 1y x 200-ticker shape
+FULL FACTORIAL     3 x 3 x 2 x 2 x 4 x 2 x 2 = 576
+offline gradings   60 level-combinations x 24 exits = 1440 (graded from the engine runs' cubes, never run themselves)
+ENGINE RUNS        4 (per axis: the production level plus any actuated non-production level)
+PENDING ACTUATION  512 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+TILING             4 + 60 + 512 = 576 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
+STEP-1 SERIAL COST 4 x 3.66 h = 15 h at the ruled 1y x 200-ticker shape
                    per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```
 

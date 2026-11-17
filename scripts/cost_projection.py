@@ -27,7 +27,8 @@ import json
 from pathlib import Path
 
 HOURLY_RATE_USD = 1.20   # c6a.16xlarge us-east-1 spot, conservative upper
-BUDGET_CAP_USD = 50.0    # owner HARD cap (CAD; treated 1:1 conservatively)
+BUDGET_CAP_USD = 100.0   # owner HARD cap: $100 TOTAL across all strategies (B2109, 2026-08-23); re-pointed
+                         # from a stale 50 at B3139q-r216 (S6-B3340 (b)) - a LOCAL run spends $0 against it
 VCPU_SATURATION = 64     # c6a.16xlarge vCPUs; >this, screening is bounded
 
 

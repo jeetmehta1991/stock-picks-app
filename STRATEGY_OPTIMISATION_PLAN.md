@@ -479,7 +479,7 @@ pair is now consistent.
 | Owner approval before any rule / threshold / parameter change | CLAUDE.md Critical Rules - this runbook MEASURES a strategy; it never changes one; a strategy gate edit without its cited ruling row is refused at commit (preflight C21, S6-B3403) |
 | Holdout dates and duration | **LOCKED** (§1.1) |
 | Local run cap | **5 h per leg** - the CEILING (B2107, recorded verbatim in queue row S6-B2107-OWNER-RULINGS-3; raised from 3 h on 2026-08-24 after the pooled 200-ticker rate measured 4.2 h per config; `prelaunch_gate.OWNER_LOCAL_CAP_HOURS`, fail-closed). The value ENFORCED is each spec's `leg_cap_hours`, passed to the engine as `--max-run-hours`; the cap counts ACTIVE hours, crediting machine-sleep gaps of 30 minutes or more (`backtest.py::kill_decision`, both gating sites; no wall-clock backstop, deliberately - L734). A run longer than one leg is LEGGED on the checkpoint infrastructure, never shortened. **STEP SCOPE (B3133, owner verbatim: '5h cap on run applies only for step 1 and not step 2'; re-affirmed B3141 2026-10-08: 'Run in step 2 is uncapped'): the ceiling binds STEP-1 runs ONLY - a Step-2 run is UNCAPPED in total, with legging retained for resume granularity; `check_supervisor_and_cap` scopes the over-cap refusal to step != 2, treats an ABSENT step as Step 1 (fail closed, L642), and still refuses an ABSENT leg cap at every step** |
-| Compute budget | **$100 TOTAL across all strategies, not per strategy or per run** (owner ruling 2026-08-23, B2109) - every venue quote, wave plan and Step-2 projection counts against ONE envelope |
+| Compute budget | **$100 TOTAL across all strategies, not per strategy or per run** (owner ruling 2026-08-23, B2109) - every venue quote, wave plan and Step-2 projection counts against ONE envelope; a LOCAL run spends $0 against it and the spend ledger is built in the batch that adds the first paid launch path (S6-B3340 (b), owner 2026-11-16); scripts/cost_projection.py's cap is $100 (re-pointed from a stale $50 at B3139q-r216) |
 | Venue | Hetzner auction, gated on (A) one strategy completed end-to-end locally (S6-B2115a) and (B) all workflows codified as automation (S6-B2115b, `scripts/run_wave.py`) - owner ruling B2115; the venue ruling (S6-B2107a, which also holds the spend ledger) precedes any non-local launch |
 | Programme target | Phase 1B entry with **>= 30 LONG** strategies; short strategies carry **no target** - each promoted long still carries its short mirror under the standing directive (owner 2026-10-19, S6-B3220: *"i need more long strategies - raising the target to 30 long strategies. Short strategies can stay without target."*; was >= 20 LONG + >= 20 logically-symmetric MIRROR SHORT, B2107) |
 | Fewer configs to save time | **OUT OF QUESTION** - cost comes from speed or machine |
@@ -609,7 +609,7 @@ trades - one family measured 20 registrations collapsing to about 1.2 independen
 1. **PRE-GATE before any campaign target is picked** (council verdict S6-B2627;
    `scripts/family_pregate.py`): trade overlap + band clustering + the MEDIAN-exit holdout printed
    beside the best-cell key (the best-vs-median gap is selection inflation, on the artifact's face).
-   A family is CONFIRMED or SPLIT only by this measured overlap, never by a name prefix.
+   A family is CONFIRMED or SPLIT only by this measured overlap, never by a name prefix. Each register open with no pre-gate naming it is disclosed on every status build (scripts/campaign_open_check.py, S6-B3402); whether that should refuse is the owner's decision S6-B3402a.
 2. **Pick ONE representative** per cluster, with the criterion stated (#165).
 3. **Close the rest by a PRE-REGISTERED sibling containment pass** after the representative's
    verdict (the pre-registration committed BEFORE grading; each sibling's overlap recorded), so
@@ -1696,7 +1696,7 @@ instance is recorded in the campaign log).
   `launch_refusals` applies the battery's own key rule (`run_postconfig.params_from_manifest`) to
   every arm, so a hand-written spec that omits one is refused before the engine runs instead of
   landing ungradeable - the b3171 chain's configs 1 and 2 named one of four knobs and both landings'
-  batteries failed closed.
+  batteries failed closed. A knob registered after a strategy's cubes landed carries `predates_cubes_before` on its SPECS row, and the key rule reads its absence on an earlier cube as production, disclosed (S6-B3442).
 - **`step1_cube: false` - set it explicitly, and know what it reaches.** A Step-1 marking arms the
   **holdout-touch FAIL** in run_postconfig - correct for a Step-1 search, which must not touch the
   holdout, and **WRONG for Step 2, which grades ON the holdout by design.** The spec field selects the

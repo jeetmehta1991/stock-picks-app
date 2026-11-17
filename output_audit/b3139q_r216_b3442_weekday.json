@@ -1,0 +1,391 @@
+{
+ "ticket": "S6-B3442",
+ "batch": "B3139q-r216",
+ "what": "news_momentum_long's two news legs at each NEWS_WINDOW_DAYS level, by screen weekday",
+ "universe": {
+  "file": "output_audit/_sweep_200.txt",
+  "sha256": "7978d8cfa42ac9832d98e7d6e9d06f18f526092840c0967d8d61dc54f5a538f6",
+  "n": 200
+ },
+ "window": {
+  "start": "2024-05-05",
+  "end_exclusive": "2025-05-05",
+  "weekdays": 260,
+  "source": "the LEVER4 news arm's Step-1 run manifest (in-sample; ends at the IS/HO boundary)"
+ },
+ "gate": "strat_news_momentum_long with its four price legs True (the real gate code; no budget)",
+ "levels": [
+  0,
+  1,
+  2,
+  3
+ ],
+ "structure": {
+  "0": {
+   "Mon": {
+    "recency_dates": 5,
+    "recency_weekdays": 3,
+    "count_dates": 7,
+    "count_weekdays": 5
+   },
+   "Tue": {
+    "recency_dates": 5,
+    "recency_weekdays": 3,
+    "count_dates": 7,
+    "count_weekdays": 5
+   },
+   "Wed": {
+    "recency_dates": 5,
+    "recency_weekdays": 3,
+    "count_dates": 7,
+    "count_weekdays": 5
+   },
+   "Thu": {
+    "recency_dates": 5,
+    "recency_weekdays": 4,
+    "count_dates": 7,
+    "count_weekdays": 5
+   },
+   "Fri": {
+    "recency_dates": 5,
+    "recency_weekdays": 5,
+    "count_dates": 7,
+    "count_weekdays": 5
+   }
+  },
+  "1": {
+   "Mon": {
+    "recency_dates": 1,
+    "recency_weekdays": 1,
+    "count_dates": 1,
+    "count_weekdays": 1
+   },
+   "Tue": {
+    "recency_dates": 1,
+    "recency_weekdays": 1,
+    "count_dates": 1,
+    "count_weekdays": 1
+   },
+   "Wed": {
+    "recency_dates": 1,
+    "recency_weekdays": 1,
+    "count_dates": 1,
+    "count_weekdays": 1
+   },
+   "Thu": {
+    "recency_dates": 1,
+    "recency_weekdays": 1,
+    "count_dates": 1,
+    "count_weekdays": 1
+   },
+   "Fri": {
+    "recency_dates": 1,
+    "recency_weekdays": 1,
+    "count_dates": 1,
+    "count_weekdays": 1
+   }
+  },
+  "2": {
+   "Mon": {
+    "recency_dates": 2,
+    "recency_weekdays": 1,
+    "count_dates": 2,
+    "count_weekdays": 1
+   },
+   "Tue": {
+    "recency_dates": 2,
+    "recency_weekdays": 2,
+    "count_dates": 2,
+    "count_weekdays": 2
+   },
+   "Wed": {
+    "recency_dates": 2,
+    "recency_weekdays": 2,
+    "count_dates": 2,
+    "count_weekdays": 2
+   },
+   "Thu": {
+    "recency_dates": 2,
+    "recency_weekdays": 2,
+    "count_dates": 2,
+    "count_weekdays": 2
+   },
+   "Fri": {
+    "recency_dates": 2,
+    "recency_weekdays": 2,
+    "count_dates": 2,
+    "count_weekdays": 2
+   }
+  },
+  "3": {
+   "Mon": {
+    "recency_dates": 3,
+    "recency_weekdays": 1,
+    "count_dates": 3,
+    "count_weekdays": 1
+   },
+   "Tue": {
+    "recency_dates": 3,
+    "recency_weekdays": 2,
+    "count_dates": 3,
+    "count_weekdays": 2
+   },
+   "Wed": {
+    "recency_dates": 3,
+    "recency_weekdays": 3,
+    "count_dates": 3,
+    "count_weekdays": 3
+   },
+   "Thu": {
+    "recency_dates": 3,
+    "recency_weekdays": 3,
+    "count_dates": 3,
+    "count_weekdays": 3
+   },
+   "Fri": {
+    "recency_dates": 3,
+    "recency_weekdays": 3,
+    "count_dates": 3,
+    "count_weekdays": 3
+   }
+  }
+ },
+ "by_level_weekday": {
+  "0": {
+   "Mon": {
+    "n": 10400,
+    "both": 1156,
+    "sent": 3853,
+    "zscore": 1966,
+    "both_pct": 11.12,
+    "sent_pct": 37.05,
+    "zscore_pct": 18.9
+   },
+   "Tue": {
+    "n": 10400,
+    "both": 1153,
+    "sent": 3927,
+    "zscore": 1921,
+    "both_pct": 11.09,
+    "sent_pct": 37.76,
+    "zscore_pct": 18.47
+   },
+   "Wed": {
+    "n": 10400,
+    "both": 1122,
+    "sent": 3955,
+    "zscore": 1808,
+    "both_pct": 10.79,
+    "sent_pct": 38.03,
+    "zscore_pct": 17.38
+   },
+   "Thu": {
+    "n": 10400,
+    "both": 1076,
+    "sent": 4171,
+    "zscore": 1697,
+    "both_pct": 10.35,
+    "sent_pct": 40.11,
+    "zscore_pct": 16.32
+   },
+   "Fri": {
+    "n": 10400,
+    "both": 1151,
+    "sent": 4308,
+    "zscore": 1747,
+    "both_pct": 11.07,
+    "sent_pct": 41.42,
+    "zscore_pct": 16.8
+   }
+  },
+  "1": {
+   "Mon": {
+    "n": 10400,
+    "both": 935,
+    "sent": 1932,
+    "zscore": 1557,
+    "both_pct": 8.99,
+    "sent_pct": 18.58,
+    "zscore_pct": 14.97
+   },
+   "Tue": {
+    "n": 10400,
+    "both": 1099,
+    "sent": 2096,
+    "zscore": 1774,
+    "both_pct": 10.57,
+    "sent_pct": 20.15,
+    "zscore_pct": 17.06
+   },
+   "Wed": {
+    "n": 10400,
+    "both": 942,
+    "sent": 1918,
+    "zscore": 1535,
+    "both_pct": 9.06,
+    "sent_pct": 18.44,
+    "zscore_pct": 14.76
+   },
+   "Thu": {
+    "n": 10400,
+    "both": 1027,
+    "sent": 2008,
+    "zscore": 1683,
+    "both_pct": 9.88,
+    "sent_pct": 19.31,
+    "zscore_pct": 16.18
+   },
+   "Fri": {
+    "n": 10400,
+    "both": 876,
+    "sent": 1869,
+    "zscore": 1418,
+    "both_pct": 8.42,
+    "sent_pct": 17.97,
+    "zscore_pct": 13.63
+   }
+  },
+  "2": {
+   "Mon": {
+    "n": 10400,
+    "both": 708,
+    "sent": 2404,
+    "zscore": 1127,
+    "both_pct": 6.81,
+    "sent_pct": 23.12,
+    "zscore_pct": 10.84
+   },
+   "Tue": {
+    "n": 10400,
+    "both": 1269,
+    "sent": 3028,
+    "zscore": 1944,
+    "both_pct": 12.2,
+    "sent_pct": 29.12,
+    "zscore_pct": 18.69
+   },
+   "Wed": {
+    "n": 10400,
+    "both": 1277,
+    "sent": 2983,
+    "zscore": 1967,
+    "both_pct": 12.28,
+    "sent_pct": 28.68,
+    "zscore_pct": 18.91
+   },
+   "Thu": {
+    "n": 10400,
+    "both": 1251,
+    "sent": 2955,
+    "zscore": 1959,
+    "both_pct": 12.03,
+    "sent_pct": 28.41,
+    "zscore_pct": 18.84
+   },
+   "Fri": {
+    "n": 10400,
+    "both": 1213,
+    "sent": 2880,
+    "zscore": 1895,
+    "both_pct": 11.66,
+    "sent_pct": 27.69,
+    "zscore_pct": 18.22
+   }
+  },
+  "3": {
+   "Mon": {
+    "n": 10400,
+    "both": 661,
+    "sent": 2770,
+    "zscore": 1021,
+    "both_pct": 6.36,
+    "sent_pct": 26.63,
+    "zscore_pct": 9.82
+   },
+   "Tue": {
+    "n": 10400,
+    "both": 1026,
+    "sent": 3289,
+    "zscore": 1545,
+    "both_pct": 9.87,
+    "sent_pct": 31.62,
+    "zscore_pct": 14.86
+   },
+   "Wed": {
+    "n": 10400,
+    "both": 1382,
+    "sent": 3569,
+    "zscore": 2114,
+    "both_pct": 13.29,
+    "sent_pct": 34.32,
+    "zscore_pct": 20.33
+   },
+   "Thu": {
+    "n": 10400,
+    "both": 1438,
+    "sent": 3607,
+    "zscore": 2208,
+    "both_pct": 13.83,
+    "sent_pct": 34.68,
+    "zscore_pct": 21.23
+   },
+   "Fri": {
+    "n": 10400,
+    "both": 1325,
+    "sent": 3453,
+    "zscore": 2083,
+    "both_pct": 12.74,
+    "sent_pct": 33.2,
+    "zscore_pct": 20.03
+   }
+  }
+ },
+ "totals": {
+  "0": {
+   "n": 52000,
+   "both": 5658,
+   "sent": 20214,
+   "zscore": 9139,
+   "both_pct": 10.88,
+   "sent_pct": 38.87,
+   "zscore_pct": 17.57
+  },
+  "1": {
+   "n": 52000,
+   "both": 4879,
+   "sent": 9823,
+   "zscore": 7967,
+   "both_pct": 9.38,
+   "sent_pct": 18.89,
+   "zscore_pct": 15.32
+  },
+  "2": {
+   "n": 52000,
+   "both": 5718,
+   "sent": 14250,
+   "zscore": 8892,
+   "both_pct": 11.0,
+   "sent_pct": 27.4,
+   "zscore_pct": 17.1
+  },
+  "3": {
+   "n": 52000,
+   "both": 5832,
+   "sent": 16688,
+   "zscore": 8971,
+   "both_pct": 11.22,
+   "sent_pct": 32.09,
+   "zscore_pct": 17.25
+  }
+ },
+ "ticker_days_with_no_article_in_the_7_date_count": 15272,
+ "tickers_with_no_article_on_any_day": [
+  "ATVI",
+  "FISV",
+  "INFO",
+  "TWTR"
+ ],
+ "workers": 6,
+ "elapsed_s": 1035.0,
+ "generator": "scratch r216_size_b3442_weekday.py, embedded in output_audit/b3139q_r216_sizing_generators.json"
+}

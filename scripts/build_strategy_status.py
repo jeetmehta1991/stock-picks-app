@@ -1393,6 +1393,17 @@ def main() -> int:
     Path(a.out).write_text("\n".join(L) + "\n", encoding="utf-8")
 
     print(f"wrote {a.out} and {a.json}")
+    # S6-B3402 (B3139q-r216): the campaign-open rules, disclosed over every
+    # register record beside the view they are read against - never a refusal
+    try:
+        import campaign_open_check as _coc
+        _s = _coc.run(ROOT, view=a.json)["summary"]
+        print(f"  campaign_open_check (S6-B3402): {_s['opens']} opens, "
+              f"{_s['without_family_pregate']} without a family pre-gate naming them "
+              f"({_s['pregate_artifacts_in_repo']} pre-gate(s) in the repo), "
+              f"{_s['lane_undeclared']} naming no W-T / W-L lane -> output_audit/campaign_open_check.json")
+    except Exception as _exc:  # noqa: BLE001 - the view is written; the disclosure names its failure
+        print(f"  campaign_open_check (S6-B3402) FAILED: {_exc!r} - the disclosure was not refreshed")
     print(f"  registered {len(recs)} | admitted {bystatus.get('DONE-ADMITTED',0)} | "
           f"in-campaign {bystatus.get('IN-CAMPAIGN',0)} | "
           f"stalled-campaign {bystatus.get('STALLED-CAMPAIGN',0)} | "

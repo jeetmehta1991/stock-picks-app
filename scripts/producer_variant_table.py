@@ -1318,6 +1318,60 @@ def lever4_r2_level(name: str) -> str:
     return json.dumps({name: {"k": len(legs) - 1, "mandatory": [thesis]}})
 
 
+# S6-B3442 (B3139q-r216; owner '1,2,3 days is needed along with what we have now.'):
+# news_momentum_long's SECOND knob - the news producer's window, NEWS_WINDOW_DAYS,
+# production 0 (each field's own window: 5-day recency, 7-date count), levels 1, 2
+# and 3 dates for BOTH fields. Engine-only: a different window adds fires as well as
+# removing them, so no level is a subset of the landed fires (resim_band, the
+# S6-B2885 rule). Registered on the generated SPECS entry so the battery reads it
+# (tools.keys / grade.flags) and make_spec auto-pins it at production on every arm
+# that does not sweep it. The other three LEVER4 entries are unchanged.
+_NEWS_WINDOW_STRATEGY = "news_momentum_long"
+_NEWS_WINDOW_LEVELS = [0, 1, 2, 3]
+
+
+def _news_window_params(name: str) -> list:
+    if name != _NEWS_WINDOW_STRATEGY:
+        return []
+    return [{"id": "P2", "producer": "news_sentiment.compute_news_sentiment_signals (the recency window of "
+                                      "news_sentiment_5d and the count window of news_volume_zscore_5d)",
+             "param": "news_window_days", "env": "NEWS_WINDOW_DAYS",
+             "free_band": [], "resim_band": list(_NEWS_WINDOW_LEVELS),
+             "consumers": ["backtest/config.py", "backtest/signals/news_sentiment.py"],
+             "production": 0, "type": "int", "band": list(_NEWS_WINDOW_LEVELS),
+             "derivation": ("S6-B3442 (owner 2026-11-10, verbatim '1,2,3 days is needed along with what "
+                            "we have now.'): 0 = production (the 5-day recency window and the 7-date "
+                            "count); 1, 2 and 3 set both windows to N dates. A 1-date window ending on "
+                            "any weekday holds 1 weekday; a 2- or 3-date window ending on a Monday holds "
+                            "1 where Tuesday to Friday hold 2 or 3 - the weekday mix is disclosed at "
+                            "band review (T3)"),
+             "subset_safe": False, "status": "UNTESTED",
+             "evidence": "config.py NEWS_WINDOW_DAYS; news_sentiment.py compute_news_sentiment_signals (_win, zw)",
+             "engine_implemented": True,
+             # the battery reads an ABSENT knob on a cube that predates this registration as
+             # production, with a disclosure (run_postconfig.params_from_manifest) - the
+             # LEVER4 news cubes landed before the knob existed
+             "predates_cubes_before": "B3139q-r216"}]
+
+
+def _news_window_keys(name: str) -> dict:
+    return {"P2": "news_window_days"} if name == _NEWS_WINDOW_STRATEGY else {}
+
+
+def _news_window_flags(name: str) -> dict:
+    return {"P2": "--news-window"} if name == _NEWS_WINDOW_STRATEGY else {}
+
+
+def _news_window_formula(name: str) -> str:
+    if name != _NEWS_WINDOW_STRATEGY:
+        return ""
+    return ("\n"
+            "P2  news_window_days  =  NEWS_WINDOW_DAYS - the news producer's window for\n"
+            "                         BOTH fields the gate reads: production 0 (5-day recency,\n"
+            "                         7-date count); levels 1, 2, 3 dates (owner 2026-11-10;\n"
+            "                         S6-B3442; engine-only)\n")
+
+
 def _lever4_spec(name: str) -> dict:
     legs, thesis, sides, fires, ho, window, cube_fires = _LEVER4[name]
     m = len(legs)
@@ -1336,7 +1390,8 @@ def _lever4_spec(name: str) -> dict:
         "\n"
         f"long   =  k-of-{m} over ({', '.join(legs)})\n"
         + ("short  =  its own legs, every one required - the budget binds the\n"
-           "          long gate only\n" if "short" in sides else ""))
+           "          long gate only\n" if "short" in sides else "")
+        + _news_window_formula(name))
     return {
         "gate": (f"long: k-of-{m} of {' AND '.join(legs)} (production k = {m})"
                  + (" | short: unchanged, every leg" if "short" in sides else "")),
@@ -1359,12 +1414,12 @@ def _lever4_spec(name: str) -> dict:
              "evidence": ("screener.py LEVER4_LEGS / _gate_budget; config.py "
                           "LEVER4_GATE_BUDGET"),
              "engine_implemented": True},
-        ],
+        ] + _news_window_params(name),
         "tools": {
-            "keys": {"P1": "gate_budget"},
+            "keys": {"P1": "gate_budget", **_news_window_keys(name)},
             "grid_keys": ["leg"],
             "grade": {"script": "lever4_step1.py", "cube": "",
-                      "flags": {"P1": "--gate-budget"},
+                      "flags": {"P1": "--gate-budget", **_news_window_flags(name)},
                       "extra": ["--strategy", name, "--min-n", "10"],
                       "pythonpath": ".;scripts",
                       # S6-B3331: a Step-2 cube's long leg is read ONCE on the
