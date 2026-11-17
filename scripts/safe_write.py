@@ -35,12 +35,20 @@ def safe_write_py(path, source: str, *, encoding: str = "utf-8") -> pathlib.Path
             "Validate before the mutation, not after - a check that runs "
             "afterwards reports a fact you can no longer act on."
         ) from exc
-    p.write_text(source, encoding=encoding)
+    # S6-B3452 (B3139q-r216g): the source's BYTES - Path.write_text in text
+    # mode turns every LF into CRLF on Windows (L756), so a patch of an LF
+    # file through this helper flipped the file's whole stored form
+    p.write_bytes(source.encode(encoding))
     return p
 
 
 def safe_append_py(path, block: str, *, encoding: str = "utf-8") -> pathlib.Path:
     """Append `block`, but only if the RESULT parses."""
     p = pathlib.Path(path)
-    current = p.read_text(encoding=encoding) if p.exists() else ""
+    # S6-B3452: read the BYTES (read_text would fold CRLF into LF) and let
+    # the block follow the target's dominant ending (L850)
+    current = p.read_bytes().decode(encoding) if p.exists() else ""
+    nl, crlf = chr(10), chr(13) + chr(10)
+    if current.count(crlf) * 2 > current.count(nl):
+        block = block.replace(crlf, nl).replace(nl, crlf)
     return safe_write_py(p, current + block, encoding=encoding)

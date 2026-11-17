@@ -1099,6 +1099,33 @@ _C18_LANES = (
 )
 
 
+# S6-B3449 (B3139q-r216; L1017, a compliance failure against #281): a change to
+# a charter GENERATOR input regenerates BOTH lanes, and every charter the
+# regeneration writes is compared - staged or not. MEASURED: B3139q-r212b
+# (c4d6ae5c6) taught build_table_a.py the OR-composite rows and regenerated no
+# lane charter, and C18 compared only STAGED charters, so 3 charters
+# (hull_rsi, ultimate_oscillator, insider_cluster_with_director_long) stayed
+# stale for a week. A charter the regeneration does not write (a departed
+# record, test_b2836's question) is not compared.
+_C18_GENERATOR_INPUTS = ("scripts/build_table_a.py", "scripts/table_a_bands.py",
+                         "scripts/producer_variant_table.py")
+
+
+def _c18_tracked_charters(lane_prefix: str) -> list:
+    """The tracked charters under one lane folder (posix paths), the README out."""
+    r = subprocess.run(["git", "ls-files", "--", lane_prefix], capture_output=True,
+                       text=True, cwd=str(REPO_ROOT), timeout=60)
+    if r.returncode != 0:
+        raise RuntimeError(f"git ls-files {lane_prefix} exited {r.returncode}")
+    out = []
+    for ln in r.stdout.splitlines():
+        p = ln.strip().replace("\\", "/")
+        rest = p[len(lane_prefix):]
+        if p.endswith(".md") and not p.endswith("README.md") and "/" not in rest:
+            out.append(p)
+    return out
+
+
 def _c18_normalise(text: str) -> str:
     """Endings unified and the by-design-nondeterministic stamp line dropped."""
     return "\n".join(
@@ -1122,23 +1149,41 @@ def _c18_regenerate(lane_args: list[list[str]]) -> Path:
 
 
 def check_generated_artifact_matches_generator(paths, *, regenerate=None,
-                                               staged_text=None) -> list[str]:
+                                               staged_text=None, tracked=None) -> list[str]:
     """C18: staged generated artifacts must byte-match a fresh regeneration -
-    labelled C15 until S6-B3284; the racing-artifact check keeps C15."""
-    targets = []
-    for p in paths:
-        pos = str(p).replace("\\", "/")
-        if (pos.startswith("strategy_optimisation/") and pos.endswith(".md")
-                and not pos.endswith("README.md")):
-            targets.append(pos)
-    if not targets:
+    labelled C15 until S6-B3284; the racing-artifact check keeps C15.
+
+    S6-B3450 (B3139q-r216, L1018): main() hands this check get_staged_files()'s
+    ABSOLUTE paths and the target filter wanted repo-relative ones, so from its
+    birth (B2852, 2026-09-17) it selected no target on its live path - 0 of the
+    6 charters staged at B3139q-r216 - while its pin passed repo-relative
+    strings through the seam (#324 rule 2). Every path is made repo-relative
+    first (_rel). S6-B3449 (B3139q-r216, L1017): a staged charter GENERATOR
+    input regenerates both lanes, and every tracked charter the regeneration
+    writes is compared, staged or not - B3139q-r212b changed build_table_a.py
+    and left 3 charters stale for a week. A charter the regeneration does not
+    write (a departed record, test_b2836's question) is not compared.
+    `regenerate`, `staged_text` and `tracked` (a lane prefix -> its tracked
+    charter paths) are the test seams."""
+    def _pos(p) -> str:
+        return Path(_rel(Path(p))).as_posix()
+    rels = [_pos(p) for p in paths]
+    targets = [pos for pos in rels
+               if pos.startswith("strategy_optimisation/") and pos.endswith(".md")
+               and not pos.endswith("README.md")]
+    gen_staged = sorted(pos for pos in rels if pos in _C18_GENERATOR_INPUTS)
+    if not targets and not gen_staged:
         return []
-    lane_args, seen = [], set()
+    lane_args, seen = [], []
+    if gen_staged:                       # S6-B3449: a generator input - both lanes
+        for prefix, args_ in _C18_LANES:
+            seen.append(prefix)
+            lane_args.append(args_)
     for pos in targets:
         for prefix, args_ in _C18_LANES:
             if pos.startswith(prefix):
                 if prefix not in seen:
-                    seen.add(prefix)
+                    seen.append(prefix)
                     lane_args.append(args_)
                 break
     regenerate = regenerate or _c18_regenerate
@@ -1154,6 +1199,7 @@ def check_generated_artifact_matches_generator(paths, *, regenerate=None,
             if r.returncode != 0:
                 raise RuntimeError(f"git show :{pos} exited {r.returncode}")
             return r.stdout
+    tracked = tracked or _c18_tracked_charters
     bad = []
     for pos in targets:
         rel = pos[len("strategy_optimisation/"):]
@@ -1174,6 +1220,33 @@ def check_generated_artifact_matches_generator(paths, *, regenerate=None,
                        f"generated artifact is never hand-edited; change "
                        f"scripts/build_table_a.py / scripts/table_a_bands.py "
                        f"and regenerate (L805)")
+    # S6-B3449: every OTHER tracked charter the regeneration writes
+    why = (" - the staged generator input(s) " + ", ".join(gen_staged)
+           + " changed it") if gen_staged else ""
+    for prefix in seen:
+        try:
+            members = tracked(prefix)
+        except Exception as e:
+            bad.append(f"C18: could not list the tracked charters under {prefix}: "
+                       f"{e!r} (fail closed)")
+            continue
+        for pos in members:
+            if pos in targets:
+                continue
+            gen_p = Path(tmp) / pos[len("strategy_optimisation/"):]
+            if not gen_p.is_file():
+                continue                 # a departed record - test_b2836's question
+            try:
+                cur = staged_text(pos)
+            except Exception as e:
+                bad.append(f"C18: could not read the index content of {pos}: {e!r}")
+                continue
+            if (_c18_normalise(cur)
+                    != _c18_normalise(gen_p.read_text(encoding="utf-8"))):
+                bad.append(f"C18 STALE CHARTER (S6-B3449 / L1017): {pos} is not "
+                           f"staged and differs from a fresh regeneration{why}; "
+                           f"regenerate it and stage it (#281: a generated "
+                           f"artifact older than its generator is stale)")
     return bad
 
 

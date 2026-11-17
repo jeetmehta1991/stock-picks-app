@@ -1,6 +1,6 @@
 # Table A - hull_rsi
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build ff10274b7 | commit ff10274b7 at 2026-10-30 10:39:08 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 10f385df2 | commit 4ead72d6a at 2026-11-17 01:29:56 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** momentum | **status:** NOT-STARTED | **R5 fires:** 1270 (closed fires in the exit cube: 1270 of 1270, S6-B3258) | **surviving fires (T1):** 1270 (unchanged since R5 - filter is identity)
 
@@ -35,7 +35,8 @@ P7  price_below_hull  <- backtest/signals/technical.py
 ============================== STRATEGY LAYER ==============================
 
 P8  adx > 20   [EXISTING-THRESHOLD]
-P9  _short_borrow_trap_active(s)   [helper gate]
+P9  OR-composite (adx > 20)   [EXISTING-THRESHOLD, OR-composite - S6-B3429]
+P10  _short_borrow_trap_active(s)   [helper gate]
 
 Gate body, VERBATIM from backtest/signals/screener.py strat_hull_rsi (docstring and return dropped):
 
@@ -74,7 +75,8 @@ leg runs.
 | P7 | PRODUCER | price_below_hull - emitted by backtest/signals/technical.py; the boolean's UNDERLYING condition is bandable through its producer's internals | close vs the Hull MA level (technical.py:1330) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P7.x) | BANDS-DEFINED |
 | P7.1 | BAND | mirror of price_above_hull - technical.py hull block | mirror | 0.0 | 0, 0.25, 0.5 | offline 0 of 3 levels - none | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P8 | STRATEGY | adx `> 20` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `> 20` | production + 4 tighter measured levels | offline 4 of 5 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P9 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | blocks SHORT fires when days_to_cover > 5.0 (B718a) | cap 5.0 (B718a owner-ruled risk guard) | - (no band ruled) | offline 0 of 1 levels (no band ruled) - tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (the short-side borrow gate the B744 lint checks for) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
+| P9 | STRATEGY | OR-composite `(adx > 20)` [EXISTING-THRESHOLD, OR-composite - S6-B3429] | an `or` of numeric cuts: tightening either arm keeps a subset of the recorded fires, and per-arm retention needs the gate's arm | `s.get('adx', 0) > 20 or s.get('adx_trending', False)` | production arms as written | offline 0 of 1 levels - arm-conditioned tighter levels are measured at grid time - the sweep takes the arms as @group axes (S6-B3290, the williams_r_oversold precedent) | - (the arms' magnitudes are persisted on the fires) | OR-COMPOSITE-REGISTERED |
+| P10 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | blocks SHORT fires when days_to_cover > 5.0 (B718a) | cap 5.0 (B718a owner-ruled risk guard) | - (no band ruled) | offline 0 of 1 levels (no band ruled) - tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (the short-side borrow gate the B744 lint checks for) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
 | B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (runbook section 3.6; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
 ### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]
@@ -828,10 +830,11 @@ breadth producers are an engine-side design act, never an offline sweep.
 | P6.1 | buffer pct (close > hull by) | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
 | P7.1 | mirror of price_above_hull | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
 | P8 | adx > 20 | 5 | subset-safe | no - derives offline | 1 | 4 | 0 |
-| P9 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 0 |
+| P9 | OR-composite (adx > 20) | 1 | **FIRE-ADDING** | **YES** | 1 | 0 | 0 |
+| P10 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 0 |
 
 ```
-FULL FACTORIAL     3 x 3 x 3 x 3 x 3 x 8 x 3 x 3 x 5 x 1 = 87480
+FULL FACTORIAL     3 x 3 x 3 x 3 x 3 x 8 x 3 x 3 x 5 x 1 x 1 = 87480
 offline gradings   9 level-combinations x 24 exits = 216 (graded from the engine runs' cubes, never run themselves)
 ENGINE RUNS        1 (per axis: the production level plus any actuated non-production level)
 PENDING ACTUATION  87470 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)

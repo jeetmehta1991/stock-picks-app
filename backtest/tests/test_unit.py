@@ -76951,3 +76951,209 @@ def test_b3442b_table_a_shows_the_news_window_and_credits_no_producer_row_with_i
     assert bta.specs_producer_row_cover(
         "news_momentum_long", ["close_above_open"],
         ["news_sentiment_5d", "news_volume_zscore_5d"])[0] is True
+
+
+
+
+# ================================================================ B3139q-r216 S6-B3449 / S6-B3450: C18 on its live path, and every charter it writes
+def test_b3449_c18_regenerates_both_lanes_on_a_generator_input_and_compares_every_charter(tmp_path):
+    """S6-B3449 (B3139q-r216, L1017): B3139q-r212b changed
+    scripts/build_table_a.py and left 3 lane charters stale for a week, and its
+    OR-composite rows reached Table A but not the Formula, so the two views
+    numbered the same steps differently. (1) preflight C18, given a staged
+    charter GENERATOR input, regenerates BOTH lanes and compares every tracked
+    charter the regeneration writes, staged or not: a stale unstaged charter
+    is refused naming the input, a matching one is quiet, a departed record
+    (one the regeneration does not write) is not compared, an unreadable
+    tracked list fails closed; a staged charter alone regenerates its own lane
+    and compares that lane's siblings. (2) every committed charter in BOTH lanes
+    carries the same P-ids in its Formula and its Table A (test_b2836 reads the
+    TIGHTEN folder only), and hull_rsi's Formula carries its OR-composite step
+    at the id Table A gives it."""
+    import re as _re
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import preflight as pf
+    gen = tmp_path / "gen"
+    (gen / "tighten" / "both").mkdir(parents=True)
+    body = "# Table A - x\n\n**Build (L803/#309):** generator g | stamp s1\n\ncontent line\n"
+    for rel in ("tighten/a.md", "tighten/both/b.md"):
+        (gen / rel).write_text(body, encoding="utf-8")
+    lanes = {"strategy_optimisation/tighten/both/": ["strategy_optimisation/tighten/both/b.md"],
+             "strategy_optimisation/tighten/": ["strategy_optimisation/tighten/a.md",
+                                                "strategy_optimisation/tighten/departed.md"]}
+    calls = []
+
+    def regen(lane_args):
+        calls.append([tuple(x) for x in lane_args])
+        return gen
+
+    def fresh(pos):
+        return body.replace("stamp s1", "stamp s2")      # only the stamp differs
+    # (1a) a generator input staged, every charter fresh -> quiet, both lanes regenerated
+    out = pf.check_generated_artifact_matches_generator(
+        ["scripts/build_table_a.py"], regenerate=regen, staged_text=fresh, tracked=lanes.get)
+    assert out == [] and len(calls[-1]) == 2, (out, calls[-1])
+    # (1b) a stale UNSTAGED charter is refused, naming the staged input
+    out = pf.check_generated_artifact_matches_generator(
+        ["scripts/build_table_a.py"], regenerate=regen, tracked=lanes.get,
+        staged_text=lambda pos: body + "stale\n" if pos.endswith("both/b.md") else fresh(pos))
+    assert len(out) == 1 and "C18 STALE CHARTER" in out[0] and "tighten/both/b.md" in out[0] \
+        and "scripts/build_table_a.py" in out[0], out
+    # (1c) the same with the input given as an ABSOLUTE path (main's live form, S6-B3450)
+    out = pf.check_generated_artifact_matches_generator(
+        [pf.REPO_ROOT / "scripts" / "producer_variant_table.py"], regenerate=regen, tracked=lanes.get,
+        staged_text=lambda pos: body + "stale\n" if pos.endswith("tighten/a.md") else fresh(pos))
+    assert len(out) == 1 and "tighten/a.md" in out[0], out
+    # (1d) a staged charter alone: its own lane regenerated, its siblings compared
+    calls.clear()
+    out = pf.check_generated_artifact_matches_generator(
+        ["strategy_optimisation/tighten/both/b.md"], regenerate=regen, staged_text=fresh,
+        tracked=lanes.get)
+    assert out == [] and calls == [[tuple(pf._C18_LANES[0][1])]], (out, calls)
+    # (1e) an unreadable tracked list fails closed; an off-trigger commit pays nothing
+    def boom(prefix):
+        raise RuntimeError("git ls-files failed")
+    out = pf.check_generated_artifact_matches_generator(
+        ["scripts/table_a_bands.py"], regenerate=regen, staged_text=fresh, tracked=boom)
+    assert out and all("fail closed" in o for o in out), out
+    calls.clear()
+    assert pf.check_generated_artifact_matches_generator(
+        ["scripts/foo.py", "EXECUTION_QUEUE.md"], regenerate=regen, tracked=boom) == [] and calls == []
+    assert set(pf._C18_GENERATOR_INPUTS) == {"scripts/build_table_a.py", "scripts/table_a_bands.py",
+                                             "scripts/producer_variant_table.py"}
+    # (2) the committed charters: one P-id set across the two views, both lanes
+    base = root / "strategy_optimisation"
+    checked = 0
+    for p in sorted(base.rglob("*.md")):
+        if p.name == "README.md":
+            continue
+        t = p.read_text(encoding="utf-8")
+        if "**T1 VERDICT:" in t or "PRODUCER LAYER" not in t:
+            continue                                     # the S6-B3239 short form
+        formula, _, rest = t.partition("## Table A - parameter inventory")
+        f_ids = set(_re.findall(r"(?m)^P(\d+) ", formula))
+        t_ids = set(_re.findall(r"(?m)^\| P(\d+) \|", rest))
+        assert f_ids == t_ids and f_ids, (p.relative_to(base).as_posix(), sorted(f_ids ^ t_ids))
+        checked += 1
+    assert checked >= 30, checked
+    hull = (base / "tighten" / "hull_rsi.md").read_text(encoding="utf-8")
+    m = _re.search(r"(?m)^\| P(\d+) \| STRATEGY \| OR-composite `\(adx > 20\)`", hull)
+    assert m, "hull_rsi's Table A carries its OR-composite row"
+    assert _re.search(r"(?m)^P" + m.group(1) + r"  OR-composite \(adx > 20\)", hull), \
+        "hull_rsi's Formula carries the OR-composite step at the same id"
+
+
+def test_b3450_c18_selects_targets_from_main_s_absolute_paths_and_no_path_check_assumes_relative(tmp_path):
+    """S6-B3450 (B3139q-r216, L1018): preflight main() hands its checks
+    get_staged_files()'s ABSOLUTE paths, and C18 selected targets by a
+    repo-relative prefix, so from its birth (B2852, 2026-09-17) it selected
+    nothing on its live path while its pin passed repo-relative strings
+    through the seam (#324 rule 2). (1) C18 driven with ABSOLUTE in-repo paths
+    regenerates and compares - a hand edit fires, a stamp-only difference is
+    quiet; (2) get_staged_files' element type is an absolute Path (the live
+    input, read from its source by AST: REPO_ROOT joined to each line); (3) the
+    class pin: no check main() hands the staged path list filters on a
+    repo-relative prefix without relativizing first (_rel / relative_to), by
+    AST - and the predicate fires on the pre-fix shape and stays quiet on the
+    fixed one."""
+    import ast as _ast
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import preflight as pf
+    gen = tmp_path / "gen"
+    (gen / "tighten").mkdir(parents=True)
+    body = "# Table A - x\n\n**Build (L803/#309):** generator g | stamp s1\n\ncontent line\n"
+    (gen / "tighten" / "x.md").write_text(body, encoding="utf-8")
+    called = []
+
+    def regen(lane_args):
+        called.append(lane_args)
+        return gen
+    absx = pf.REPO_ROOT / "strategy_optimisation" / "tighten" / "x.md"
+    none = (lambda prefix: [])
+    assert pf.check_generated_artifact_matches_generator(
+        [absx], regenerate=regen, staged_text=lambda pos: body.replace("s1", "s2"), tracked=none) == []
+    assert called, "an absolute charter path must reach the regeneration"
+    fired = pf.check_generated_artifact_matches_generator(
+        [absx], regenerate=regen, staged_text=lambda pos: body + "hand edit\n", tracked=none)
+    assert fired and "never hand-edited" in fired[0], fired
+    # (2) the live input's shape, from the helper's source
+    src = (root / "scripts" / "preflight.py").read_text(encoding="utf-8")
+    tree = _ast.parse(src)
+    gsf = next(n for n in tree.body if isinstance(n, _ast.FunctionDef) and n.name == "get_staged_files")
+    assert "REPO_ROOT / line" in _ast.unparse(gsf), "get_staged_files returns REPO_ROOT-joined paths"
+
+    # (3) the class pin over every check main() hands the staged path list
+    def assumes_relative(fn_src: str) -> bool:
+        f = _ast.parse(fn_src)
+        rel_prefix = any(isinstance(n, _ast.Call) and isinstance(n.func, _ast.Attribute)
+                         and n.func.attr == "startswith" and n.args
+                         and isinstance(n.args[0], _ast.Constant) and isinstance(n.args[0].value, str)
+                         and "/" in n.args[0].value and not n.args[0].value.startswith("/")
+                         for n in _ast.walk(f))
+        relativizes = "_rel(" in fn_src or "relative_to(" in fn_src
+        return rel_prefix and not relativizes
+    pre_fix = ("def check_x(paths):\n    for p in paths:\n        pos = str(p).replace(chr(92), '/')\n"
+               "        if pos.startswith('strategy_optimisation/'):\n            return [pos]\n    return []\n")
+    fixed = pre_fix.replace("str(p).replace(chr(92), '/')", "Path(_rel(Path(p))).as_posix()")
+    assert assumes_relative(pre_fix) and not assumes_relative(fixed)
+    main = next(n for n in tree.body if isinstance(n, _ast.FunctionDef) and n.name == "main")
+    handed = sorted({c.func.id for c in _ast.walk(main) if isinstance(c, _ast.Call)
+                     and isinstance(c.func, _ast.Name) and c.func.id.startswith("check_")
+                     and any(isinstance(a, _ast.Name) and a.id == "files" for a in c.args)})
+    assert len(handed) >= 9 and "check_generated_artifact_matches_generator" in handed, handed
+    defs = {n.name: n for n in tree.body if isinstance(n, _ast.FunctionDef)}
+    flagged = [name for name in handed if assumes_relative(_ast.unparse(defs[name]))]
+    assert flagged == [], flagged
+
+
+def test_b3452_safe_write_keeps_the_sources_line_endings(tmp_path):
+    """S6-B3452 (B3139q-r216g): scripts/safe_write.py, the parse-before-write
+    helper L592 and B1883 prescribe, wrote with Path.write_text - text mode,
+    which on Windows turns every LF into CRLF (L756) - so a patch of an LF file
+    routed through it would flip the file's whole stored form, and
+    safe_append_py read with read_text (universal newlines), so an append to a
+    CRLF file came back LF. test_b1883 reads back in text mode too, which is
+    why neither showed. The helper now writes the source's BYTES and an append
+    follows the target's dominant ending (L850). Asserted on BYTES: an LF
+    source stays LF, a CRLF source stays CRLF, an append keeps a CRLF file
+    pure CRLF and an LF file pure LF, and a candidate that does not parse
+    still leaves the file untouched."""
+    import importlib.util
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location("sw_b3452", root / "scripts" / "safe_write.py")
+    sw = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(sw)
+    CR, LF = bytes([13]), bytes([10])
+    crlf_src = "a = 1" + chr(13) + chr(10) + "b = 2" + chr(13) + chr(10)
+
+    lf = tmp_path / "lf.py"
+    sw.safe_write_py(lf, "a = 1\nb = 2\n")
+    assert lf.read_bytes() == b"a = 1\nb = 2\n" and CR not in lf.read_bytes()
+    sw.safe_append_py(lf, "c = 3\n")
+    assert lf.read_bytes() == b"a = 1\nb = 2\nc = 3\n", lf.read_bytes()
+
+    cr = tmp_path / "crlf.py"
+    sw.safe_write_py(cr, crlf_src)
+    assert cr.read_bytes() == crlf_src.encode(), cr.read_bytes()
+    sw.safe_append_py(cr, "c = 3\n")
+    b = cr.read_bytes()
+    assert b.count(CR + LF) == 3 and b.count(LF) == 3, b
+
+    # the parse gate is unchanged: a bad candidate leaves the bytes alone
+    before = cr.read_bytes()
+    try:
+        sw.safe_append_py(cr, "def broken(:\n")
+        raised = False
+    except SyntaxError:
+        raised = True
+    assert raised and cr.read_bytes() == before

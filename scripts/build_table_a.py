@@ -894,6 +894,14 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
     for key, op, prod in sorted(set(comparisons)):
         _p += 1
         L.append(f"P{_p}  {key} {op} {_fmt(prod)}   [EXISTING-THRESHOLD]")
+    # S6-B3449 (B3139q-r216, L1017): the OR groups take their Table A ids in
+    # the Formula too - B3139q-r212b added them to Table A only, so every later
+    # step was numbered one lower here (hull_rsi: Table A P9 the OR-composite,
+    # the Formula's P9 the borrow guard)
+    for grp in (or_groups or []):
+        _p += 1
+        _arms = " OR ".join(f"{k} {op} {_fmt(v)}" for k, op, v in grp["arms"])
+        L.append(f"P{_p}  OR-composite ({_arms})   [EXISTING-THRESHOLD, OR-composite - S6-B3429]")
     for h in helpers:
         _p += 1
         L.append(f"P{_p}  {h}(s)   [helper gate]")

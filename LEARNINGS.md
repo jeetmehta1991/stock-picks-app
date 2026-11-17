@@ -26037,3 +26037,25 @@ MEASURED: scripts/squeeze_derived_landed.py, which I added at B3139q-r163 for th
 **Rule.** None - **record-of-fact**: #201 and #228 stand as written.
 
 **Mechanism.** JUDGMENT-ONLY - no detection mechanism: a universal in a ticket row can describe data ('every article from 2025 on is labelled') or the code's rule ('every article still counts'), and only a reading tells the two apart; the process diet builds no gate for a wording slip (S6-B3424). Recorded as S6-B3447.
+
+### L1017 - A GENERATOR CHANGE LEFT THREE COMMITTED CHARTERS STALE FOR A WEEK, AND ITS TWO VIEWS NUMBERED THE SAME STEPS DIFFERENTLY (B3139q-r212b / r216, 2026-11-17)
+
+**MEASURED** (B3139q-r216: git history and a lane regeneration from the current generator): B3139q-r212b (c4d6ae5c6, 2026-11-09, S6-B3429) taught scripts/build_table_a.py the OR-composite rows and regenerated no lane charter; hull_rsi's charter (last committed 2026-10-30), ultimate_oscillator's and insider_cluster_with_director_long's (2026-10-25) stayed without their OR-composite rows until this turn. The regeneration showed the change had added the rows to Table A only: the Formula section kept numbering every later step one lower, so in hull_rsi Table A's P9 was the OR-composite and the Formula's P9 the borrow guard. test_b2836 caught it before any commit, for hull_rsi alone - it reads the TIGHTEN folder, and the other two sit in the BOTH folder.
+
+**Why.** Compliance failure against #281 - a generated artifact is stale the moment any of its generators changes, and the change's own commit is where its regeneration belongs. #281's enforcing register (_B1974_GENERATED) holds no lane charter, and the commit-time gate built for exactly this, preflight C18, compared nothing on its live path (L1018).
+
+**Rule.** None - **record-of-fact**: #281 stands.
+
+**Mechanism.** C18 regenerates both lanes whenever a charter generator input (build_table_a.py, table_a_bands.py, producer_variant_table.py) is staged and compares every tracked charter the regeneration writes, staged or not; the generator now emits the OR-composite steps in the Formula at Table A's ids, and the 3 charters are regenerated. Pinned by test_b3449, which also holds every committed charter in both lanes to one P-id set across its two views (S6-B3449).
+
+### L1018 - PREFLIGHT C18 SELECTED NOTHING ON ITS LIVE PATH FOR 61 DAYS: MAIN PASSES ABSOLUTE PATHS, ITS FILTER WANTED REPO-RELATIVE ONES (B2852 / B3139q-r216, 2026-11-17)
+
+**MEASURED** (B3139q-r216: a probe replacing C18's regeneration with a recorder, and git history): get_staged_files() has returned REPO_ROOT-joined absolute paths since 002d8fb2f (2026-05-08). C18 - born as C15 at B2852 (97e59b5d4, 2026-09-17) and wired in that commit as check_generated_artifact_matches_generator(files) - picked its targets with str(p).startswith('strategy_optimisation/'), so on its live input it selected 0 of the 6 charters staged at B3139q-r216 and never called the regeneration; given the same paths repo-relative, the call regenerates. Its pin passed repo-relative strings through the seam and checked the wiring by counting the call's text. A sweep of the 9 checks main() hands the same path list: 8 test suffix, name or path parts, or relativize first; C18 was the one.
+
+**Why.** Compliance failure against #324 rule (2): a gate with an injection seam needs at least one test that drives its live branch with the helper's real return type - here get_staged_files' absolute Path - and C18's never did, so its must-fire arms proved a branch main() could not reach.
+
+**Rule.** None - **record-of-fact**: #324 stands.
+
+**Mechanism.** C18 makes every path repo-relative first (_rel). Pinned by test_b3450: C18 driven with absolute in-repo paths regenerates and compares, and the class pin walks every check main() hands the staged path list and refuses one that filters on a repo-relative prefix without relativizing (AST; the predicate fires on the pre-fix shape and is quiet on the fixed one) (S6-B3450).
+
+**Addendum to L949 (B3139q-r216).** A historical instance the B3139q-r90 sweep's phrases could not see: S6-B2118b's EXECUTED row installed M8's borrow-trap meter and kept, in that terminal row, the trigger 'the first wave containing a SHORT strategy still raises this to P1' - none of the swept deferral phrases, so the sweep (a lower bound, as this entry says) passed it. Two such waves landed - output_candle_tbc_c01 on 2026-09-21 and output_candle_tbc_c02 on 2026-09-23, both on _subset_three_black_crows_short.txt - and nothing raised it; the r200 context pass flagged it on S6-B3401 as an unverified agent claim, confirmed this turn from their specs and output_audit/postconfig_landings.jsonl. The meter itself is read by no run: the screen pool runs strategies in worker processes, and no landing records the count. Record-of-fact against #328, whose rule postdates the row. Mechanism: BATCHED (S6-B3451) - its M8 lens reports a short cube with no meter reading as a finding, built as its own engine batch.

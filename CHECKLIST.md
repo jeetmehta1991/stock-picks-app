@@ -5622,6 +5622,8 @@ stale artifact keeps the SHAPE of a measurement while being a memory.
 **Batch re-exam lineage (B1446 rule 5):** the one genuinely new class in the
 L602-L613 batch; the other ten are covered by the items their entries cite.
 
+**INSTANCE (B3139q-r216 / L1017) - A GENERATOR CHANGE WITHOUT ITS REGENERATION.** B3139q-r212b (c4d6ae5c6) taught scripts/build_table_a.py the OR-composite rows and regenerated no lane charter: hull_rsi's, ultimate_oscillator's and insider_cluster_with_director_long's charters stayed stale a week, and the change put its rows in Table A only, so the Formula numbered every later step one lower. Mechanism: preflight C18 regenerates both lanes when a charter generator input is staged and compares every tracked charter the regeneration writes, staged or not (S6-B3449, test_b3449).
+
 ### #282 - THE PER-TURN REPORTING CONTRACT IS OWNER-SPECIFIED, TABULAR, AND GATED (B2039 / L618)
 
 Owner directives 2026-08-21 + 2026-08-23, combined: every turn's close reports
@@ -6653,6 +6655,8 @@ registered.
 
 **INSTANCE (B3139q-r77 / L944) - THE SAME SHAPE, ONE BATCH LATER.** scan_decision_without_ticket shipped a ticket_ids seam that test_b3121_every_call_site_seam_is_registered_with_its_live_path_reason refused at the batch's first full gate (1 failed, 1808 passed); the targeted run before it had been chosen by a search the registry test did not match. Registered SOUND with its live-path reason; test_b3233_decision_list_items_name_a_live_ticket drives the live ledger branch and its fail-closed refusal.
 
+**INSTANCE (B3139q-r216 / L1018) - A PREFLIGHT GATE DEAD ON ITS LIVE INPUT FOR 61 DAYS.** preflight main() hands its checks get_staged_files()'s absolute paths; C18 (B2852, 2026-09-17) selected targets by the repo-relative prefix 'strategy_optimisation/', so it selected nothing on its live path while its pin fed repo-relative strings through the seam - rule (2) unmet. Mechanism: C18 relativizes first (_rel); test_b3450 drives it with absolute paths and pins the class over every check main() hands the staged list (S6-B3450).
+
 ### #325 - A COMPARISON OF TWO CODE TREES HOLDS THE DATA ENVIRONMENT FIXED (B3139 / L889, self-caught 2026-09-30)
 
 A run-against-run comparison across two code trees (a worktree A/B, an old-engine
@@ -6757,6 +6761,8 @@ MECHANISM: scan_obligation_in_closing_row (scripts/verify_turn_compliance.py)
 fires on such a row added in the turn, the phrase outside quotes, pinned by
 test_b3260. A lower bound: 'next session' is left out (4 of its 5 terminal-row
 uses are context), so L704's own incident is outside the slice.
+
+**INSTANCE (B3139q-r216 / L949's addendum) - A HISTORICAL OBLIGATION THE SWEEP'S PHRASES COULD NOT SEE.** S6-B2118b's EXECUTED row kept M8's trigger, 'the first wave containing a SHORT strategy still raises this to P1', in a terminal row with none of the swept phrases; two short-strategy waves landed on 2026-09-21 and 2026-09-23 and nothing raised it (confirmed this turn from their specs and the landing ledger). The remainder rides S6-B3451 (P1); record-of-fact - the row predates this item.
 
 ### #329 - A COMMAND MOVED TO THE BACKGROUND HAS NOT FINISHED UNTIL A NOTICE OR A STOP SAYS SO (B3139q-r154 / L999, citing L641, self-caught 2026-10-30)
 

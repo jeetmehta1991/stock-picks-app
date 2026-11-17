@@ -1,6 +1,6 @@
 # Table A - insider_cluster_with_director_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build adafdd452 | commit adafdd452 at 2026-10-25 20:59:24 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 10f385df2 | commit 4ead72d6a at 2026-11-17 01:28:10 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** event_driven | **status:** NOT-STARTED | **R5 fires:** 24 (closed fires in the exit cube: 16 of 24 - 8 MISSING, S6-B3258) | **surviving fires (T1):** 24 (unchanged since R5 - filter is identity)
 
@@ -24,6 +24,7 @@ P3  price_above_ema_200  <- backtest/signals/technical.py (f-string template) +1
 
 P4  insider_director_buyers_30d >= 1   [EXISTING-THRESHOLD]
 P5  insider_officer_buyers_30d >= 1   [EXISTING-THRESHOLD]
+P6  OR-composite (insider_director_buyers_30d >= 1 OR insider_officer_buyers_30d >= 1)   [EXISTING-THRESHOLD, OR-composite - S6-B3429]
 
 Gate body, VERBATIM from backtest/signals/screener.py strat_insider_cluster_with_director_long (docstring and return dropped):
 
@@ -52,6 +53,7 @@ leg runs.
 | P3.1 | BAND | ema span (the 200 in above/below_ema_200) - producer_variant_table.SPECS['bollinger_lower'] P3/P4; backtest/signals/technical.py compute_ema_sma | SPECS bollinger_lower P3/P4 (T3/Q2-APPROVED 2026-09-27): production 200 + resim spans [9, 20, 21, 50, 100, 150, 250] | 200 | 9, 20, 21, 50, 100, 150, 200, 250 | offline 0 of 8 levels - canon-span FLAGS (above/below ema 9/20/21/50/200) ARE persisted - measured 200-of-200 bollinger fires, S6-B3117b; offline as ADD-A-CONDITION legs only. The SWAP of the gate span, and non-canon spans, are RESIM | the whole band except production (resim_band [9, 20, 21, 50, 100, 150, 250]); env STRAT_EMA_SPAN does not reach this gate - it reads the literal key - DEFINED-NO-ACTUATOR here (S6-B3253) | T3 review before any grid |
 | P4 | STRATEGY | insider_director_buyers_30d `>= 1` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `>= 1` | production + 1 tighter measured levels | offline 1 of 2 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P5 | STRATEGY | insider_officer_buyers_30d `>= 1` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `>= 1` | production + 1 tighter measured levels | offline 1 of 2 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P6 | STRATEGY | OR-composite `(insider_director_buyers_30d >= 1 OR insider_officer_buyers_30d >= 1)` [EXISTING-THRESHOLD, OR-composite - S6-B3429] | an `or` of numeric cuts: tightening either arm keeps a subset of the recorded fires, and per-arm retention needs the gate's arm | `s.get('insider_director_buyers_30d', 0) >= 1 or s.get('insider_officer_buyers_30d', 0) >= 1` | production arms as written | offline 0 of 1 levels - arm-conditioned tighter levels are measured at grid time - the sweep takes the arms as @group axes (S6-B3290, the williams_r_oversold precedent) | - (the arms' magnitudes are persisted on the fires) | OR-COMPOSITE-REGISTERED |
 | B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (runbook section 3.6; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
 ### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]
@@ -647,9 +649,10 @@ breadth producers are an engine-side design act, never an offline sweep.
 | P3.1 | ema span (the 200 in above/below_ema_200 | 8 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 7 |
 | P4 | insider_director_buyers_30d >= 1 | 2 | subset-safe | no - derives offline | 1 | 1 | 0 |
 | P5 | insider_officer_buyers_30d >= 1 | 2 | subset-safe | no - derives offline | 1 | 1 | 0 |
+| P6 | OR-composite (insider_director_buyers_30d >= 1 OR insider_officer_buyers_30d >= 1) | 1 | **FIRE-ADDING** | **YES** | 1 | 0 | 0 |
 
 ```
-FULL FACTORIAL     3 x 3 x 3 x 8 x 2 x 2 = 864
+FULL FACTORIAL     3 x 3 x 3 x 8 x 2 x 2 x 1 = 864
 offline gradings   11 level-combinations x 24 exits = 264 (graded from the engine runs' cubes, never run themselves)
 ENGINE RUNS        1 (per axis: the production level plus any actuated non-production level)
 PENDING ACTUATION  852 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
