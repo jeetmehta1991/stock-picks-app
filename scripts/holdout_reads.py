@@ -671,11 +671,26 @@ def census_rows(path=None) -> dict:
 # breadth read's DISCLOSED-RE-READ provenance), so b2646's unlabelled re-read
 # is recorded as the fact it is.
 # ---------------------------------------------------------------------------
-def _first_added(relpath: str, root: Path) -> str:
+def _staged_addition(relpath: str, root: Path) -> bool:
+    """S6-B3456: is `relpath` staged in the index as an ADDED file?"""
+    r = subprocess.run(["git", "-C", str(root), "diff", "--cached", "--name-only",
+                        "--diff-filter=A", "--", relpath],
+                       capture_output=True, text=True, timeout=60)
+    return r.returncode == 0 and relpath in [x.strip() for x in r.stdout.splitlines()]
+
+
+def _first_added(relpath: str, root: Path) -> str | None:
+    """The first-add commit's UTC time of a tracked read artifact. S6-B3456
+    (B3139q-r217): git ls-files reads the INDEX, so the commit that adds a read
+    artifact lists it before any commit holds it - that artifact is dated None
+    (not yet committed) rather than refused, and main's --write refuses to
+    backfill it; any other path with no first-add commit still REFUSES."""
     r = subprocess.run(["git", "-C", str(root), "log", "--diff-filter=A",
                         "--format=%cI", "--", relpath],
                        capture_output=True, text=True, timeout=60)
     lines = [x for x in r.stdout.splitlines() if x.strip()]
+    if r.returncode == 0 and not lines and _staged_addition(relpath, root):
+        return None
     if r.returncode != 0 or not lines:
         raise SystemExit(f"REFUSED (S6-B3395): no first-add commit for {relpath} - "
                          "a backfilled read is dated by git or not at all")
@@ -777,7 +792,8 @@ def backfill_candidates(root=None) -> list:
                       "owner_word": d.get("owner_word"),
                       "ts": _first_added(relpath, rootp),
                       "declared": declared})
-    found.sort(key=lambda e: (e["ts"], e["read_id"]))
+    # S6-B3456: a staged, not-yet-committed artifact (ts None) is the newest
+    found.sort(key=lambda e: (e["ts"] or "9999-12-31T23:59:59Z", e["read_id"]))
     for i, e in enumerate(found):
         earlier = [p for p in found[:i]
                    if p["strategy"] == e["strategy"]
@@ -826,6 +842,12 @@ def main(argv=None) -> int:
         print(f"  {c['ts']}  {c['door']:<22} {c['strategy']} ({c['leg'] or 'both'})"
               f"  {mark}{lab}  {c['read_id']}")
     if a.write:
+        # S6-B3456: a backfilled read is dated by git or not at all - an
+        # artifact staged but not yet committed has no date to give it
+        unborn = [c["read_id"] for c in new if c["ts"] is None]
+        if unborn:
+            raise SystemExit(f"REFUSED (S6-B3456): {len(unborn)} read artifact(s) staged "
+                             f"but not committed - commit them first: {unborn}")
         for c in new:
             record(read_id=c["read_id"], strategy=c["strategy"], leg=c["leg"],
                    door=c["door"], artifact=c["artifact"], source=c["source"],

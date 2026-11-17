@@ -13,5 +13,47 @@
    "word": {"ticket": "S6-B3247", "verbatim": "Approve your recommendations fable mode proceed"},
    "ruled_utc": "2026-10-28T11:01:42Z",
    "ruling": "S6-B3247 (a): WAIVE in words the 11 engine-only producer levels never put to the owner at band review (record S6-B3349)"}
+ ],
+ "m_and_a_target_long": [
+  {"axis": "P1.1", "pending": 3, "levels": "filing window 7, 14 and 60 days",
+   "word": {"ticket": "S6-B3423", "verbatim": "Waive all 22 (Recommended)"},
+   "ruled_utc": "2026-11-17T17:53:29Z",
+   "ruling": "S6-B3423 (B3139q-r217): WAIVE in words the 22 engine-only producer levels the 3 approved depth holdout reads need, never put to the owner at band review"}
+ ],
+ "stochrsi_oversold": [
+  {"axis": "P1.1", "pending": 7, "levels": "EMA span 9, 20, 21, 50, 100, 150 and 250",
+   "word": {"ticket": "S6-B3423", "verbatim": "Waive all 22 (Recommended)"},
+   "ruled_utc": "2026-11-17T17:53:29Z",
+   "ruling": "S6-B3423 (B3139q-r217): WAIVE in words the 22 engine-only producer levels the 3 approved depth holdout reads need, never put to the owner at band review"},
+  {"axis": "P5.1", "pending": 1, "levels": "overbought threshold k > 75 (short leg)",
+   "word": {"ticket": "S6-B3423", "verbatim": "Waive all 22 (Recommended)"},
+   "ruled_utc": "2026-11-17T17:53:29Z",
+   "ruling": "S6-B3423 (B3139q-r217): WAIVE in words the 22 engine-only producer levels the 3 approved depth holdout reads need, never put to the owner at band review"},
+  {"axis": "P5.2", "pending": 2, "levels": "stoch-RSI period 10 and 21 (short leg)",
+   "word": {"ticket": "S6-B3423", "verbatim": "Waive all 22 (Recommended)"},
+   "ruled_utc": "2026-11-17T17:53:29Z",
+   "ruling": "S6-B3423 (B3139q-r217): WAIVE in words the 22 engine-only producer levels the 3 approved depth holdout reads need, never put to the owner at band review"},
+  {"axis": "P6.1", "pending": 2, "levels": "stoch-RSI period 10 and 21",
+   "word": {"ticket": "S6-B3423", "verbatim": "Waive all 22 (Recommended)"},
+   "ruled_utc": "2026-11-17T17:53:29Z",
+   "ruling": "S6-B3423 (B3139q-r217): WAIVE in words the 22 engine-only producer levels the 3 approved depth holdout reads need, never put to the owner at band review"},
+  {"axis": "P6.2", "pending": 1, "levels": "oversold threshold k < 25",
+   "word": {"ticket": "S6-B3423", "verbatim": "Waive all 22 (Recommended)"},
+   "ruled_utc": "2026-11-17T17:53:29Z",
+   "ruling": "S6-B3423 (B3139q-r217): WAIVE in words the 22 engine-only producer levels the 3 approved depth holdout reads need, never put to the owner at band review"},
+  {"axis": "P7.1", "pending": 2, "levels": "RSI span 9 and 21",
+   "word": {"ticket": "S6-B3423", "verbatim": "Waive all 22 (Recommended)"},
+   "ruled_utc": "2026-11-17T17:53:29Z",
+   "ruling": "S6-B3423 (B3139q-r217): WAIVE in words the 22 engine-only producer levels the 3 approved depth holdout reads need, never put to the owner at band review"},
+  {"axis": "P8.1", "pending": 2, "levels": "RSI span 9 and 21 (short leg)",
+   "word": {"ticket": "S6-B3423", "verbatim": "Waive all 22 (Recommended)"},
+   "ruled_utc": "2026-11-17T17:53:29Z",
+   "ruling": "S6-B3423 (B3139q-r217): WAIVE in words the 22 engine-only producer levels the 3 approved depth holdout reads need, never put to the owner at band review"}
+ ],
+ "tema_dema": [
+  {"axis": "P4.1", "pending": 2, "levels": "TEMA / DEMA period 10 and 30",
+   "word": {"ticket": "S6-B3423", "verbatim": "Waive all 22 (Recommended)"},
+   "ruled_utc": "2026-11-17T17:53:29Z",
+   "ruling": "S6-B3423 (B3139q-r217): WAIVE in words the 22 engine-only producer levels the 3 approved depth holdout reads need, never put to the owner at band review"}
  ]
 }

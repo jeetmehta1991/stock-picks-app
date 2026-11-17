@@ -77157,3 +77157,234 @@ def test_b3452_safe_write_keeps_the_sources_line_endings(tmp_path):
     except SyntaxError:
         raised = True
     assert raised and cr.read_bytes() == before
+
+
+def test_b3456_a_staged_read_artifact_is_dated_none_not_refused(tmp_path, monkeypatch):
+    """S6-B3456 (B3139q-r217): holdout_reads.backfill_candidates lists tracked
+    read artifacts with git ls-files, which reads the INDEX, and dated each by
+    its first-add commit - so the commit that ADDS a read artifact failed
+    test_b3395b and test_b3413 on its own pre-gate (MEASURED at B3139q-r217a:
+    'no first-add commit for output_audit/b3423_m_and_a_target_long_breadth_
+    step2_read_long.json'). On a throwaway repo: (1) a committed artifact is
+    dated by its commit, one STAGED as an addition is dated None, and a path
+    neither committed nor staged still REFUSES; (2) backfill_candidates lists
+    both, the staged one last; (3) a backfill --write refuses an undated
+    candidate, writing nothing - a backfilled read is dated by git or not at
+    all."""
+    import json as _jsn
+    import subprocess
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import holdout_reads as hr
+    repo = tmp_path / "repo"
+    (repo / "output_audit").mkdir(parents=True)
+
+    def git(*a):
+        return subprocess.run(["git", "-C", str(repo), "-c", "user.email=t@t", "-c", "user.name=t",
+                               *a], capture_output=True, text=True, check=True)
+    git("init", "-q")
+
+    def read_doc(s):
+        return _jsn.dumps({"strategy": s, "leg": "long", "ruling_verbatim": "the owner's words",
+                           "step1_artifact": f"output_audit/{s}_grid.json",
+                           "provenance": {"label": "FIRST-READ / GRID-SELECTED"}})
+    (repo / "output_audit" / "a_read.json").write_text(read_doc("sa"), encoding="utf-8")
+    git("add", "output_audit/a_read.json")
+    git("commit", "-q", "-m", "first read")
+    (repo / "output_audit" / "b_read.json").write_text(read_doc("sb"), encoding="utf-8")
+    git("add", "output_audit/b_read.json")
+    (repo / "output_audit" / "c_loose.json").write_text(read_doc("sc"), encoding="utf-8")
+    # (1)
+    ts = hr._first_added("output_audit/a_read.json", repo)
+    assert isinstance(ts, str) and ts.endswith("Z"), ts
+    assert hr._first_added("output_audit/b_read.json", repo) is None, "a staged addition is undated"
+    for loose in ("output_audit/c_loose.json", "output_audit/never_written.json"):
+        with pytest.raises(SystemExit) as e:
+            hr._first_added(loose, repo)
+        assert "no first-add commit" in str(e.value), (loose, e.value)
+    # (2)
+    c = hr.backfill_candidates(root=repo)
+    assert [x["read_id"] for x in c] == ["output_audit/a_read.json", "output_audit/b_read.json"], c
+    assert c[0]["ts"] == ts and c[1]["ts"] is None and c[1]["door"] == "breadth_step2_read", c
+    # (3)
+    wrote = []
+    monkeypatch.setattr(hr, "backfill_candidates", lambda root=None: [dict(c[1], rereads=[])])
+    monkeypatch.setattr(hr, "entries", lambda *a, **k: [])
+    monkeypatch.setattr(hr, "record", lambda **k: wrote.append(k))
+    with pytest.raises(SystemExit) as e:
+        hr.main(["--backfill", "--write"])
+    assert "S6-B3456" in str(e.value) and "b_read.json" in str(e.value), e.value
+    assert wrote == [], "the refusal comes before any write"
+
+
+def test_b3453_guard_refusals_link_by_rule_id_not_by_path():
+    """S6-B3453 (B3139q-r217): a PreToolUse guard refusal is linked by what the
+    GUARD writes - 'REFUSED BEFORE RUNNING (<rule id> /' with a rule id it emits
+    - never by a script path the harness may drop. MEASURED 2026-11-17: this
+    harness relays a refusal as 'PreToolUse:Bash hook error: [command hook]:
+    REFUSED BEFORE RUNNING (...)' with no path, and the S6-B3144 link (path
+    required) read 2 refused heredocs as commands that ran. (1) The helper
+    links the current wrapper and the older one, and nothing else - a non-error
+    result, prose quoting the marker, a rule id the guard does not emit.
+    (2) scan_heredoc_escapes: a refused heredoc is not an incident under either
+    wrapper; an unrefused one, and one whose refusal is another call's, still
+    fire. (3) scan_help_on_parserless_script, which linked no refusal at all: a
+    refused --help never ran. (4) GUARD_RULE_IDS is the guard's own rule set -
+    every refusal literal in decide() carries an id in it and every id is
+    emitted (AST, not prose). (5) Wired: both scans read guard_refused_ids."""
+    import ast as _ast
+    import inspect as _insp
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import gate_incident_corpus as gic
+    import verify_turn_compliance as vtc
+    q, bs, nl = chr(39), chr(92), chr(10)
+    heredoc = "python - <<EOF" + nl + "print(" + q + "a" + bs + "nb" + q + ")" + nl + "EOF"
+    assert vtc.heredoc_escape_hits(heredoc), heredoc
+
+    def use(tid, cmd):
+        return {"type": "assistant", "timestamp": "2099-01-01T00:00:00.000Z",
+                "message": {"content": [{"type": "tool_use", "id": tid,
+                                         "name": "Bash", "input": {"command": cmd}}]}}
+
+    def result(tid, text, err=True):
+        blk = {"type": "tool_result", "tool_use_id": tid, "content": text}
+        if err:
+            blk["is_error"] = True
+        return {"type": "user", "message": {"content": [blk]}}
+    new = ("PreToolUse:Bash hook error: [command hook]: REFUSED BEFORE RUNNING "
+           "(S6-B3139ae / #259 / L885): 1 heredoc body(ies) fed to an interpreter")
+    old = ("PreToolUse:Bash hook error: [python scripts/pretooluse_heredoc_guard.py]: "
+           "REFUSED BEFORE RUNNING (S6-B3139ae / #259 / L885): 1 heredoc body(ies)")
+    # (1)
+    assert vtc.guard_refused_ids([result("a", new)]) == {"a"}
+    assert vtc.guard_refused_ids([result("b", old)]) == {"b"}
+    assert vtc.guard_refused_ids([result("c", new, err=False)]) == set(), \
+        "a result that is not an error is no refusal"
+    assert vtc.guard_refused_ids([result(
+        "d", "the REFUSED BEFORE RUNNING marker, quoted in prose")]) == set()
+    assert vtc.guard_refused_ids([result(
+        "e", "REFUSED BEFORE RUNNING (S6-B9999 / #1 / L1): x")]) == set(), \
+        "a rule id the guard does not emit links nothing"
+    # (2)
+    u = use("h1", heredoc)
+    assert vtc.scan_heredoc_escapes([u, result("h1", new)]) == [], "refused under the new wrapper"
+    assert vtc.scan_heredoc_escapes([u, result("h1", old)]) == [], "refused under the old wrapper"
+    assert vtc.scan_heredoc_escapes([u]), "an unrefused heredoc still fires"
+    assert vtc.scan_heredoc_escapes([u, result("h2", new)]), "another call's refusal clears nothing"
+    # (3)
+    inc = gic.INCIDENTS["scan_help_on_parserless_script"][2]
+    qs_cmd, noparse = inc["cmds"][0], inc["sources"]
+    helped = ("PreToolUse:Bash hook error: [command hook]: REFUSED BEFORE RUNNING "
+              "(S6-B3268 / #327 / L947): --help on a repo script that builds no parser")
+    hu = use("p1", qs_cmd)
+    assert vtc.scan_help_on_parserless_script([hu], sources=noparse), "an unrefused --help fires"
+    assert vtc.scan_help_on_parserless_script([hu, result("p1", helped)], sources=noparse) == []
+    # (4)
+    gsrc = (root / "scripts" / "pretooluse_heredoc_guard.py").read_text(encoding="utf-8")
+    fn = next(n for n in _ast.walk(_ast.parse(gsrc))
+              if isinstance(n, _ast.FunctionDef) and n.name == "decide")
+    heads = [n.value for n in _ast.walk(fn) if isinstance(n, _ast.Constant)
+             and isinstance(n.value, str) and n.value.startswith("REFUSED BEFORE RUNNING (")]
+    ids = {vtc._GUARD_REFUSAL_RE.search(h).group(1) for h in heads}
+    assert len(heads) >= 7 and ids == set(vtc.GUARD_RULE_IDS), (sorted(ids), vtc.GUARD_RULE_IDS)
+    # (5)
+    for name in ("scan_heredoc_escapes", "scan_help_on_parserless_script"):
+        assert "guard_refused_ids(entries)" in _insp.getsource(getattr(vtc, name)), name
+
+
+def test_b3454_holdout_read_packet_is_generated_and_gated():
+    """S6-B3454 (B3139q-r217, L1019): a holdout read put to the owner comes from
+    the generated packet. (1) The verbatim B3139q-r216 decision rows fire with
+    no packet run and are quiet once holdout_packet.py ran; a results table
+    reporting reads is quiet. (2) The shared decision-table reader reads a 'My
+    recommendation' header - the r216 header, which the launch-price scan's
+    'rec' prefix did not read - so an unpriced launch row under it now fires.
+    (3) The packet's classifier and survivor rules on artifact-shaped dicts:
+    depth by preregistration_refusal, breadth by its own null at the S6-B3206
+    bar with a positive best. (4) preflight on a live committed surface through
+    its seams: complete coverage and no prior read is READY; an unwaived Table A
+    level is REFUSED, named, with the waiver as what clears it; a prior read is
+    a DISCLOSED-RE-READ. (5) build() over batch 2's 12 live Step-1 artifacts with
+    the seams held clean: 8 survivors (3 depth, 5 breadth), the 4 noise-refused
+    depth surfaces excluded, and a subject's second read - the breadth read of a
+    strategy whose depth line reads first - a DISCLOSED-RE-READ (3 of 8).
+    (6) Wired in main's scan list; the corpus incident fires and its twins do
+    not."""
+    import inspect as _insp
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import gate_incident_corpus as gic
+    import holdout_packet as hp
+    import verify_turn_compliance as vtc
+    nl = chr(10)
+    scan = vtc.scan_holdout_read_decision_unpacketed
+    # (1)
+    text, fire, state = gic.INCIDENTS["scan_holdout_read_decision_unpacketed"]
+    hits = scan([], text=text, **state)
+    assert fire and len(hits) == 1 and "2 of 2" in hits[0], hits
+    for t2, f2, s2 in gic.EXTRA_INCIDENTS["scan_holdout_read_decision_unpacketed"]:
+        assert bool(scan([], text=t2, **s2)) == f2, t2
+    # (2)
+    head = "| Ticket | Question | My recommendation |" + nl + "|---|---|---|" + nl
+    assert vtc._decision_table_rows(head + "| S6-B1 | x? | y |" + nl) == ["| S6-B1 | x? | y |"]
+    assert vtc._decision_table_rows("| Ticket | Result |" + nl + "|---|---|" + nl
+                                    + "| S6-B1 | done |" + nl) == []
+    assert vtc.scan_launch_decision_without_price(
+        [], text=head + "| S6-B1248 | Launch the two engine runs? | Your word |" + nl)
+    # (3)
+    assert hp.classify({"preregistration_candidate": {}, "cells_graded": 1}) == "depth"
+    assert hp.classify({"depth_base": {}, "leg": "long", "step1_ranking": [], "rows": []}) == "breadth"
+    assert hp.classify({"results": [], "fdr_threshold": 0.1, "survivors": []}) is None
+    good = {"permutation_null": {"p_value": 0.0099, "observed_best_is_sharpe": 1.2}, "trials": 9}
+    assert hp.survivor("breadth", good)[0]
+    assert not hp.survivor("breadth", dict(good, permutation_null={
+        "p_value": 0.3, "observed_best_is_sharpe": 1.2}))[0]
+    assert not hp.survivor("breadth", dict(good, permutation_null={
+        "p_value": 0.01, "observed_best_is_sharpe": -0.1}))[0]
+    assert not hp.survivor("breadth", {"permutation_null": {}})[0]
+    noise = {"preregistration_candidate": {"levels": [1], "is_sharpe": 0.5},
+             "permutation_null": {"p_value_best": 0.41}}
+    assert not hp.survivor("depth", noise)[0] and "noise" in hp.survivor("depth", noise)[1]
+    # (4)
+    import json as _jsn
+    rel = "output_audit/b3423_tema_dema_long_net_step1_ao_surface.json"
+    doc = _jsn.loads((root / rel).read_text(encoding="utf-8"))
+    clean = {"evaluable": True, "complete": True, "params": [], "table_a": {}}
+    ok = hp.preflight("depth", rel, doc, [], coverage=clean, prior=[])
+    assert ok["ready"] and ok["refusals"] == [] and ok["disclosures"] == [], ok
+    gap = {"evaluable": True, "complete": False, "params": [],
+           "table_a": {"pending": [{"axis": "P4.1", "param": "TEMA period", "pending": 2,
+                                    "waived": False}], "struck": [], "blocked": []}}
+    bad = hp.preflight("depth", rel, doc, [], coverage=gap, prior=[])
+    assert not bad["ready"] and "P4.1" in bad["refusals"][0], bad
+    assert "producer_level_waivers.json" in " ".join(bad["clears"]), bad
+    again = hp.preflight("depth", rel, doc, [], coverage=clean, prior=["x.json"])
+    assert again["ready"] and "DISCLOSED-RE-READ" in again["disclosures"][0], again
+    # (5)
+    import glob as _glob
+    paths = sorted(str(_P(p).relative_to(root)).replace(chr(92), "/") for p in
+                   _glob.glob(str(root / "output_audit" / "b3423_*_surface.json"))
+                   + _glob.glob(str(root / "output_audit" / "b3423_*_breadth_net_long.json")))
+    assert len(paths) == 12, paths
+    pk = hp.build(paths, prior_of=lambda s, leg: [], coverage_of=lambda s, ps: clean)
+    surv = [r for r in pk["rows"] if r["survivor"]]
+    assert pk["survivors"] == 8 and pk["ready"] == 8, pk["survivors"]
+    assert sum(1 for r in surv if r["kind"] == "depth") == 3
+    assert sum(1 for r in pk["rows"] if not r["survivor"]) == 4
+    rer = sorted(r["strategy"] for r in surv if r["read_order"].startswith("DISCLOSED"))
+    assert rer == ["m_and_a_target_long", "stochrsi_oversold", "tema_dema"], rer
+    assert all(r["kind"] == "breadth" for r in surv if r["read_order"].startswith("DISCLOSED"))
+    md = hp.render(pk)
+    assert "8 survivors" in md and md.count(nl + "| ") >= 12, md[:400]
+    # (6)
+    assert "scan_holdout_read_decision_unpacketed," in _insp.getsource(vtc.main)

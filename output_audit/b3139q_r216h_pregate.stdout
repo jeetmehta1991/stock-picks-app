@@ -1,0 +1,5 @@
+........................................................................ [ 80%]
+.................                                                        [100%]
+89 passed in 351.54s (0:05:51)
+pregate_select: 3 changed path(s) -> 89 test(s) (R1 0, R2 43, R3 0, R4 0, R5 0, R6 38, R7 15) - a LOWER bound; the full gate stays the authority
+pregate_select: stamped .pregate_stamp - PASSED on this tree (89 tests, 2026-11-17T07:45:30Z)

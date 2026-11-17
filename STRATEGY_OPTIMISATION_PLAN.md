@@ -217,7 +217,7 @@ and the launch-time refusal (B2578) followed (§2.1); the table above and the wo
    (`step1_gates.require_band_ruling`); (5) put the batch's Table A bands to the owner in ONE band
    packet, the words still recorded per strategy on its ticket (§0.6); (6) run the offline Step-1
    grids (§3.4, §3.6) - ranked lists, no holdout read; (7) put every Step-1 survivor's pre-registered
-   line to the owner in ONE holdout-read packet - one read per line, as always; (8) render any
+   line to the owner in ONE holdout-read packet built by `scripts/holdout_packet.py` (S6-B3454: every survivor, each reader's refusals dry-run, the read order) - one read per line, as always; (8) render any
    admission through `build_phase_1b_roster.py` after the owner rules, the de-dup and the labels
    re-checked; (9) list for the owner the candidates whose axes need the engine (S6-B3422 (E)).
    Unchanged: the six live gates, the one-shot holdout read on the owner's word, BH-FDR at the roster,

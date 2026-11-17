@@ -4173,6 +4173,33 @@ def scan_decision_without_ticket(entries, *, text=None, ticket_ids=None) -> list
             "recommendation, and name its id."]
 
 
+def _decision_table_rows(t: str) -> list[str]:
+    """S6-B3454 (B3139q-r217): the rows of every DECISION table in `t` - a
+    markdown table whose header row (the row above its separator) has a cell
+    starting 'rec' (Recommend, Recommendation, Rec) or containing 'recommend'.
+    MEASURED: the B3139q-r216 close's decision table was headed '| Ticket |
+    Question | My recommendation |', which the 'rec' prefix alone did not read,
+    so scan_launch_decision_without_price never saw its rows. ONE reader for
+    every decision-row scan (L593)."""
+    import re
+    sep = re.compile(r"^\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)*\|?\s*$")
+    lines = t.splitlines()
+    rows, in_table = [], False
+    for i, ln in enumerate(lines):
+        s = ln.strip()
+        if not s.startswith("|"):
+            in_table = False
+            continue
+        if sep.match(s):
+            head = lines[i - 1].strip() if i else ""
+            cells = [c.strip().strip("*_ ").lower() for c in head.strip("|").split("|")]
+            in_table = any(c.startswith("rec") or "recommend" in c for c in cells)
+            continue
+        if in_table:
+            rows.append(s)
+    return rows
+
+
 def scan_launch_decision_without_price(entries, *, text=None) -> list[str]:
     """S6-B3431 (B3139q-r205c, L1013): an engine run put to the owner carries
     its own price.
@@ -4201,26 +4228,60 @@ def scan_launch_decision_without_price(entries, *, text=None) -> list[str]:
                         r"(?:the\s+|a\s+|an\s+|two\s+|both\s+|its\s+|their\s+)?"
                         r"(?:runs?|waves?|chains?|arms?)\b", re.I)
     price = re.compile(r"\d+(?:\.\d+)?\s*(?:h|hrs?|hours?)\b", re.I)
-    sep = re.compile(r"^\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)*\|?\s*$")
-    lines = t.splitlines()
-    rows, in_table = {}, False
-    for i, ln in enumerate(lines):
-        s = ln.strip()
-        if not s.startswith("|"):
-            in_table = False
-            continue
-        if sep.match(s):
-            head = lines[i - 1].strip() if i else ""
-            cells = [c.strip().strip("*_ ").lower() for c in head.strip("|").split("|")]
-            in_table = any(c.startswith("rec") for c in cells)
-            continue
-        if in_table and launch.search(s):
+    # S6-B3454: the decision tables come from the one shared reader, which
+    # also reads a 'My recommendation' header
+    rows = {}
+    for s in _decision_table_rows(t):
+        if launch.search(s):
             rows[f"row {len(rows) + 1} {s[:120]!r}"] = bool(price.search(s))
     return require_each(
         "LAUNCH DECISION WITHOUT ITS PRICE (S6-B3431 / L1013, #295)", rows,
         why=("A decision row put an engine run to the owner with no duration. "
              "State each run's own price from make_spec.step2_sizing (L964) in "
              "the row, e.g. '24.8-84.0 h'."))
+
+
+def scan_holdout_read_decision_unpacketed(entries, *, text=None,
+                                         tool_text=None) -> list[str]:
+    """S6-B3454 (B3139q-r217, L1019): a holdout read put to the owner comes
+    from a GENERATED packet.
+
+    MEASURED 2026-11-17: the B3139q-r216 close's decision table carried the row
+    '| S6-B3423 | Read the holdout once for each of the 3 survivors? | Yes, as
+    step 5 plans; ... |' and the owner approved it (sent 2026-11-17T16:13:49Z).
+    scripts/offline_holdout_read.py then refused all 3 on the band-coverage gate
+    - 22 engine-only Table A levels no waiver covered - and the row had left out
+    the 5 breadth grids the plan's step 5 puts in the same packet, so the owner
+    was asked twice. scripts/holdout_packet.py generates the packet: every
+    Step-1 survivor of the given artifacts, each reader's refusals dry-run
+    before any holdout row is read, the read order per subject.
+
+    The mechanizable slice: a row of a DECISION table (_decision_table_rows)
+    that names a holdout read - 'holdout read(s)' or 'read the holdout' -
+    requires that this turn RAN scripts/holdout_packet.py (_executed_tool_text;
+    a heredoc body or a written file is not a run). A lower bound (L757): a read
+    asked for in prose outside such a table is not read here, and whether the
+    packet covered the row's strategies is not checked. `tool_text` is the seam
+    (#241) for the executed commands."""
+    import re
+    t = _response_text(entries, text, keep_code=True)
+    if not t:
+        return []
+    read = re.compile(r"\bholdout[- ]reads?\b|\bread(?:s|ing)?\s+(?:the\s+|its\s+|"
+                      r"their\s+|each\s+)?holdouts?\b", re.I)
+    rows = [s for s in _decision_table_rows(t) if read.search(s)]
+    if not rows:
+        return []
+    ran = "holdout_packet.py" in _executed_tool_text(entries, tool_text)
+    return require_each(
+        "HOLDOUT READ PUT TO THE OWNER WITHOUT ITS GENERATED PACKET (S6-B3454 / "
+        "L1019, #164)",
+        {f"row {i} {s[:120]!r}": ran for i, s in enumerate(rows, 1)},
+        why=("A decision row asks the owner for a holdout read, and this turn did not "
+             "run scripts/holdout_packet.py over the strategy's Step-1 artifacts. The "
+             "packet names every survivor and dry-runs each reader's refusals - the "
+             "band-coverage waiver the r216 packet omitted - so run it and put its "
+             "rows to the owner."))
 
 
 def scan_findings_vs_tickets(entries, *, text=None, rows=None,
@@ -6699,6 +6760,46 @@ def backslash_run_hits(cmd: str) -> list[str]:
     return out
 
 
+# S6-B3453 (B3139q-r217): THE GUARD'S REFUSALS, LINKED BY WHAT THE GUARD
+# WRITES. scripts/pretooluse_heredoc_guard.py opens every refusal with
+# 'REFUSED BEFORE RUNNING (<rule id> / ...'; the harness that relays it has
+# changed its wrapper - MEASURED on the 2026-11-17 transcript, a refusal now
+# arrives as 'PreToolUse:Bash hook error: [command hook]: REFUSED BEFORE
+# RUNNING (...)' with is_error true and NO script path, where S6-B3144's link
+# required the path, so 2 refused heredocs read as commands that ran. The
+# link keys on is_error and the guard's own head with a rule id it emits; the
+# older wrapper (the path beside the marker) still links. ONE definition for
+# every close-time scan judging a command the guard can refuse - the
+# heredoc / -c scan here and the parserless --help scan, which linked no
+# refusal at all. GUARD_RULE_IDS is the guard's rule set, pinned against the
+# guard's own refusal literals by test_b3453 (a new guard rule must join it).
+GUARD_RULE_IDS = ("S6-B3377", "S6-B3391", "S6-B3268", "S6-B3379",
+                  "S6-B3139ae", "S6-B3144", "S6-B3327")
+_GUARD_REFUSAL_RE = re.compile(r"REFUSED BEFORE RUNNING \((S6-B[0-9]+[a-z]*) /")
+
+
+def guard_refused_ids(entries) -> set:
+    """The tool_use ids of every call the PreToolUse guard refused before it
+    ran: a tool_result with is_error true whose text carries the guard's head
+    with one of GUARD_RULE_IDS - or the older wrapper naming the guard script
+    beside the marker. A result quoting the marker with no rule id (prose
+    about a refusal) links nothing; neither does a non-error result."""
+    out = set()
+    for d in (entries or ()):
+        c0 = (d.get("message") or {}).get("content") if isinstance(d, dict) else None
+        for b in (c0 if isinstance(c0, list) else ()):
+            if not (isinstance(b, dict) and b.get("type") == "tool_result"
+                    and b.get("is_error")):
+                continue
+            text = str(b.get("content"))
+            m = _GUARD_REFUSAL_RE.search(text)
+            if ((m and m.group(1) in GUARD_RULE_IDS)
+                    or ("pretooluse_heredoc_guard" in text
+                        and "REFUSED BEFORE RUNNING" in text)):
+                out.add(b.get("tool_use_id"))
+    return out
+
+
 def scan_heredoc_escapes(entries, *, cmds=None, active_from=None) -> list[str]:
     """S6-B3138a / #259 / L885: never pass a backslash escape through a heredoc.
 
@@ -6723,18 +6824,11 @@ def scan_heredoc_escapes(entries, *, cmds=None, active_from=None) -> list[str]:
         cmds, dash_cmds = [], []
         # S6-B3144: a command the PreToolUse guard REFUSED never ran - the
         # record counts what RAN, the guard what WOULD run. Linked by
-        # tool_use id to the harness's refusal result (is_error, the guard's
-        # own path and REFUSED BEFORE RUNNING); a guard that failed open left
-        # no such result, so its command still fires here.
-        refused = set()
-        for d in (entries or ()):
-            c0 = (d.get("message") or {}).get("content") if isinstance(d, dict) else None
-            for b in (c0 if isinstance(c0, list) else ()):
-                if (isinstance(b, dict) and b.get("type") == "tool_result"
-                        and b.get("is_error")
-                        and "pretooluse_heredoc_guard" in str(b.get("content"))
-                        and "REFUSED BEFORE RUNNING" in str(b.get("content"))):
-                    refused.add(b.get("tool_use_id"))
+        # tool_use id to the harness's refusal result through
+        # guard_refused_ids (S6-B3453: by the guard's own head and rule id,
+        # never by a path the harness may drop); a guard that failed open
+        # left no such result, so its command still fires here.
+        refused = guard_refused_ids(entries)
         for d in _turn_entries(entries):
             if not isinstance(d, dict) or d.get("type") != "assistant":
                 continue
@@ -6910,6 +7004,9 @@ def scan_help_on_parserless_script(entries, *, cmds=None, active_from=None,
     if cmds is None:
         cut = active_from or HELP_PARSERLESS_ACTIVE_FROM
         cmds = []
+        # S6-B3453: since S6-B3268 the guard REFUSES this --help before it
+        # runs; a refused command never ran, so it is not judged here
+        refused = guard_refused_ids(entries)
         for d in _turn_entries(entries):
             if not isinstance(d, dict) or d.get("type") != "assistant":
                 continue
@@ -6918,7 +7015,8 @@ def scan_help_on_parserless_script(entries, *, cmds=None, active_from=None,
             for blk in (d.get("message") or {}).get("content") or ():
                 if (isinstance(blk, dict) and blk.get("type") == "tool_use"
                         and str(blk.get("name") or "").lower()
-                        in ("bash", "powershell")):
+                        in ("bash", "powershell")
+                        and blk.get("id") not in refused):
                     cmds.append(str((blk.get("input") or {}).get("command") or ""))
     hits = [h for c in cmds for h in help_on_parserless_hits(c, sources=sources)]
     if hits:
@@ -7535,6 +7633,9 @@ def main(argv: list[str] | None = None) -> int:
                 # S6-B3431 (B3139q-r205c, L1013): an engine run put to
                 # the owner carries its own price.
                 scan_launch_decision_without_price,
+                # S6-B3454 (B3139q-r217, L1019): a holdout read put to
+                # the owner comes from the generated packet.
+                scan_holdout_read_decision_unpacketed,
                 # S6-B2993 (owner approved 2026-09-22): a registered
                 # deferral trigger that NEWLY fires blocks one close.
                 scan_deferral_trigger_fired,

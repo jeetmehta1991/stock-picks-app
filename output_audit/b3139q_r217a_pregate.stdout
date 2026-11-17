@@ -1,0 +1,549 @@
+...s.................................................................... [ 19%]
+.................F...................................................... [ 38%]
+........................................................................ [ 58%]
+........................................................................ [ 77%]
+...........................................................F............ [ 97%]
+.F.........                                                              [100%]
+================================== FAILURES ===================================
+________________ test_b1945_no_new_dangling_learnings_citation ________________
+
+    def test_b1945_no_new_dangling_learnings_citation():
+        """B1945 (L595): a citation is a claim with an ADDRESS, and the address is
+        checkable independently of the claim.
+    
+        `L611` does not exist. I read `611:` from a `grep -n` on LEARNINGS.md and
+        recorded it as a lesson number; the text is at LINE 611, inside `L126`. It
+        propagated into ticket rows, a `CHECKLIST #279` amendment and a `SKILL.md`
+        section **loaded into context every turn**.
+    
+        **`#201` asks a FIGURE to name its source. Nothing asked whether a named
+        source EXISTS.**
+    
+        The legacy sets below are frozen from a live measurement and may only
+        SHRINK. A NEW dangling citation fails here.
+        """
+        import pathlib as _p
+        import re as _re
+    
+        root = _p.Path(__file__).resolve().parents[2]
+    
+        LEGACY = {
+            'EXECUTION_QUEUE.md': {
+                'L611',
+            },
+            'CHECKLIST.md': {
+                'L137',
+                'L138',
+                'L139',
+                'L140',
+                'L141',
+            },
+            '.claude/skills/execution-discipline/SKILL.md': {
+            },
+            'CLAUDE.md': {
+            },
+        }
+    
+        lm = (root / "LEARNINGS.md").read_text(encoding="utf-8")
+        exist = set(_re.findall(r"^#{2,3} (L\d+)", lm, _re.M))
+        assert len(exist) > 300, (
+            f"only {len(exist)} L-entries parsed - the heading regex has drifted "
+            "and this test would pass by seeing nothing")
+    
+        # B3139q-r154: ONE definition of a lesson citation (L593), with its
+        # positive control - a bare citation and both ends of a lesson range are
+        # seen; a file-line anchor, the end of an anchor range and a word that
+        # merely contains L and digits are not
+        _CITE = _re.compile(
+            r"(?<![#\w])(?<!#L\d\d-)(?<!#L\d\d\d-)(?<!#L\d\d\d\d-)L(\d{2,4})\b")
+        assert _CITE.findall("see L998, L976-L980 and (L1003)") == ["998", "976", "980", "1003"]
+        assert _CITE.findall("CHECKLIST.md#L1651, smc_ict.py#L81 and screener.py#L1040-L1050") == []
+        assert _CITE.findall("AL2023 and XL100") == []
+    
+        for name, legacy in LEGACY.items():
+            p = root / name
+            if not p.is_file():
+                continue
+            # B1945c: strip inline-code spans first. B1738's convention -
+            # vocabulary in backticks is a MENTION, not a USE - and the rows that
+            # DOCUMENT a mis-citation must be able to name it. This ratchet fired
+            # on `S6-B1945a`, the row explaining the L611 defect.
+            # B1993b (#275): strip PER LINE, never whole-file. The append-log
+            # carries decades of odd backtick counts (apostrophes typed as
+            # backticks, fences, wrapped rows); cumulative parity then flips the
+            # pairing for everything downstream, and a correctly-backticked
+            # mention leaks out bare. Inline code never crosses lines here, so
+            # per-line stripping contains each historical oddity to its own line.
+            _txt = "\n".join(_re.sub(r"`[^`]*`", " ", _ln)
+                             for _ln in p.read_text(encoding="utf-8").splitlines())
+            # B3139q-r154 (S6-B3311's past-L999 clause): four digits once the
+            # corpus reached L999. A file-line anchor is not a lesson id - #L1651,
+            # and the end of #L2730-L2733 - so the lookbehinds drop them (the old
+            # pattern read smc_ict.py#L81 as a dangling L81); prose line numbers
+            # (L8016, L9725 and L9784 in the queue) sit above the window by value,
+            # and test_b3311 raises the window before the corpus reaches it.
+            cited = {f"L{c}" for c in _CITE.findall(_txt)
+                      if 80 <= int(c) <= 1099}  # S6-B3311 (L962): was 700, then 999
+            dangling = cited - exist
+            # B1993: COUNTS frozen too, not only identities. B1992 measured 13
+            # new #237 citations riding the number-freeze in one session; this
+            # register had the identical gap - a 14th L611 citation would have
+            # passed silently. Baseline measured LAST, after every edit of the
+            # batch that wrote it (L562). Update DOWNWARD when cleaning one up.
+            _LBASE = {'EXECUTION_QUEUE.md': {'L611': 13}, 'CHECKLIST.md': {'L137': 1, 'L138': 2, 'L139': 6, 'L140': 2, 'L141': 2}}
+            for _n, _cap in _LBASE.get(name, {}).items():
+                _got = len(_re.findall(rf"\b{_n}\b",
+                                       p.read_text(encoding="utf-8",
+                                                   errors="replace")))
+                assert _got <= _cap, (
+                    f"{name}: {_got} citations of retired {_n} exceeds frozen "
+                    f"baseline {_cap} - a new citation of a known-dangling "
+                    "L-number deepens the debt (B1993; L611 is RETIRED and must "
+                    "never gain content or citations)")
+            new = sorted(dangling - set(legacy), key=lambda x: int(x[1:]))
+>           assert not new, (
+                f"{name} cites L-entries that do NOT exist: {new}. A citation is "
+                "a claim with an address - `L611` was a grep LINE NUMBER read as a "
+                "lesson id and it reached three canonical docs. Cite the entry "
+                "that holds the rule, or write the entry.")
+E           AssertionError: EXECUTION_QUEUE.md cites L-entries that do NOT exist: ['L1019']. A citation is a claim with an address - `L611` was a grep LINE NUMBER read as a lesson id and it reached three canonical docs. Cite the entry that holds the rule, or write the entry.
+E           assert not ['L1019']
+
+backtest\tests\test_unit.py:21072: AssertionError
+_____________________ test_b3395b_the_holdout_read_ledger _____________________
+
+tmp_path = WindowsPath('C:/Users/jeetm/AppData/Local/Temp/pytest-of-jeetm/pytest-5693/test_b3395b_the_holdout_read_l0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002B79157F930>
+
+    def test_b3395b_the_holdout_read_ledger(tmp_path, monkeypatch):
+        """S6-B3395 Batch 7b (B3139q-r178), owner ruling 2026-11-03 'A approved':
+        the holdout-read ledger at the two offline doors - runbook 0.3 (census
+        line 140, one owner-worded read, a re-read declared) and 1.1 item 6
+        (census line 323, holdout reads counted project-wide).
+    
+        (1) The primitives on a temp ledger: a recorded read makes the next read
+        of the same subject an UNDECLARED re-read (refused); declaring it by its
+        read_id passes, a wrong id refuses, and so does a declaration with no
+        recorded read at all; legs overlap (both covers long; long and short are
+        separate subjects); the engine door keys on config, so the waterfall's
+        next config passes and the same config refuses; a read id is recorded
+        once; a missing strategy, a corrupt line and an unknown door refuse
+        (L580, L642); an append keeps the file's dominant line ending (L850).
+    
+        (2) The redirect is honoured ONLY under pytest - without
+        PYTEST_CURRENT_TEST the production ledger is read whatever the variable
+        says (L596: the escape gets the stricter matcher).
+    
+        (3) The depth reader, through main(): the first read is recorded; a second
+        read of the same Step-1 surface under a NEW --out - the b2646 shape -
+        refuses before the read is taken (the reader stub is not called); declared
+        with --rereads it passes and the artifact carries rerun_of_spent_holdout
+        and the ledger block; --force-rerun onto a recorded read's own artifact
+        refuses.
+    
+        (4) The breadth reader: --ruling-ticket is required and the word is
+        checked (S6-B3338's door covered 1 of 2 readers); an existing --out
+        refuses; --prior-read 'none' refuses when the ledger records a read of
+        the subject, and so does a --prior-read naming none of the recorded
+        reads - both before the frame is built.
+    
+        (5) The committed ledger holds every read the tracked artifacts of the
+        three recognised read shapes imply - such an artifact committed without
+        its ledger entry fails here; reads that leave other shapes (the
+        declared-row reader, the historical one-off readers) are Batch 7c's census. Its engine reads carry the
+        arm's env as their identity - the key a launch can compute, re-derived
+        here from the tracked spec arm of each - and the grader's own config
+        beside it (B3139q-r179: the grader's dict re-derives from a spec for 3 of
+        7 engine reads, the arm env for 7 of 7)."""
+        import importlib.util as _ilu
+        import json as _j
+        import sys as _s
+        from pathlib import Path as _P
+        import pytest
+        root = _P(__file__).resolve().parents[2]
+        if str(root / "scripts") not in _s.path:
+            _s.path.insert(0, str(root / "scripts"))
+        import holdout_reads as hr
+        import os as _os
+        # (0) the conftest isolation is on: this test, and every test, starts on a
+        # temp ledger - never the production one a reader test would otherwise write
+        assert _os.environ.get(hr.ENV_KEY) and hr.ledger_path() != hr.LEDGER_PROD, (
+            "backtest/tests/conftest.py _holdout_reads_ledger_isolated is off")
+        assert not hr.ledger_path().exists(), "each test starts on an EMPTY ledger"
+    
+        # (1) primitives
+        L = tmp_path / "ledger.jsonl"
+        common = dict(door="offline_holdout_read", artifact="a.json", source="s.json", path=L)
+        assert hr.reread_refusal("s1", "long", door="d", path=L) is None
+        assert "not a recorded read" in hr.reread_refusal("s1", "long", declared="r0",
+                                                          door="d", path=L), (
+            "a declaration with no recorded read refuses")
+        hr.record(read_id="r1", strategy="s1", leg="long", **common)
+        why = hr.reread_refusal("s1", "long", door="d", path=L)
+        assert why and "r1" in why and "DECLARED" in why, why
+        assert hr.reread_refusal("s1", "long", declared="r1", door="d", path=L) is None
+        assert "not a recorded read" in hr.reread_refusal("s1", "long", declared="zz",
+                                                          door="d", path=L)
+        assert hr.reread_refusal("s1", "both", door="d", path=L), "both overlaps long"
+        assert hr.reread_refusal("s1", None, door="d", path=L), "no leg overlaps long"
+        assert hr.reread_refusal("s1", "short", door="d", path=L) is None, "short is separate"
+        assert hr.reread_refusal("other", "long", door="d", path=L) is None
+        assert "names no strategy" in hr.reread_refusal(None, "long", door="d", path=L)
+        assert hr.read_id_refusal("r1", door="d", path=L), "a read id is recorded once"
+        assert hr.read_id_refusal("r2", door="d", path=L) is None
+        cfg9 = hr.engine_identity({"STRAT_EMA_SPAN": "9"})
+        cfg250 = hr.engine_identity({"STRAT_EMA_SPAN": "250"})
+        assert cfg9 == hr.engine_identity({"STRAT_EMA_SPAN": 9}), "values compare as text"
+        assert hr.engine_identity(None) == hr.engine_identity({}) == "{}", "production = no env"
+        with pytest.raises(SystemExit):
+            hr.record(read_id="e0", strategy="bl", leg=None, door="engine_step2",
+                      artifact="g0", source="c0", path=L)
+        hr.record(read_id="e9", strategy="bl", leg=None, door="engine_step2", artifact="g9",
+                  source="c9", config=cfg9, grid_config={"P4_ema_span": 9}, path=L)
+        assert hr.reread_refusal("bl", None, config=cfg250, door="engine", path=L) is None, (
+            "the waterfall's next config is a new read (runbook 1.1 item 1)")
+        assert hr.reread_refusal("bl", None, config=cfg9, door="engine", path=L), (
+            "a renamed wave of the SAME config is a re-read")
+        with pytest.raises(SystemExit):
+            hr.record(read_id="x", strategy="s", leg=None, door="nope", artifact="a",
+                      source="s", path=L)
+        with pytest.raises(SystemExit):
+            hr.record(read_id="x", strategy="", leg=None, door="engine_step2", artifact="a",
+                      source="s", path=L)
+        assert [e["read_id"] for e in hr.entries(L)] == ["r1", "e9"], "refused records wrote nothing"
+        bad = tmp_path / "bad.jsonl"
+        bad.write_text("{not json" + chr(10), encoding="utf-8")
+        with pytest.raises(SystemExit) as e:
+            hr.entries(bad)
+        assert "not JSON" in str(e.value)
+        nameless = tmp_path / "nameless.jsonl"
+        nameless.write_text('{"read_id": "z"}' + chr(10), encoding="utf-8")
+        with pytest.raises(SystemExit):
+            hr.entries(nameless)
+        crlf = tmp_path / "crlf.jsonl"
+        crlf.write_bytes(b'{"read_id": "a", "strategy": "s"}' + bytes([13, 10]))
+        hr.record(read_id="b", strategy="s", leg=None, door="offline_holdout_read",
+                  artifact="a", source="s", path=crlf)
+        raw = crlf.read_bytes()
+        assert raw.count(bytes([13, 10])) == 2 and raw.count(bytes([10])) == 2, raw
+    
+        # (2) the redirect only under pytest
+        monkeypatch.setenv(hr.ENV_KEY, str(L))
+        assert hr.ledger_path() == L
+        monkeypatch.delenv("PYTEST_CURRENT_TEST", raising=False)
+        assert hr.ledger_path() == hr.LEDGER_PROD, "a production read cannot redirect"
+        monkeypatch.setenv("PYTEST_CURRENT_TEST", "pin")
+    
+        # (3) the depth reader records, refuses the undeclared re-read, takes the declared one
+        led = tmp_path / "depth_ledger.jsonl"
+        monkeypatch.setenv(hr.ENV_KEY, str(led))
+        import owner_word as ow
+        q = tmp_path / "queue.md"
+        q.write_text("| **S6-B9396** | **OPEN** | P1 | **RULED: 'read the fixture holdout once' "
+                     "(fixture).** | _reason:_ OPEN |" + chr(10), encoding="utf-8")
+        monkeypatch.setattr(ow, "QUEUE", q)
+        spec = _ilu.spec_from_file_location("ohr_b3395b", root / "scripts" / "offline_holdout_read.py")
+        ohr = _ilu.module_from_spec(spec)
+        spec.loader.exec_module(ohr)
+        monkeypatch.setattr(hr, "step1_uncommitted", lambda *a, **k: None)
+        s1 = tmp_path / "surface.json"
+        s1.write_text(_j.dumps({"strategy": "fx", "multiplicity": {"reconciles": True},
+                                "axes": []}), encoding="utf-8")
+        adm = {"levels": [], "exit": "x", "holdout_sharpe": 0.4, "holdout_n": 20, "full_n": 80,
+               "profit_factor": 1.1, "sortino": 0.5, "psr": 0.6, "n_gates": 3,
+               "n_gates_evaluable": 6, "verdict": "FAIL"}
+        reads = []
+    
+        def _read(*a, **k):
+            reads.append(1)
+            return {"strategy": "fx", "verdict": "FAIL", "basis": "net", "basis_source": "fx",
+                    "subject": {"direction": None}, "admission": adm, "trials": 1,
+                    "peek_bound": {"cells_clearing_all_gates_besides_admission": 0}}
+        monkeypatch.setattr(ohr, "read_step2", _read)
+        monkeypatch.setattr(ohr, "render_table", lambda rec: "")
+    
+        def run(out, extra=()):
+            monkeypatch.setattr(_s, "argv", ["ohr", "--sweep-artifact", str(s1), "--out", str(out),
+                                             "--ruling", "read the fixture holdout once",
+                                             "--ruling-ticket", "S6-B9396", "--breadth-leg",
+                                             "not_run", "--breadth-ticket", "S6-B9396"] + list(extra))
+            return ohr.main()
+        first = tmp_path / "first.json"
+        assert run(first) == 0 and len(reads) == 1
+        recs = hr.entries(led)
+        assert len(recs) == 1 and recs[0]["strategy"] == "fx", recs
+        assert recs[0]["door"] == "offline_holdout_read" and recs[0]["declared"] is None
+        assert recs[0]["owner_word"]["ticket"] == "S6-B9396"
+        first_id = recs[0]["read_id"]
+        assert first_id == hr.repo_rel(first)
+        assert _j.loads(first.read_text(encoding="utf-8"))["holdout_read_ledger"] == {
+            "read_id": first_id, "prior_reads": [], "rereads": []}
+        with pytest.raises(SystemExit) as e:
+            run(tmp_path / "second.json")
+        assert "S6-B3395" in str(e.value) and first_id in str(e.value), e.value
+        assert len(reads) == 1, "the undeclared re-read refused BEFORE the read was taken"
+        assert not (tmp_path / "second.json").exists() and len(hr.entries(led)) == 1
+        with pytest.raises(SystemExit) as e:
+            run(tmp_path / "second.json", ["--rereads", "not/a/read.json"])
+        assert "not a recorded read" in str(e.value)
+        assert run(tmp_path / "third.json", ["--rereads", first_id]) == 0
+        rec = _j.loads((tmp_path / "third.json").read_text(encoding="utf-8"))
+        assert rec["rerun_of_spent_holdout"] is True
+        assert rec["holdout_read_ledger"]["prior_reads"] == [first_id]
+        third = hr.entries(led)[1]
+        assert third["rereads"] == [first_id] and third["declared"] is True
+        with pytest.raises(SystemExit) as e:
+            run(first, ["--force-rerun", "--rereads", first_id])
+        assert "already the artifact of a recorded holdout read" in str(e.value), e.value
+        assert len(hr.entries(led)) == 2 and len(reads) == 2
+    
+        # (4) the breadth reader: its word is checked, an existing --out refuses,
+        # and --prior-read is checked against the ledger before the frame is built
+        import breadth_step2_read as b2
+    
+        def _no_frame(*a, **k):
+            raise AssertionError("build_frame reached - the ledger check must come first")
+        monkeypatch.setattr(b2, "build_frame", _no_frame)
+        spent = tmp_path / "spent_breadth.json"
+        spent.write_text("{}", encoding="utf-8")
+        s1b = tmp_path / "breadth_surface.json"
+        s1b.write_text(_j.dumps({"strategy": "fx", "leg": "long", "depth_base": None,
+                                 "multiplicity": {"reconciles": True}, "rows": []}),
+                       encoding="utf-8")
+        base = ["b2", "--step1-artifact", str(s1b),
+                "--breadth-disposition", "ran", "--depth-leg", "ran", "--depth-evidence", "pin"]
+        word = ["--ruling", "read the fixture holdout once", "--ruling-ticket", "S6-B9396"]
+        monkeypatch.setattr(_s, "argv", base + ["--ruling", "read the fixture holdout once",
+                                                "--out", str(tmp_path / "o.json"),
+                                                "--prior-read", "none"])
+        with pytest.raises(SystemExit) as e:
+            b2.main()
+        assert e.value.code == 2, "argparse must require --ruling-ticket"
+        monkeypatch.setattr(_s, "argv", base + ["--ruling", "an unrecorded word here",
+                                                "--ruling-ticket", "S6-B9396",
+                                                "--out", str(tmp_path / "o.json"),
+                                                "--prior-read", "none"])
+        with pytest.raises(SystemExit) as e:
+            b2.main()
+        assert "S6-B3338" in str(e.value), e.value
+        monkeypatch.setattr(_s, "argv", base + word + ["--out", str(spent), "--prior-read", "none"])
+        with pytest.raises(SystemExit) as e:
+            b2.main()
+        assert "exists" in str(e.value) and "S6-B3395" in str(e.value), e.value
+        monkeypatch.setattr(_s, "argv", base + word + ["--out", str(tmp_path / "b1.json"),
+                                                       "--prior-read", "none"])
+        with pytest.raises(SystemExit) as e:
+            b2.main()
+        assert "S6-B3395" in str(e.value) and first_id in str(e.value), e.value
+        assert "one Step-2 read" in str(e.value), ("a first-read claim the ledger "
+                                                   "contradicts gets the rule's refusal", e.value)
+        monkeypatch.setattr(_s, "argv", base + word + ["--out", str(tmp_path / "b1.json"),
+                                                       "--prior-read", "an earlier look",
+                                                       "--disclosure", "the owner's words"])
+        with pytest.raises(SystemExit) as e:
+            b2.main()
+        assert "names none of the ledger's recorded reads" in str(e.value), e.value
+        assert len(hr.entries(led)) == 2, "a refused breadth read recorded nothing"
+        monkeypatch.setattr(_s, "argv", base + word + ["--out", str(tmp_path / "b1.json"),
+                                                       "--prior-read", f"the depth read {first.name}",
+                                                       "--disclosure", "the owner's words"])
+        with pytest.raises(AssertionError, match="build_frame reached"):
+            b2.main()
+    
+        # (5) the committed ledger holds every read the tracked artifacts imply
+>       cands = {c["read_id"]: c for c in hr.backfill_candidates()}
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^
+
+backtest\tests\test_unit.py:72039: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts\holdout_reads.py:778: in backfill_candidates
+    "ts": _first_added(relpath, rootp),
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+relpath = 'output_audit/b3423_m_and_a_target_long_breadth_step2_read_long.json'
+root = WindowsPath('C:/Users/jeetm/Github/stock-picks-app')
+
+    def _first_added(relpath: str, root: Path) -> str:
+        r = subprocess.run(["git", "-C", str(root), "log", "--diff-filter=A",
+                            "--format=%cI", "--", relpath],
+                           capture_output=True, text=True, timeout=60)
+        lines = [x for x in r.stdout.splitlines() if x.strip()]
+        if r.returncode != 0 or not lines:
+>           raise SystemExit(f"REFUSED (S6-B3395): no first-add commit for {relpath} - "
+                             "a backfilled read is dated by git or not at all")
+E           SystemExit: REFUSED (S6-B3395): no first-add commit for output_audit/b3423_m_and_a_target_long_breadth_step2_read_long.json - a backfilled read is dated by git or not at all
+
+scripts\holdout_reads.py:680: SystemExit
+---------------------------- Captured stdout call -----------------------------
+fx STEP 2: FAIL (basis net: fx)
+  STEP-2 LEG NEGATIVE; BREADTH LEG NOT RUN - NO STRATEGY FAILURE (#299, S6-B3353) - depth ran, breadth not_run
+  pre-registered [] exit x: holdout sharpe 0.4 on n=20 (full 80); PF 1.1 sortino 0.5 PSR 0.6
+  gates passed 3 of 6
+  peek bound (diagnostic): 0 other lines of 1 clear all gates
+  control comparison (pead_long_high_yoy_growth_only): NO_QUALIFIERS - nothing to compare, 0 line(s)
+  holdout-read ledger: C:/Users/jeetm/AppData/Local/Temp/pytest-of-jeetm/pytest-5693/test_b3395b_the_holdout_read_l0/first.json recorded (C:\Users\jeetm\AppData\Local\Temp\pytest-of-jeetm\pytest-5693\test_b3395b_the_holdout_read_l0\depth_ledger.jsonl); prior reads of the subject: none
+wrote C:\Users\jeetm\AppData\Local\Temp\pytest-of-jeetm\pytest-5693\test_b3395b_the_holdout_read_l0\first.json and C:\Users\jeetm\AppData\Local\Temp\pytest-of-jeetm\pytest-5693\test_b3395b_the_holdout_read_l0\first.md
+fx STEP 2: FAIL (basis net: fx)
+  STEP-2 LEG NEGATIVE; BREADTH LEG NOT RUN - NO STRATEGY FAILURE (#299, S6-B3353) - depth ran, breadth not_run
+  pre-registered [] exit x: holdout sharpe 0.4 on n=20 (full 80); PF 1.1 sortino 0.5 PSR 0.6
+  gates passed 3 of 6
+  peek bound (diagnostic): 0 other lines of 1 clear all gates
+  control comparison (pead_long_high_yoy_growth_only): NO_QUALIFIERS - nothing to compare, 0 line(s)
+  holdout-read ledger: C:/Users/jeetm/AppData/Local/Temp/pytest-of-jeetm/pytest-5693/test_b3395b_the_holdout_read_l0/third.json recorded (C:\Users\jeetm\AppData\Local\Temp\pytest-of-jeetm\pytest-5693\test_b3395b_the_holdout_read_l0\depth_ledger.jsonl); prior reads of the subject: ['C:/Users/jeetm/AppData/Local/Temp/pytest-of-jeetm/pytest-5693/test_b3395b_the_holdout_read_l0/first.json']
+wrote C:\Users\jeetm\AppData\Local\Temp\pytest-of-jeetm\pytest-5693\test_b3395b_the_holdout_read_l0\third.json and C:\Users\jeetm\AppData\Local\Temp\pytest-of-jeetm\pytest-5693\test_b3395b_the_holdout_read_l0\third.md
+---------------------------- Captured stderr call -----------------------------
+usage: python.exe -m pytest [-h] --step1-artifact STEP1_ARTIFACT
+                            --ruling RULING --ruling-ticket RULING_TICKET
+                            [--control CONTROL]
+                            --breadth-disposition {ran,waived}
+                            [--breadth-reason BREADTH_REASON]
+                            [--breadth-word BREADTH_WORD]
+                            [--breadth-word-ticket BREADTH_WORD_TICKET]
+                            --depth-leg {ran,waived,not_run}
+                            [--depth-evidence DEPTH_EVIDENCE]
+                            [--depth-word DEPTH_WORD]
+                            [--depth-word-ticket DEPTH_WORD_TICKET]
+                            [--depth-ticket DEPTH_TICKET] --out OUT
+                            --prior-read PRIOR_READ [--disclosure DISCLOSURE]
+                            [--cube-dir CUBE_DIR]
+python.exe -m pytest: error: the following arguments are required: --ruling-ticket
+_______________ test_b3413_pregate_reads_are_counted_and_exempt _______________
+
+tmp_path = WindowsPath('C:/Users/jeetm/AppData/Local/Temp/pytest-of-jeetm/pytest-5693/test_b3413_pregate_reads_are_c0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002B7776D8600>
+
+    def test_b3413_pregate_reads_are_counted_and_exempt(tmp_path, monkeypatch):
+        """S6-B3413 (B3139q-r182), owner ruling 2026-11-03, verbatim 'C': a family
+        pre-gate's holdout reads are COUNTED - recorded like every other read - and
+        EXEMPT from the re-read refusal in both directions.
+    
+        (1) Counted: a pre-gate read records one entry per member it graded, and a
+        later read's history (prior_reads; a campaign door's prior) still names it.
+        (2) Exempt as an EARLIER read: binding_reads leaves it out, so the depth
+        and declared-row check (reread_refusal), a campaign door, and the breadth
+        reader through main (--prior-read none reaches the frame) pass a later read
+        undeclared. (3) Exempt as the READER: a pre-gate over a member with a
+        binding read passes undeclared and is recorded declared None. (4) Control:
+        a binding read still binds - each of those paths refuses the undeclared
+        re-read and names the binding read, not the pre-gate's, and declaring the
+        pre-gate's read does not stand in for it. (5) The repository: the backfill
+        keeps pre-gate reads in a read's history and derives declared None for the
+        3 reads (c) changes - b2651 (after only the b2633 pre-gate), the b2674
+        composite read of xs_low_beta_with_smart_money_long (after only a pre-gate)
+        and the b2667 pre-gate read of xs_momentum_top_decile; b2646's binding
+        history still derives False; the committed ledger agrees."""
+        import json as _j
+        import sys as _s
+        from pathlib import Path as _P
+        import pytest
+        root = _P(__file__).resolve().parents[2]
+        if str(root / "scripts") not in _s.path:
+            _s.path.insert(0, str(root / "scripts"))
+        import holdout_reads as hr
+        import owner_word as ow
+        assert hr.ledger_path() != hr.LEDGER_PROD, "the conftest isolation is off"
+        assert hr.REREAD_EXEMPT_DOORS == ("family_pregate",)
+        q = tmp_path / "queue.md"
+        q.write_text("| **S6-B9413** | **OPEN** | P1 | **RULED: 'read the fixture holdout once' "
+                     "(fixture)** | _reason:_ OPEN |" + chr(10), encoding="utf-8")
+        monkeypatch.setattr(ow, "QUEUE", q)
+        W = dict(ruling="read the fixture holdout once", ruling_ticket="S6-B9413")
+    
+        # (1) counted
+        pre = {"members": {"fx": {"holdout_gradable_exits": 2}, "fy": {"holdout_gradable_exits": 1}},
+               "overlap": {}, "cube": "x"}
+        p1 = tmp_path / "pg1.json"
+        g = hr.campaign_door("family_pregate", ["fx", "fy"], out=p1, **W)
+        pids = hr.campaign_record("family_pregate", pre, out=p1, word=g["word"], prior=g["prior"])
+        assert [e["read_id"] for e in hr.entries()] == pids == [hr.campaign_read_id(p1, "fx"),
+                                                                hr.campaign_read_id(p1, "fy")]
+        assert [e["read_id"] for e in hr.prior_reads("fx")] == [pids[0]], "counted"
+        assert hr.binding_reads("fx") == [], "and binding nothing"
+    
+        # (2) exempt as an EARLIER read
+        assert hr.reread_refusal("fx", "long", door="offline_holdout_read") is None
+        assert hr.reread_refusal("fx", None, door="declared_row_holdout_read") is None
+        gc = hr.campaign_door("composite_variant_test", ["fx"], out=tmp_path / "cv0.json", **W)
+        assert gc["prior"] == {"fx": [pids[0]]}, "the history still names the pre-gate read"
+        import breadth_step2_read as b2
+    
+        def _no_frame(*a, **k):
+            raise AssertionError("build_frame reached")
+        monkeypatch.setattr(b2, "build_frame", _no_frame)
+        monkeypatch.setattr(hr, "step1_uncommitted", lambda *a, **k: None)
+        s1b = tmp_path / "breadth_surface.json"
+        s1b.write_text(_j.dumps({"strategy": "fx", "leg": "long", "depth_base": None,
+                                 "multiplicity": {"reconciles": True}, "rows": []}),
+                       encoding="utf-8")
+        bargs = ["b2", "--step1-artifact", str(s1b), "--breadth-disposition", "ran",
+                 "--depth-leg", "ran", "--depth-evidence", "pin",
+                 "--ruling", W["ruling"], "--ruling-ticket", W["ruling_ticket"],
+                 "--prior-read", "none"]
+        monkeypatch.setattr(_s, "argv", bargs + ["--out", str(tmp_path / "b1.json")])
+        with pytest.raises(AssertionError, match="build_frame reached"):
+            b2.main()
+    
+        # (3) exempt as the READER, over a member with a binding read
+        hr.record(read_id="real.json", strategy="fx", leg=None, door="offline_holdout_read",
+                  artifact="real.json", source="s")
+        p2 = tmp_path / "pg2.json"
+        g2 = hr.campaign_door("family_pregate", ["fx"], out=p2, **W)
+        hr.campaign_record("family_pregate", {"members": {"fx": {"holdout_gradable_exits": 1}},
+                                              "overlap": {}, "cube": "x"},
+                           out=p2, word=g2["word"], prior=g2["prior"])
+        last = hr.entries()[-1]
+        assert (last["door"], last["strategy"], last["declared"]) == ("family_pregate", "fx", None)
+        assert hr.reread_refusal("fx", None, door="family_pregate") is None, (
+            "the shared check never refuses the exempt door")
+    
+        # (4) control: the binding read binds on every path, the pre-gate's never
+        why = hr.reread_refusal("fx", "long", door="offline_holdout_read")
+        assert why and "real.json" in why and pids[0] not in why, why
+        assert hr.reread_refusal("fx", None, declared=pids[0], door="offline_holdout_read"), (
+            "declaring the pre-gate's read does not stand in for the binding read")
+        assert hr.reread_refusal("fx", None, declared="real.json",
+                                 door="declared_row_holdout_read") is None
+        with pytest.raises(SystemExit) as e:
+            hr.campaign_door("composite_variant_test", ["fx"], out=tmp_path / "cv1.json", **W)
+        assert "real.json" in str(e.value) and pids[0] not in str(e.value), e.value
+        with pytest.raises(SystemExit):
+            hr.campaign_door("composite_variant_test", ["fx"], out=tmp_path / "cv1.json",
+                             rereads=[hr.repo_rel(p1)], **W)
+        monkeypatch.setattr(_s, "argv", bargs + ["--out", str(tmp_path / "b2.json")])
+        with pytest.raises(SystemExit) as e:
+            b2.main()
+        assert "one Step-2 read" in str(e.value) and "real.json" in str(e.value), e.value
+    
+        # (5) the repository's backfill and committed ledger
+>       cands = {c["read_id"]: c for c in hr.backfill_candidates()}
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^
+
+backtest\tests\test_unit.py:72703: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts\holdout_reads.py:778: in backfill_candidates
+    "ts": _first_added(relpath, rootp),
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+relpath = 'output_audit/b3423_m_and_a_target_long_breadth_step2_read_long.json'
+root = WindowsPath('C:/Users/jeetm/Github/stock-picks-app')
+
+    def _first_added(relpath: str, root: Path) -> str:
+        r = subprocess.run(["git", "-C", str(root), "log", "--diff-filter=A",
+                            "--format=%cI", "--", relpath],
+                           capture_output=True, text=True, timeout=60)
+        lines = [x for x in r.stdout.splitlines() if x.strip()]
+        if r.returncode != 0 or not lines:
+>           raise SystemExit(f"REFUSED (S6-B3395): no first-add commit for {relpath} - "
+                             "a backfilled read is dated by git or not at all")
+E           SystemExit: REFUSED (S6-B3395): no first-add commit for output_audit/b3423_m_and_a_target_long_breadth_step2_read_long.json - a backfilled read is dated by git or not at all
+
+scripts\holdout_reads.py:680: SystemExit
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b1945_no_new_dangling_learnings_citation
+FAILED backtest/tests/test_unit.py::test_b3395b_the_holdout_read_ledger - Sys...
+FAILED backtest/tests/test_unit.py::test_b3413_pregate_reads_are_counted_and_exempt
+3 failed, 367 passed, 1 skipped in 1226.45s (0:20:26)
+pregate_select: 20 changed path(s) -> 371 test(s) (R1 0, R2 278, R3 42, R4 2, R5 17, R6 77, R7 15) - a LOWER bound; the full gate stays the authority
+pregate_select: stamped .pregate_stamp - FAILED on this tree (pytest exit 1, 371 tests, 2026-11-17T20:26:10Z)

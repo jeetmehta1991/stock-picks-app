@@ -495,6 +495,18 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
         True,
         {},
     ),
+    # S6-B3454 (B3139q-r217, L1019): VERBATIM rows of the B3139q-r216 close's
+    # decision table (posted 2026-11-17, approved 2026-11-17T16:13:49Z): the
+    # S6-B3423 read could not run as approved and the packet had omitted the
+    # breadth grids; no holdout_packet.py had run.
+    "scan_holdout_read_decision_unpacketed": (
+        "| Ticket | Question | My recommendation |\n|---|---|---|\n"
+        "| S6-B3423 | Read the holdout once for each of the 3 survivors? | Yes, as step 5 "
+        "plans; m_and_a_target_long has 46.9% of its in-sample trades in April 2025 |\n"
+        "| S6-B3249, S6-B3373, S6-B3335 | Holdout reads | Your word |\n",
+        True,
+        {"tool_text": ""},
+    ),
     # S6-B3233 (B3139q-r77, L944): VERBATIM from the 2026-10-20 14:51Z close.
     # Four items named live tickets by fragment or id; 'which long campaigns
     # to start' named none, carried no recommendation, and no ledger reader
@@ -1558,6 +1570,16 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
     # lineage text, from the TEST-EVERY-QUANTITY incident (L470):
     "scan_unmeasured_quantity": [
         ("Costs nothing - same runtime.", True, {}),
+    ],
+    # S6-B3454: must-QUIET - the same rows once the packet ran this turn, and
+    # a RESULTS table (no recommendation column) reporting reads
+    "scan_holdout_read_decision_unpacketed": [
+        ("| Ticket | Question | My recommendation |\n|---|---|---|\n"
+         "| S6-B3423 | Read the holdout once for each of the 3 survivors? | Yes |\n",
+         False,
+         {"tool_text": "python scripts/holdout_packet.py --artifacts output_audit/b3423_*_surface.json"}),
+        ("| Ticket | Result |\n|---|---|\n| S6-B3423 | 3 holdout reads taken, 0 of 3 qualify |\n",
+         False, {"tool_text": ""}),
     ],
     # S6-B3431: must-QUIET - the same row once it carries the runs' prices
     "scan_launch_decision_without_price": [
