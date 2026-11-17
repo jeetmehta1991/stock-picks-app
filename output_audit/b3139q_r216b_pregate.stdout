@@ -1,0 +1,63 @@
+.....s.................................................................. [ 18%]
+....................................................................F... [ 37%]
+........................................................................ [ 55%]
+...........................................................F............ [ 74%]
+........................................................................ [ 93%]
+...........................                                              [100%]
+================================== FAILURES ===================================
+______________ test_b2128_silent_except_pass_is_a_shrinking_set _______________
+
+    def test_b2128_silent_except_pass_is_a_shrinking_set():
+        """B2128 (S6-B2118a, prevention half): no NEW silent `except: pass`.
+    
+        THE CORRECTION THIS SHIPS WITH: the execution-discipline skill's
+        enforcement table claimed the C7 banned-pattern scan blocks "unlogged
+        `except: pass`". It does not - C7 has exactly three patterns (NOT-S-GET,
+        DEFAULT-TRUE-GATE, RELATIVE-PREFETCH-PATH), read this batch. The rule was
+        real and the mechanism was absent: #224, inside the enforcement table
+        itself. A line-scan cannot see the multi-line form anyway, so the
+        mechanism is this AST ratchet rather than a fourth regex.
+        """
+        sites = _b2128_silent_except_sites()
+>       assert len(sites) <= _B2128_SILENT_EXCEPT_CEILING, (
+            f"{len(sites)} silent except:pass sites > frozen ceiling "
+            f"{_B2128_SILENT_EXCEPT_CEILING}. A NEW one was added: pair it with a "
+            "logged success-check (#122), or waive it on the line with a reason. "
+            f"New/changed sites include: {sites[-5:]}")
+E       AssertionError: 129 silent except:pass sites > frozen ceiling 128. A NEW one was added: pair it with a logged success-check (#122), or waive it on the line with a reason. New/changed sites include: ['scripts\\verify_batch_69_phase_3.py:120', 'scripts\\verify_flag_binds.py:57', 'scripts\\verify_turn_compliance.py:8064', 'scripts\\verify_turn_compliance.py:1001', 'scripts\\verify_turn_compliance.py:7624']
+E       assert 129 <= 128
+E        +  where 129 = len(['backtest\\agents\\pipeline.py:303', 'backtest\\agents\\toolkits\\our_fundamentals_toolkit.py:85', 'backtest\\data\\s...money.py:1195', 'backtest\\diagnostics\\section_09b_pre_cube_evidence.py:121', 'backtest\\engine\\backtest.py:99', ...])
+
+backtest\tests\test_unit.py:26669: AssertionError
+___ test_b3121_every_call_site_seam_is_registered_with_its_live_path_reason ___
+
+    def test_b3121_every_call_site_seam_is_registered_with_its_live_path_reason():
+        """B3121 (S6-B3121, L878, #276b): a seam that REPLACES a live helper's
+        output answers a different question than the live path - the class that
+        kept scan_findings_vs_tickets dead on its live branch while every test
+        passed. B1811 swept this shape by one helper's NAME; this sweeps it by
+        SHAPE. Every call-site seam in the turn gate is either classified SOUND
+        with its reason or named in the shrink-only UNREAD backlog (S6-B3121a);
+        a new seam fails here until someone reads it.
+        """
+        from pathlib import Path as _P
+        src = (_P(__file__).resolve().parents[2] / "scripts" /
+               "verify_turn_compliance.py").read_text(encoding="utf-8")
+        found = _b3121_call_site_seams(src)
+        assert not (set(_B3121_SEAMS_SOUND) & _B3121_SEAMS_UNREAD)
+        registered = set(_B3121_SEAMS_SOUND) | _B3121_SEAMS_UNREAD
+        new, stale = found - registered, registered - found
+>       assert not new, (
+            "unregistered call-site seam(s) - read each: does the injected value "
+            "have the live helper's TYPE, and does it get the helper's PROCESSING? "
+            f"Then register it with its reason: {sorted(new)}")
+E       AssertionError: unregistered call-site seam(s) - read each: does the injected value have the live helper's TYPE, and does it get the helper's PROCESSING? Then register it with its reason: [('skill_state_path', 'state_dir')]
+E       assert not {('skill_state_path', 'state_dir')}
+
+backtest\tests\test_unit.py:48920: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b2128_silent_except_pass_is_a_shrinking_set
+FAILED backtest/tests/test_unit.py::test_b3121_every_call_site_seam_is_registered_with_its_live_path_reason
+2 failed, 384 passed, 1 skipped in 919.10s (0:15:19)
+pregate_select: 9 changed path(s) -> 387 test(s) (R1 0, R2 309, R3 41, R4 3, R5 17, R6 102, R7 15) - a LOWER bound; the full gate stays the authority
+pregate_select: stamped .pregate_stamp - FAILED on this tree (pytest exit 1, 387 tests, 2026-11-17T01:53:28Z)

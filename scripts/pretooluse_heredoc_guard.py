@@ -39,6 +39,39 @@ payload without a run, and is corrected. A git commit or tag message heredoc
 stays exempt. The rule runs after the two above, so their refusals keep
 their own messages. Bash only: the PowerShell tool's transport is unmeasured.
 
+B3139q-r216 (owner 'except for new strategy runs. Address and impletement all
+open tickets. Test extensively. do not invoke fable mode', sent
+2026-11-16T08:22:37Z, read as the ruling word on each ticket's recommendation
+(a)) - three more refusals, each decided in verify_turn_compliance, where the
+Stop-time scans live, so a refusal and a record cannot disagree:
+
+  S6-B3377 (a): a Bash, PowerShell or Monitor call while the transcript's last
+    compaction is NEWER than its last Skill(execution-discipline) load
+    (skill_reload_owed - the same compaction marker and load forms as the
+    close-time scan_discipline_not_loaded's _skill_context_text; L871, L998
+    and its four addenda: five instances in seventeen days, the longest
+    7 h 42 min and six commits, every one inside a long turn and invisible
+    to the close-time gate until a close). The check reads the transcript
+    INCREMENTALLY - a state file in the OS temp dir, one per transcript,
+    keeps the byte offset and the newest compaction and load - MEASURED on
+    the 1.4 GB live transcript: 0.39 s for the first read, 0.022 s after.
+    No transcript path in the payload, or an unreadable one, allows: the
+    close-time gate stays the backstop. Runs FIRST: nothing else should run
+    before the reload.
+  S6-B3391 (a): (1) a TOP-LEVEL cd / pushd / chdir (Bash) or cd / chdir / sl /
+    Set-Location / Push-Location / pushd (PowerShell) whose target is not the
+    repository root (cwd_move_hits; #330, L1005: one `cd scripts &&` moved
+    the session's directory and every relative hook path with it). A ( )
+    subshell, a $( ) substitution, a quoted string and a heredoc body are not
+    top level. (2) The Monitor tool's command is read as a Bash command - the
+    settings.json matcher carries Monitor beside Bash and PowerShell.
+  S6-B3379 (a): a Bash or Monitor `python -` whose stdin is EMPTY - an empty
+    heredoc body or /dev/null (python_stdin_hang_hits; L999, #329: either
+    input enters the Python 3.14 interactive REPL, whose Windows console
+    layer raises OSError on a non-console handle and retries forever,
+    15.4 MB of tracebacks in about 5 s from an empty heredoc, 119.3 MB in
+    about 2.5 min from /dev/null, silent once stderr is discarded).
+
 Failure mode: an internal error exits 1, which Claude Code treats as a
 NON-blocking hook error, so a broken guard lets commands through (fail-open)
 rather than refusing every Bash call. The pin runs this file as a subprocess
@@ -59,14 +92,40 @@ import sys
 from pathlib import Path
 
 
-def decide(payload: dict, root=None) -> tuple[int, str]:
+def decide(payload: dict, root=None, state_dir=None) -> tuple[int, str]:
     """(exit code, stderr message) for one PreToolUse payload. `root` is
-    the test seam for the --help check's repo-file read (None: the repo)."""
+    the test seam for the repository root (the --help check's repo-file read
+    and the cwd rule's target comparison; None: the repo); `state_dir` is the
+    skill-reload check's state-file seam (None: the OS temp dir)."""
     tool = str(payload.get("tool_name") or "")
-    if tool not in ("Bash", "PowerShell"):
+    if tool not in ("Bash", "PowerShell", "Monitor"):
         return 0, ""
+    # S6-B3391 (a)(2): the Monitor tool runs its command through Bash
+    shell = "PowerShell" if tool == "PowerShell" else "Bash"
     cmd = str((payload.get("tool_input") or {}).get("command") or "")
     sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from verify_turn_compliance import (cwd_move_hits,
+                                        python_stdin_hang_hits,
+                                        skill_reload_owed)
+    # S6-B3377 (a): first - nothing runs before the reload
+    owed = skill_reload_owed(payload, state_dir)
+    if owed:
+        return 2, ("REFUSED BEFORE RUNNING (S6-B3377 / #229 / L998): "
+                   f"{owed}. The compacted copy of the skill is a preview "
+                   "(L871): call Skill(execution-discipline) first - this "
+                   "check reads the transcript, so the reload clears it on "
+                   "the next call. No shell or Monitor command runs until "
+                   "then.")
+    # S6-B3391 (a)(1): a top-level directory move off the repository root
+    moves = cwd_move_hits(cmd, shell, root)
+    if moves:
+        return 2, ("REFUSED BEFORE RUNNING (S6-B3391 / #330 / L1005): "
+                   f"{len(moves)} top-level change(s) of the session's working "
+                   f"directory off the repository root - first: {moves[0]!r}. "
+                   "The directory persists between tool calls and every hook "
+                   "runs from it. Use an absolute path, `git -C <dir>`, or a "
+                   "subshell `( cd <dir> && ... )`; a cd to the repository "
+                   "root is the one top-level cd allowed.")
     if "-h" in cmd:                    # --help contains it too
         from verify_turn_compliance import (_HELP_PARSERLESS_HEAD,
                                             help_on_parserless_hits)
@@ -84,8 +143,20 @@ def decide(payload: dict, root=None) -> tuple[int, str]:
                        "to learn its flags; a script that imports argparse, "
                        "optparse, click, typer or docopt, or compares against "
                        "a --help literal, is not refused.")
-    if tool != "Bash" or ("<<" not in cmd and "-c" not in cmd
-                          and "\\\\" not in cmd):
+    if shell != "Bash":
+        return 0, ""
+    # S6-B3379 (a): `python -` on an empty heredoc body or /dev/null
+    hangs = (python_stdin_hang_hits(cmd)
+             if ("<<" in cmd or "/dev/null" in cmd) else [])
+    if hangs:
+        return 2, ("REFUSED BEFORE RUNNING (S6-B3379 / #329 / L999): "
+                   f"{len(hangs)} `python -` call(s) with EMPTY stdin - first: "
+                   f"{hangs[0]!r}. An empty heredoc body or /dev/null puts "
+                   "the interpreter in the interactive REPL, which on this "
+                   "machine retries an OSError forever (L999: 119.3 MB of "
+                   "tracebacks in 2.5 min, silent once stderr is discarded). "
+                   "Give `python -` a program on stdin, or run a FILE.")
+    if "<<" not in cmd and "-c" not in cmd and "\\\\" not in cmd:
         return 0, ""
     from verify_turn_compliance import (backslash_run_hits,
                                         dash_c_escape_hits,

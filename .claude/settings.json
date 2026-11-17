@@ -18,6 +18,15 @@
             "command": "python \"${CLAUDE_PROJECT_DIR:-.}/scripts/pretooluse_heredoc_guard.py\""
           }
         ]
+      },
+      {
+        "matcher": "Monitor",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"${CLAUDE_PROJECT_DIR:-.}/scripts/pretooluse_heredoc_guard.py\""
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [

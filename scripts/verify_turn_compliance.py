@@ -7797,3 +7797,277 @@ def _unquote_script_paths(cmd: str) -> str:
 
 if __name__ == "__main__":
     sys.exit(run_guarded())
+
+
+# ======================================================================
+# B3139q-r216 (owner 'Address and impletement all open tickets', sent
+# 2026-11-16T08:22:37Z): three PreToolUse detectors, defined HERE - the one
+# place the guard imports its decisions from (test_b3139ae: the guard compiles
+# no pattern of its own) - and each refused by scripts/pretooluse_heredoc_guard.py
+# before the command runs.
+#
+# S6-B3379 (a): a Bash `python -` whose stdin is EMPTY - an empty heredoc body
+# or /dev/null. Either input enters the Python 3.14 interactive REPL, whose
+# Windows console layer raises OSError on a non-console handle and retries
+# forever (L999, MEASURED B3139q-r154: 15.4 MB of tracebacks in about 5 s from
+# an empty heredoc, 119.3 MB in about 2.5 min from /dev/null), while the same
+# call with a one-line program exits 0. The input has no use, and the hang is
+# silent once stderr is discarded, as it was in the incident.
+# the interpreter token: an optional path (this repo runs .venv/Scripts/python.exe),
+# python / python3 / python3.14 / py, an optional .exe, single-letter flags, then the
+# lone dash. The first draft refused any '/' before the word and so missed every
+# path form - the repo's own idiom (L821, found on the B3139q-r216 incident below).
+_PY_STDIN_RE = re.compile(r"(?:^|(?<=[\s;&|(]))(?:[^\s;&|()<>'\"]*[\\/])?(?:python[0-9.]*|py)"
+                          r"(?:\.exe)?(?:\s+-[A-Za-z]+)*\s+-(?=\s|$)")
+_EMPTY_HEREDOC_RE = re.compile(
+    r"<<-?\s*(?P<q>['\"]?)(?P<tag>\w+)(?P=q)[^\n]*\n(?P<body>(?:[ \t]*\n)*)[ \t]*(?P=tag)[ \t]*(?:\n|$)")
+
+
+def python_stdin_hang_hits(cmd: str) -> list[str]:
+    """One line per `python -` (the interpreter reading its program from stdin)
+    whose stdin is EMPTY - an empty heredoc body, or /dev/null - in a Bash
+    command, the interpreter named bare or by path; [] when none. A heredoc with any non-blank line, or a pipe into
+    `python -`, delivers a program and is not a hit. Bash only: the PowerShell
+    tool has no heredoc and no /dev/null."""
+    hits = []
+    text = str(cmd or "")
+    for seg in re.split(r"(?:&&|\|\||;|\n)", text):
+        if not _PY_STDIN_RE.search(seg):
+            continue
+        if re.search(r"<\s*/dev/null", seg):
+            hits.append(seg.strip()[:120] + "  <- stdin from /dev/null")
+            continue
+        # the heredoc THIS segment opens - matched at its own "<<", never searched
+        # onward, so a later unrelated empty heredoc is not blamed on this python
+        pos = text.find("<<", text.find(seg)) if "<<" in seg else -1
+        m = _EMPTY_HEREDOC_RE.match(text, pos) if pos >= 0 else None
+        if m is not None and not m.group("body").strip():
+            hits.append(seg.strip()[:120] + "  <- empty heredoc body")
+    return hits
+
+
+# S6-B3391 (a)(1): a TOP-LEVEL change of the shell's working directory whose
+# target is not the repository root (#330, L1005: one `cd scripts &&` moved the
+# session's directory and every relative hook path with it; L1005's second
+# addendum, a cd into the scratchpad at 2026-11-04T09:18:42Z). Bash: a ( )
+# subshell, a $( ) substitution, a quoted string and a heredoc body are not
+# top level - their directory dies with them. PowerShell has no subshell for
+# its location, so every statement counts. The r167 draft's corpus: the
+# verbatim incident and 10 more must-fire, 12 must-quiet, 7 of 7 mutations
+# killed (scratchpad r167/cwd_rule_draft.py).
+_CD_WORDS = {"Bash": ("cd", "pushd", "chdir"),
+             "PowerShell": ("cd", "chdir", "sl", "set-location",
+                            "push-location", "pushd")}
+_CMD_START_TOKENS = {";", "&&", "||", "|", "&", "(", "{", "!", "then", "do",
+                     "else", "elif"}
+_CD_HEREDOC_BODY_RE = re.compile(
+    r"(?m)^(?P<head>[^\n]*?)<<-?\s*(?P<q>['\"]?)(?P<tag>\w+)(?P=q)[^\n]*\n"
+    r"(?P<body>.*?)^\s*(?P=tag)\s*$", re.S)
+
+
+def _cd_blank_heredocs(cmd: str) -> str:
+    """Each heredoc BODY removed - a body is data the command carries, never a
+    command that runs (B1979)."""
+    out, last = [], 0
+    for m in _CD_HEREDOC_BODY_RE.finditer(cmd):
+        out.append(cmd[last:m.start("body")])
+        last = m.end("body")
+    out.append(cmd[last:])
+    return "".join(out)
+
+
+def _cd_same_dir(target: str, root) -> bool:
+    """True when a cd target resolves to the repository root. A Git Bash drive
+    path (/c/x) is read as C:/x; '~', '-', a $variable or no target at all is
+    never the root."""
+    t = str(target or "").strip().strip("'\"")
+    if not t or t in ("-", "~") or t.startswith("~") or "$" in t:
+        return False
+    m = re.match(r"^/([A-Za-z])(/.*)?$", t)
+    if m:
+        t = f"{m.group(1)}:{m.group(2) or '/'}"
+    p = Path(t)
+    if not p.is_absolute():
+        p = Path(root) / p
+    try:
+        a, b = p.resolve(), Path(root).resolve()
+    except OSError:
+        return False
+    return os.path.normcase(str(a)) == os.path.normcase(str(b))
+
+
+def cwd_move_hits(cmd: str, tool: str, root=None) -> list[str]:
+    """One 'word target' line per top-level command in `cmd` that moves the
+    session's working directory off the repository root; [] when none, and []
+    for a command the tokenizer cannot read (an unbalanced quote) - the rule
+    refuses what it can read and never guesses at the rest. `tool` is Bash or
+    PowerShell (the Monitor tool's command is Bash)."""
+    import shlex
+    root = REPO_ROOT if root is None else root
+    words = _CD_WORDS.get(tool)
+    if not words or not cmd:
+        return []
+    text = _cd_blank_heredocs(str(cmd)).replace("\r\n", "\n").replace("\n", " ; ")
+    try:
+        lex = shlex.shlex(text, posix=(tool == "Bash"), punctuation_chars=";&|(){}")
+        lex.whitespace_split = True
+        lex.commenters = ""
+        toks = list(lex)
+    except ValueError:
+        return []
+    hits, depth, prev = [], 0, ";"
+    for i, tok in enumerate(toks):
+        if tool == "Bash" and tok == "(":
+            depth += 1
+        elif tool == "Bash" and tok == ")":
+            depth = max(0, depth - 1)
+        at_start = prev in _CMD_START_TOKENS or i == 0
+        prev = tok
+        if not at_start or tok.lower() not in words:
+            continue
+        if tool == "Bash" and depth:
+            continue
+        target = ""
+        for nxt in toks[i + 1:]:
+            if nxt in _CMD_START_TOKENS or nxt == ")":
+                break
+            low = nxt.lower()
+            if tool == "PowerShell" and low in ("-path", "-literalpath"):
+                continue
+            if nxt.startswith("-") and nxt != "-":
+                continue
+            target = nxt
+            break
+        if not _cd_same_dir(target, root):
+            hits.append(f"{tok} {target or '(no target: HOME)'}".strip())
+    return hits
+
+
+# S6-B3377 (a): a shell call while the transcript's last compaction is NEWER
+# than its last Skill(execution-discipline) call (L871, L998 and its three
+# addenda: four instances in eight days, the longest 7 h 42 min and six
+# commits, every one inside a long turn and invisible to the close-time gate
+# scan_discipline_not_loaded until a close). The guard reads the transcript
+# INCREMENTALLY - a state file in the repository root keeps the byte offset,
+# the newest compaction and the newest load - so each call reads only the
+# bytes appended since the last; a first read of a transcript starts
+# SKILL_TAIL_BYTES from its end (MEASURED B3139q-r216 on the 1.4 GB live
+# transcript: 0.39 s for the first read, 0.022 s incremental). No transcript
+# path in the payload, or an unreadable one, allows - the close-time gate
+# stays the backstop. The state file lives OUTSIDE the repository, in the OS
+# temp dir, one file per transcript: a shell call during a pyramid gate run
+# must not write into the tree the gate fingerprints (L755 / #292).
+SKILL_STATE_PREFIX = "stock_picks_skill_load_state_"
+SKILL_TAIL_BYTES = 48 * 1024 * 1024
+
+
+def skill_state_path(transcript_path, state_dir=None) -> Path:
+    """The state file for one transcript: <temp>/<prefix><sha1(path)[:16]>.json.
+    `state_dir` is the test seam."""
+    import hashlib
+    import tempfile
+    key = hashlib.sha1(str(transcript_path).encode("utf-8")).hexdigest()[:16]
+    base = Path(state_dir) if state_dir is not None else Path(tempfile.gettempdir())
+    return base / f"{SKILL_STATE_PREFIX}{key}.json"
+
+
+def _skill_state_scan(path, state: dict) -> dict:
+    """Advance `state` over the transcript bytes appended since its offset:
+    `compaction` (the newest boundary's timestamp), `skill_load` (the newest
+    Skill(execution-discipline) call's) and `compaction_seen` - True when the
+    newest of the two events is a compaction."""
+    path = Path(path)
+    size = path.stat().st_size
+    off = int(state.get("offset") or 0)
+    if state.get("path") != str(path) or off > size:
+        state.clear()
+        state["path"] = str(path)
+        off = max(0, size - SKILL_TAIL_BYTES)
+        state["tail_start"] = off > 0
+    with open(path, "rb") as fh:
+        fh.seek(off)
+        chunk = fh.read()
+    if off and state.get("tail_start") and not state.get("aligned"):
+        nl = chunk.find(b"\n")          # drop the partial first line
+        chunk = chunk[nl + 1:] if nl >= 0 else b""
+        state["aligned"] = True
+    last_nl = chunk.rfind(b"\n")
+    if last_nl < 0:
+        return state                    # no complete line appended yet
+    complete, state["offset"] = chunk[:last_nl + 1], off + last_nl + 1
+    marker = _COMPACTION_MARKER.encode()
+    for raw in complete.split(b"\n"):
+        if not raw.strip():
+            continue
+        low = raw.lower()
+        if (b"compact_boundary" not in raw and b"execution-discipline" not in raw
+                and marker not in low and b"base directory for this skill" not in low
+                and b"re-invocation of /" not in low):
+            continue
+        try:
+            e = json.loads(raw)
+        except ValueError:
+            continue
+        if not isinstance(e, dict):
+            continue
+        ts = str(e.get("timestamp") or "")
+        if e.get("type") == "system" and e.get("subtype") == "compact_boundary":
+            state["compaction"] = ts or state.get("compaction") or "?"
+            state["compaction_seen"] = True
+            continue
+        if e.get("type") == "user":
+            c = (e.get("message") or {}).get("content")
+            txt = c if isinstance(c, str) else " ".join(
+                x.get("text") or "" for x in (c or []) if isinstance(x, dict))
+            tl = txt.lower()
+            if _COMPACTION_MARKER in tl:
+                state["compaction"] = ts or state.get("compaction") or "?"
+                state["compaction_seen"] = True
+            elif (("base directory for this skill" in tl or "re-invocation of /" in tl)
+                  and "execution-discipline" in tl):
+                # the skill BODY arriving as a user-role message - the load
+                # _skill_context_text counts (B1983); the same rule here
+                state["skill_load"] = ts or "?"
+                state["compaction_seen"] = False
+            continue
+        if e.get("type") == "assistant":
+            for b in (e.get("message") or {}).get("content") or []:
+                if (isinstance(b, dict) and b.get("type") == "tool_use"
+                        and str(b.get("name")).lower() == "skill"
+                        and "execution-discipline" in json.dumps(b.get("input") or {}).lower()):
+                    state["skill_load"] = ts or "?"
+                    state["compaction_seen"] = False
+    return state
+
+
+def skill_reload_owed(payload: dict, state_dir=None) -> str:
+    """'' when the transcript's last compaction is older than its last
+    Skill(execution-discipline) call, or no compaction has been seen; else one
+    sentence naming both. The state lives in the OS temp dir (skill_state_path);
+    `state_dir` is the test seam."""
+    tp = (payload or {}).get("transcript_path")
+    if not tp or not Path(str(tp)).is_file():
+        return ""
+    sp = skill_state_path(tp, state_dir)
+    try:
+        state = json.loads(sp.read_text(encoding="utf-8"))
+        if not isinstance(state, dict):
+            state = {}
+    except (OSError, ValueError):
+        state = {}
+    try:
+        state = _skill_state_scan(Path(str(tp)), state)
+    except OSError:
+        return ""
+    try:
+        sp.write_text(json.dumps(state), encoding="utf-8")
+    except OSError as exc:
+        # not fatal - the next call re-reads the transcript from its start,
+        # slower and still correct - but never silent (#122)
+        sys.stderr.write(f"skill_reload_owed: state not saved ({exc!r}); the next "
+                         "call re-reads the transcript\n")
+    if state.get("compaction_seen"):
+        return (f"the transcript's last compaction ({state.get('compaction')}) is newer than "
+                f"its last Skill(execution-discipline) call "
+                f"({state.get('skill_load') or 'none seen'})")
+    return ""

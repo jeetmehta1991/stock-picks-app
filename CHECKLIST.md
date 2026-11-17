@@ -4136,6 +4136,8 @@ hypothesis disproven by one group-by (B1717).
 
 **INSTANCE (B3139q-r154 / L998) - A MID-TURN COMPACTION, SEVEN HOURS UNCHECKED.** The compaction at 2026-10-30T08:04:49Z was followed by six commits and no Skill(execution-discipline) call for 7 h 42 min. scan_discipline_not_loaded fires on that window and runs only at a close, which the turn did not reach. The earlier check - a PreToolUse refusal reusing the gate's window - is the owner decision S6-B3377.
 
+**INSTANCE (B3139q-r216 / L998 fourth addendum) - A FIFTH MID-TURN COMPACTION, AND THE EARLIER CHECK LANDS.** The compaction at 2026-11-16T15:33:36Z was followed by the first tool call at 15:33:54Z and the Skill(execution-discipline) call at 15:40:29Z - 6 min 53 s, no commit between (scripts/transcript_timeline.py). MECHANISM: S6-B3377 (a) landed on the owner's 'except for new strategy runs. Address and impletement all open tickets. Test extensively. do not invoke fable mode' (sent 2026-11-16T08:22:37Z) - scripts/pretooluse_heredoc_guard.py refuses every Bash, PowerShell and Monitor call while the transcript's last compaction is newer than its last skill load (verify_turn_compliance.skill_reload_owed, incremental, state in the OS temp dir), so the reload comes before the next tool call, not before the next close; pinned by test_b3377_b3379_b3391_guard_refuses_reload_debt_cwd_moves_and_empty_stdin.
+
 ### #230 - A CLAIM ABOUT A CAPABILITY IS A CLAIM, AND NEEDS THE SAME EVIDENCE (B1731 / L505)
 
 **INSTANCE (B3120/L876, artifact-schema arm L506-a):** make_spec was drafted against a guessed status-artifact schema (`strategies`; the file holds `rows`) and its own fires_at_production refusal blocked the happy path; the artifact was opened, the key corrected, the both-ways CLI pin (test_b3120a) holds it.
@@ -6778,6 +6780,8 @@ of running shells is the earlier point (L998).
 
 **INSTANCE (B3139q-r166) - RECORD-OF-FACT - A STRAY STDIN READER.** a status probe carried a stray `cat > /dev/null` with no input; the call waited on stdin, the harness moved it to the background at its 120 s timeout (b8pnblwov, 2026-10-31T09:34:50Z), and TaskStop ended it 7 s later - nothing ran or was written. The second stdin reader to hang this way after L999's `python -` on an empty heredoc; S6-B3379 gains it as evidence.
 
+**MECHANISM (B3139q-r216):** S6-B3379 (a) landed on the owner's 'except for new strategy runs. Address and impletement all open tickets. Test extensively. do not invoke fable mode' (sent 2026-11-16T08:22:37Z) - scripts/pretooluse_heredoc_guard.py refuses, before it runs, a Bash or Monitor `python -` - the interpreter named bare or by path - whose stdin is an empty heredoc body or /dev/null (verify_turn_compliance.python_stdin_hang_hits; a heredoc with a program, or a pipe into `python -`, is not refused), pinned by test_b3377_b3379_b3391_guard_refuses_reload_debt_cwd_moves_and_empty_stdin. Another hang of this form, issued at 2026-11-17T01:05:59Z with the repo's .venv/Scripts/python.exe, was stopped by TaskStop at 01:08:09Z, before the refusal landed; the pin carries its shape. The `cat > /dev/null` form above is a different reader and stays with this item's close-time scan.
+
 ### #330 - A SHELL CALL NEVER MOVES THE SESSION'S WORKING DIRECTORY (B3139q-r166 / L1005, self-caught 2026-10-31)
 
 The working directory persists between tool calls, and every hook in
@@ -6797,9 +6801,14 @@ MECHANISM: every hook command in .claude/settings.json is anchored on the
 project root - python "${CLAUDE_PROJECT_DIR:-.}/scripts/<hook>.py" - so a
 directory move from any cause cannot make a hook unfindable (S6-B3388),
 pinned by test_b3388_every_hook_finds_its_script_from_any_directory.
-Refusing the move itself, and wiring the guard to the Monitor tool, are new
-refusals and the owner's word (S6-B3391); until then the rule's habit half
-is JUDGMENT-ONLY at the keyboard. RECOVERY if a hook breaks anyway: the
+Refusing the move itself, and wiring the guard to the Monitor tool, LANDED at
+B3139q-r216 (S6-B3391, on the owner's 2026-11-16 'Address and impletement all
+open tickets'): the guard refuses a top-level cd / pushd / chdir (Bash, and the
+Monitor tool's command) or cd / chdir / sl / Set-Location / Push-Location /
+pushd (PowerShell) whose target is not the repository root - a subshell, a
+substitution, a quoted string and a heredoc body are not top level
+(verify_turn_compliance.cwd_move_hits), pinned by
+test_b3377_b3379_b3391_guard_refuses_reload_debt_cwd_moves_and_empty_stdin. RECOVERY if a hook breaks anyway: the
 script must exist where the hook looks - a shim at the moved directory's
 scripts/ that runs the real guard lets one cd to the root pass; scripts/ is
 inside the pyramid gate's fingerprint, so write and delete the shim in one

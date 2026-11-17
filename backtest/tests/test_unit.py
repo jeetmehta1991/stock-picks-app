@@ -25264,6 +25264,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # ride; its pre-gate is still required. Pins the operative clause.
         ("a commit staging no engine or script .py spends no ride",
          "S6-B3425 (b): a doc/test/record commit spends no ride; its pre-gate still required"),
+        # B3139q-r216 / S6-B3377 (a): the PreToolUse reload refusal, named in the
+        # L998 tripwire row so the row cannot keep calling it an open decision.
+        ("refuses every shell and Monitor call while the transcript's last compaction is newer than its last skill load",
+         "S6-B3377 (a): the PreToolUse reload refusal (B3139q-r216)"),
         ("READ THE VERIFIER'S UNMAPPED OR FAILED BAND AS CAREFULLY AS ITS MATCHED ONE",
          "B3139q-r42/L902: a verdict carried past its mapped rows - the 13F Date column's second meaning sat in ay's UNMAPPED band"),
         # B2851: the L805 tripwire row - an owner catch on a locked
@@ -26458,7 +26462,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 374 -> 375 at B3139q-r166 (L1005's working-directory row; same call).
     # 375 -> 377 at B3139q-r170 (the two S6-B3410 cadence fragments).
     # 377 -> 378 at S6-B3424 (the process-diet fragment).
-    assert len(gutted) == 379, gutted
+    assert len(gutted) == 380, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -48810,6 +48814,12 @@ _B3121_SEAMS_SOUND = {
         "str seam for turn_anchor(entries)'s return, an instruction uuid; "
         "the same equality test against the stamp's turn runs on both "
         "branches, and test_b3193 also derives it from entries (its u1 case)",
+    ("skill_state_path", "state_dir"):
+        "directory seam (a path) for the OS temp dir tempfile.gettempdir() returns on the live "
+        "branch; both get the same Path() wrapping and the same file name, SKILL_STATE_PREFIX "
+        "plus the sha1 of the transcript path, and the unseamed production path - its parent "
+        "the OS temp dir, never inside the repository - is asserted on the live branch by "
+        "test_b3377_b3379_b3391_guard_refuses_reload_debt_cwd_moves_and_empty_stdin (S6-B3377)",
 }
 # B3126 (S6-B3121a): the backlog is EMPTY - all 18 read. 15 entered SOUND
 # with their reasons; 3 were parity FIXES (locked-format live normalisation,
@@ -54630,12 +54640,18 @@ def test_b3139ae_pretooluse_refuses_backslash_heredoc_to_interpreter():
     cmds = [h.get("command", "") for e in s["hooks"]["PreToolUse"]
             if e.get("matcher") == "Bash" for h in e.get("hooks", [])]
     assert any("scripts/pretooluse_heredoc_guard.py" in c for c in cmds), cmds
+    # B3139q-r216 / S6-B3391 (a)(2): the Monitor tool's command reaches the guard too
+    mon = [h.get("command", "") for e in s["hooks"]["PreToolUse"]
+           if e.get("matcher") == "Monitor" for h in e.get("hooks", [])]
+    assert any("scripts/pretooluse_heredoc_guard.py" in c for c in mon), mon
     # one definition: the guard imports the Stop scan's functions (S6-B3327 added backslash_run_hits) and compiles no pattern of its own
     tree = ast.parse(guard.read_text(encoding="utf-8"))
     imported = {a.name for n in ast.walk(tree) if isinstance(n, ast.ImportFrom)
                 and n.module == "verify_turn_compliance" for a in n.names}
     assert imported == {"heredoc_escape_hits", "dash_c_escape_hits", "backslash_run_hits",
-                        "help_on_parserless_hits", "_HELP_PARSERLESS_HEAD"}, imported
+                        "help_on_parserless_hits", "_HELP_PARSERLESS_HEAD",
+                        # B3139q-r216: S6-B3391 (a), S6-B3379 (a), S6-B3377 (a)
+                        "cwd_move_hits", "python_stdin_hang_hits", "skill_reload_owed"}, imported
     assert not [n for n in ast.walk(tree) if isinstance(n, ast.Attribute) and n.attr == "compile"]
 
 
@@ -76014,3 +76030,164 @@ def test_b3423_batch2_graded_offline_and_tema_buffer_derived():
             assert d["derive"]["path"].endswith(derive) and len(d["derive"]["sha256"]) == 64, fn
         else:
             assert d["derive"] is None, fn
+
+
+
+
+# ================================================================ B3139q-r216 S6-B3377 / S6-B3379 / S6-B3391: three PreToolUse refusals
+def test_b3377_b3379_b3391_guard_refuses_reload_debt_cwd_moves_and_empty_stdin(tmp_path, monkeypatch):
+    """B3139q-r216, on the owner's 'except for new strategy runs. Address and
+    impletement all open tickets. Test extensively. do not invoke fable mode'
+    (sent 2026-11-16T08:22:37Z) read as the ruling word on each ticket's
+    recommendation (a): scripts/pretooluse_heredoc_guard.py refuses, before
+    it runs, (1) S6-B3379 a Bash or Monitor `python -` whose stdin is an empty
+    heredoc body or /dev/null (L999's hang); (2) S6-B3391 a top-level cd /
+    pushd / chdir (Bash, Monitor) or cd / chdir / sl / Set-Location /
+    Push-Location / pushd (PowerShell) whose target is not the repository
+    root, the L1005 incident verbatim among the must-fire cases, a subshell
+    and a cd to the root among the must-quiet; the Monitor tool's command is
+    read as Bash; (3) S6-B3377 any Bash / PowerShell / Monitor call while the
+    transcript's last compaction is newer than its last Skill(execution-
+    discipline) load - on a fixture transcript, read incrementally through a
+    temp-dir state file, cleared by a Skill tool_use OR by the skill body
+    arriving as a user-role message (the two load forms _skill_context_text
+    counts), re-owed by a compact_boundary OR the user-text marker (its two
+    compaction forms). Mutation probes: the cwd rule's word table and the
+    reload rule's compaction state each drive their arm. Wiring: a Monitor
+    matcher in settings.json runs the guard, and the production state file
+    is under the OS temp dir, never the repository."""
+    import json as _j
+    import subprocess as _sp
+    import sys as _s
+    import tempfile as _tf
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    guard = root / "scripts" / "pretooluse_heredoc_guard.py"
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import verify_turn_compliance as vtc
+    import pretooluse_heredoc_guard as g
+
+    def run(payload):
+        r = _sp.run([_s.executable, str(guard)], input=_j.dumps(payload), capture_output=True,
+                    text=True, encoding="utf-8", cwd=str(root), timeout=90)
+        return r.returncode, r.stderr
+
+    def tool(name, cmd):
+        return {"tool_name": name, "tool_input": {"command": cmd}}
+
+    root_posix = "/" + str(root).replace(":", "", 1).replace("\\", "/")   # /c/Users/... form
+    incident = ('cd scripts && python -c "\nfrom producer_variant_table import resolved_spec\n'
+                'for s in (\'a\',):\n    print(s)\n"')
+    fire = [
+        ("Bash", "python - <<'EOF'\nEOF", "S6-B3379"),
+        ("Bash", "python - < /dev/null", "S6-B3379"),
+        ("Monitor", "ls && python3 - </dev/null; echo x", "S6-B3379"),
+        # the repo's own interpreter form, and the B3139q-r216 incident's shape (issued
+        # 2026-11-17T01:05:59Z: an empty FIRST heredoc before a || fallback with a program)
+        ("Bash", ".venv/Scripts/python.exe - <<'PY'\nPY", "S6-B3379"),
+        ("Bash", "PYTHONIOENCODING=utf-8 C:/x/.venv/Scripts/python.exe - a.py < /dev/null", "S6-B3379"),
+        ("Bash", 'S="C:/tmp/s"; .venv/Scripts/python.exe - "$S/land.py" <<\'PY\' 2>/dev/null || '
+                 '/c/repo/.venv/Scripts/python.exe - "$S/land.py" <<\'PY2\'\nPY\nimport sys\nprint(sys.argv)\nPY2',
+         "S6-B3379"),
+        ("Bash", incident, "S6-B3391"),
+        ("Bash", "cd scripts; ls", "S6-B3391"),
+        ("Bash", "pushd scripts", "S6-B3391"),
+        ("Bash", "cd", "S6-B3391"),
+        ("PowerShell", "Set-Location scripts; Get-ChildItem", "S6-B3391"),
+        ("PowerShell", "sl -Path C:/Users", "S6-B3391"),
+        ("Monitor", "cd scripts && tail -f x.log", "S6-B3391"),
+    ]
+    for name, cmd, ticket in fire:
+        rc, err = run(tool(name, cmd))
+        assert rc == 2 and ticket in err and "REFUSED BEFORE RUNNING" in err, (name, cmd[:50], rc, err[:160])
+    quiet = [
+        ("Bash", "python - <<'EOF'\nprint(1)\nEOF"), ("Bash", "echo 1 | python -"),
+        ("Bash", ".venv/Scripts/python.exe - <<'PY'\nprint(1)\nPY"),
+        ("Bash", ".venv/Scripts/python.exe -c 'print(1)'"), ("Bash", "echo 1 | .venv/Scripts/python.exe -"),
+        ("Bash", ".venv/Scripts/python.exe scripts/pyramid_gate.py --out x -- -q"),
+        ("Bash", "python - <<'PY'\nprint(1)\nPY\ncat <<'EOF' > /dev/null\nEOF"),
+        ("Bash", "cat > /dev/null"), ("Bash", f"cd {root_posix} && git status"),
+        ("Bash", f"cd {str(root).replace(chr(92), '/')} && ls"), ("Bash", "( cd scripts && python x.py )"),
+        ("Bash", "git -C scripts log -1"), ("Bash", "echo $(cd scripts; pwd)"),
+        ("Bash", "cat <<'EOF' | python -\ncd scripts\nEOF"), ("Bash", "grep -n 'cd scripts' x.txt"),
+        ("PowerShell", f"Set-Location {root}; git status"), ("PowerShell", "Get-ChildItem scripts"),
+        ("Monitor", "( cd scripts && tail -f x.log )"), ("Monitor", "tail -f run.log | grep --line-buffered ERROR"),
+    ]
+    for name, cmd in quiet:
+        rc, err = run(tool(name, cmd))
+        assert rc == 0 and not err.strip(), (name, cmd[:50], rc, err[:160])
+    # precedence: a moved directory is named before an empty-stdin hang in the same command
+    rc, err = run(tool("Bash", "cd scripts && python - <<'EOF'\nEOF"))
+    assert rc == 2 and "S6-B3391" in err and "S6-B3379" not in err
+
+    # --- S6-B3377: the reload check on a fixture transcript, incremental, both load and both compaction forms
+    def line(**e):
+        return _j.dumps(e) + "\n"
+
+    def skill_line(ts):
+        return line(type="assistant", timestamp=ts, message={"content": [
+            {"type": "tool_use", "name": "Skill", "input": {"skill": "execution-discipline"}}]})
+
+    def boundary(ts):
+        return line(type="system", subtype="compact_boundary", timestamp=ts)
+
+    def marker(ts):
+        return line(type="user", timestamp=ts, message={"content": [
+            {"type": "text", "text": "This session is being continued from a previous conversation that ran out of context."}]})
+
+    def body(ts):
+        return line(type="user", timestamp=ts, message={"content": [
+            {"type": "text", "text": "(Re-invocation of /execution-discipline) Base directory for this skill: x/execution-discipline"}]})
+
+    tp = tmp_path / "t.jsonl"
+    sd = tmp_path / "state"
+    sd.mkdir()
+    tp.write_text(skill_line("2026-11-16T08:22:51Z") + boundary("2026-11-16T15:33:34Z"), encoding="utf-8")
+    pl = {"tool_name": "Bash", "tool_input": {"command": "ls"}, "transcript_path": str(tp)}
+    rc, msg = g.decide(pl, root=root, state_dir=sd)
+    assert rc == 2 and "S6-B3377" in msg and "15:33:34" in msg and "08:22:51" in msg, (rc, msg)
+    st = vtc.skill_state_path(tp, sd)
+    assert st.is_file() and st.parent == sd
+    off1 = _j.loads(st.read_text(encoding="utf-8"))["offset"]
+    assert off1 == tp.stat().st_size
+    with open(tp, "a", encoding="utf-8") as fh:                         # the reload clears it - incrementally
+        fh.write(skill_line("2026-11-16T15:40:29Z"))
+    assert g.decide(pl, root=root, state_dir=sd) == (0, "")
+    assert _j.loads(st.read_text(encoding="utf-8"))["offset"] == tp.stat().st_size > off1
+    with open(tp, "a", encoding="utf-8") as fh:                         # the user-text marker re-owes it
+        fh.write(marker("2026-11-16T16:00:00Z"))
+    rc, msg = g.decide({**pl, "tool_name": "PowerShell"}, root=root, state_dir=sd)
+    assert rc == 2 and "S6-B3377" in msg and "16:00:00" in msg
+    with open(tp, "a", encoding="utf-8") as fh:                         # the skill BODY as a user message clears it
+        fh.write(body("2026-11-16T16:01:00Z"))
+    assert g.decide({**pl, "tool_name": "Monitor"}, root=root, state_dir=sd) == (0, "")
+    assert g.decide({**pl, "tool_name": "Write"}, root=root, state_dir=sd) == (0, "")   # other tools never judged
+    # no transcript path, or an unreadable one, allows (the close-time gate is the backstop)
+    assert g.decide({"tool_name": "Bash", "tool_input": {"command": "ls"}}, root=root, state_dir=sd) == (0, "")
+    assert g.decide({**pl, "transcript_path": str(tmp_path / "none.jsonl")}, root=root, state_dir=sd) == (0, "")
+    # a transcript whose load is already newer than its compaction is quiet from the first read
+    tp2 = tmp_path / "t2.jsonl"
+    tp2.write_text(boundary("2026-11-16T15:33:34Z") + skill_line("2026-11-16T15:40:29Z"), encoding="utf-8")
+    assert g.decide({**pl, "transcript_path": str(tp2)}, root=root, state_dir=sd) == (0, "")
+    # the production state file is under the OS temp dir, never the repository (a gate run's tree)
+    prod = vtc.skill_state_path(tp)
+    assert prod.parent == _P(_tf.gettempdir()) and not str(prod).startswith(str(root))
+
+    # --- mutation probes: each arm is driven by its table / state
+    monkeypatch.setitem(vtc._CD_WORDS, "Bash", ())
+    assert g.decide(tool("Bash", "cd scripts; ls"), root=root, state_dir=sd) == (0, "")
+    monkeypatch.undo()
+    assert g.decide(tool("Bash", "cd scripts; ls"), root=root, state_dir=sd)[0] == 2
+    import verify_turn_compliance as vtc2
+    monkeypatch.setattr(vtc2, "_PY_STDIN_RE", vtc2.re.compile(r"(?!x)x"))
+    assert g.decide(tool("Bash", "python - <<'EOF'\nEOF"), root=root, state_dir=sd) == (0, "")
+    monkeypatch.undo()
+    assert g.decide(tool("Bash", "python - <<'EOF'\nEOF"), root=root, state_dir=sd)[0] == 2
+
+    # --- wiring: the Monitor tool's calls reach the guard too
+    s = _j.loads((root / ".claude" / "settings.json").read_text(encoding="utf-8"))
+    for m in ("Bash", "PowerShell", "Monitor"):
+        cmds = [h.get("command", "") for e in s["hooks"]["PreToolUse"]
+                if e.get("matcher") == m for h in e.get("hooks", [])]
+        assert any("scripts/pretooluse_heredoc_guard.py" in c for c in cmds), (m, cmds)
