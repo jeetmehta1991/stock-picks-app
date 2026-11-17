@@ -1644,8 +1644,8 @@ class BacktestEngine:
     # ----------------------------------------------------------------------
 
     def run(self):
-        from backtest.util.owner_word_gate import require_engine_word
-        require_engine_word()   # S6-B3358: no engine runs without the owner's word
+        from backtest.util.owner_word_gate import require_engine_word, refuse_live_fetch_override
+        require_engine_word(); refuse_live_fetch_override()   # S6-B3358: no engine runs without the owner's word; S6-B3392: never under STAGE2_NO_LIVE_FETCH=0 (one line, so no citation below moves - L943)
         # S6-B3098e (B3110): R5_OUTPUT_DIR was set only at POOL init
         # (B1294), so the sequential path's demand-pruning state had no
         # home and a sequential resumed leg re-warmed from scratch.

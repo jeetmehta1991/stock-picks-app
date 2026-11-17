@@ -1247,6 +1247,115 @@ def check_leg_paths_while_wave_live(*, staged=None, inflight=None,
             "halt."]
 
 
+
+# ---------------------------------------------------------------------------
+# C21 (S6-B3403, B3139q-r216): a strategy GATE edit cites its owner ruling.
+# ---------------------------------------------------------------------------
+STRAT_EDIT_OVERRIDE_ENV = "ALLOW_STRAT_EDIT_WITHOUT_RULING"
+SCREENER_REL = "backtest/signals/screener.py"
+
+
+def _strat_function_dumps(source: str) -> dict:
+    """{strat_<name>: ast.dump of its def} for every module-level `def strat_*`
+    in `source`; docstrings and comments are not in the dump, so a text-only
+    edit leaves a function's dump unchanged. An unparsable source maps every
+    function to its error so the comparison fails closed."""
+    import ast
+    try:
+        tree = ast.parse(source)
+    except SyntaxError as exc:
+        return {"<unparsable>": f"SyntaxError: {exc}"}
+    out = {}
+    for n in tree.body:
+        if isinstance(n, ast.FunctionDef) and n.name.startswith("strat_"):
+            body = [b for b in n.body
+                    if not (isinstance(b, ast.Expr) and isinstance(getattr(b, "value", None), ast.Constant)
+                            and isinstance(b.value.value, str))]
+            out[n.name] = ast.dump(ast.Module(body=body, type_ignores=[]), include_attributes=False) \
+                + "|args=" + ast.dump(n.args) + "|dec=" + ",".join(ast.dump(d) for d in n.decorator_list)
+    return out
+
+
+def changed_strategy_gates(head_src: str, staged_src: str) -> list[str]:
+    """The strat_ functions whose RUNTIME body differs between HEAD and the
+    staged blob - added, removed, or changed in any node outside docstrings
+    and comments. Sorted names."""
+    a, b = _strat_function_dumps(head_src), _strat_function_dumps(staged_src)
+    if "<unparsable>" in a or "<unparsable>" in b:
+        return ["<unparsable>"]
+    return sorted(n for n in set(a) | set(b) if a.get(n) != b.get(n))
+
+
+def ruling_rows_for(names, queue_added_lines) -> dict:
+    """{strat_name: True/False}: does a queue row ADDED in this commit name the
+    strategy (with or without its strat_ prefix) and the owner's word - the
+    word 'owner' or 'ruling' beside it? The row is the citation the runbook's
+    approval rules ask for (S6-B3403)."""
+    out = {}
+    low_rows = [str(ln).lower() for ln in queue_added_lines]
+    for n in names:
+        bare = n[len("strat_"):] if n.startswith("strat_") else n
+        out[n] = any((bare.lower() in r) and ("owner" in r or "ruling" in r or "ruled" in r)
+                     for r in low_rows)
+    return out
+
+
+def check_strategy_gate_edit_cites_ruling(*, staged=None, head_src=None, staged_src=None,
+                                          queue_added_lines=None, env=None) -> list[str]:
+    """C21: a staged change to a strategy's GATE in backtest/signals/screener.py
+    (any strat_ function whose runtime body differs from HEAD) needs, in the
+    same commit, an added EXECUTION_QUEUE.md row naming that strategy and the
+    owner's word. Runbook: owner approval precedes every rule, threshold or
+    gate change, per strategy (S6-B3403's four census rules). Docstring and
+    comment edits are not gate edits. Seams: staged, head_src, staged_src,
+    queue_added_lines, env."""
+    import os
+    env = os.environ if env is None else env
+    if staged is None:
+        try:
+            r = subprocess.run(["git", "diff", "--cached", "--name-only"], cwd=REPO_ROOT,
+                               capture_output=True, text=True, check=False)
+            staged = [ln.strip() for ln in r.stdout.splitlines() if ln.strip()]
+        except Exception as exc:
+            return [f"C21: the staged set could not be read ({exc!r}) - fail closed while it is unknown"]
+    rels = {str(p).replace(chr(92), "/") for p in staged}
+    if SCREENER_REL not in rels:
+        return []
+    try:
+        if head_src is None:
+            head_src = subprocess.run(["git", "show", f"HEAD:{SCREENER_REL}"], cwd=REPO_ROOT,
+                                      capture_output=True, text=True, check=True,
+                                      encoding="utf-8", errors="replace").stdout
+        if staged_src is None:
+            staged_src = subprocess.run(["git", "show", f":{SCREENER_REL}"], cwd=REPO_ROOT,
+                                        capture_output=True, text=True, check=True,
+                                        encoding="utf-8", errors="replace").stdout
+    except Exception as exc:
+        return [f"C21: the screener blobs could not be read ({exc!r}) - fail closed: a strategy "
+                "gate edit needs its cited ruling (S6-B3403)"]
+    changed = changed_strategy_gates(head_src, staged_src)
+    if not changed:
+        return []
+    if queue_added_lines is None:
+        queue_added_lines = [ln for f, ln in get_staged_added_lines() if f == "EXECUTION_QUEUE.md"]
+    cited = ruling_rows_for(changed, queue_added_lines)
+    missing = [n for n in changed if not cited.get(n)]
+    if not missing:
+        return []
+    why = str(env.get(STRAT_EDIT_OVERRIDE_ENV) or "").strip()
+    if why:
+        print(f"preflight C21: {len(missing)} strategy gate edit(s) without a cited ruling row - "
+              f"overridden: {why} ({', '.join(missing[:6])})")
+        return []
+    return [f"C21 STRATEGY GATE EDIT WITHOUT A CITED RULING (S6-B3403 / runbook: owner approval "
+            f"precedes every rule, threshold or gate change, per strategy): {len(missing)} of "
+            f"{len(changed)} changed strat_ function(s) in {SCREENER_REL} has no EXECUTION_QUEUE.md "
+            f"row added in this commit naming the strategy and the owner's word - "
+            + ", ".join(missing[:6])
+            + ". Add the ticket row quoting the ruling (strategy name + 'owner' / 'ruling'), or set "
+            f"{STRAT_EDIT_OVERRIDE_ENV}=<reason> for a proven-defect fix that changes no verdict (#310)."]
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--staged", action="store_true", help="check git-staged files only")
@@ -1309,6 +1418,9 @@ def main() -> int:
         # C20 (B3139q-r131 / L972): no leg-read path committed while a
         # wave is live - drift_check would halt it at its next leg
         all_violations += check_leg_paths_while_wave_live()
+        # C21 (B3139q-r216 / S6-B3403): a strategy GATE edit in screener.py cites
+        # its owner ruling - a queue row added in the same commit
+        all_violations += check_strategy_gate_edit_cites_ruling()
 
     if not all_violations:
         print("preflight: PASS - no rule violations found")

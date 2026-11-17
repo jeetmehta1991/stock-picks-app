@@ -527,6 +527,10 @@ PASSING targeted pre-gate on the exact tree (`scripts/pregate_select.py
 passing pre-gate on the exact tree is still required - so a doc, test or record
 commit between code commits does not shorten the cycle
 (`_pregate_ride(record=False)`, pinned by test_b3410's arm (g)).
+**S6-B3361 (b) (B3139q-r216):** when no passing pre-gate stamp covers the gate's tree,
+scripts/pyramid_gate.py runs the selection itself and stops RED at a failure before the full run
+(EXIT_PREGATE_RED, test_b3361) - a red selection costs its own minutes, not the gate's
+hour (L984).
 Everything else in this phase stands: pin tests, the batch cap, the
 gate-record discipline, and the full gate still runs LAST on the tree
 it vouches for whenever it runs.

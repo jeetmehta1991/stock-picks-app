@@ -59,3 +59,36 @@ def require_engine_word(environ=None) -> None:
     refused = engine_word_refusals(environ)
     if refused:
         raise SystemExit(f"{TAG} {refused[0]}")
+
+
+
+# S6-B3392 part 3 (B3139q-r216; runbook: 'Set STAGE2_NO_LIVE_FETCH=0 only for
+# prefetch/setup, never a backtest'): the engine refuses to START when the
+# environment carries an EXPLICIT STAGE2_NO_LIVE_FETCH=0. With it, an OHLCV
+# cache miss degrades silently instead of raising (backtest/data/cache.py),
+# so a backtest run under it can grade a universe with tickers quietly
+# dropped. Prefetch and setup scripts set it and never build an engine; a
+# backtest never needs it. Checked at the two places the owner-word check
+# runs - run_phase1a.main and BacktestEngine.run - so every route that runs
+# an engine passes it. An ABSENT variable, or any value but '0', passes.
+LIVE_FETCH_KEY = "STAGE2_NO_LIVE_FETCH"
+LIVE_FETCH_TAG = "[S6-B3392 LIVE FETCH]"
+
+
+def live_fetch_override_refusals(environ=None) -> list:
+    """[] unless the environment carries STAGE2_NO_LIVE_FETCH=0 exactly."""
+    environ = os.environ if environ is None else environ
+    if str(environ.get(LIVE_FETCH_KEY, "")).strip() == "0":
+        return [f"REFUSED (engine entry, S6-B3392): {LIVE_FETCH_KEY}=0 is set - that "
+                "setting is for prefetch and setup only, never a backtest: under it an "
+                "OHLCV cache miss degrades silently (backtest/data/cache.py) and the run "
+                "grades a universe with tickers quietly dropped. Unset it (the default, "
+                "1, raises on a miss) and launch again."]
+    return []
+
+
+def refuse_live_fetch_override(environ=None) -> None:
+    """Raise SystemExit with the refusal when STAGE2_NO_LIVE_FETCH=0 is set."""
+    refused = live_fetch_override_refusals(environ)
+    if refused:
+        raise SystemExit(f"{LIVE_FETCH_TAG} {refused[0]}")

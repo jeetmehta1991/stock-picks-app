@@ -604,6 +604,57 @@ def pytest_tail(log_text: str, limit: int = 20) -> list[str]:
     return out
 
 
+EXIT_PREGATE_RED = 7
+
+
+def _pregate_fail_fast(root, pregate: str, runner=None, reader=None) -> str:
+    """S6-B3361 (b) (B3139q-r216, on the owner's 'Address and impletement all
+    open tickets' 2026-11-16, read as the row's recommendation (b)): when no
+    PASSING pre-gate selection covers this tree, the gate RUNS THE SELECTION
+    ITSELF - scripts/pregate_select.py --run, the tests that read what the
+    tree changed (S6-B3269, #315) - and returns the stamp's verdict on the
+    tree after that run. The caller stops RED (EXIT_PREGATE_RED) on a FAILED
+    verdict and continues to the full run otherwise, so a red selection costs
+    its own minutes instead of the full gate's (L984: the r139 gate went RED
+    on 3 of 1,905, 2 of them the selector's own picks). A PASSED or NOTHING
+    CHANGED stamp runs nothing. `runner` (the subprocess call) and `reader`
+    (the verdict after it) are the test seams; a runner that raises reads as
+    FAILED - a selection that could not run has not passed (L642)."""
+    if pregate.startswith(("PASSED", "NOTHING CHANGED")):
+        return pregate
+    runner = runner if runner is not None else (
+        lambda: subprocess.run([sys.executable, str(Path(root) / "scripts" / "pregate_select.py"),
+                                "--run"], cwd=str(root)).returncode)
+    reader = reader if reader is not None else (lambda: _pregate_line(root))
+    print("  S6-B3361 (b): running the pre-gate selection now (the stamp was "
+          f"'{pregate}'); a FAILED selection stops this gate RED before the "
+          "full run.", flush=True)
+    try:
+        runner()
+    except Exception as e:  # noqa: BLE001 - an unrun selection has not passed
+        return f"FAILED on this tree (the selection could not run: {type(e).__name__})"
+    return reader()
+
+
+def _pregate_red_record(out, pregate: str, t0: float, moved_cites: str,
+                        runbook_drift: str, beside_wave) -> str:
+    """The artifact written when the fail-fast stops the gate: the verdict
+    first, then the footer keys a reader of a full record looks for, so
+    `exit=` and `pregate=` are where they always are."""
+    footer = (f"PRE-GATE RED (S6-B3361 (b)): {pregate}\n"
+              f"pytest_exit=NOT RUN\n"
+              f"tree=NOT MEASURED - the full run did not start\n"
+              f"exit={EXIT_PREGATE_RED}\n"
+              f"elapsed_s={time.time() - t0:.0f}\n"
+              f"beside_wave_override={(beside_wave or '').strip() or 'none'}\n"
+              f"moved_line_citations={moved_cites}\n"
+              f"pregate={pregate}\n"
+              f"runbook_drift={runbook_drift}\n"
+              "stamp_binding=none - no pyramid stamp is written on a pre-gate RED\n")
+    Path(out).write_text(footer, encoding="utf-8")
+    return footer
+
+
 def run(out: Path, root: Path, pytest_args: list[str],
         beside_wave: str | None = None) -> int:
     # L942: first, and before any write - a committed record is evidence.
@@ -650,6 +701,18 @@ def run(out: Path, root: Path, pytest_args: list[str],
     # snapshot - the gate's stdout is usually redirected INTO output_audit,
     # and a flushed line after the snapshot reads as a mid-run write (gate
     # r83 re-ran 91 tests over its own .out).
+    # S6-B3361 (b) (B3139q-r216): no passing pre-gate on this tree? run the
+    # selection NOW and stop RED on a failure - before the output_audit
+    # snapshot, so its tests' writes are not this gate's mid-run writes, and
+    # before the full run spends its hour. The footer's pregate= carries the
+    # verdict after that run.
+    t_pre = time.time()
+    pregate = _pregate_fail_fast(root, pregate)
+    if pregate.startswith("FAILED"):
+        _pregate_red_record(out, pregate, t_pre, moved_cites, runbook_drift, beside_wave)
+        print(f"PRE-GATE RED (S6-B3361 (b)): {pregate} - exit={EXIT_PREGATE_RED}; the "
+              "full run did not start, no pyramid stamp was written", flush=True)
+        return EXIT_PREGATE_RED
     power_start = _power_state()
     if power_start.startswith("battery"):
         print(f"[power] S6-B3163: the gate starts ON BATTERY ({power_start}) - a "

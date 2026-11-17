@@ -682,8 +682,8 @@ def main():
     # launch word - after the run mode is recorded and asserted, so a refused
     # launch is still auditable, and before any engine work. BacktestEngine.run
     # checks again for the routes that never pass this main.
-    from backtest.util.owner_word_gate import require_engine_word
-    require_engine_word()
+    from backtest.util.owner_word_gate import require_engine_word, refuse_live_fetch_override
+    require_engine_word(); refuse_live_fetch_override()   # S6-B3392: never a backtest under STAGE2_NO_LIVE_FETCH=0 (one line - L943)
 
     engine = BacktestEngine(
         universe=universe, start=start, end=end,

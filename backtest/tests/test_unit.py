@@ -25268,6 +25268,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # L998 tripwire row so the row cannot keep calling it an open decision.
         ("refuses every shell and Monitor call while the transcript's last compaction is newer than its last skill load",
          "S6-B3377 (a): the PreToolUse reload refusal (B3139q-r216)"),
+        # B3139q-r216 / S6-B3361 (b): the gate runs the pre-gate selection itself.
+        ("runs the selection itself and stops RED at a failure before the full run",
+         "S6-B3361 (b): the gate's pre-gate fail-fast (B3139q-r216)"),
         ("READ THE VERIFIER'S UNMAPPED OR FAILED BAND AS CAREFULLY AS ITS MATCHED ONE",
          "B3139q-r42/L902: a verdict carried past its mapped rows - the 13F Date column's second meaning sat in ay's UNMAPPED band"),
         # B2851: the L805 tripwire row - an owner catch on a locked
@@ -26462,7 +26465,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 374 -> 375 at B3139q-r166 (L1005's working-directory row; same call).
     # 375 -> 377 at B3139q-r170 (the two S6-B3410 cadence fragments).
     # 377 -> 378 at S6-B3424 (the process-diet fragment).
-    assert len(gutted) == 380, gutted
+    assert len(gutted) == 381, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -76191,3 +76194,181 @@ def test_b3377_b3379_b3391_guard_refuses_reload_debt_cwd_moves_and_empty_stdin(t
         cmds = [h.get("command", "") for e in s["hooks"]["PreToolUse"]
                 if e.get("matcher") == m for h in e.get("hooks", [])]
         assert any("scripts/pretooluse_heredoc_guard.py" in c for c in cmds), (m, cmds)
+
+
+
+
+# ================================================================ B3139q-r216 S6-B3361 (b): the gate runs the pre-gate itself and stops RED
+def test_b3361_the_gate_runs_the_pregate_selection_and_stops_red_on_a_failure(tmp_path):
+    """S6-B3361 (b) (B3139q-r216, on the owner's 'Address and impletement all
+    open tickets' 2026-11-16, the row's recommendation): when no PASSING
+    pre-gate stamp covers the gate's tree, scripts/pyramid_gate.py runs
+    scripts/pregate_select.py --run itself and stops RED (EXIT_PREGATE_RED)
+    on a FAILED verdict, continuing to the full run otherwise. (1) the helper
+    in both directions through its seams: PASSED / NOTHING CHANGED run
+    nothing; NONE / STALE / FAILED run the selection and return the reader's
+    verdict; a runner that raises reads FAILED; (2) the RED record carries the
+    footer keys a reader looks for and no stamp binding; (3) wiring (L654):
+    run() calls the helper after the first _pregate_line read and BEFORE the
+    fingerprint snapshot and pytest, and returns EXIT_PREGATE_RED on FAILED;
+    (4) the exit code is distinct from the gate's others."""
+    import ast as _ast
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import pyramid_gate as pg
+    ran = []
+
+    def runner():
+        ran.append(1)
+        return 0
+    for ok in ("PASSED on this tree (7 tests, T)", "NOTHING CHANGED (a clean tree against HEAD)"):
+        assert pg._pregate_fail_fast(root, ok, runner=runner, reader=lambda: "x") == ok
+    assert ran == []
+    for pending in ("NONE", "STALE (1 of 2 changed path(s) differ)", "FAILED on this tree (pytest exit 1)"):
+        out = pg._pregate_fail_fast(root, pending, runner=runner,
+                                    reader=lambda: "PASSED on this tree (3 tests, T2)")
+        assert out.startswith("PASSED"), (pending, out)
+    assert ran == [1, 1, 1]
+    red = pg._pregate_fail_fast(root, "NONE", runner=runner,
+                                reader=lambda: "FAILED on this tree (pytest exit 1, 3 tests, T3)")
+    assert red.startswith("FAILED")
+
+    def boom():
+        raise OSError("no python")
+    assert pg._pregate_fail_fast(root, "NONE", runner=boom, reader=lambda: "PASSED").startswith("FAILED")
+    # (2) the RED record
+    rec = tmp_path / "gate.stdout"
+    text = pg._pregate_red_record(rec, red, 0.0, "none", "none", None)
+    body = rec.read_text(encoding="utf-8")
+    assert body == text and body.startswith("PRE-GATE RED (S6-B3361 (b)): FAILED")
+    for key in ("exit=%d" % pg.EXIT_PREGATE_RED, "pregate=FAILED", "pytest_exit=NOT RUN",
+                "stamp_binding=none", "moved_line_citations=none", "beside_wave_override=none"):
+        assert key in body, key
+    # (3) wiring, by AST on run()
+    src = (root / "scripts" / "pyramid_gate.py").read_text(encoding="utf-8")
+    run = next(n for n in _ast.parse(src).body if isinstance(n, _ast.FunctionDef) and n.name == "run")
+    calls = [n for n in _ast.walk(run) if isinstance(n, _ast.Call)]
+    line = min(n.lineno for n in calls if _ast.unparse(n.func) == "_pregate_line")
+    ff = [n.lineno for n in calls if _ast.unparse(n.func) == "_pregate_fail_fast"]
+    fp = [n.lineno for n in calls if _ast.unparse(n.func) == "fingerprint"]
+    snap = [n.lineno for n in calls if _ast.unparse(n.func) == "output_audit_snapshot"]
+    pytest_call = [n.lineno for n in calls if _ast.unparse(n.func) == "subprocess.call"]
+    assert ff and line < min(ff) < min(fp) and min(ff) < min(snap) < min(pytest_call), (line, ff, fp, snap, pytest_call)
+    rets = [n for n in _ast.walk(run) if isinstance(n, _ast.Return) and n.value is not None
+            and _ast.unparse(n.value) == "EXIT_PREGATE_RED"]
+    assert rets and min(r.lineno for r in rets) < min(pytest_call)
+    assert any(_ast.unparse(n.func) == "_pregate_red_record" for n in calls)
+    # (4) a distinct exit code
+    assert pg.EXIT_PREGATE_RED not in (0, 1, 4, pg.EXIT_REFUSED_BESIDE_WAVE,
+                                       pg.EXIT_REFUSED_TRACKED_RECORD, pg.EXIT_SUSPECT)
+
+
+# ================================================================ B3139q-r216 S6-B3403: a strategy gate edit cites its owner ruling (preflight C21)
+def test_b3403_a_strategy_gate_edit_without_a_cited_ruling_row_is_refused():
+    """S6-B3403 (B3139q-r216, on the owner's 'Address and impletement all open
+    tickets' 2026-11-16): preflight C21. A staged change to a strat_ function's
+    RUNTIME body in backtest/signals/screener.py needs an EXECUTION_QUEUE.md
+    row added in the same commit naming the strategy and the owner's word -
+    the runbook's four approval rules (S6-B3344's M-APPROVAL cluster). (1) the
+    diff by AST: a threshold change, a new gate and a new strategy fire; a
+    docstring or comment edit does not; an unparsable blob fails closed; (2)
+    the row: strategy name plus 'owner' / 'ruling' satisfies, a row naming the
+    strategy without the word does not; (3) the check through its seams, both
+    directions, the stated override, and the screener absent from the staged
+    set; (4) wiring: main() registers it in --staged mode."""
+    import ast as _ast
+    import importlib.util as _ilu
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = _ilu.spec_from_file_location("pf_b3403", root / "scripts" / "preflight.py")
+    pf = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(pf)
+    head = ('def helper(s):\n    return s.get("x")\n\n'
+            'def strat_alpha(s):\n    """old doc"""\n    fl = s.get("rsi_14", 100) < 35  # cut\n    return fl\n\n'
+            'def strat_beta(s):\n    return s.get("y", False)\n')
+    assert pf.changed_strategy_gates(head, head) == []
+    doc_only = head.replace('"""old doc"""', '"""new doc, same gate"""').replace("# cut", "# a reworded comment")
+    assert pf.changed_strategy_gates(head, doc_only) == []
+    threshold = head.replace("< 35", "< 40")
+    assert pf.changed_strategy_gates(head, threshold) == ["strat_alpha"]
+    new_gate = head.replace("    return fl\n", '    fl = fl and s.get("vol_above_avg", False)\n    return fl\n')
+    assert pf.changed_strategy_gates(head, new_gate) == ["strat_alpha"]
+    added = head + '\ndef strat_gamma(s):\n    return s.get("z", False)\n'
+    assert pf.changed_strategy_gates(head, added) == ["strat_gamma"]
+    removed = head.replace('def strat_beta(s):\n    return s.get("y", False)\n', "")
+    assert pf.changed_strategy_gates(head, removed) == ["strat_beta"]
+    helper_only = head.replace('return s.get("x")', 'return s.get("x2")')
+    assert pf.changed_strategy_gates(head, helper_only) == []            # not a strat_ body
+    assert pf.changed_strategy_gates(head, head + "\ndef (:\n") == ["<unparsable>"]
+    # (2) the row
+    rows = ["| **S6-B9999** | **EXECUTED** | P1 | **alpha's RSI cut 35 -> 40 on the owner's 'Approve' (sent 2026-11-16T08:22:37Z)** |"]
+    assert pf.ruling_rows_for(["strat_alpha", "strat_beta"], rows) == {"strat_alpha": True, "strat_beta": False}
+    assert pf.ruling_rows_for(["strat_alpha"], ["| alpha's cut moved to 40, my call |"]) == {"strat_alpha": False}
+    # (3) the check
+    chk = pf.check_strategy_gate_edit_cites_ruling
+    staged = ["backtest/signals/screener.py", "EXECUTION_QUEUE.md"]
+    v = chk(staged=staged, head_src=head, staged_src=threshold, queue_added_lines=[], env={})
+    assert len(v) == 1 and "C21" in v[0] and "strat_alpha" in v[0] and "S6-B3403" in v[0], v
+    assert chk(staged=staged, head_src=head, staged_src=threshold, queue_added_lines=rows, env={}) == []
+    assert chk(staged=staged, head_src=head, staged_src=doc_only, queue_added_lines=[], env={}) == []
+    assert chk(staged=["EXECUTION_QUEUE.md", "scripts/x.py"], head_src=head, staged_src=threshold,
+               queue_added_lines=[], env={}) == []
+    assert chk(staged=staged, head_src=head, staged_src=threshold, queue_added_lines=[],
+               env={pf.STRAT_EDIT_OVERRIDE_ENV: "proven defect, no verdict moves"}) == []
+    v = chk(staged=staged, head_src=head, staged_src=head + "\ndef (:\n", queue_added_lines=rows, env={})
+    assert v and "<unparsable>" in v[0]
+    # (4) wiring: registered in main()'s staged block
+    src = (root / "scripts" / "preflight.py").read_text(encoding="utf-8")
+    main = next(n for n in _ast.parse(src).body if isinstance(n, _ast.FunctionDef) and n.name == "main")
+    names = [_ast.unparse(n.func) for n in _ast.walk(main) if isinstance(n, _ast.Call)]
+    assert "check_strategy_gate_edit_cites_ruling" in names and "check_leg_paths_while_wave_live" in names
+
+
+# ================================================================ B3139q-r216 S6-B3392 part 3: the engine refuses STAGE2_NO_LIVE_FETCH=0
+def test_b3392f_the_engine_refuses_an_explicit_live_fetch_override(monkeypatch):
+    """S6-B3392 part 3 (B3139q-r216; runbook: 'Set STAGE2_NO_LIVE_FETCH=0 only
+    for prefetch/setup, never a backtest'): the engine refuses to start under an
+    explicit STAGE2_NO_LIVE_FETCH=0 - under it an OHLCV cache miss degrades
+    silently (backtest/data/cache.py) and a backtest grades a universe with
+    tickers quietly dropped. (1) the helper both ways: '0' refuses, '1', '',
+    absent and ' 0 ' (stripped) decide as written; (2) wiring (L654): both
+    engine entries - run_phase1a.main and BacktestEngine.run - call it right
+    after the owner-word check and before any engine work, by AST order."""
+    import ast as _ast
+    from pathlib import Path as _P
+    from backtest.util import owner_word_gate as owg
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    assert owg.live_fetch_override_refusals({"STAGE2_NO_LIVE_FETCH": "0"})
+    assert owg.live_fetch_override_refusals({"STAGE2_NO_LIVE_FETCH": " 0 "})
+    for v in ({"STAGE2_NO_LIVE_FETCH": "1"}, {"STAGE2_NO_LIVE_FETCH": ""}, {}, {"STAGE2_NO_LIVE_FETCH": "00"}):
+        assert owg.live_fetch_override_refusals(v) == [], v
+    with pytest.raises(SystemExit) as ei:
+        owg.refuse_live_fetch_override({"STAGE2_NO_LIVE_FETCH": "0"})
+    assert "S6-B3392" in str(ei.value) and "prefetch and setup only" in str(ei.value)
+    owg.refuse_live_fetch_override({"STAGE2_NO_LIVE_FETCH": "1"})
+    monkeypatch.setenv("STAGE2_NO_LIVE_FETCH", "0")                         # the default environ path
+    with pytest.raises(SystemExit):
+        owg.refuse_live_fetch_override()
+    monkeypatch.delenv("STAGE2_NO_LIVE_FETCH", raising=False)
+    owg.refuse_live_fetch_override()
+    # (2) wiring at both entries
+    for rel, fn in (("backtest/engine/backtest.py", "run"), ("backtest/run_phase1a.py", "main")):
+        src = (root / rel).read_text(encoding="utf-8", errors="replace")
+        tree = _ast.parse(src)
+        funcs = [n for n in _ast.walk(tree) if isinstance(n, _ast.FunctionDef) and n.name == fn]
+        assert funcs, (rel, fn)
+        node = funcs[0]
+        calls = [n for n in _ast.walk(node) if isinstance(n, _ast.Call)]
+        # (line, column): the refusal may share the owner-word check's line - it does by
+        # design, so no line citation below it moves (L943) - and must follow it there
+        word = [(n.lineno, n.col_offset) for n in calls if _ast.unparse(n.func) == "require_engine_word"]
+        fetch = [(n.lineno, n.col_offset) for n in calls
+                 if _ast.unparse(n.func) == "refuse_live_fetch_override"]
+        assert word and fetch and min(word) < min(fetch) and min(fetch)[0] <= min(word)[0] + 3, (
+            rel, word, fetch)
+        later = [n.lineno for n in calls if _ast.unparse(n.func) in ("self.load_data", "BacktestEngine")]
+        assert later and min(fetch)[0] < min(later), (rel, fetch, later)

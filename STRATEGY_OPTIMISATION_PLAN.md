@@ -237,7 +237,7 @@ This is the mandatory pre-execution check for every campaign:
 | Step 1 - IS-only ranked list + Table D | yes (no holdout contact) | campaign start covers it once the bands are reviewed |
 | **Step 2 - the holdout read** | **NO - one-way door** | its OWN explicit word, every time ('build the reader and run step 2'; 'admit all... as long as it clears') |
 | Admission to PHASE_1B_ROSTER | reversible (strike) but owner-owned | its OWN ruling per admission, or an explicit standing scope ('top 1 per strategy', 'admit all in table A') |
-| NEW-GATE wiring into strategies or engine knobs | code change | per-strategy owner approval (the ask-every-time rule) |
+| NEW-GATE wiring into strategies or engine knobs | code change | per-strategy owner approval (the ask-every-time rule); preflight C21 refuses a staged strategy gate edit in screener.py without a queue row added in the same commit naming the strategy and the owner's word (S6-B3403, test_b3403) |
 | Engine launch | cost + hours | NEVER without the owner's launch word (standing); the decision row that asks for it states the run's hours, priced from the subject's own record (§4.9 Step 2.3; S6-B3431, L1013 - `scan_launch_decision_without_price`); and while the owner's pause stands, only the runs a release names (§1.3; S6-B3409) |
 
 **MECHANIZED IN PART (S6-B3338, B3139q-r138): two one-way doors in this table now check the
@@ -476,7 +476,7 @@ pair is now consistent.
 
 | constraint | ruling |
 |---|---|
-| Owner approval before any rule / threshold / parameter change | CLAUDE.md Critical Rules - this runbook MEASURES a strategy; it never changes one |
+| Owner approval before any rule / threshold / parameter change | CLAUDE.md Critical Rules - this runbook MEASURES a strategy; it never changes one; a strategy gate edit without its cited ruling row is refused at commit (preflight C21, S6-B3403) |
 | Holdout dates and duration | **LOCKED** (§1.1) |
 | Local run cap | **5 h per leg** - the CEILING (B2107, recorded verbatim in queue row S6-B2107-OWNER-RULINGS-3; raised from 3 h on 2026-08-24 after the pooled 200-ticker rate measured 4.2 h per config; `prelaunch_gate.OWNER_LOCAL_CAP_HOURS`, fail-closed). The value ENFORCED is each spec's `leg_cap_hours`, passed to the engine as `--max-run-hours`; the cap counts ACTIVE hours, crediting machine-sleep gaps of 30 minutes or more (`backtest.py::kill_decision`, both gating sites; no wall-clock backstop, deliberately - L734). A run longer than one leg is LEGGED on the checkpoint infrastructure, never shortened. **STEP SCOPE (B3133, owner verbatim: '5h cap on run applies only for step 1 and not step 2'; re-affirmed B3141 2026-10-08: 'Run in step 2 is uncapped'): the ceiling binds STEP-1 runs ONLY - a Step-2 run is UNCAPPED in total, with legging retained for resume granularity; `check_supervisor_and_cap` scopes the over-cap refusal to step != 2, treats an ABSENT step as Step 1 (fail closed, L642), and still refuses an ABSENT leg cap at every step** |
 | Compute budget | **$100 TOTAL across all strategies, not per strategy or per run** (owner ruling 2026-08-23, B2109) - every venue quote, wave plan and Step-2 projection counts against ONE envelope |
@@ -920,7 +920,7 @@ the L-number is the incident, and its LEARNINGS entry carries the detail.
 
 **Standing rules that bind every step:** no silent misses (every scope item ends with a terminal
 disposition; a finding without a queue ticket does not exist); owner approval for every threshold /
-gate / production-path change, and approval for one strategy is not approval for the next; pyramid
+gate / production-path change (preflight C21 refuses a strategy gate edit without its cited ruling row, S6-B3403), and approval for one strategy is not approval for the next; pyramid
 green before every commit, with the doc sweep and queue entry in the same turn; and **harvest every
 strategy a cube carries** (L404) - one run computes many strategies, and reading one wastes the rest.
 
@@ -2564,7 +2564,7 @@ read from `backtest/config.py` at cite time, not from memory.
 | `DEMAND_PRUNING_WARMUP` | `25` bars | **OPT-ONLY** | Bars spent RECORDING which signal keys are read before pruning arms. Raise it if a strategy's branches are rare. |
 | `OPTIMIZATION_MODE` | `0` | **OPT-ONLY** | Uncaps `max_candidates_per_day`. **No-op under `--cube-isolation`** (isolation already bypasses the cap, L419). Does NOT skip `smart_money_score` - that was tried and REVERTED (L418), because tier maps LOW -> 0.0 and a zero size SKIPS the trade, so tier GATES ENTRY. |
 | family sweep knobs | production values | sweep knob | Declared per strategy in its SPECS entry (env name, band, consumers) and read in `backtest/config.py`; a FIRE-ADDING knob needs one engine run per value. **A knob built into a key at RUNTIME** (e.g. `f"price_above_ema_{span}"`) **is invisible to a static scan** (L437). The values two early configs actually ran were recovered from their run's own record into the campaign log (S6-B1537b); a spec-launched config carries its knob values in its own spec |
-| `STAGE2_NO_LIVE_FETCH` | `1` (on) | **ALWAYS-ON** | Raises on any OHLCV cache miss instead of degrading silently. Set `0` ONLY for prefetch/setup, never a backtest. |
+| `STAGE2_NO_LIVE_FETCH` | `1` (on) | **ALWAYS-ON** | Raises on any OHLCV cache miss instead of degrading silently. Set `0` ONLY for prefetch/setup, never a backtest - the engine REFUSES to start under an explicit `0` at both entries, run_phase1a.main and BacktestEngine.run (owner_word_gate.refuse_live_fetch_override, S6-B3392 part 3, test_b3392f). |
 | `ENGINE_OUTPUT_DIR` | unset | infra | Output directory override. |
 
 **Config flags (not env), live values:** `USE_PRECOMPUTED_SIGNALS=False` (B1563 - the cache is EMPTY;
