@@ -6,14 +6,15 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## How much confidence these checks earn
 
-**Across the entire ledger (185 entries), 2185 named checks have run and 25 have ever returned non-PASS.**
+**Across the entire ledger (186 entries), 2212 named checks have run and 26 have ever returned non-PASS.**
 
 ## Landings - what the supervisor recorded (B2520)
 
-79 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
+80 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
+| output_b3139q_lv4s2_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe | 2026-11-07T13:13:52 | engine-hook | 0 | 4_three_leg_spot_check | 0 | False | False | yes 2026-11-07T14:03:40 |
 | output_b3248sq_p2_1p5_p2_1p5 | 2026-10-31T15:32:53 | engine-hook | 0 | none | 0 | d1b3f8e3f | True | yes 2026-10-31T17:18:02 |
 | output_b3248sq_p2_2p0_p2_2p0 | 2026-10-31T12:08:19 | engine-hook | 0 | none | 0 | 4831646fa | True | yes 2026-10-31T14:45:29 |
 | output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45 | 2026-10-28T21:44:47 | manual | 0 | none | 0 | False | False | yes 2026-10-28T23:05:44 |
@@ -205,13 +206,14 @@ _`starved-IS` = no exit cleared min_n IN-SAMPLE, a SAMPLE-SIZE fact rather than 
 | `npoc_s1_p1_100_p2_252_p3_6_p4_40_p6_0p02_p1_100_p2_252_p3_6_p4_40_p6_0p02` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=200(free, declared); P2=252(free, declared); P3=6(free, declared); P4=40(free, declared); P5=0,1,2(free, declared); P6=0.0028,0.0059,0.0096,0.0141,0.02(free, declared); B1=require_true(free, declared); B2=q20,q40,q60,q80(free, declared); B3=q20,q40,q60,q80(free, declared); B4=q20,q40,q60,q80(free, declared); B5=q20,q40,q60,q80(free, declared); B6=q20,q40,q60,q80(free, declared) | -0.248 | 0.495 | 0.495 | 0.223 | P1_ema_span=100 P2_lookback=252 P3_n_periods=6 P4_n_bins=40 P6_max_distance_pct=0.020 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
 | `npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=200(free, declared); P2=252(free, declared); P3=6(free, declared); P4=40(free, declared); P5=0,1,2(free, declared); P6=0.0028,0.0059,0.0096,0.0141,0.02(free, declared); B1=require_true(free, declared); B2=q20,q40,q60,q80(free, declared); B3=q20,q40,q60,q80(free, declared); B4=q20,q40,q60,q80(free, declared); B5=q20,q40,q60,q80(free, declared); B6=q20,q40,q60,q80(free, declared) | -0.316 | 0.428 | 0.428 | 0.153 | P1_ema_span=150 P2_lookback=252 P3_n_periods=6 P4_n_bins=40 P6_max_distance_pct=0.020 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
 | `b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45` | 1 combination (72 cell-exit lines ranked) | 0 | 0 | 72 | - | 0 | B1=q20,q40,q60,q80(free, declared); B2=q20,q40,q60,q80(free, declared); B3=require_true(free, declared); B4=q20,q40,q60,q80(free, declared); B5=require_false(free, declared); B6=q20,q40,q60,q80(free, declared); B7=require_false(free, declared); B8=require_false(free, declared); B9=q20,q40,q60,q80(free, declared); B10=require_true(free, declared); B11=q20,q40,q60,q80(free, declared); B12=require_false(free, declared); B13=require_false(free, declared); B14=q20,q40,q60,q80(free, declared); P1={"k": 3, "mandatory": ["above_r1"]}(fixed) | -0.711 | 0.801 | 0.801 | 0.516 | P1_gate_budget={"k": 3, "mandatory": ["above_r1"]} / regime_flip | - |
-| `b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe` | 1 combination (24 cell-exit lines ranked) | 0 | 0 | 24 | - | 0 | P1={"k": 5, "mandatory": ["news_sentiment_5d"]}(fixed) | -0.338 | 0.442 | 0.442 | 0.151 | P1_gate_budget={"k": 5, "mandatory": ["news_sentiment_5d"]} / breakeven_plus_trail | - |
+| `b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe` | 1 combination (24 cell-exit lines ranked) | 0 | 0 | 24 | - | 0 | P1={"k": 5, "mandatory": ["news_sentiment_5d"]}(fixed); P2=? | -0.338 | 0.442 | 0.442 | 0.151 | P1_gate_budget={"k": 5, "mandatory": ["news_sentiment_5d"]} / breakeven_plus_trail | - |
 | `b3139q_lv4_smc_bos_continuation_p1_j213420ef_p1_j213420ef` | 1 combination (72 cell-exit lines ranked) | 0 | 0 | 72 | - | 0 | P1={"k": 3, "mandatory": ["smc_bos_bullish"]}(fixed) | -0.56 | 0.481 | 0.481 | 0.082 | P1_gate_budget={"k": 3, "mandatory": ["smc_bos_bullish"]} / breakeven_plus_trail | - |
 | `b3139q_lv4_orb_stocks_in_play_long_p1_j0924495a_p1_j0924495a` | 1 combination (24 cell-exit lines ranked) | 0 | 0 | 24 | - | 0 | P1={"k": 3, "mandatory": ["gap_up_pct"]}(fixed) | -0.262 | 0.275 | 0.275 | -0.075 | P1_gate_budget={"k": 3, "mandatory": ["gap_up_pct"]} / breakeven_plus_trail | - |
 | `b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45` | 1 combination (72 cell-exit lines ranked) | 0 | 0 | 72 | - | 0 | B1=q20,q40,q60,q80(free, declared); B2=q20,q40,q60,q80(free, declared); B3=require_true(free, declared); B4=q20,q40,q60,q80(free, declared); B5=require_false(free, declared); B6=q20,q40,q60,q80(free, declared); B7=require_false(free, declared); B8=require_false(free, declared); B9=q20,q40,q60,q80(free, declared); B10=require_true(free, declared); B11=q20,q40,q60,q80(free, declared); B12=require_false(free, declared); B13=require_false(free, declared); B14=q20,q40,q60,q80(free, declared); P1={"k": 3, "mandatory": ["above_r1"]}(fixed) | -0.433 | 0.617 | 0.617 | 0.538 | P1_gate_budget={"k": 3, "mandatory": ["above_r1"]} / breakeven_plus_trail | - |
 | `b3248sq_p2_2p0_p2_2p0` | 1 combination (24 cell-exit lines ranked) | 0 | 0 | 24 | - | - | P1=fire-up(not swept); P2=2.0,2.5(free, declared); P3=1.5,2.0(free, declared); P4=20(free, declared); P5=20(free, declared); B1=q20,q40,q60,q80(free, declared); B2=q20,q40,q60,q80(free, declared); B3=q20,q40,q60,q80(free, declared); B4=q20,q40,q60,q80(free, declared); B5=q20,q40,q60,q80(free, declared); B6=q20,q40,q60,q80(free, declared); B7=require_false(free, declared); B8=q20,q40,q60,q80(free, declared); B9=q20,q40,q60,q80(free, declared); B10=q20,q40,q60,q80(free, declared); B11=require_false(free, declared); B12=q20,q40,q60,q80(free, declared); B13=q20,q40,q60,q80(free, declared); B14=require_false(free, declared); P6=0(free, declared) | -0.286 | 0.561 | 0.561 | 0.297 | P2_kc_mult=2.0 P3_bb_std=2.0 P4_mom_window=20 P5_kc_period=20 P6_prior_n=0 / breakeven_plus_trail | - |
 | `b3248sq_p2_1p5_p2_1p5` | 1 combination (24 cell-exit lines ranked) | 0 | 0 | 24 | - | - | P1=fire-up(not swept); P2=2.0,2.5(free, declared); P3=1.5,2.0(free, declared); P4=20(free, declared); P5=20(free, declared); B1=q20,q40,q60,q80(free, declared); B2=q20,q40,q60,q80(free, declared); B3=q20,q40,q60,q80(free, declared); B4=q20,q40,q60,q80(free, declared); B5=q20,q40,q60,q80(free, declared); B6=q20,q40,q60,q80(free, declared); B7=require_false(free, declared); B8=q20,q40,q60,q80(free, declared); B9=q20,q40,q60,q80(free, declared); B10=q20,q40,q60,q80(free, declared); B11=require_false(free, declared); B12=q20,q40,q60,q80(free, declared); B13=q20,q40,q60,q80(free, declared); B14=require_false(free, declared); P6=0(free, declared) | -0.479 | 0.522 | 0.522 | 0.279 | P2_kc_mult=1.5 P3_bb_std=2.0 P4_mom_window=20 P5_kc_period=20 P6_prior_n=0 / breakeven_plus_trail | - |
-| `b3139q_lv4s2_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe` | 1 combination (24 cell-exit lines ranked) | 0 | 0 | 24 | - | 0 | P1={"k": 5, "mandatory": ["news_sentiment_5d"]}(fixed) | 0.208 | 0.563 | 0.563 | 0.467 | P1_gate_budget={"k": 5, "mandatory": ["news_sentiment_5d"]} / breakeven_plus_trail | - |
+| `b3139q_lv4s2_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe` | 1 combination (24 cell-exit lines ranked) | 0 | 0 | 24 | - | 0 | P1={"k": 5, "mandatory": ["news_sentiment_5d"]}(fixed); P2=? | 0.208 | 0.563 | 0.563 | 0.467 | P1_gate_budget={"k": 5, "mandatory": ["news_sentiment_5d"]} / breakeven_plus_trail | - |
+| `b3139q_r217_nw_p2_0_p1_j4bc78dbe_p2_0_p1_j4bc78dbe` | 1 combination (24 cell-exit lines ranked) | 0 | 0 | 24 | - | 0 | P1={"k": 5, "mandatory": ["news_sentiment_5d"]}(fixed); P2=? | -0.195 | 0.466 | 0.466 | 0.157 | P1_gate_budget={"k": 5, "mandatory": ["news_sentiment_5d"]} / breakeven_plus_trail | - |
 
 **Parameters tested** - distinct values each config exercised per axis, read from the result rows themselves. `1 value` = the axis was PINNED and contributed no search; an axis absent from the artifact reads `not recorded`, never `1`. **P1 `swing_length` and P6 `span` are the CROSS-CONFIG axes** - they define which config a cube IS and are held FIXED within it, so they show a value rather than a count. Recorded in the artifact since B2138; anything graded before that reads `not recorded`, which is what let a swing-10 cube be re-graded as swing-20 (S6-B2136).
 
@@ -347,11 +349,12 @@ _`starved-IS` = no exit cleared min_n IN-SAMPLE, a SAMPLE-SIZE fact rather than 
 | config | B1 atr_pct | B2 atr | B3 vix_term_backwardation | B4 cot_dxy_mmoney_pctile_3y | B5 within_pead_window | B6 days_to_cover | B7 monthly_bias_bull | B8 is_monday | B9 po3_accum_range_pct | B10 news_uses_polygon_score | B11 otc_volume_recent | B12 smc_ob_bullish_active | B13 vp_close_above_poc | B14 xs_max_anomaly | P1 gate_budget |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45` | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | require_true(free, declared) | q20,q40,q60,q80(free, declared) | require_false(free, declared) | q20,q40,q60,q80(free, declared) | require_false(free, declared) | require_false(free, declared) | q20,q40,q60,q80(free, declared) | require_true(free, declared) | q20,q40,q60,q80(free, declared) | require_false(free, declared) | require_false(free, declared) | q20,q40,q60,q80(free, declared) | {"k": 3, "mandatory": ["above_r1"]}(fixed) |
-| `b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe` | {"k": 5, "mandatory": ["news_sentiment_5d"]}(fixed) |
+| `b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe` | {"k": 5, "mandatory": ["news_sentiment_5d"]}(fixed) | ? |
 | `b3139q_lv4_smc_bos_continuation_p1_j213420ef_p1_j213420ef` | {"k": 3, "mandatory": ["smc_bos_bullish"]}(fixed) |
 | `b3139q_lv4_orb_stocks_in_play_long_p1_j0924495a_p1_j0924495a` | {"k": 3, "mandatory": ["gap_up_pct"]}(fixed) |
 | `b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45` | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | require_true(free, declared) | q20,q40,q60,q80(free, declared) | require_false(free, declared) | q20,q40,q60,q80(free, declared) | require_false(free, declared) | require_false(free, declared) | q20,q40,q60,q80(free, declared) | require_true(free, declared) | q20,q40,q60,q80(free, declared) | require_false(free, declared) | require_false(free, declared) | q20,q40,q60,q80(free, declared) | {"k": 3, "mandatory": ["above_r1"]}(fixed) |
-| `b3139q_lv4s2_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe` | {"k": 5, "mandatory": ["news_sentiment_5d"]}(fixed) |
+| `b3139q_lv4s2_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe` | {"k": 5, "mandatory": ["news_sentiment_5d"]}(fixed) | ? |
+| `b3139q_r217_nw_p2_0_p1_j4bc78dbe_p2_0_p1_j4bc78dbe` | {"k": 5, "mandatory": ["news_sentiment_5d"]}(fixed) | ? |
 
 | config | P1 squeeze_fire_up identity | P2 Keltner multiplier (squeeze definition) | P3 Bollinger std multiplier (squeeze definition) | P4 momentum window | P5 Keltner EMA / ATR period | B1 short_interest_observations | B2 gold_silver_ratio | B3 xs_max_anomaly | B4 vix_value | B5 trading_day_of_month | B6 po3_accum_range_pct | B7 three_white_soldiers | B8 news_sentiment_30d | B9 days_since_last_earnings | B10 total_active_holders | B11 smc_inverse_fvg_bullish | B12 pair_zscore_signed | B13 cot_dxy_mmoney_pctile_3y | B14 rsi_9_bullish | P6 prior squeeze within N bars (0 = none required) |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -396,7 +399,7 @@ _**EVERY PRODUCER BAND IS A COLUMN HERE** (owner ruling: one unified table, no s
 | 24 | b2197_sw50sp50_sw50sp50 | 50 | True | 2 | None | 0.03 | 50 | time_stop_10d | +0.613 | 22 | THIN | - | 2.865 | 1 | 0 | 22 | BELOW_POWER_FLOOR | yes |
 | 25 | b2197_sw30sp20_sw30sp20 | 30 | True | 20 | 120 | 0.03 | 20 | earnings_blackout | +0.604 | 15 | THIN | 1 of 3 | 1.849 | 5 | 0 | 15 | BELOW_POWER_FLOOR | - |
 
-_1352 ranked outcomes across 111 graded configs; 1326 distinct signatures._
+_1375 ranked outcomes across 112 graded configs; 1349 distinct signatures._
 
 _SUPERSEDED configs, ranked above as evidence and excluded from the per-tier best (S6-B3266): icg_cfg1 by icg_cfg1_rerun_cfg1_rerun - S6-B2605a: 23 of 373 fires carried empty signals_at_entry; the clean re-run reads is_ci_lo -0.106 against -0.087; icg_span100_span100 by icg_span100_rerun_span100 - S6-B2574a: a 2pct-of-price ATR proxy priced 83.7pct of trades; the clean re-run reads is_ci_lo -0.078 against +0.062._
 
@@ -408,11 +411,12 @@ _SUPERSEDED configs, ranked above as evidence and excluded from the per-tier bes
 | MID | +0.656 | 33 | 191 |
 | THIN | +1.250 | 14 | 91 |
 
-## Index - 111 graded config(s), newest first
+## Index - 112 graded config(s), newest first
 
 | config | best is_ci_lo | count | starved | steps closed (DONE+N/A of 9; the gate's own is_closed) |
 |---|---|---|---|---|
-| output_b3139q_lv4s2_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe | 0.467 | full_n 3963 | 0/24 cell-exit lines | 8/9 **OPEN: 4_three_leg_spot_check** |
+| output_b3139q_r217_nw_p2_0_p1_j4bc78dbe_p2_0_p1_j4bc78dbe | 0.157 | full_n 434 | 0/24 cell-exit lines | 9/9 |
+| output_b3139q_lv4s2_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe | 0.467 | full_n 3963 | 0/24 cell-exit lines | 9/9 |
 | output_b3248sq_p2_1p5_p2_1p5 | 0.279 | full_n 726 | 0/24 cell-exit lines | 9/9 |
 | output_b3248sq_p2_2p0_p2_2p0 | 0.297 | full_n 580 | 0/24 cell-exit lines | 9/9 |
 | output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45 | 0.538 | full_n 5361 | 0/72 cell-exit lines | 9/9 |
@@ -526,20 +530,130 @@ _SUPERSEDED configs, ranked above as evidence and excluded from the per-tier bes
 
 ## Per-config findings
 
+### output_b3139q_r217_nw_p2_0_p1_j4bc78dbe_p2_0_p1_j4bc78dbe
+
+**Configuration:** P1_gate_budget={"k": 5, "mandatory": ["news_sentiment_5d"]}
+
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.157** (is_sharpe 0.466, full_n 434, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+
+**Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
+
+| step | status | evidence / reason (never truncated) |
+|---|---|---|
+| 1_cube_sanity | DONE | the named checks are tabulated below by risk question |
+| 2_grade_with_config_params | DONE | AUTO (S6-B3240); legs x exits at the cube's gate budget; Step 2 (S6-B3331): the long leg's holdout read once: lever4_step1 at manifest gate_budget={"news_momentum_long": {"k": 5, "mandatory": ["news_sentiment_5d"]}} news_window_days=0 -> output_b3139q_r217_nw_p2_0_p1_j4bc78dbe_p2_0_p1_j4bc78dbe_grid_auto.json |
+| 3_outlier_discrepancy_sweep | DONE | AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS; M12_entries_vs_grid_fires=PASS |
+| 4_three_leg_spot_check | DONE | S6-B3427 re-derivation leg: [PASS] re-derived close_above_open 50/50; close_in_top_40pct_of_range 50/50; dc20_breakout_up 50/50; news_sentiment_5d 50/50; news_volume_zscore_5d 50/50; vol_above_avg 50/50; previous-bar control disagrees on 92 row-key -> output_b3139q_r217_nw_p2_0_p1_j4bc78dbe_p2_0_p1_j4bc78dbe_rederive.json; R6: sampled 50 of 434 entries with seed 42 |
+| 5_adversarial_lens_review | DONE | AUTO (B2520): lenses 16 run: 0 WARN / 0 FAIL / 16 INFO -> output_b3139q_r217_nw_p2_0_p1_j4bc78dbe_p2_0_p1_j4bc78dbe_lenses.json |
+| 6_post_fix_recheck | N/A | no lens finding (16 lenses, 0 WARN / 0 FAIL) -> nothing to recheck; N/A on evidence |
+| 6b_equivalence_class_check | DONE | AUTO (B2192): the grader collapses identical outcomes - 23 ranked outcome classes carry None parameter combinations; None distinct outcome classes among 0 combinations enumerated in output_b3139q_r217_nw_p2_0_p1_j4bc78dbe_p2_0_p1_j4bc78dbe_grid_auto.json |
+| 7_implement_in_engine | N/A | Step-1 ranking cube; admission happens at Step 2; nothing to implement. Engine check PASS: 2 of 2 declared knobs read from the environment + consumer lists match the tree; verify_lever4_anchors.py exit 0 |
+| 8_verdict_with_denominators | DONE | AUTO (B2520) VERDICT (denominators from output_b3139q_r217_nw_p2_0_p1_j4bc78dbe_p2_0_p1_j4bc78dbe_grid_auto.json): 24 of 24 cell-exit lines graded across 1 cell(s) ['base:long']; rank-1 [breakeven_plus_trail] is_ci_lo 0.157 is_sharpe 0.466 full_n 434 - Step-1: ranking only, no admission (B1608); producers varied 1 of 2 (params ['P1'] of 2; arm-moved ['P1'], swept in-grid none); exits_effective 22 of 24 registered at the cube's SHA; no PASS row, so no PASS ci_lo |
+
+**Is this the right data?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| cube produced rows | 10416 rows | PASS | zero rows = the config ran and emitted nothing |
+| exactly one strategy in the cube | 1 strategies | PASS | more than 1 = the strategy-subset filter leaked |
+| the graded strategy appears in the cube (S6-B3397) | graded leg news_momentum_long; the cube carries 1 strategy ... | PASS | absent = the cube does not hold the strategy it was run to grade |
+| mega-caps present in the universe | NVDA, MSFT, GOOGL, TSLA, AAPL | PASS | absent = the abandoned A-C chunk universe (L445) |
+| universe artifact verified | exit 0 on output_audit/_sweep_200.txt (verifier is ... | PASS | FAIL = the ticker list is not what was intended |
+| cube content hash | 07b6ed72d2478440 | PASS | a repeat across configs = two configs produced identical cubes, so one knob did nothing |
+| entry-date span actually simulated | entries 2024-05-06 .. 2025-05-02 | PASS | a short span = the run did not cover its window |
+| every entry carries one row per registered exit | cube [24] vs registry-now 24 (a differing single value = an ... | PASS | a shortfall = exits silently dropped from the cube |
+| closed trade-log fires that have an exit-cube row | 434 of 434 closed trade-log fires have exit-cube rows; 0 ... | PASS | any missing = an entry the cube lost, which M2 cannot see (S6-B3267) |
+| cube entries equal the grid's largest trade count (S6-B3397) | grid is_n 434, full_n_count_only 434 = the cube's 434 ... | PASS | a shortfall = the grader silently dropped trades it could not diagnose (L454) |
+
+**Did anything leak from the future?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| entries at or after the LOCKED holdout start | 0 entries at/after HO_START 2025-05-05 in a STEP-1 cube | PASS | any non-zero = the holdout was contaminated and the run is void |
+| fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
+| pre-launch receipt matches the run manifest | receipt matches manifest sha 1a439ebc6521 | PASS | mismatch = this run is not the run that was gated |
+
+**Does the arithmetic reproduce?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is ... | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': ... | PASS | each mapping = an exit you paid to test and did not actually test |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; gate_budget={"news_momentum_long": {"k": 5, ... | PASS | non-zero = the grid was never produced |
+| the landed grid carries the B2505 contract (R4, S6-B3397) | B2505 contract holds: config, strategy, instrument, cube / ... | PASS | a missing field = a reader of this grid cannot place its rows |
+| a graded variant landing is registered as resim evidence (S6-B3397) | registered output_b3139q_r217_nw_p2_0_p1_j4bc78dbe_p2_0_p1_j ... | PASS | unregistered = the levels this run paid for read UNTESTED to the band-coverage gate; a disagreement = the grader and the arm name different levels |
+| independent spot check ran | exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 ... | PASS | non-zero = no re-derivation happened |
+| the spot check sampled min(50, entries) trades with seed 42 (R6) | R6: sampled 50 of 434 entries with seed 42 | PASS | another seed or size = the checker ignored the battery's flags |
+| the spot check can certify every input family (S6-B3397) | NOT CERTIFIED for news ['news_sentiment_5d', ... | WARN **<-- NOT PASS** | NOT CERTIFIED = an input no checker leg re-derives - the check agreeing says nothing about it |
+| engine-side implementation check exit code | 2 of 2 declared knobs read from the environment + consumer ... | PASS | non-zero = the wiring is absent |
+
+**Other checks**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| M8_borrow_trap | no short trade in the cube - blocked 0 of 0 consults ... | PASS | - |
+| step_derivation | Step-1: manifest window.end 2025-05-05 <= HO_START ... | PASS | - |
+| family_dispatch | news_momentum_long: manifest arms[0] gate_budget={"news_mome ... | PASS | - |
+| step4_rederive | exit 0; [PASS] re-derived close_above_open 50/50; ... | PASS | - |
+
+**Independent re-derivation of sampled trades (step 4)**
+
+- 50 of 50 sampled trades re-derived to the SAME fire/no-fire decision as the engine; 0 disagreed; 0 execution failures.
+- Sampled with seed 42 at this config's own parameters (parameters not recorded in the artifact).
+- CAVEAT worth stating: the re-derivation uses the SAME parameter set as the engine, so it catches wiring and data faults, NOT a wrong parameter choice. Full per-trade rows: output_audit/output_b3139q_r217_nw_p2_0_p1_j4bc78dbe_p2_0_p1_j4bc78dbe_spot_check.json.
+
+**Adversarial lenses (step 5) - 16 lenses, 0 WARN/FAIL** (step basis: manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube; family news_momentum_long)
+
+| lens | level | evidence |
+|---|---|---|
+| holdout_untouched | INFO | 0 of 434 entries at/after HO_START 2025-05-05 (Step-1 cube: any touch is a leak, B1718 class) |
+| period_concentration | INFO | max quarter share 0.24 (2024Q2) over 5 quarters of 434 entries; WARN > 0.5 |
+| ticker_concentration | INFO | top-5 tickers carry 0.06 of 434 entries across 177 tickers; WARN > 0.30 |
+| eligibility_leak | INFO | 0 of 434 entries not screenable under daily_subtract_v1 (carry 0 / daily 0); 0 unclassifiable; cube built under daily_subtract_v1 (stamped) |
+| selection_margin | INFO | rank-1 [breakeven_plus_trail] is_ci_lo 0.157 vs rank-2 [hybrid_50pct_target] 0.091: margin 0.066 between cell-exit lines; WARN < 0.05 (selection at noise level); INFO not WARN - Step-1 admission ranks CONFIGS (exit ties never move a config score); this lens informs only a pre-registered exit choice (S6-B2611a) |
+| band_levels_change_outcome | INFO | no grid key of ['leg'] carries 2+ levels in this grid - nothing swept in-cube to check (N/A) |
+| effective_parameter | INFO | 2 of 2 grade flags verified (a moved value was refused) (lever4_step1.py) |
+| negative_control | INFO | news_momentum_long declares no free levels (N/A) |
+| entries_per_ticker_vs_r5 | INFO | 434 news_momentum_long entries over 200 tickers (2.1700/ticker) vs R5's 3 on the same tickers 2024-05-05..2025-05-05 (0.0150/ticker) = 144.67x; the arm sets ['LEVER4_GATE_BUDGET', 'NEWS_WINDOW_DAYS'], so the ratio carries the variant's own effect beside the universe's; no PASS on a 200-ticker universe (R5 ran 544); band 0.5-2.0 (universe_ladder_run S2, B1514) |
+| registration_redundancy | INFO | max J 0.035 (camarilla_r4_breakout/long); news_momentum_long vs 64 registrations over the same tickers and window (79 under 50 entries skipped, 4 disabled or retired not compared); bars 0.7 / 0.95 (audit_registration_redundancy) |
+| empty_signals_share | INFO | 0 of 434 trade_log rows carry an empty signals_at_entry (S6-B2512 class) |
+| replay_atr_proxy | INFO | ATR proxy on 0.0% of replayed trades (<= 5%; MEASURED 0/434 (0.0%) from replay_atr_fallback.json) |
+| grading_provenance | INFO | grading surface UNCHANGED since freeze (47 files, digest 3629e7d69dd5) |
+| direction_consistency | INFO | directions ['long'] (single direction) |
+| spot_check_disagreements | INFO | 50 agree / 0 DISAGREE / 0 skipped in output_b3139q_r217_nw_p2_0_p1_j4bc78dbe_p2_0_p1_j4bc78dbe_spot_check.json |
+| min_trades_floor | INFO | 434 distinct entries; the live gates need holdout >= 15 and full-period >= 75 (applied by the grader, not here) |
+
+**Is the sample large enough to mean anything? (step 2 funnel)**
+
+- 24 cell-exit lines enumerated (population field `rows`).
+- **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
+- 24 graded and ranked, collapsing to None distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 23 classes carry None combinations forward to Step 2 (tighten_breaker_block.main, its --top-n classes).
+
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
+|---|---|---|---|---|---|---|
+| None | 0.157 | 0.466 | full_n 434 | breakeven_plus_trail | None | (no knobs recorded) |
+| None | 0.091 | 0.322 | full_n 434 | hybrid_50pct_target | None | (no knobs recorded) |
+| None | -0.103 | 0.108 | full_n 434 | earnings_blackout | None | (no knobs recorded) |
+| None | -0.12 | 0.166 | full_n 434 | class_time_stop | None | (no knobs recorded) |
+| None | -0.137 | 0.224 | full_n 434 | regime_flip | None | (no knobs recorded) |
+
+_Top 5 of the ranking; the full list is in output_audit/output_b3139q_r217_nw_p2_0_p1_j4bc78dbe_p2_0_p1_j4bc78dbe_grid_auto.json._
+
 ### output_b3139q_lv4s2_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe
 
 **Configuration:** P1_gate_budget={"k": 5, "mandatory": ["news_sentiment_5d"]}
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.467** (is_sharpe 0.563, full_n 3963, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 8 of 9 steps closed** (7 DONE with evidence, 1 N/A with a reason: 6_post_fix_recheck). **1 step(s) NOT closed (4_three_leg_spot_check) - this cube BLOCKS the turn gate until each is DONE with evidence or N/A with a reason; SKIPPED is not a disposition (B2520).**
+**Completeness: 9 of 9 steps closed** (8 DONE with evidence, 1 N/A with a reason: 6_post_fix_recheck). Every step is dispositioned; nothing is outstanding on this cube.
 
 | step | status | evidence / reason (never truncated) |
 |---|---|---|
 | 1_cube_sanity | DONE | the named checks are tabulated below by risk question |
 | 2_grade_with_config_params | DONE | AUTO (S6-B3240); legs x exits at the cube's gate budget; Step 2 (S6-B3331): the long leg's holdout read once: lever4_step1 at manifest gate_budget={"news_momentum_long": {"k": 5, "mandatory": ["news_sentiment_5d"]}} -> output_b3139q_lv4s2_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe_grid_auto.json; Step-2 gate verdict present: step2 block: FAIL on breakeven_plus_trail |
 | 3_outlier_discrepancy_sweep | DONE | AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=SKIP; M5_pnl_integrity=PASS; M7_degraded_exits=PASS; M12_entries_vs_grid_fires=PASS |
-| 4_three_leg_spot_check | OPEN **<-- NOT CLOSED** | NOT CERTIFIED - hand disposition owed (S6-B3415 (a)): AUTO (S6-B3240); the live strategy replayed on the cube's signals under the arm's budget: spot_check_replay at manifest gate_budget={"news_momentum_long": {"k": 5, "mandatory": ["news_sentiment_5d"]}}; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skipped; execution failures 0; artifact output_b3139q_lv4s2_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe_spot_check.json; coverage NOT CERTIFIED for news ['news_sentiment_5d', 'news_volume_zscore_5d']; ohlcv ['close_above_open', 'close_in_top_40pct_of_ |
+| 4_three_leg_spot_check | DONE | HAND DISPOSITION (S6-B3415 (a), B3139q-r206): the six gate keys the replay took as persisted - close_above_open, close_in_top_40pct_of_range, dc20_breakout_up, vol_above_avg, news_sentiment_5d, news_volume_zscore_5d - re-derived from source for the spot check's 50 sampled trades: 300 of 300 comparisons agree, each key 50 of 50. Price keys by direct arithmetic on backtest/data/cache/ohlcv bars (the technical.py formulas); news keys through news_sentiment.compute_news_sentiment_signals on the raw article files. Controls: persisted False on 30 of 50 (dc20_breakout_up), 4 (vol_above_avg) and 2 (close_in_top_40pct_of_range), all matched; the news keys take 32 and 39 distinct values; on the previous bar the price keys agree only 24 to 31 of 50, so the comparison discriminates. Evidence output_audit/b3139q_lv4s2_news_momentum_long_step4_hand_disposition.json / prior: NOT CERTIFIED - hand disposition owed (S6-B3415 (a)): AUTO (S6-B3240); the live strategy replayed on the cube's signals under the arm's budget: spot_check_replay at manifest gate_budget={"news_momentum_long": {"k": 5, "mandatory": ["news_sentiment_5d"]}}; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skipped; execution failures 0; artifact output_b3139q_lv4s2_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe_spot_check.json; coverage NOT CERTIFIED for news ['news_sentiment_5d', 'news_volume_zscore_5d']; ohlcv ['close_above_open', 'close_in_top_40pct_of_ |
 | 5_adversarial_lens_review | DONE | AUTO (B2520): lenses 16 run: 0 WARN / 0 FAIL / 16 INFO -> output_b3139q_lv4s2_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe_lenses.json |
 | 6_post_fix_recheck | N/A | no lens finding (16 lenses, 0 WARN / 0 FAIL) -> nothing to recheck; N/A on evidence |
 | 6b_equivalence_class_check | DONE | AUTO (B2192): the grader collapses identical outcomes - 23 ranked outcome classes carry None parameter combinations; None distinct outcome classes among 0 combinations enumerated in output_b3139q_lv4s2_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe_grid_auto.json |
