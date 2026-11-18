@@ -290,6 +290,13 @@ def main() -> int:
                 "npt_barred": ex == BARRED_EXIT})
     quals = [r for r in rows if r["all_live_gates"] and not r["npt_barred"]]
     quals.sort(key=lambda r: -r["holdout_sharpe"])
+    # S6-B3455: a qualifier on an axis whose stored values pre-date its
+    # producer's point-in-time correction carries the reason (a disclosure)
+    from pit_axes import non_pit_axes as _non_pit
+    non_pit = _non_pit(axis_keys, a.cube_dir)
+    for q in quals:
+        if q["axis"] in non_pit:
+            q["non_pit"] = non_pit[q["axis"]]
     print(f"{len(rows)} cells read | {len(quals)} all-six non-npt qualifiers "
           f"({time.time()-t0:.0f}s)")
     # S6-B3395 Batch 7b: the read is TAKEN - counted before anything is written
@@ -369,6 +376,7 @@ def main() -> int:
            "control_source": "output_r5_merged_1_7 (control's own fires)",
            "cells_read": len(rows),
            "qualifiers_all_six_non_npt": len(quals),
+           "non_pit_axes": non_pit,      # S6-B3455
            "qualifiers": quals,
            "control": {"strategy": a.control,
                        "note": "same axis/level/exit on the control's own fires, "

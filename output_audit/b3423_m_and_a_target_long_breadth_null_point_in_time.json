@@ -1,0 +1,362 @@
+{
+ "_doc": "S6-B3139bw (owner question 2026-10-07, \"i closed because you said qualifying\ncells were just noise in step 3. Is that true?\"): is a breadth Step-2 holdout\nread's qualifier set beyond what chance produces?\n\nNothing new is selected. The read's OWN registered cells are re-scored on the\nread's OWN frame (breadth_step1_grid.build_frame, the leg and basis the Step-1\nartifact recorded) with the reader's OWN grade (breadth_step2_read.grade_holdout).\n\n1. REPRODUCTION, fail closed: the all-six non-npt qualifier set must equal the\n   read artifact's qualifier set exactly.\n2. BASELINE: the unfiltered leg's holdout grade per exit.\n3. NULL: K joint shuffles of the signal vectors across fires WITHIN each period\n   (in-sample, holdout). Each cell keeps its exact in-sample and holdout trade\n   counts and the axes keep their joint structure; only the link between a\n   fire's signals and its outcome is broken. Recorded per shuffle: the number\n   of all-six qualifiers, the distinct cells with one, each observed\n   qualifier's holdout Sharpe (a per-cell p, valid only for a PRE-CHOSEN cell),\n   and the best holdout lower bound over every cell-exit (the FAMILY-WISE\n   statistic: the observed best was picked as the best of all cell-exits).\n\nProvenance (B1801 / #201): every null figure here - the shuffle medians,\npercentiles and p-values - is SYNTHETIC: drawn from rng shuffles of the read's\nown data, so it prices chance and never performance. The OBSERVED figures\n(qualifier set, holdout grades, baseline) are measured.\n\nDirection of the null's known bias: random subsets spread over time, while a\nreal filter's trades cluster, so a real no-edge filter is MORE variable than\nthis null - its p-values are, if anything, too small. A \"not beyond chance\"\nverdict from it is therefore conservative.\n\nusage: breadth_holdout_null.py --step1-artifact A --read-artifact R\n                               --perms K [--seed S] --out O\n",
+ "strategy": "m_and_a_target_long",
+ "leg": "long",
+ "cube_dir": "output_r5_merged_1_7 (default)",
+ "basis": "net",
+ "n_perms": 300,
+ "seed": 20261007,
+ "null_label": "SYNTHETIC null (rng shuffles of the read's own data) - prices chance, never performance; observed figures are measured",
+ "cell_exits_scored": 400,
+ "registered_cells": 16,
+ "fires": {
+  "IS": 562,
+  "HO": 189,
+  "OUT": 0
+ },
+ "observed": {
+  "qualifiers": 11,
+  "cells_with_a_qualifier": 4
+ },
+ "null_qualifiers": {
+  "mean": 2.1033333333333335,
+  "median": 1.0,
+  "p95": 8.0,
+  "max": 19,
+  "p_value": 0.026578073089700997
+ },
+ "null_cells_with_a_qualifier": {
+  "mean": 0.96,
+  "p95": 3.0,
+  "p_value": 0.03322259136212625
+ },
+ "family_best_ci_lo": {
+  "observed": 0.422,
+  "at": [
+   "vp_close_near_poc_pct",
+   "ge",
+   0.1428,
+   "hybrid_50pct_target"
+  ],
+  "null_median": 0.212,
+  "null_p95": 0.603,
+  "p_value": 0.1362126245847176
+ },
+ "baseline_unfiltered_by_exit": {
+  "atr_trail_1x": {
+   "holdout_sharpe": -4.155,
+   "ci_lo": -5.361,
+   "holdout_n": 189,
+   "profit_factor": 0.283,
+   "all_live_gates": false
+  },
+  "atr_trail_2x": {
+   "holdout_sharpe": -0.646,
+   "ci_lo": -1.262,
+   "holdout_n": 189,
+   "profit_factor": 0.685,
+   "all_live_gates": false
+  },
+  "atr_trail_mae_conditional": {
+   "holdout_sharpe": -4.155,
+   "ci_lo": -5.361,
+   "holdout_n": 189,
+   "profit_factor": 0.283,
+   "all_live_gates": false
+  },
+  "atr_trail_vix_conditional": {
+   "holdout_sharpe": -1.879,
+   "ci_lo": -2.796,
+   "holdout_n": 189,
+   "profit_factor": 0.455,
+   "all_live_gates": false
+  },
+  "break_even_at_1r": {
+   "holdout_sharpe": -1.646,
+   "ci_lo": -2.513,
+   "holdout_n": 189,
+   "profit_factor": 0.428,
+   "all_live_gates": false
+  },
+  "breakeven_plus_trail": {
+   "holdout_sharpe": 0.429,
+   "ci_lo": -0.039,
+   "holdout_n": 189,
+   "profit_factor": 1.615,
+   "all_live_gates": false
+  },
+  "chandelier_3x": {
+   "holdout_sharpe": -0.143,
+   "ci_lo": -1.14,
+   "holdout_n": 189,
+   "profit_factor": 0.913,
+   "all_live_gates": false
+  },
+  "class_time_stop": {
+   "holdout_sharpe": 0.348,
+   "ci_lo": -0.086,
+   "holdout_n": 189,
+   "profit_factor": 1.36,
+   "all_live_gates": false
+  },
+  "earnings_blackout": {
+   "holdout_sharpe": 0.445,
+   "ci_lo": 0.112,
+   "holdout_n": 189,
+   "profit_factor": 1.748,
+   "all_live_gates": false
+  },
+  "fixed_4r_2r": {
+   "holdout_sharpe": 0.329,
+   "ci_lo": -0.194,
+   "holdout_n": 189,
+   "profit_factor": 1.229,
+   "all_live_gates": false
+  },
+  "hybrid_50pct_target": {
+   "holdout_sharpe": 0.407,
+   "ci_lo": 0.023,
+   "holdout_n": 189,
+   "profit_factor": 1.43,
+   "all_live_gates": false
+  },
+  "ma_exit_ema9": {
+   "holdout_sharpe": -0.246,
+   "ci_lo": -1.589,
+   "holdout_n": 189,
+   "profit_factor": 0.91,
+   "all_live_gates": false
+  },
+  "mfe_lockin_trail": {
+   "holdout_sharpe": -3.493,
+   "ci_lo": -4.702,
+   "holdout_n": 189,
+   "profit_factor": 0.356,
+   "all_live_gates": false
+  },
+  "multi_tier_partial": {
+   "holdout_sharpe": -3.087,
+   "ci_lo": -4.301,
+   "holdout_n": 189,
+   "profit_factor": 0.415,
+   "all_live_gates": false
+  },
+  "r_multiple_2r": {
+   "holdout_sharpe": -0.473,
+   "ci_lo": -1.446,
+   "holdout_n": 189,
+   "profit_factor": 0.854,
+   "all_live_gates": false
+  },
+  "r_multiple_3r": {
+   "holdout_sharpe": -0.115,
+   "ci_lo": -0.927,
+   "holdout_n": 189,
+   "profit_factor": 0.951,
+   "all_live_gates": false
+  },
+  "regime_flip": {
+   "holdout_sharpe": 0.209,
+   "ci_lo": -0.31,
+   "holdout_n": 189,
+   "profit_factor": 1.161,
+   "all_live_gates": false
+  },
+  "reverse_signal": {
+   "holdout_sharpe": -4.155,
+   "ci_lo": -5.361,
+   "holdout_n": 189,
+   "profit_factor": 0.283,
+   "all_live_gates": false
+  },
+  "smart_money_reversal": {
+   "holdout_sharpe": -4.251,
+   "ci_lo": -5.47,
+   "holdout_n": 189,
+   "profit_factor": 0.277,
+   "all_live_gates": false
+  },
+  "smc_mitigation_zone": {
+   "holdout_sharpe": -4.943,
+   "ci_lo": -6.899,
+   "holdout_n": 189,
+   "profit_factor": 0.394,
+   "all_live_gates": false
+  },
+  "time_stop_10d": {
+   "holdout_sharpe": -0.184,
+   "ci_lo": -0.908,
+   "holdout_n": 189,
+   "profit_factor": 0.909,
+   "all_live_gates": false
+  },
+  "time_stop_20d": {
+   "holdout_sharpe": 0.209,
+   "ci_lo": -0.31,
+   "holdout_n": 189,
+   "profit_factor": 1.161,
+   "all_live_gates": false
+  },
+  "trailing_10pct": {
+   "holdout_sharpe": -0.002,
+   "ci_lo": -0.432,
+   "holdout_n": 189,
+   "profit_factor": 0.998,
+   "all_live_gates": false
+  },
+  "trailing_15pct": {
+   "holdout_sharpe": 0.216,
+   "ci_lo": -0.121,
+   "holdout_n": 189,
+   "profit_factor": 1.31,
+   "all_live_gates": false
+  },
+  "trailing_5pct": {
+   "holdout_sharpe": -1.585,
+   "ci_lo": -2.36,
+   "holdout_n": 189,
+   "profit_factor": 0.458,
+   "all_live_gates": false
+  }
+ },
+ "per_qualifier": [
+  {
+   "axis": "vp_close_near_poc_pct",
+   "op": "ge",
+   "level": 0.1428,
+   "exit": "regime_flip",
+   "holdout_sharpe": 1.429,
+   "ci_lo": 0.153,
+   "holdout_n": 32,
+   "null_median_sharpe": 0.2765,
+   "null_p95_sharpe": 1.0722500000000001,
+   "p_value_if_prechosen": 0.016611295681063124
+  },
+  {
+   "axis": "vp_close_near_poc_pct",
+   "op": "ge",
+   "level": 0.1428,
+   "exit": "time_stop_20d",
+   "holdout_sharpe": 1.429,
+   "ci_lo": 0.153,
+   "holdout_n": 32,
+   "null_median_sharpe": 0.2765,
+   "null_p95_sharpe": 1.0722500000000001,
+   "p_value_if_prechosen": 0.016611295681063124
+  },
+  {
+   "axis": "vp_close_near_poc_pct",
+   "op": "ge",
+   "level": 0.1428,
+   "exit": "hybrid_50pct_target",
+   "holdout_sharpe": 1.386,
+   "ci_lo": 0.422,
+   "holdout_n": 32,
+   "null_median_sharpe": 0.4075,
+   "null_p95_sharpe": 1.0675000000000001,
+   "p_value_if_prechosen": 0.026578073089700997
+  },
+  {
+   "axis": "vp_close_near_poc_pct",
+   "op": "ge",
+   "level": 0.0942,
+   "exit": "regime_flip",
+   "holdout_sharpe": 1.154,
+   "ci_lo": 0.219,
+   "holdout_n": 61,
+   "null_median_sharpe": 0.252,
+   "null_p95_sharpe": 0.82635,
+   "p_value_if_prechosen": 0.006644518272425249
+  },
+  {
+   "axis": "vp_close_near_poc_pct",
+   "op": "ge",
+   "level": 0.0942,
+   "exit": "time_stop_20d",
+   "holdout_sharpe": 1.154,
+   "ci_lo": 0.219,
+   "holdout_n": 61,
+   "null_median_sharpe": 0.252,
+   "null_p95_sharpe": 0.82635,
+   "p_value_if_prechosen": 0.006644518272425249
+  },
+  {
+   "axis": "ppo_signal",
+   "op": "le",
+   "level": -2.0092,
+   "exit": "time_stop_10d",
+   "holdout_sharpe": 1.04,
+   "ci_lo": -0.184,
+   "holdout_n": 67,
+   "null_median_sharpe": -0.1765,
+   "null_p95_sharpe": 0.6517000000000002,
+   "p_value_if_prechosen": 0.006644518272425249
+  },
+  {
+   "axis": "vp_close_near_poc_pct",
+   "op": "ge",
+   "level": 0.1428,
+   "exit": "breakeven_plus_trail",
+   "holdout_sharpe": 1.037,
+   "ci_lo": -0.137,
+   "holdout_n": 32,
+   "null_median_sharpe": 0.4175,
+   "null_p95_sharpe": 0.9823500000000001,
+   "p_value_if_prechosen": 0.029900332225913623
+  },
+  {
+   "axis": "xs_max_anomaly",
+   "op": "ge",
+   "level": 0.0744,
+   "exit": "class_time_stop",
+   "holdout_sharpe": 1.03,
+   "ci_lo": -0.061,
+   "holdout_n": 30,
+   "null_median_sharpe": 0.3255,
+   "null_p95_sharpe": 1.0692000000000004,
+   "p_value_if_prechosen": 0.06976744186046512
+  },
+  {
+   "axis": "vp_close_near_poc_pct",
+   "op": "ge",
+   "level": 0.0942,
+   "exit": "hybrid_50pct_target",
+   "holdout_sharpe": 1.004,
+   "ci_lo": 0.306,
+   "holdout_n": 61,
+   "null_median_sharpe": 0.412,
+   "null_p95_sharpe": 0.8215000000000001,
+   "p_value_if_prechosen": 0.023255813953488372
+  },
+  {
+   "axis": "vp_close_near_poc_pct",
+   "op": "ge",
+   "level": 0.1428,
+   "exit": "fixed_4r_2r",
+   "holdout_sharpe": 1.002,
+   "ci_lo": -0.149,
+   "holdout_n": 32,
+   "null_median_sharpe": 0.3805,
+   "null_p95_sharpe": 1.2227500000000002,
+   "p_value_if_prechosen": 0.11295681063122924
+  },
+  {
+   "axis": "vp_close_near_poc_pct",
+   "op": "ge",
+   "level": 0.1428,
+   "exit": "class_time_stop",
+   "holdout_sharpe": 1.001,
+   "ci_lo": -0.055,
+   "holdout_n": 32,
+   "null_median_sharpe": 0.3805,
+   "null_p95_sharpe": 1.0554000000000006,
+   "p_value_if_prechosen": 0.0664451827242525
+  }
+ ],
+ "dropped_non_pit_axes": {
+  "cot_rut_commercials_net_pct": "S6-B3139as / S6-B3139at (B3139q-r47): COT positioning is usable from its Friday release, one contract per file; a value stored before the fix used the positions date and the Micro E-mini file; output_r5_merged_1_7 was built in 2026-07, before the correction - not point-in-time here (S6-B3455)"
+ },
+ "drop_note": "S6-B3455: priced over the cells and qualifiers left after dropping the axes above - a re-price of a read already taken, not a new read",
+ "step1_artifact": "output_audit/b3423_m_and_a_target_long_breadth_net_long.json",
+ "read_artifact": "output_audit/b3423_m_and_a_target_long_breadth_step2_read_long.json"
+}

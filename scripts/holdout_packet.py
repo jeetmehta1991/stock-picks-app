@@ -129,6 +129,16 @@ def preflight(kind: str, path: str, doc: dict, siblings: list[str],
         refusals.append(str(exc))
         clears.append("re-run the Step-1 search so its multiplicity block reconciles")
     strategy, leg = subject(kind, doc)
+    # S6-B3455: an axis whose stored values pre-date its producer's
+    # point-in-time correction - a read of its cells is not admissible as is
+    import pit_axes
+    _axes = ({a.get("key") for a in doc.get("axes") or []} if kind == "depth"
+             else {r.get("axis") for r in doc.get("rows") or []})
+    _cube = doc.get("cube_dir") or doc.get("cube") or None
+    for ax, why in pit_axes.non_pit_axes(_axes, _cube).items():
+        disclosures.append(f"NOT POINT-IN-TIME axis {ax}: {why} - its cells' holdout "
+                           "lines are not admissible as is (S6-B3139ar dropped it for "
+                           "bollinger_lower)")
     closed = pvt.offline_retest_refusal(strategy)
     if closed:
         refusals.append(closed)

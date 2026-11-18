@@ -219,11 +219,30 @@ def main() -> int:
     ap.add_argument("--perms", type=int, required=True)
     ap.add_argument("--seed", type=int, default=20261007)
     ap.add_argument("--out", required=True)
+    # S6-B3455: re-price the read without the axes whose stored values pre-date
+    # their producer's point-in-time correction (S6-B3139ar's option B, there
+    # for bollinger_lower) - the dropped axes are recorded with their reasons
+    ap.add_argument("--drop-non-pit", action="store_true",
+                    help="drop every non-point-in-time axis (scripts/pit_axes.py) "
+                         "from the cells and the qualifiers before pricing")
     a = ap.parse_args()
     t0 = time.time()
     art = json.loads(Path(a.step1_artifact).read_text(encoding="utf-8"))
     read = json.loads(Path(a.read_artifact).read_text(encoding="utf-8"))
+    dropped = None
+    if a.drop_non_pit:
+        from pit_axes import drop_non_pit
+        _cube = (read.get("cube_dir") or "").split(" (")[0] or None
+        art, read, dropped = drop_non_pit(art, read, _cube)
+        if not art.get("rows"):
+            raise SystemExit("REFUSED (S6-B3455): no cell is left once the "
+                             "non-point-in-time axes are dropped")
     out = run(art, read, a.perms, a.seed)
+    if dropped is not None:
+        out["dropped_non_pit_axes"] = dropped
+        out["drop_note"] = ("S6-B3455: priced over the cells and qualifiers left "
+                            "after dropping the axes above - a re-price of a read "
+                            "already taken, not a new read")
     out["step1_artifact"], out["read_artifact"] = a.step1_artifact, a.read_artifact
     Path(a.out).write_text(json.dumps(out, indent=1) + "\n", encoding="utf-8")
     print(json.dumps({k: out[k] for k in ("observed", "null_qualifiers",

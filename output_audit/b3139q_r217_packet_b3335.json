@@ -1,0 +1,29 @@
+{
+ "generator": "scripts/holdout_packet.py (S6-B3454)",
+ "artifacts": 1,
+ "step1_sources": 1,
+ "skipped": [],
+ "survivors": 1,
+ "ready": 1,
+ "refused": 0,
+ "rereads": 1,
+ "rows": [
+  {
+   "artifact": "output_audit/b3335_pivot_r1_breakout_lv4_breadth_net_long.json",
+   "kind": "breadth",
+   "strategy": "pivot_r1_breakout",
+   "leg": "long",
+   "survivor": true,
+   "why": "720 trials, best IS 3.017, null p 0.0099 (the S6-B3206 bar 0.2; no breadth-specific bar is ruled)",
+   "refusals": [],
+   "clears": [],
+   "disclosures": [
+    "band coverage stamped, not refused: 4 gap(s) - monthly_bias_bull: untested ['require_false']; otc_volume_recent: untested ['needs >= 4 distinct levels on the long leg (4 quantile labels), got 0']; gate_budget: untested ['{\"pivot_r1_breakout\": {\"k\": 3, \"mandatory\": [\"above_r1\"]}}']; no Table A file for pivot_r1_breakout (strategy_optimisation/tighten/**/pivot_r1_breakout.md or output_audit/*_pivot_r1_breakout_table_a.md) - pending producer levels cannot be read (S6-B3339) - a negative read declares no failure (#299)",
+    "the ledger records 1 binding read(s) of pivot_r1_breakout (long): ['output_audit/output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45_grid_auto.json'] - this read is a DISCLOSED-RE-READ"
+   ],
+   "ready": true,
+   "coverage_artifacts": [],
+   "read_order": "DISCLOSED-RE-READ - needs the owner's disclosure words"
+  }
+ ]
+}

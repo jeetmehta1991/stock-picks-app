@@ -77690,3 +77690,98 @@ def test_b3451b_a_malformed_borrow_trap_delta_is_logged_not_swallowed(caplog):
     finally:
         for k, v in saved.items():
             scr._BORROW_TRAP_COUNTER[k] = v
+
+
+
+
+def test_b3455_non_point_in_time_axes_are_named_and_droppable(tmp_path):
+    """S6-B3455 (B3139q-r217, L1019): an axis whose stored values in a cube
+    pre-date its producer's point-in-time correction is named wherever a
+    holdout read is planned or taken. S6-B3139as (B3139q-r47, 265c12ccb) moved
+    COT to its Friday release and one contract per file; R5 was built before
+    it; batch 2's grids kept a COT axis in 3 of 5 and rsi_oversold's read put
+    21 of 41 qualifiers on it. (1) R5 - the default, or any path naming it - is
+    pre-fix for cot_*, with the ticket in the reason; a non-cot axis is never
+    named. (2) A cube whose manifest froze a sha descending from the fix is
+    post-fix; one before it, one with no manifest and one with no frozen_sha
+    are pre-fix, each with its reason. (3) drop_non_pit removes the rows and
+    qualifiers on named axes and returns the map. (4) holdout_packet's
+    preflight discloses a named axis of rsi_oversold's committed grid and of a
+    depth surface carrying one, and nothing for morning_star's grid. (5) The
+    breadth reader labels a qualifier on a named axis and records the map; the
+    null's --drop-non-pit is wired (both by source)."""
+    import inspect as _insp
+    import json as _jsn
+    import subprocess
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import breadth_holdout_null as bhn
+    import breadth_step2_read as bsr
+    import holdout_packet as hp
+    import pit_axes as pa
+    # (1)
+    for cube in (None, "output_r5_merged_1_7", "output_r5_merged_1_7 (default)",
+                 str(root / "output_r5_merged_1_7" / "trade_exit_detail.csv")):
+        got = pa.non_pit_axes(["cot_ndx_mmoney_pctile_3y", "rsi_14"], cube)
+        assert set(got) == {"cot_ndx_mmoney_pctile_3y"}, (cube, got)
+        assert "S6-B3139as" in got["cot_ndx_mmoney_pctile_3y"]
+    assert pa.non_pit_axes(["sector_strongest_rs", "atr_pct"]) == {}
+    # the other two corrections that change stored values: short interest
+    # (S6-B3139bn / bd, r45) and the FRED vintages (S6-B3139bi, r44)
+    si = pa.non_pit_axes(["days_to_cover", "short_interest_pct", "hy_oas", "macro_score"])
+    assert set(si) == {"days_to_cover", "short_interest_pct", "hy_oas", "macro_score"}, si
+    assert "S6-B3139bn" in si["days_to_cover"] and "S6-B3139bi" in si["macro_score"]
+    assert {c["commit"] for c in pa.CORRECTIONS} == {"265c12ccb", "c36a07bf4", "39fbb9bb5"}
+    # (2)
+    head = subprocess.run(["git", "-C", str(root), "rev-parse", "HEAD"],
+                          capture_output=True, text=True, check=True).stdout.strip()
+    before = subprocess.run(["git", "-C", str(root), "rev-parse", "265c12ccb~1"],
+                            capture_output=True, text=True, check=True).stdout.strip()
+    for name, sha, want in (("post", head, False), ("pre", before, True)):
+        d = tmp_path / name
+        d.mkdir()
+        (d / "run_manifest.json").write_text(_jsn.dumps({"frozen_sha": sha}), encoding="utf-8")
+        got = pa.non_pit_axes(["cot_rut_commercials_net_pct"], str(d))
+        assert bool(got) == want, (name, got)
+        # a grid's cube_dir can carry a label suffix; the trunk strips it
+        got2 = pa.non_pit_axes(["cot_rut_commercials_net_pct"], str(d) + " (from the spec)")
+        assert got2 == got, (name, got2)
+    (tmp_path / "nosha").mkdir()
+    (tmp_path / "nosha" / "run_manifest.json").write_text("{}", encoding="utf-8")
+    assert "no frozen_sha" in pa.non_pit_axes(["cot_x"], str(tmp_path / "nosha"))["cot_x"]
+    (tmp_path / "noman").mkdir()
+    assert "unreadable" in pa.non_pit_axes(["cot_x"], str(tmp_path / "noman"))["cot_x"]
+    # (3)
+    art = {"rows": [{"axis": "cot_a", "op": "ge", "level": 1}, {"axis": "sector_strongest_rs",
+                                                                 "op": "le", "level": 0.03}]}
+    read = {"qualifiers": [{"axis": "cot_a", "exit": "x"}, {"axis": "sector_strongest_rs",
+                                                            "exit": "x"}]}
+    a2, r2, dropped = pa.drop_non_pit(art, read)
+    assert [r["axis"] for r in a2["rows"]] == ["sector_strongest_rs"]
+    assert [q["axis"] for q in r2["qualifiers"]] == ["sector_strongest_rs"]
+    assert set(dropped) == {"cot_a"} and len(art["rows"]) == 2, "the inputs are not mutated"
+    # (4)
+    clean = {"evaluable": True, "complete": True, "params": [], "table_a": {}}
+    rel = "output_audit/b3423_rsi_oversold_breadth_net_long.json"
+    g = _jsn.loads((root / rel).read_text(encoding="utf-8"))
+    pf = hp.preflight("breadth", rel, g, [], coverage=clean, prior=[])
+    assert any("NOT POINT-IN-TIME axis cot_ndx_mmoney_pctile_3y" in d for d in pf["disclosures"]), pf
+    rel2 = "output_audit/b3423_morning_star_breadth_net_long.json"
+    g2 = _jsn.loads((root / rel2).read_text(encoding="utf-8"))
+    pf2 = hp.preflight("breadth", rel2, g2, [], coverage=clean, prior=[])
+    assert not any("NOT POINT-IN-TIME" in d for d in pf2["disclosures"]), pf2
+    rel3 = "output_audit/b3423_tema_dema_long_net_step1_ao_surface.json"
+    s3 = _jsn.loads((root / rel3).read_text(encoding="utf-8"))
+    s3 = dict(s3, axes=[dict(s3["axes"][0], key="cot_rut_commercials_net_pct")])
+    pf3 = hp.preflight("depth", rel3, s3, [], coverage=clean, prior=[])
+    assert any("NOT POINT-IN-TIME axis cot_rut_commercials_net_pct" in d
+               for d in pf3["disclosures"]), pf3
+    # (5)
+    src = _insp.getsource(bsr.main)
+    assert "_non_pit(axis_keys, a.cube_dir)" in src and '"non_pit_axes": non_pit' in src
+    assert 'q["non_pit"] = non_pit[q["axis"]]' in src
+    nsrc = _insp.getsource(bhn.main)
+    assert "--drop-non-pit" in nsrc and "drop_non_pit(art, read, _cube)" in nsrc

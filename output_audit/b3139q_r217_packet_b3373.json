@@ -1,0 +1,91 @@
+{
+ "generator": "scripts/holdout_packet.py (S6-B3454)",
+ "artifacts": 4,
+ "step1_sources": 4,
+ "skipped": [],
+ "survivors": 4,
+ "ready": 2,
+ "refused": 2,
+ "rereads": 2,
+ "rows": [
+  {
+   "artifact": "output_audit/b3373_avwap_252_breakout_breadth_net_long.json",
+   "kind": "breadth",
+   "strategy": "avwap_252_breakout",
+   "leg": "long",
+   "survivor": true,
+   "why": "780 trials, best IS 1.809, null p 0.0099 (the S6-B3206 bar 0.2; no breadth-specific bar is ruled)",
+   "refusals": [],
+   "clears": [],
+   "disclosures": [
+    "NOT POINT-IN-TIME axis cot_dxy_mmoney_pctile_3y: S6-B3139as / S6-B3139at (B3139q-r47): COT positioning is usable from its Friday release, one contract per file; a value stored before the fix used the positions date and the Micro E-mini file; output_r5_merged_1_7 was built in 2026-07, before the correction - not point-in-time here (S6-B3455) - its cells' holdout lines are not admissible as is (S6-B3139ar dropped it for bollinger_lower)",
+    "NOT POINT-IN-TIME axis short_interest_observations: S6-B3139bn / S6-B3139bd (B3139q-r45): a FINRA settlement is usable from its publication date and the share count is dated at the settlement; a value stored before the fix used the settlement date and an undated share count; output_r5_merged_1_7 was built in 2026-07, before the correction - not point-in-time here (S6-B3455) - its cells' holdout lines are not admissible as is (S6-B3139ar dropped it for bollinger_lower)",
+    "band coverage stamped, not refused: 25 gap(s) - margin past the AVWAP (pct, both legs): untested [0.25, 0.5]; volume ratio floor (both legs): untested [1.2, 1.5, 2.0]; pct_from_avwap_50low: untested ['needs >= 4 distinct levels on the long leg (4 quantile labels), got 0']; avg_position_age_quarters: untested ['needs >= 4 distinct levels on the long leg (4 quantile labels), got 0']; po3_accum_range_pct: untested ['needs >= 4 distinct levels on the short leg (4 quantile labels), got 0']; within_pead_window: untested ['require_false']; xs_max_anomaly: untested ['needs >= 4 distinct levels on the short leg (4 quantile labels), got 0']; vix_value: untested ['needs >= 4 distinct levels on the short leg (4 quantile labels), got 0']; ... - a negative read declares no failure (#299)"
+   ],
+   "ready": true,
+   "coverage_artifacts": [],
+   "read_order": "DISCLOSED-RE-READ - needs the owner's disclosure words"
+  },
+  {
+   "artifact": "output_audit/b3373_avwap_252_breakout_breadth_net_short.json",
+   "kind": "breadth",
+   "strategy": "avwap_252_breakout",
+   "leg": "short",
+   "survivor": true,
+   "why": "1378 trials, best IS 0.633, null p 0.0099 (the S6-B3206 bar 0.2; no breadth-specific bar is ruled)",
+   "refusals": [],
+   "clears": [],
+   "disclosures": [
+    "NOT POINT-IN-TIME axis cot_ndx_commercials_net_pct: S6-B3139as / S6-B3139at (B3139q-r47): COT positioning is usable from its Friday release, one contract per file; a value stored before the fix used the positions date and the Micro E-mini file; output_r5_merged_1_7 was built in 2026-07, before the correction - not point-in-time here (S6-B3455) - its cells' holdout lines are not admissible as is (S6-B3139ar dropped it for bollinger_lower)",
+    "band coverage stamped, not refused: 23 gap(s) - margin past the AVWAP (pct, both legs): untested [0.25, 0.5]; volume ratio floor (both legs): untested [1.2, 1.5, 2.0]; pct_from_avwap_50low: untested ['needs >= 4 distinct levels on the long leg (4 quantile labels), got 0']; atr: untested ['needs >= 4 distinct levels on the long leg (4 quantile labels), got 0']; avg_position_age_quarters: untested ['needs >= 4 distinct levels on the long leg (4 quantile labels), got 0']; dxy_20d_pct_change: untested ['needs >= 4 distinct levels on the long leg (4 quantile labels), got 0']; cot_dxy_mmoney_pctile_3y: untested ['needs >= 4 distinct levels on the long leg (4 quantile labels), got 0']; head_shoulders_top_detected: untested ['require_false']; ... - a negative read declares no failure (#299)"
+   ],
+   "ready": true,
+   "coverage_artifacts": [],
+   "read_order": "DISCLOSED-RE-READ - needs the owner's disclosure words"
+  },
+  {
+   "artifact": "output_audit/b3373_avwap_252_breakout_long_net_step1_is_surface.json",
+   "kind": "depth",
+   "strategy": "avwap_252_breakout",
+   "leg": "long",
+   "survivor": true,
+   "why": "pre-registered [0.5, 2.0] @ time_stop_10d, IS 1.102, null p 0.0792",
+   "refusals": [
+    "band coverage incomplete (S6-B2886 / S6-B3339): 9 gap(s) - pct_from_avwap_50low: untested ['needs >= 4 distinct levels on the long leg (4 quantile labels), got 0']; avg_position_age_quarters: untested ['needs >= 4 distinct levels on the long leg (4 quantile labels), got 0']; within_pead_window: untested ['require_false']; total_active_holders: untested ['needs >= 4 distinct levels on the short leg (4 quantile labels), got 0']; otc_volume_recent: untested ['needs >= 4 distinct levels on the short leg (4 quantile labels), got 0']; Table A P1.1 anchor lookback - mirror of the reclaim': 2 engine-only level(s) unwaived; Table A P1.2 event window - a close above the AVWAP w: 2 engine-only level(s) unwaived; Table A P2.1 anchor lookback - the lowest low of the: 2 engine-only level(s) unwaived; Table A P2.2 event window - a close below the AVWAP w: 2 engine-only level(s) unwaived"
+   ],
+   "clears": [
+    "grade the listed levels, or the owner's waiver of each engine-only level in output_audit/producer_level_waivers.json"
+   ],
+   "disclosures": [],
+   "ready": false,
+   "coverage_artifacts": [
+    "output_audit/b3373_avwap_252_breakout_breadth_net_long.json",
+    "output_audit/b3373_avwap_252_breakout_breadth_net_short.json",
+    "output_audit/b3373_avwap_252_breakout_short_net_step1_is_surface.json"
+   ],
+   "read_order": "clean first read"
+  },
+  {
+   "artifact": "output_audit/b3373_avwap_252_breakout_short_net_step1_is_surface.json",
+   "kind": "depth",
+   "strategy": "avwap_252_breakout",
+   "leg": "short",
+   "survivor": true,
+   "why": "pre-registered [-0.25, 2.0] @ breakeven_plus_trail, IS 0.27, null p 0.0099",
+   "refusals": [
+    "band coverage incomplete (S6-B2886 / S6-B3339): 9 gap(s) - pct_from_avwap_50low: untested ['needs >= 4 distinct levels on the long leg (4 quantile labels), got 0']; avg_position_age_quarters: untested ['needs >= 4 distinct levels on the long leg (4 quantile labels), got 0']; within_pead_window: untested ['require_false']; total_active_holders: untested ['needs >= 4 distinct levels on the short leg (4 quantile labels), got 0']; otc_volume_recent: untested ['needs >= 4 distinct levels on the short leg (4 quantile labels), got 0']; Table A P1.1 anchor lookback - mirror of the reclaim': 2 engine-only level(s) unwaived; Table A P1.2 event window - a close above the AVWAP w: 2 engine-only level(s) unwaived; Table A P2.1 anchor lookback - the lowest low of the: 2 engine-only level(s) unwaived; Table A P2.2 event window - a close below the AVWAP w: 2 engine-only level(s) unwaived"
+   ],
+   "clears": [
+    "grade the listed levels, or the owner's waiver of each engine-only level in output_audit/producer_level_waivers.json"
+   ],
+   "disclosures": [],
+   "ready": false,
+   "coverage_artifacts": [
+    "output_audit/b3373_avwap_252_breakout_breadth_net_long.json",
+    "output_audit/b3373_avwap_252_breakout_breadth_net_short.json",
+    "output_audit/b3373_avwap_252_breakout_long_net_step1_is_surface.json"
+   ],
+   "read_order": "clean first read"
+  }
+ ]
+}

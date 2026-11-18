@@ -1,0 +1,26 @@
+  NOTE (S6-B3245/L943): this tree's edits MOVED code line citations - run_postconfig.py=1(test_unit.py:32078@test_b2520_l736_count_the_asks_rule_is_anchored). A text-only edit can be reflowed line-count-neutral before the commit.
+  NOTE (S6-B3343/#67): tickets 2, not named in the runbook 1 (S6-B3424); lessons 0, not cited 0. Does each change the optimisation workflow or a report? If so, this batch edits the runbook and cites the id; nothing is refused.
+pytest_exit=0 tree=SAME exit=0
+  pytest: 2063 passed, 3 skipped, 2 warnings in 2571.26s (0:42:51)
+  elapsed_s=2610
+  chain_inflight=none
+  chain_inflight_start=none
+  chain_inflight_end=none
+  power_start=ac
+  power_end=ac
+  engine_inflight=none
+  engine_inflight_start=none
+  engine_inflight_end=none
+  engine_dead_within_window=none
+  beside_wave_override=none
+  output_audit_created=none
+  output_audit_modified_tracked=none
+  output_audit_modified_untracked=none
+  readset=CLEAN
+  readset_rerun=none
+  readset_suite_writes=2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
+  moved_line_citations=run_postconfig.py=1(test_unit.py:32078@test_b2520_l736_count_the_asks_rule_is_anchored)
+  pregate=PASSED on this tree (1410 tests, 2026-11-17T23:46:54Z)
+  runbook_drift=tickets 2, not named in the runbook 1 (S6-B3424); lessons 0, not cited 0
+  stamp_binding=kept-green
+  NOTE (S6-B3130a/L689): test(s) WROTE under the production output_audit in-process: 2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
