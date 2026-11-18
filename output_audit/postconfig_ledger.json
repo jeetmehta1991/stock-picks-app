@@ -7072,7 +7072,7 @@
  "output_b3139q_r217_nw_p2_1_p1_j4bc78dbe_p2_1_p1_j4bc78dbe": {
   "1_cube_sanity": {
    "status": "DONE",
-   "evidence": "run_postconfig: cube_exists=PASS(10104 rows); one_strategy=PASS(1 strategies); graded_strategy_present=PASS(graded leg news_momentum_long; the cube carries 1 strategy ...); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ...); megacaps_present=PASS(NVDA, MSFT, GOOGL, TSLA, AAPL); M1_content_sha=PASS(2f420db8683f6dda); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-05-02); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is ...); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ...); M8_borrow_trap=PASS(no short trade in the cube - blocked 0 of 0 consults ...); M10_gate_receipt=PASS(receipt matches manifest sha 7c36450759ca); M11_closed_fires_in_cube=PASS(421 of 421 closed trade-log fires have exit-cube rows; 0 ...); step_derivation=PASS(Step-1: manifest window.end 2025-05-05 <= HO_START ...); M9_universe_artifact=PASS(exit 0 on output_audit/_sweep_200.txt (verifier is ...); family_dispatch=PASS(news_momentum_long: manifest arms[0] gate_budget={\"news_mome ...); step2_grade_auto=PASS(exit 0; gate_budget={\"news_momentum_long\": {\"k\": 5, ...); step2_grid_contract=PASS(B2505 contract holds: config, strategy, instrument, cube / ...); step2_resim_evidence=PASS(registered output_b3139q_r217_nw_p2_1_p1_j4bc78dbe_p2_1_p1_j ...); step4_spot_check_auto=PASS(exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 ...); step4_coverage=WARN(NOT CERTIFIED for news ['news_sentiment_5d', ...); step4_rederive=PASS(exit 0; [PASS] re-derived close_above_open 50/50; ...); step7_engine_implemented=PASS(2 of 2 declared knobs read from the environment + consumer ...); step4_sampling_contract=PASS(R6: sampled 50 of 421 entries with seed 42); M12_entries_vs_grid_fires=PASS(grid is_n 421, full_n_count_only 421 = the cube's 421 ...); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence)"
+   "evidence": "run_postconfig: cube_exists=PASS(10104 rows); one_strategy=PASS(1 strategies); graded_strategy_present=PASS(graded leg news_momentum_long; the cube carries 1 strategy ...); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ...); megacaps_present=PASS(NVDA, MSFT, GOOGL, TSLA, AAPL); M1_content_sha=PASS(2f420db8683f6dda); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-05-02); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is ...); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ...); M8_borrow_trap=PASS(no short trade in the cube - blocked 0 of 0 consults ...); M10_gate_receipt=PASS(receipt matches manifest sha 7c36450759ca); M11_closed_fires_in_cube=PASS(421 of 421 closed trade-log fires have exit-cube rows; 0 ...); step_derivation=PASS(Step-1: manifest window.end 2025-05-05 <= HO_START ...); M9_universe_artifact=PASS(exit 0 on output_audit/_sweep_200.txt (verifier is ...); family_dispatch=PASS(news_momentum_long: manifest arms[0] gate_budget={\"news_mome ...); step2_grade_auto=PASS(exit 0; gate_budget={\"news_momentum_long\": {\"k\": 5, ...); step2_grid_contract=PASS(B2505 contract holds: config, strategy, instrument, cube / ...); step2_resim_evidence=PASS(registered output_b3139q_r217_nw_p2_1_p1_j4bc78dbe_p2_1_p1_j ...); step4_spot_check_auto=PASS(exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 ...); step4_coverage=WARN(NOT CERTIFIED for news ['news_sentiment_5d', ...); step4_rederive=PASS(exit 0; [PASS] re-derived close_above_open 50/50; ...); step7_engine_implemented=PASS(2 of 2 declared knobs read from the environment + consumer ...); step4_sampling_contract=PASS(R6: sampled 50 of 421 entries with seed 42); M12_entries_vs_grid_fires=PASS(grid is_n 421, full_n_count_only 421 = the cube's 421 ...); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence) | run_wave verified 10104 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg"
   },
   "3_outlier_discrepancy_sweep": {
    "status": "DONE",
@@ -7105,6 +7105,44 @@
   "8_verdict_with_denominators": {
    "status": "DONE",
    "evidence": "AUTO (B2520) VERDICT (denominators from output_b3139q_r217_nw_p2_1_p1_j4bc78dbe_p2_1_p1_j4bc78dbe_grid_auto.json): 24 of 24 cell-exit lines graded across 1 cell(s) ['base:long']; rank-1 [breakeven_plus_trail] is_ci_lo 0.02 is_sharpe 0.328 full_n 421 - Step-1: ranking only, no admission (B1608); producers varied 2 of 2 (params ['P1', 'P2'] of 2; arm-moved ['P1', 'P2'], swept in-grid none); exits_effective 22 of 24 registered at the cube's SHA; no PASS row, so no PASS ci_lo"
+  }
+ },
+ "output_b3139q_r217_nw_p2_2_p1_j4bc78dbe_p2_2_p1_j4bc78dbe": {
+  "1_cube_sanity": {
+   "status": "DONE",
+   "evidence": "run_postconfig: cube_exists=PASS(10536 rows); one_strategy=PASS(1 strategies); graded_strategy_present=PASS(graded leg news_momentum_long; the cube carries 1 strategy ...); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ...); megacaps_present=PASS(NVDA, MSFT, GOOGL, TSLA, AAPL); M1_content_sha=PASS(16a272b838ed7d80); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-05-02); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is ...); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ...); M8_borrow_trap=PASS(no short trade in the cube - blocked 0 of 0 consults ...); M10_gate_receipt=PASS(receipt matches manifest sha be255ea90136); M11_closed_fires_in_cube=PASS(439 of 439 closed trade-log fires have exit-cube rows; 0 ...); step_derivation=PASS(Step-1: manifest window.end 2025-05-05 <= HO_START ...); M9_universe_artifact=PASS(exit 0 on output_audit/_sweep_200.txt (verifier is ...); family_dispatch=PASS(news_momentum_long: manifest arms[0] gate_budget={\"news_mome ...); step2_grade_auto=PASS(exit 0; gate_budget={\"news_momentum_long\": {\"k\": 5, ...); step2_grid_contract=PASS(B2505 contract holds: config, strategy, instrument, cube / ...); step2_resim_evidence=PASS(registered output_b3139q_r217_nw_p2_2_p1_j4bc78dbe_p2_2_p1_j ...); step4_spot_check_auto=PASS(exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 ...); step4_coverage=WARN(NOT CERTIFIED for news ['news_sentiment_5d', ...); step4_rederive=PASS(exit 0; [PASS] re-derived close_above_open 50/50; ...); step7_engine_implemented=PASS(2 of 2 declared knobs read from the environment + consumer ...); step4_sampling_contract=PASS(R6: sampled 50 of 439 entries with seed 42); M12_entries_vs_grid_fires=PASS(grid is_n 439, full_n_count_only 439 = the cube's 439 ...); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence)"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "DONE",
+   "evidence": "AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS; M12_entries_vs_grid_fires=PASS"
+  },
+  "2_grade_with_config_params": {
+   "status": "DONE",
+   "evidence": "AUTO (S6-B3240); legs x exits at the cube's gate budget; Step 2 (S6-B3331): the long leg's holdout read once: lever4_step1 at manifest gate_budget={\"news_momentum_long\": {\"k\": 5, \"mandatory\": [\"news_sentiment_5d\"]}} news_window_days=2 -> output_b3139q_r217_nw_p2_2_p1_j4bc78dbe_p2_2_p1_j4bc78dbe_grid_auto.json"
+  },
+  "4_three_leg_spot_check": {
+   "status": "DONE",
+   "evidence": "S6-B3427 re-derivation leg: [PASS] re-derived close_above_open 50/50; close_in_top_40pct_of_range 50/50; dc20_breakout_up 50/50; news_sentiment_5d 50/50; news_volume_zscore_5d 50/50; vol_above_avg 50/50; previous-bar control disagrees on 92 row-key -> output_b3139q_r217_nw_p2_2_p1_j4bc78dbe_p2_2_p1_j4bc78dbe_rederive.json; R6: sampled 50 of 439 entries with seed 42"
+  },
+  "5_adversarial_lens_review": {
+   "status": "DONE",
+   "evidence": "AUTO (B2520): lenses 16 run: 0 WARN / 0 FAIL / 16 INFO -> output_b3139q_r217_nw_p2_2_p1_j4bc78dbe_p2_2_p1_j4bc78dbe_lenses.json"
+  },
+  "6_post_fix_recheck": {
+   "status": "N/A",
+   "evidence": "no lens finding (16 lenses, 0 WARN / 0 FAIL) -> nothing to recheck; N/A on evidence"
+  },
+  "6b_equivalence_class_check": {
+   "status": "DONE",
+   "evidence": "AUTO (B2192): the grader collapses identical outcomes - 23 ranked outcome classes carry None parameter combinations; None distinct outcome classes among 0 combinations enumerated in output_b3139q_r217_nw_p2_2_p1_j4bc78dbe_p2_2_p1_j4bc78dbe_grid_auto.json"
+  },
+  "7_implement_in_engine": {
+   "status": "N/A",
+   "evidence": "Step-1 ranking cube; admission happens at Step 2; nothing to implement. Engine check PASS: 2 of 2 declared knobs read from the environment + consumer lists match the tree; verify_lever4_anchors.py exit 0"
+  },
+  "8_verdict_with_denominators": {
+   "status": "DONE",
+   "evidence": "AUTO (B2520) VERDICT (denominators from output_b3139q_r217_nw_p2_2_p1_j4bc78dbe_p2_2_p1_j4bc78dbe_grid_auto.json): 24 of 24 cell-exit lines graded across 1 cell(s) ['base:long']; rank-1 [breakeven_plus_trail] is_ci_lo 0.166 is_sharpe 0.467 full_n 439 - Step-1: ranking only, no admission (B1608); producers varied 2 of 2 (params ['P1', 'P2'] of 2; arm-moved ['P1', 'P2'], swept in-grid none); exits_effective 22 of 24 registered at the cube's SHA; no PASS row, so no PASS ci_lo"
   }
  }
 }

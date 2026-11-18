@@ -1,0 +1,89 @@
+{
+ "cube": "output_b3139q_r217_nw_p2_2_p1_j4bc78dbe_p2_2_p1_j4bc78dbe",
+ "step": 1,
+ "step_basis": "manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube",
+ "family": "news_momentum_long",
+ "ts": "2026-11-18T11:52:35",
+ "lenses": [
+  {
+   "lens": "holdout_untouched",
+   "level": "INFO",
+   "evidence": "0 of 439 entries at/after HO_START 2025-05-05 (Step-1 cube: any touch is a leak, B1718 class)"
+  },
+  {
+   "lens": "period_concentration",
+   "level": "INFO",
+   "evidence": "max quarter share 0.26 (2024Q3) over 5 quarters of 439 entries; WARN > 0.5"
+  },
+  {
+   "lens": "ticker_concentration",
+   "level": "INFO",
+   "evidence": "top-5 tickers carry 0.06 of 439 entries across 175 tickers; WARN > 0.30"
+  },
+  {
+   "lens": "eligibility_leak",
+   "level": "INFO",
+   "evidence": "0 of 439 entries not screenable under daily_subtract_v1 (carry 0 / daily 0); 0 unclassifiable; cube built under daily_subtract_v1 (stamped)"
+  },
+  {
+   "lens": "selection_margin",
+   "level": "INFO",
+   "evidence": "rank-1 [breakeven_plus_trail] is_ci_lo 0.166 vs rank-2 [hybrid_50pct_target] 0.084: margin 0.082 between cell-exit lines; WARN < 0.05 (selection at noise level); INFO not WARN - Step-1 admission ranks CONFIGS (exit ties never move a config score); this lens informs only a pre-registered exit choice (S6-B2611a)"
+  },
+  {
+   "lens": "band_levels_change_outcome",
+   "level": "INFO",
+   "evidence": "no grid key of ['leg'] carries 2+ levels in this grid - nothing swept in-cube to check (N/A)"
+  },
+  {
+   "lens": "effective_parameter",
+   "level": "INFO",
+   "evidence": "2 of 2 grade flags verified (a moved value was refused) (lever4_step1.py)"
+  },
+  {
+   "lens": "negative_control",
+   "level": "INFO",
+   "evidence": "news_momentum_long declares no free levels (N/A)"
+  },
+  {
+   "lens": "entries_per_ticker_vs_r5",
+   "level": "INFO",
+   "evidence": "439 news_momentum_long entries over 200 tickers (2.1950/ticker) vs R5's 3 on the same tickers 2024-05-05..2025-05-05 (0.0150/ticker) = 146.33x; the arm sets ['LEVER4_GATE_BUDGET', 'NEWS_WINDOW_DAYS'], so the ratio carries the variant's own effect beside the universe's; no PASS on a 200-ticker universe (R5 ran 544); band 0.5-2.0 (universe_ladder_run S2, B1514)"
+  },
+  {
+   "lens": "registration_redundancy",
+   "level": "INFO",
+   "evidence": "max J 0.039 (camarilla_r4_breakout|long); news_momentum_long vs 64 registrations over the same tickers and window (79 under 50 entries skipped, 4 disabled or retired not compared); bars 0.7 / 0.95 (audit_registration_redundancy)"
+  },
+  {
+   "lens": "empty_signals_share",
+   "level": "INFO",
+   "evidence": "0 of 439 trade_log rows carry an empty signals_at_entry (S6-B2512 class)"
+  },
+  {
+   "lens": "replay_atr_proxy",
+   "level": "INFO",
+   "evidence": "ATR proxy on 0.0% of replayed trades (<= 5%; MEASURED 0/439 (0.0%) from replay_atr_fallback.json)"
+  },
+  {
+   "lens": "grading_provenance",
+   "level": "INFO",
+   "evidence": "grading surface UNCHANGED since freeze (47 files, digest 3629e7d69dd5)"
+  },
+  {
+   "lens": "direction_consistency",
+   "level": "INFO",
+   "evidence": "directions ['long'] (single direction)"
+  },
+  {
+   "lens": "spot_check_disagreements",
+   "level": "INFO",
+   "evidence": "50 agree / 0 DISAGREE / 0 skipped in output_b3139q_r217_nw_p2_2_p1_j4bc78dbe_p2_2_p1_j4bc78dbe_spot_check.json"
+  },
+  {
+   "lens": "min_trades_floor",
+   "level": "INFO",
+   "evidence": "439 distinct entries; the live gates need holdout >= 15 and full-period >= 75 (applied by the grader, not here)"
+  }
+ ]
+}
