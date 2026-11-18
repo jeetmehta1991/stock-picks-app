@@ -73,7 +73,7 @@ def test_batch491_0d_below_floor_avg_volume_rejected_by_filter_logic():
     assert passes_price, "synthetic close=10 should clear min_price=5"
     assert not passes_volume, (
         f"avg_vol={avg_vol_below} must NOT pass floor={floor}; "
-        "engine gate (backtest.py:285) reject branch did not fire"
+        "engine gate (backtest.py BacktestEngine._build_liquid_universe) reject branch did not fire"
     )
 
 

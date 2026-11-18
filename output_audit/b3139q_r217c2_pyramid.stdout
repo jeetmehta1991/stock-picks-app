@@ -1,0 +1,10 @@
+PRE-GATE RED (S6-B3361 (b)): FAILED on this tree (pytest exit 1, 1410 tests, 2026-11-17T23:16:06Z)
+pytest_exit=NOT RUN
+tree=NOT MEASURED - the full run did not start
+exit=7
+elapsed_s=1656
+beside_wave_override=none
+moved_line_citations=run_postconfig.py=1(test_unit.py:32078@test_b2520_l736_count_the_asks_rule_is_anchored)
+pregate=FAILED on this tree (pytest exit 1, 1410 tests, 2026-11-17T23:16:06Z)
+runbook_drift=tickets 2, not named in the runbook 1 (S6-B3424); lessons 0, not cited 0
+stamp_binding=none - no pyramid stamp is written on a pre-gate RED

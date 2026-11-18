@@ -110,6 +110,33 @@ def graded_and_riders(cube_dir: Path) -> tuple:
     return (graded[0] if len(graded) == 1 else None), _names(riders_rel)
 
 
+def m8_borrow_trap_row(cube_dir: Path, df) -> tuple:
+    """S6-B3451: the M8 row - the borrow-trap counts and rates the engine
+    recorded in engine_state.json, as a disclosure. SKIP names a cube from
+    before the meter or an unreadable state; PASS carries the reading, and on
+    a cube with no short trade says the meter has nothing to judge."""
+    import json as _j8
+    try:
+        st = _j8.loads((cube_dir / "engine_state.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        return ("M8_borrow_trap", "SKIP", f"engine_state.json unreadable: {exc!r}"[:200])
+    bt = st.get("borrow_trap")
+    if not isinstance(bt, dict) or "consulted" not in bt:
+        return ("M8_borrow_trap", "SKIP",
+                "the cube predates S6-B3451 - engine_state.json carries no "
+                "borrow_trap block")
+    shorts = 0
+    if df is not None and "direction" in getattr(df, "columns", ()):
+        shorts = int((df["direction"].astype(str).str.lower() == "short").sum())
+    head = (f"blocked {bt.get('blocked')} of {bt.get('consulted')} consults "
+            f"(rate_all {bt.get('rate_all')}; rate_measured {bt.get('rate_measured')} "
+            f"over the consults carrying days_to_cover, {bt.get('no_dtc_data')} without); "
+            "S6-B2118b baseline 0.235 - a disclosure, moves no verdict")
+    if not shorts:
+        return ("M8_borrow_trap", "PASS", "no short trade in the cube - " + head)
+    return ("M8_borrow_trap", "PASS", f"{shorts} short trade row(s) - " + head)
+
+
 def checks(cube_dir: Path, step1: bool = False, graded_leg: str | None = None):
     import pandas as pd
     from roster_core import HO_START, WINSORIZE
@@ -234,6 +261,11 @@ def checks(cube_dir: Path, step1: bool = False, graded_leg: str | None = None):
                     f"degraded map (B1623 measure-not-assume): {deg or '{}'}"))
     except Exception as exc:
         out.append(("M7_degraded_exits", "SKIP", f"lens unavailable: {exc!r}"))
+
+    # M8 borrow-trap meter (S6-B3451): what the run's engine_state.json
+    # recorded, beside S6-B2118b's 23.5 pct baseline - a DISCLOSURE that moves
+    # no verdict (#310). Never FAIL: SKIP when the cube predates the meter.
+    out.append(m8_borrow_trap_row(cube_dir, df))
 
     # M10 gate receipt (B2169, S6-B2159b): the cube's dir must carry the
     # receipt the gate wrote at launch, and its manifest hash must match the

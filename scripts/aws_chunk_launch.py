@@ -98,7 +98,7 @@ tar -cf /tmp/artifacts.tar output_chunk@N@
 curl -sf -X PUT -T /tmp/artifacts.tar "@ART_PUT@"
 # B1312 FIX (class-level, generalization mandate): the completion marker must
 # reflect ACTUAL window completion, not mere process exit. --max-run-hours and
-# spot-interruption leave engine_state status='running' (backtest.py:1082 emits
+# spot-interruption leave engine_state status='running' (backtest.py BacktestEngine.run's finalize emits
 # 'complete' ONLY after the full window finalizes). Writing CHUNK_COMPLETE
 # unconditionally fooled the auto-resume controller -- chunk 2 capped at day 669
 # (67%) yet was marked COMPLETE, so resumes=0 and the run stopped short. Gate the

@@ -171,6 +171,16 @@ def closed_trade_rows(trades) -> list:
     return rows
 
 
+def _borrow_trap_block() -> dict:
+    """S6-B3451: borrow_trap_rate() for the state builder, or a disclosed
+    failure - the state writers run on kill paths and must never raise."""
+    try:
+        from backtest.signals.screener import borrow_trap_rate
+        return borrow_trap_rate()
+    except Exception as exc:  # noqa: BLE001 - recorded, never swallowed silently
+        return {"error": f"borrow_trap_rate unavailable: {exc!r}"[:200]}
+
+
 def _b1070_starmap_wrapper(args):
     """Module-level unpacker so multiprocessing.Pool.imap_unordered can pickle
     it on Windows spawn. Delegates to _pool_cube_replay_worker with unpacked args."""
@@ -1306,6 +1316,10 @@ class BacktestEngine:
             "portfolio": _pf_block,
             "last_completed_day": _lc,
             "day_in_progress": _dip,
+            # S6-B3451: M8's borrow-trap meter - the counts and rates of this
+            # run (the pool workers' counts merged by screen_universe; a resume
+            # seeded from the prior state), so a landing can read it
+            "borrow_trap": _borrow_trap_block(),
         }
         state.update(extra)
         return state
@@ -1385,6 +1399,15 @@ class BacktestEngine:
                 "B1076 resume: prior run status=complete; nothing to resume. "
                 "Remove --resume-from-checkpoint flag for fresh run."
             )
+        # S6-B3451: a resumed leg is a new process - seed M8's borrow-trap
+        # counter from the prior state, or disclose that the checkpoint
+        # predates the meter (its count restarts at this leg; L580)
+        from backtest.signals.screener import seed_borrow_trap_counter
+        self._borrow_trap_seeded = seed_borrow_trap_counter(state.get("borrow_trap"))
+        if not self._borrow_trap_seeded:
+            logger.warning(
+                "S6-B3451 RESUME: engine_state.json carries no borrow_trap block "
+                "(a pre-S6-B3451 checkpoint) - the M8 count restarts at this leg")
         # S6-B2387 / S6-B3096g: restore EVERY Portfolio state field - cash,
         # open positions, the equity and benchmark curves and the running
         # equity peak. Absent block means a pre-B2387 checkpoint; leave the

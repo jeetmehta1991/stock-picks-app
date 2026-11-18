@@ -53836,13 +53836,13 @@ _B3139BB_LINE_CITATIONS = {
     "backtest/run_phase1a.py": 1,
     "backtest/tests/test_b1062_monitor_schema_contract.py": 1,
     "backtest/tests/test_batch459_verification_matrix_scripts_layer.py": 1,
-    "backtest/tests/test_batch491_audit_pattern3_closures.py": 1,
+    # test_batch491_audit_pattern3_closures.py left at B3139q-r217 (its citation is a symbol now)
     "backtest/tests/test_batch495_pattern3_closures.py": 2,
     "backtest/tests/test_exit_distribution_sanity.py": 1,
     "backtest/tests/test_integration.py": 4,
     "backtest/tests/test_smc_spof_sentinel.py": 9,
     "backtest/tests/test_unit.py": 9,
-    "scripts/aws_chunk_launch.py": 1,
+    # scripts/aws_chunk_launch.py left at B3139q-r217 (its citation is a symbol now)
     "scripts/b974_classify_signal_orphan_17.py": 17,
     "scripts/b987_tranche_2_stage5_candidates.py": 1,
     "scripts/build_strategy_roster.py": 24,
@@ -77465,6 +77465,133 @@ def test_b3454_holdout_read_packet_is_generated_and_gated():
     assert "scan_holdout_read_decision_unpacketed," in _insp.getsource(vtc.main)
 
 
+def test_b3451_borrow_trap_meter_is_recorded_pooled_or_not(monkeypatch, tmp_path):
+    """S6-B3451 (B3139q-r217): M8's borrow-trap meter is a RECORDED
+    measurement. MEASURED at B3139q-r216b: the counter lived in the process
+    that ran the strategies, so a spawn-pool run's parent counted nothing, a
+    resumed leg restarted at 0, and no engine_state.json or landing read it.
+    (1) The pool worker entry returns its result with the counts it added and
+    puts its own counter back. (2) screen_universe's pool path - through an
+    in-process pool sharing the parent's counter AND a pool that gives each
+    call a SEPARATE counter, as a spawn worker is - leaves the parent with
+    exactly the sequential path's counts, never doubled. (3) The one state
+    builder records borrow_trap_rate(). (4) A resume seeds the counter from
+    the prior block and reports an absent one (pre-S6-B3451). (5) M8 in the
+    post-config checks: SKIP for a cube without the block or the state, PASS
+    with the reading beside the 0.235 baseline - naming short rows when the
+    cube has them - and never FAIL. (6) Wired: the pool branch maps the
+    counted entry and merges, checks() appends M8, the resume loader seeds."""
+    import ast as _ast
+    import inspect as _insp
+    import json as _jsn
+    import sys
+    import types
+    from datetime import date as _d
+    from pathlib import Path as _P
+    import numpy as np
+    import pandas as pd
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import backtest.signals.screener as scr
+    from backtest.engine.backtest import BacktestEngine
+    import run_postconfig as rp
+    trap = scr._short_borrow_trap_active
+
+    def consult(n_blocked=3, n_missing=1):
+        for _ in range(n_blocked):
+            trap({"days_to_cover": 7.0})
+        for _ in range(n_missing):
+            trap({})
+
+    # (1)
+    scr.reset_borrow_trap_counter()
+    monkeypatch.setattr(scr, "_worker_screen_ticker", lambda args: (consult(), "R")[1])
+    res, delta = scr._worker_screen_ticker_counted(("AAA",))
+    assert res == "R" and delta == {"consulted": 4, "blocked": 3, "no_dtc_data": 1}, delta
+    assert scr.borrow_trap_counts() == {"consulted": 0, "blocked": 0, "no_dtc_data": 0}
+    monkeypatch.undo()
+    # (2)
+    n = 80
+    dates = pd.date_range("2023-06-01", periods=n, freq="B")
+
+    def make_df(seed):
+        rng = np.random.default_rng(seed)
+        close = 100 * np.exp(np.cumsum(rng.normal(0, 0.01, n)))
+        return pd.DataFrame({"open": close, "high": close * 1.005, "low": close * 0.995,
+                             "close": close, "volume": rng.integers(1_000_000, 5_000_000, n)},
+                            index=dates)
+    ohlcv = {t: make_df(i) for i, t in enumerate(["AAA", "BBB", "CCC"])}
+    info = {t: {"ticker": t, "market_cap": 50_000_000_000} for t in ohlcv}
+    as_of = _d(2023, 9, 15)
+
+    def fake_screen(ticker, *a, **k):
+        consult()
+        return {"ticker": ticker, "liquidity_ok": False, "strategy_count": 0}
+    monkeypatch.setattr(scr, "screen_instrument", fake_screen)
+    monkeypatch.setattr(scr, "_WORKER_OHLCV", ohlcv)
+    monkeypatch.setattr(scr, "_WORKER_INFO", info)
+
+    class Shared:
+        def map(self, fn, it):
+            return [fn(x) for x in it]
+
+    class Separate:
+        def map(self, fn, it):
+            out = []
+            for x in it:
+                real = scr._BORROW_TRAP_COUNTER
+                scr._BORROW_TRAP_COUNTER = {"consulted": 0, "blocked": 0, "no_dtc_data": 0}
+                try:
+                    out.append(fn(x))
+                finally:
+                    scr._BORROW_TRAP_COUNTER = real
+            return out
+    want = {"consulted": 12, "blocked": 9, "no_dtc_data": 3}
+    pit = {t: df[df.index.date <= as_of] for t, df in ohlcv.items()}
+    for label, pool in (("sequential", None), ("shared", Shared()), ("separate", Separate())):
+        scr.reset_borrow_trap_counter()
+        scr.screen_universe(pit if pool is None else ohlcv, info, as_of, pool=pool)
+        assert scr.borrow_trap_counts() == want, (label, scr.borrow_trap_counts())
+    # (3)
+    stub = types.SimpleNamespace(closed_trades=[], open_trades=[],
+                                 _portfolio_state_block=lambda: {})
+    state = BacktestEngine._engine_state(stub, status="running", sim_day_index=3,
+                                         sim_date=as_of)
+    assert state["borrow_trap"] == scr.borrow_trap_rate(), state["borrow_trap"]
+    assert state["borrow_trap"]["consulted"] == 12 and state["borrow_trap"]["rate_all"] == 0.75
+    # (4)
+    scr.reset_borrow_trap_counter()
+    assert scr.seed_borrow_trap_counter(state["borrow_trap"]) is True
+    assert scr.borrow_trap_counts() == want
+    assert scr.seed_borrow_trap_counter(None) is False
+    assert scr.seed_borrow_trap_counter({"portfolio": {}}) is False
+    assert scr.borrow_trap_counts() == want, "an absent block must not zero the counter"
+    scr.reset_borrow_trap_counter()
+    # (5)
+    df = pd.DataFrame({"direction": ["long", "short", "SHORT"]})
+    assert rp.m8_borrow_trap_row(tmp_path, df)[1] == "SKIP"
+    (tmp_path / "engine_state.json").write_text(_jsn.dumps({"status": "complete"}), encoding="utf-8")
+    old = rp.m8_borrow_trap_row(tmp_path, df)
+    assert old[1] == "SKIP" and "predates S6-B3451" in old[2], old
+    (tmp_path / "engine_state.json").write_text(_jsn.dumps(state), encoding="utf-8")
+    row = rp.m8_borrow_trap_row(tmp_path, df)
+    assert row[0] == "M8_borrow_trap" and row[1] == "PASS", row
+    assert "2 short trade row(s)" in row[2] and "blocked 9 of 12" in row[2] and "0.235" in row[2], row
+    longs = rp.m8_borrow_trap_row(tmp_path, pd.DataFrame({"direction": ["long"]}))
+    assert longs[1] == "PASS" and "no short trade" in longs[2], longs
+    # (6)
+    tree = _ast.parse(_insp.getsource(scr.screen_universe))
+    mapped = [c for c in _ast.walk(tree) if isinstance(c, _ast.Call)
+              and getattr(c.func, "attr", "") == "map"]
+    assert any(isinstance(a, _ast.Name) and a.id == "_worker_screen_ticker_counted"
+               for c in mapped for a in c.args), "the pool branch maps the counted entry"
+    assert "merge_borrow_trap_counts(" in _insp.getsource(scr.screen_universe)
+    assert "m8_borrow_trap_row(cube_dir, df)" in _insp.getsource(rp.checks)
+    assert "seed_borrow_trap_counter(state.get(" in _insp.getsource(
+        BacktestEngine._load_resume_checkpoint)
+
+
 def test_b3398b_one_arm_step1_cube_and_a_stated_factorial(monkeypatch, capsys, tmp_path):
     """S6-B3398 census 1223, 1226 and 1138 (B3139q-r217). (1) launch_refusals
     refuses a wave spec carrying more than one arm (1223) and one DECLARING
@@ -77540,3 +77667,26 @@ def test_b3398b_one_arm_step1_cube_and_a_stated_factorial(monkeypatch, capsys, t
     out = capsys.readouterr().out
     assert "census 1138" in out and "REFUSED" in out, out
     assert len(seen) == n_seen, "the real run refuses before any draft reaches the gate"
+
+
+def test_b3451b_a_malformed_borrow_trap_delta_is_logged_not_swallowed(caplog):
+    """S6-B3451 follow-up (B3139q-r217): the parent's merge of a worker's
+    borrow-trap counts adds an integer count, ignores a missing delta and
+    LOGS a non-integer one instead of swallowing it - the first form's
+    `except: pass` was one over test_b2128's frozen silent-except ceiling."""
+    import logging
+    from backtest.signals import screener as scr
+    saved = scr.borrow_trap_counts()
+    try:
+        for k in ("consulted", "blocked", "no_dtc_data"):
+            scr._BORROW_TRAP_COUNTER[k] = 0
+        scr.merge_borrow_trap_counts(None)
+        assert scr.borrow_trap_counts() == {"consulted": 0, "blocked": 0, "no_dtc_data": 0}
+        with caplog.at_level(logging.WARNING, logger=scr.logger.name):
+            scr.merge_borrow_trap_counts({"consulted": 5, "blocked": "x", "no_dtc_data": True})
+        assert scr.borrow_trap_counts() == {"consulted": 5, "blocked": 0, "no_dtc_data": 0}
+        msgs = [r.getMessage() for r in caplog.records]
+        assert any("blocked='x'" in m for m in msgs) and any("no_dtc_data=True" in m for m in msgs), msgs
+    finally:
+        for k, v in saved.items():
+            scr._BORROW_TRAP_COUNTER[k] = v

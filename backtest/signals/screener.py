@@ -224,6 +224,43 @@ def reset_borrow_trap_counter() -> None:
         _BORROW_TRAP_COUNTER[k] = 0
 
 
+_BORROW_TRAP_KEYS = ("consulted", "blocked", "no_dtc_data")
+
+
+def borrow_trap_counts() -> dict:
+    """S6-B3451: the three raw counts, a copy (the delta and seed currency)."""
+    return {k: int(_BORROW_TRAP_COUNTER[k]) for k in _BORROW_TRAP_KEYS}
+
+
+def merge_borrow_trap_counts(delta) -> None:
+    """S6-B3451: add a worker's counts to THIS process's counter. A missing
+    delta (None, or a pool result from a worker that predates the delta) adds
+    nothing; a count that is not an integer is LOGGED and skipped - never
+    swallowed (#122; test_b2128 holds the silent-except set)."""
+    if not isinstance(delta, dict):
+        return
+    for k in _BORROW_TRAP_KEYS:
+        v = delta.get(k, 0) or 0
+        if isinstance(v, bool) or not isinstance(v, int):
+            logger.warning("S6-B3451: borrow-trap delta %s=%r is not an integer - "
+                           "skipped", k, v)
+            continue
+        _BORROW_TRAP_COUNTER[k] += v
+
+
+def seed_borrow_trap_counter(block) -> bool:
+    """S6-B3451: a resumed leg is a new process, so its counter starts at 0;
+    seed it from the prior engine_state.json borrow_trap block so a multi-leg
+    run's count does not restart. Returns False (nothing seeded) when the
+    block is absent or carries none of the counts - a pre-S6-B3451 checkpoint,
+    which the caller discloses rather than reads as zero (L580)."""
+    if not isinstance(block, dict) or not any(k in block for k in _BORROW_TRAP_KEYS):
+        return False
+    for k in _BORROW_TRAP_KEYS:
+        _BORROW_TRAP_COUNTER[k] = int(block.get(k, 0) or 0)
+    return True
+
+
 def _strat(fires, direction, category, signals_used, context_bullets):
     """Single-direction strategy  -  fires True/False with fixed direction.
 
@@ -9745,6 +9782,22 @@ def _worker_screen_ticker(args):
         return None
 
 
+def _worker_screen_ticker_counted(args):
+    """S6-B3451: the pool path's worker entry - _worker_screen_ticker's result
+    PLUS the borrow-trap counts this call added, so the parent can sum what
+    its own counter never saw (a spawn worker is another process). The
+    worker's counter is put back where it was, so an IN-PROCESS pool (the
+    Batch 321 parity pool) cannot count a consult twice: the parent's
+    counter moves only through merge_borrow_trap_counts, pooled or not."""
+    before = borrow_trap_counts()
+    result = _worker_screen_ticker(args)
+    after = borrow_trap_counts()
+    delta = {k: after[k] - before[k] for k in _BORROW_TRAP_KEYS}
+    for k in _BORROW_TRAP_KEYS:
+        _BORROW_TRAP_COUNTER[k] = before[k]
+    return result, delta
+
+
 def screen_universe(
     ohlcv_dict: dict,
     info_dict: dict,
@@ -9825,7 +9878,10 @@ def screen_universe(
             (ticker, as_of, regime, vix_value, vix_history, xs_features.get(ticker))
             for ticker in ohlcv_dict
         ]
-        for result in pool.map(_worker_screen_ticker, work_items):
+        # S6-B3451: each worker returns its borrow-trap counts beside the
+        # result; the parent sums them (its own counter never sees a worker's)
+        for result, _bt_delta in pool.map(_worker_screen_ticker_counted, work_items):
+            merge_borrow_trap_counts(_bt_delta)
             if (result is not None
                 and result.get("liquidity_ok")
                 and result.get("strategy_count", 0) >= min_strategies):

@@ -1,0 +1,54 @@
+  NOTE (S6-B3245/L943): this tree's edits MOVED code line citations - backtest.py=2(test_batch491_audit_pattern3_closures.py:76@test_batch491_0d_below_floor_avg_volume_rejected_by_filter_logic,aws_chunk_launch.py:101);run_postconfig.py=1(test_unit.py:32078@test_b2520_l736_count_the_asks_rule_is_anchored). A text-only edit can be reflowed line-count-neutral before the commit.
+  NOTE (S6-B3360/L984): no passing pre-gate selection on this tree - STALE (7 of 7 changed path(s) differ from the run at 2026-11-17T21:58:27Z, first EXECUTION_QUEUE.md). scripts/pregate_select.py --run runs the tests that read what the tree changed, before this gate (S6-B3269, #315).
+  S6-B3361 (b): running the pre-gate selection now (the stamp was 'STALE (7 of 7 changed path(s) differ from the run at 2026-11-17T21:58:27Z, first EXECUTION_QUEUE.md)'); a FAILED selection stops this gate RED before the full run.
+........................................................................ [  5%]
+........................................................................ [ 10%]
+................s....................................................... [ 15%]
+........................................................................ [ 20%]
+................F....................................................... [ 25%]
+........................................................................ [ 30%]
+........................................................................ [ 35%]
+........................................................................ [ 40%]
+........................................................................ [ 45%]
+........................................................................ [ 51%]
+........................................................................ [ 56%]
+........................................................................ [ 61%]
+.......................s.......s........................................ [ 66%]
+........................................................................ [ 71%]
+........................................................................ [ 76%]
+........................................................................ [ 81%]
+........................................................................ [ 86%]
+........................................................................ [ 91%]
+........................................................................ [ 97%]
+.........................................                                [100%]
+================================== FAILURES ===================================
+______________ test_b2128_silent_except_pass_is_a_shrinking_set _______________
+
+    def test_b2128_silent_except_pass_is_a_shrinking_set():
+        """B2128 (S6-B2118a, prevention half): no NEW silent `except: pass`.
+    
+        THE CORRECTION THIS SHIPS WITH: the execution-discipline skill's
+        enforcement table claimed the C7 banned-pattern scan blocks "unlogged
+        `except: pass`". It does not - C7 has exactly three patterns (NOT-S-GET,
+        DEFAULT-TRUE-GATE, RELATIVE-PREFETCH-PATH), read this batch. The rule was
+        real and the mechanism was absent: #224, inside the enforcement table
+        itself. A line-scan cannot see the multi-line form anyway, so the
+        mechanism is this AST ratchet rather than a fourth regex.
+        """
+        sites = _b2128_silent_except_sites()
+>       assert len(sites) <= _B2128_SILENT_EXCEPT_CEILING, (
+            f"{len(sites)} silent except:pass sites > frozen ceiling "
+            f"{_B2128_SILENT_EXCEPT_CEILING}. A NEW one was added: pair it with a "
+            "logged success-check (#122), or waive it on the line with a reason. "
+            f"New/changed sites include: {sites[-5:]}")
+E       AssertionError: 129 silent except:pass sites > frozen ceiling 128. A NEW one was added: pair it with a logged success-check (#122), or waive it on the line with a reason. New/changed sites include: ['scripts\\validate_sec_edgar_decoded_completeness.py:230', 'scripts\\verify_batch_69_phase_3.py:120', 'scripts\\verify_flag_binds.py:57', 'scripts\\verify_turn_compliance.py:1001', 'scripts\\verify_turn_compliance.py:7725']
+E       assert 129 <= 128
+E        +  where 129 = len(['backtest\\agents\\pipeline.py:303', 'backtest\\agents\\toolkits\\our_fundamentals_toolkit.py:85', 'backtest\\data\\s...money.py:1195', 'backtest\\diagnostics\\section_09b_pre_cube_evidence.py:121', 'backtest\\engine\\backtest.py:99', ...])
+
+backtest\tests\test_unit.py:26672: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b2128_silent_except_pass_is_a_shrinking_set
+1 failed, 1405 passed, 3 skipped in 1703.36s (0:28:23)
+pregate_select: 7 changed path(s) -> 1409 test(s) (R1 0, R2 1342, R3 42, R4 1, R5 17, R6 77, R7 15) - a LOWER bound; the full gate stays the authority
+pregate_select: stamped .pregate_stamp - FAILED on this tree (pytest exit 1, 1409 tests, 2026-11-17T22:43:28Z)
+PRE-GATE RED (S6-B3361 (b)): FAILED on this tree (pytest exit 1, 1409 tests, 2026-11-17T22:43:28Z) - exit=7; the full run did not start, no pyramid stamp was written

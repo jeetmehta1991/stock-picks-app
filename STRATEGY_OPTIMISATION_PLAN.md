@@ -1933,10 +1933,10 @@ spec's `step1_cube`, applies only when its `--if-not-landed` call is the one tha
 universe artifact via the cube's own manifest, **M10 the gate receipt** (§8.6), and **M11 closed trade-log fires against the exit cube** (S6-B3267: FAILs a cube that drops a closed fire, SKIPs one with no trade_log.csv - a finding on a new cube); M6 (boundary
 carryover - the pre-B3096 text said boundary DROPS; open trades are restored at a leg boundary
 (S6-B2213a), and S6-B2404 renamed the counter to what it counts, `run_arm`'s `boundary_carryover`) is recorded by run_wave and is meaningful only
-after B2167. M8 (a short borrow-rate check) never entered the battery - the pre-B3096 text said it was
-pending a short cube: S6-B2118b resolved it by instrumenting the borrow-trap blocking rate at the
-helper's own definition (`_BORROW_TRAP_COUNTER`, `backtest/signals/screener.py:141`), so it needs no
-short cube - though its row keeps a trigger: the first wave containing a SHORT strategy raises it to
+after B2167. M8 (the borrow-trap meter) entered the battery at S6-B3451 (B3139q-r217) - the pre-B3096 text said it was
+pending a short cube: S6-B2118b instrumented the borrow-trap blocking rate at the helper's own
+definition (`_BORROW_TRAP_COUNTER` in `backtest/signals/screener.py`); S6-B3451 sums the pool workers' counts, records `borrow_trap_rate()` in
+engine_state.json and seeds it on a resume, and checks() discloses it (PASS or SKIP, never FAIL) - S6-B2118b's row had kept a trigger: the first wave containing a SHORT strategy raises it to
 P1. The runner by hand:
 `PYTHONPATH=".;scripts" python scripts/run_postconfig.py --cube output_<dir> [--step1-cube] [--write-ledger]`. Beside a battery already running on that cube it refuses, exit 3 (S6-B3156).
 
