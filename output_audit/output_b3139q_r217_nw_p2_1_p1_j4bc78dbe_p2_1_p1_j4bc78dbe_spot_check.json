@@ -1,0 +1,435 @@
+{
+  "strategy": "news_momentum_long",
+  "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_b3139q_r217_nw_p2_1_p1_j4bc78dbe_p2_1_p1_j4bc78dbe",
+  "generator": "scripts/spot_check_replay.py",
+  "n_sampled": 50,
+  "seed": 42,
+  "agree": 50,
+  "disagree": 0,
+  "skipped": 0,
+  "execution_failures": [],
+  "knobs": {
+    "LEVER4_GATE_BUDGET": {
+      "news_momentum_long": {
+        "k": 5,
+        "mandatory": [
+          "news_sentiment_5d"
+        ]
+      }
+    },
+    "STRAT_EMA_SPAN": 200
+  },
+  "gate_keys_by_side": {
+    "long": [
+      "close_above_open",
+      "close_in_top_40pct_of_range",
+      "dc20_breakout_up",
+      "news_sentiment_5d",
+      "news_volume_zscore_5d",
+      "vol_above_avg"
+    ]
+  },
+  "legs_disclosure": "LEG A the cube's persisted signals and recorded direction; LEG B the live strategy function replayed on them under this process's config (the landed arm's env when the battery runs it); LEG C execution against the cached bars. No precompute leg - the knob reads none. A fire whose gate key was not persisted is skipped, never agreed.",
+  "rows": [
+    {
+      "ticker": "MMM",
+      "entry_date": "2025-04-22",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "PEP",
+      "entry_date": "2024-05-16",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "DOW",
+      "entry_date": "2025-04-25",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "NEM",
+      "entry_date": "2024-12-20",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "WFC",
+      "entry_date": "2024-08-16",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "SPY",
+      "entry_date": "2025-04-09",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "INTC",
+      "entry_date": "2024-07-08",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "UBER",
+      "entry_date": "2024-05-09",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "GOOGL",
+      "entry_date": "2024-12-11",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "CHTR",
+      "entry_date": "2024-07-29",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "TSLA",
+      "entry_date": "2024-11-06",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "MDLZ",
+      "entry_date": "2025-02-13",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "CVX",
+      "entry_date": "2024-11-06",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "CRWD",
+      "entry_date": "2025-02-26",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "UBER",
+      "entry_date": "2024-09-24",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "RTX",
+      "entry_date": "2024-07-30",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "LMT",
+      "entry_date": "2025-04-17",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "GM",
+      "entry_date": "2024-07-12",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "LLY",
+      "entry_date": "2024-08-20",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "CMCSA",
+      "entry_date": "2024-07-17",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "LRCX",
+      "entry_date": "2025-04-11",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "MCHP",
+      "entry_date": "2024-11-05",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "CMG",
+      "entry_date": "2024-11-01",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "ABNB",
+      "entry_date": "2024-05-08",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "ACN",
+      "entry_date": "2025-03-07",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "MSFT",
+      "entry_date": "2025-03-05",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "CAT",
+      "entry_date": "2025-01-13",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "NVDA",
+      "entry_date": "2025-01-02",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "GOOG",
+      "entry_date": "2025-04-24",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "UNH",
+      "entry_date": "2024-06-24",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "EXPE",
+      "entry_date": "2024-06-28",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "AMAT",
+      "entry_date": "2024-09-09",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "SLB",
+      "entry_date": "2024-12-11",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "LRCX",
+      "entry_date": "2025-04-07",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "WYNN",
+      "entry_date": "2024-09-27",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "AMZN",
+      "entry_date": "2025-03-21",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "COST",
+      "entry_date": "2024-05-09",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "FCX",
+      "entry_date": "2024-09-24",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "C",
+      "entry_date": "2024-05-21",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "CRM",
+      "entry_date": "2024-08-27",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "MRNA",
+      "entry_date": "2025-04-11",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "CVX",
+      "entry_date": "2025-01-16",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "MAR",
+      "entry_date": "2025-01-21",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "OXY",
+      "entry_date": "2024-12-09",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "DVN",
+      "entry_date": "2024-12-09",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "UAL",
+      "entry_date": "2025-02-28",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "DIS",
+      "entry_date": "2024-07-02",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "GILD",
+      "entry_date": "2025-04-09",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "NVDA",
+      "entry_date": "2024-08-19",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "QCOM",
+      "entry_date": "2025-04-11",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    }
+  ]
+}

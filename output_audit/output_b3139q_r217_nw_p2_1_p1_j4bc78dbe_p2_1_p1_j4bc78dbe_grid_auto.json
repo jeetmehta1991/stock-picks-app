@@ -1,0 +1,844 @@
+{
+  "strategy": "news_momentum_long",
+  "generator": "scripts/lever4_step1.py",
+  "cube_rows": 10104,
+  "is_rows": 10104,
+  "holdout_rows": 0,
+  "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_b3139q_r217_nw_p2_1_p1_j4bc78dbe_p2_1_p1_j4bc78dbe",
+  "config": {
+    "P1_gate_budget": "{\"k\": 5, \"mandatory\": [\"news_sentiment_5d\"]}"
+  },
+  "reproduction": "VARIANT-CUBE-NO-R5-REPRODUCTION: produced at gate budget {\"k\": 5, \"mandatory\": [\"news_sentiment_5d\"]}; own fires 421",
+  "design": "base cell per leg x exits, IS-only; holdout untouched; npt barred; ranked on is_ci_lo; the LEVER4 budget is resim-only (a looser gate adds fires no cube holds), so the grid carries no offline numeric axis",
+  "reproduction_fires": 421,
+  "survival": {
+    "applied": false,
+    "fires_graded": 421
+  },
+  "cells_graded": 24,
+  "multiplicity": {
+    "method": "benjamini-hochberg",
+    "q": 0.1,
+    "searched": 24,
+    "graded": 0,
+    "unpriceable": 0,
+    "no_candidate": 0,
+    "scored_unpriced": 24,
+    "unclassified": 0,
+    "rejected": 0,
+    "threshold": null,
+    "smallest_p": null,
+    "uncorrected_p05": 0,
+    "expected_best_under_null_se": null,
+    "expected_best_if_all_searched_counted_se": 1.79,
+    "report_only": true,
+    "note": "complete partition: graded + unpriceable + no_candidate + unclassified == searched. no_candidate rows produced no candidate to rank and are non-observations; unpriceable rows selected a candidate that could not be scored; scored_unpriced rows WERE graded and carry no p - their significance is established elsewhere, see significance_basis; NO per-row p-values and no permutation null supplied - this grid's significance is UNPRICED, which is not the same as nothing having been graded",
+    "reconciles": true,
+    "significance_basis": "none_available",
+    "trials_searched": 24
+  },
+  "step1_ranking": [
+    {
+      "is_sharpe": 0.328,
+      "is_ci_lo": 0.02,
+      "cell": "base:long",
+      "exit": "breakeven_plus_trail",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": 0.258
+      }
+    },
+    {
+      "is_sharpe": 0.23,
+      "is_ci_lo": -0.001,
+      "cell": "base:long",
+      "exit": "hybrid_50pct_target",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": 0.169
+      }
+    },
+    {
+      "is_sharpe": 0.123,
+      "is_ci_lo": -0.089,
+      "cell": "base:long",
+      "exit": "earnings_blackout",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": 0.143
+      }
+    },
+    {
+      "is_sharpe": 0.226,
+      "is_ci_lo": -0.145,
+      "cell": "base:long",
+      "exit": "regime_flip",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": 0.236
+      }
+    },
+    {
+      "is_sharpe": 0.093,
+      "is_ci_lo": -0.196,
+      "cell": "base:long",
+      "exit": "class_time_stop",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": 0.06
+      }
+    },
+    {
+      "is_sharpe": -0.002,
+      "is_ci_lo": -0.239,
+      "cell": "base:long",
+      "exit": "trailing_10pct",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -0.059
+      }
+    },
+    {
+      "is_sharpe": -0.106,
+      "is_ci_lo": -0.291,
+      "cell": "base:long",
+      "exit": "trailing_15pct",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -0.152
+      }
+    },
+    {
+      "is_sharpe": 0.069,
+      "is_ci_lo": -0.313,
+      "cell": "base:long",
+      "exit": "fixed_4r_2r",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": 0.112
+      }
+    },
+    {
+      "is_sharpe": 0.016,
+      "is_ci_lo": -0.331,
+      "cell": "base:long",
+      "exit": "time_stop_20d",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -0.01
+      }
+    },
+    {
+      "is_sharpe": -0.214,
+      "is_ci_lo": -0.656,
+      "cell": "base:long",
+      "exit": "atr_trail_2x",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -0.195
+      }
+    },
+    {
+      "is_sharpe": -0.27,
+      "is_ci_lo": -0.752,
+      "cell": "base:long",
+      "exit": "time_stop_10d",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -0.202
+      }
+    },
+    {
+      "is_sharpe": -0.29,
+      "is_ci_lo": -0.755,
+      "cell": "base:long",
+      "exit": "break_even_at_1r",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -0.488
+      }
+    },
+    {
+      "is_sharpe": -0.133,
+      "is_ci_lo": -0.804,
+      "cell": "base:long",
+      "exit": "r_multiple_2r",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -0.261
+      }
+    },
+    {
+      "is_sharpe": -0.348,
+      "is_ci_lo": -0.826,
+      "cell": "base:long",
+      "exit": "chandelier_3x",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -0.451
+      }
+    },
+    {
+      "is_sharpe": -0.46,
+      "is_ci_lo": -0.868,
+      "cell": "base:long",
+      "exit": "trailing_5pct",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -0.529
+      }
+    },
+    {
+      "is_sharpe": -0.311,
+      "is_ci_lo": -0.88,
+      "cell": "base:long",
+      "exit": "r_multiple_3r",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -0.464
+      }
+    },
+    {
+      "is_sharpe": -0.366,
+      "is_ci_lo": -0.997,
+      "cell": "base:long",
+      "exit": "ma_exit_ema9",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -0.456
+      }
+    },
+    {
+      "is_sharpe": -1.499,
+      "is_ci_lo": -2.165,
+      "cell": "base:long",
+      "exit": "atr_trail_vix_conditional",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -1.361
+      }
+    },
+    {
+      "is_sharpe": -2.366,
+      "is_ci_lo": -3.178,
+      "cell": "base:long",
+      "exit": "multi_tier_partial",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -2.521
+      }
+    },
+    {
+      "is_sharpe": -2.663,
+      "is_ci_lo": -3.466,
+      "cell": "base:long",
+      "exit": "atr_trail_1x",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -2.984
+      }
+    },
+    {
+      "is_sharpe": -2.663,
+      "is_ci_lo": -3.466,
+      "cell": "base:long",
+      "exit": "reverse_signal",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -2.984
+      }
+    },
+    {
+      "is_sharpe": -2.851,
+      "is_ci_lo": -3.676,
+      "cell": "base:long",
+      "exit": "mfe_lockin_trail",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -3.011
+      }
+    },
+    {
+      "is_sharpe": -4.273,
+      "is_ci_lo": -5.33,
+      "cell": "base:long",
+      "exit": "smc_mitigation_zone",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -4.388
+      }
+    }
+  ],
+  "rows": [
+    {
+      "is_sharpe": -2.663,
+      "is_ci_lo": -3.466,
+      "cell": "base:long",
+      "exit": "atr_trail_1x",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -2.984
+      }
+    },
+    {
+      "is_sharpe": -0.214,
+      "is_ci_lo": -0.656,
+      "cell": "base:long",
+      "exit": "atr_trail_2x",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -0.195
+      }
+    },
+    {
+      "is_sharpe": -1.499,
+      "is_ci_lo": -2.165,
+      "cell": "base:long",
+      "exit": "atr_trail_vix_conditional",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -1.361
+      }
+    },
+    {
+      "is_sharpe": -0.29,
+      "is_ci_lo": -0.755,
+      "cell": "base:long",
+      "exit": "break_even_at_1r",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -0.488
+      }
+    },
+    {
+      "is_sharpe": 0.328,
+      "is_ci_lo": 0.02,
+      "cell": "base:long",
+      "exit": "breakeven_plus_trail",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": 0.258
+      }
+    },
+    {
+      "is_sharpe": -0.348,
+      "is_ci_lo": -0.826,
+      "cell": "base:long",
+      "exit": "chandelier_3x",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -0.451
+      }
+    },
+    {
+      "is_sharpe": 0.093,
+      "is_ci_lo": -0.196,
+      "cell": "base:long",
+      "exit": "class_time_stop",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": 0.06
+      }
+    },
+    {
+      "is_sharpe": 0.123,
+      "is_ci_lo": -0.089,
+      "cell": "base:long",
+      "exit": "earnings_blackout",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": 0.143
+      }
+    },
+    {
+      "is_sharpe": 0.069,
+      "is_ci_lo": -0.313,
+      "cell": "base:long",
+      "exit": "fixed_4r_2r",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": 0.112
+      }
+    },
+    {
+      "is_sharpe": 0.23,
+      "is_ci_lo": -0.001,
+      "cell": "base:long",
+      "exit": "hybrid_50pct_target",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": 0.169
+      }
+    },
+    {
+      "is_sharpe": -0.366,
+      "is_ci_lo": -0.997,
+      "cell": "base:long",
+      "exit": "ma_exit_ema9",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -0.456
+      }
+    },
+    {
+      "is_sharpe": -2.851,
+      "is_ci_lo": -3.676,
+      "cell": "base:long",
+      "exit": "mfe_lockin_trail",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -3.011
+      }
+    },
+    {
+      "is_sharpe": -2.366,
+      "is_ci_lo": -3.178,
+      "cell": "base:long",
+      "exit": "multi_tier_partial",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -2.521
+      }
+    },
+    {
+      "is_sharpe": -0.039,
+      "is_ci_lo": -0.535,
+      "cell": "base:long",
+      "exit": "next_pivot_target",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": true,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -0.132
+      }
+    },
+    {
+      "is_sharpe": -0.133,
+      "is_ci_lo": -0.804,
+      "cell": "base:long",
+      "exit": "r_multiple_2r",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -0.261
+      }
+    },
+    {
+      "is_sharpe": -0.311,
+      "is_ci_lo": -0.88,
+      "cell": "base:long",
+      "exit": "r_multiple_3r",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -0.464
+      }
+    },
+    {
+      "is_sharpe": 0.226,
+      "is_ci_lo": -0.145,
+      "cell": "base:long",
+      "exit": "regime_flip",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": 0.236
+      }
+    },
+    {
+      "is_sharpe": -2.663,
+      "is_ci_lo": -3.466,
+      "cell": "base:long",
+      "exit": "reverse_signal",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -2.984
+      }
+    },
+    {
+      "is_sharpe": -4.273,
+      "is_ci_lo": -5.33,
+      "cell": "base:long",
+      "exit": "smc_mitigation_zone",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -4.388
+      }
+    },
+    {
+      "is_sharpe": -0.27,
+      "is_ci_lo": -0.752,
+      "cell": "base:long",
+      "exit": "time_stop_10d",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -0.202
+      }
+    },
+    {
+      "is_sharpe": 0.016,
+      "is_ci_lo": -0.331,
+      "cell": "base:long",
+      "exit": "time_stop_20d",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -0.01
+      }
+    },
+    {
+      "is_sharpe": -0.002,
+      "is_ci_lo": -0.239,
+      "cell": "base:long",
+      "exit": "trailing_10pct",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -0.059
+      }
+    },
+    {
+      "is_sharpe": -0.106,
+      "is_ci_lo": -0.291,
+      "cell": "base:long",
+      "exit": "trailing_15pct",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -0.152
+      }
+    },
+    {
+      "is_sharpe": -0.46,
+      "is_ci_lo": -0.868,
+      "cell": "base:long",
+      "exit": "trailing_5pct",
+      "is_n": 421,
+      "full_n_count_only": 421,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2024-05",
+        "top_month_share": 0.152,
+        "months": 13,
+        "n": 421,
+        "n_without_top_month": 357,
+        "is_sharpe_without_top_month": -0.529
+      }
+    }
+  ],
+  "holdout_read": "NOT FIRED - Step 2 needs its own owner word (11.2c)"
+}
