@@ -1,0 +1,276 @@
+.................s...................................................... [ 29%]
+..............F......................................................... [ 59%]
+........................................................................ [ 89%]
+.........................                                                [100%]
+================================== FAILURES ===================================
+_________ test_b2123_session_rules_survive_in_the_always_read_skills __________
+
+    def test_b2123_session_rules_survive_in_the_always_read_skills():
+        """B2123 (#231 mechanism for the B2122e/fable-mode edits): durability.
+    
+        JUDGMENT-ONLY for DETECTION (no scan knows whether a method rule is being
+        FOLLOWED); this pins the other half - that the rules cannot silently
+        vanish from the files that are read every turn (L548's two questions).
+        """
+        from pathlib import Path
+        root = Path(__file__).resolve().parents[2]
+        fable = (root / ".claude" / "skills" / "fable-mode" / "SKILL.md").read_text(
+            encoding="utf-8")
+        disc = (root / ".claude" / "skills" / "execution-discipline" / "SKILL.md").read_text(
+            encoding="utf-8")
+        assert _b2123_skill_rules_present(fable, disc) == []
+        # #226 prove-it-can-fail: a gutted file must be REPORTED, not pass
+        gutted = _b2123_skill_rules_present("# The Fable Method\n", "# Discipline\n")
+        # B2316: 54 -> 88 with the S6-B2245 batch-1 fragments; 118 -> 119 at
+        # B2413b (the L718 leg-label fragment); 119 -> 120 at B2423b (the L719
+        # producer-vs-consumer fragment); 120 -> 121 at B2430 (the L720 pin-the-
+        # source fragment); 121 -> 122 at B2432 (the subject-vs-remedy fragment);
+        # 122 -> 123 at B2434 (the claim-armed-gate fragment); 123 -> 124 at B2446
+        # (the collapsed-status-count fragment); 124 -> 125 at B2450 (the
+        # tightened-gate-re-judges-the-backlog fragment); 125 -> 126 at B2453 (the
+        # presupposed-population fragment). This number is the pin's own must-FIRE
+        # arm - if a doc edit silently drops fragments, the gutted count falls and
+        # this assertion catches the shrinkage.
+        # 126 -> 127 at B2457 (the L520 form-not-property fragment).
+        # 127 -> 128 at B2458 (the L583 restated-position fragment).
+        # 128 -> 129 at B2459 (the L503 remedy-misses-the-question fragment).
+        # 129 -> 130 at B2460 (the L619 owed-vs-blocked fragment).
+        # 130 -> 131 at B2406 (the L723 haystack fragment).
+        # 131 -> 219 at B2382 (S6-B2317 + S6-B2382: every remaining section
+        # rule in the always-read skill now carries a fragment pin).
+        # 219 -> 220 at B2419 (the L724 parser-hypothesis fragment).
+        # 220 -> 221 at B2466 (the L725 tool-output-is-not-delivery fragment).
+        # 221 -> 222 at B2467 (the L726 persistence-not-monotonicity fragment).
+        # 222 -> 223 at B2469 (the L727 inherited-band fragment).
+        # 223 -> 224 at B2472 (the L728 assert-the-match-count fragment).
+        # 224 -> 225 at B2475 (the L728 overloaded-field fragment).
+        # 225 -> 226 at B2478 (the L574 gate-selector fragment).
+        # 226 -> 227 at B2482 (the L729 silent-None fragment).
+        # 227 -> 228 at B2487 (the L730 watchdog-scheduler fragment).
+        # 228 -> 229 at B2562 (S6-B2532a: the B2532/L695-addendum fragment -
+        # a named source is the provenance nobody re-opens. The rule had sat in
+        # the skill with no fragment, so the durability mechanism every other
+        # rule has did not cover it; the pin was deferred once on a measured
+        # memory constraint that has since resolved).
+        # 229 -> 230 at B2572 (the L752 three-part-disguise fragment; the L752
+        # tripwire row landed at B2571 without its fragment - the B2130 same-call
+        # rule violated and repaired one commit later, recorded in L753).
+        # 230 -> 231 at B2573 (the L754 portability-class fragment; same-call with
+        # its tripwire row per B2130).
+        # 231 -> 232 at B2580 (the L755 one-tree fragment; same-call with its
+        # tripwire row per B2130).
+        # 232 -> 233 at B2582 (the L756 patcher-writes-bytes fragment; its
+        # tripwire row ships in the same commit per B2130 - the rule the turn
+        # gate asked for when L756 landed in LEARNINGS alone).
+        # 233 -> 234 at B2583 (the L757 population-sweep fragment; LEARNINGS,
+        # CHECKLIST, skill, pin, queue row and banner in ONE call per L632).
+        # 234 -> 235 at B2584 (the L758 strategy-context fragment; the owner's
+        # scope ruling, recorded and acted on in the same call).
+        # 235 -> 236 at B2587 (the L759 sweep-the-other-calls fragment, shipped
+        # with the two live instances the sweep found).
+        # 236 -> 237 at B2591 (the wrapper-vs-predicate clause B2590 amended into
+        # the L757 row; an amendment needs its own fragment or it can be deleted
+        # while the row's original pin stays green).
+        # 237 -> 238 at B2593 (the L760 co-occurrence row, shipped with its pin in
+        # the same call after B1723 caught the entry landing in LEARNINGS alone).
+        # 238 -> 239 at B2595 (the L761 count-both-ways row; the fourth entry in a
+        # row to need its skill row on the NEXT close, which the row now says).
+        # 239 -> 240 at B2596 (the L762 clause amended into the L705 row; an
+        # amendment needs its own fragment or it can be deleted while the row's
+        # original pin stays green - B2591's rule, second application).
+        # 240 -> 241 at B2608b (the L765 append-only row, added after the orphan
+        # gate refused the entry: declining a CHECKLIST item is not the same
+        # decision as giving a rule no anchor at all).
+        # 241 -> 242 at B2638c (the L770 grid-axis-epistemics row; shipped in
+        # the same call as its tripwire row per B2130, after the turn gate
+        # caught the entry landing in LEARNINGS and CHECKLIST alone).
+        # 242 -> 243 at B2638d (the L771 probe-semantics row; same call as its
+        # LEARNINGS entry and its pin assertion per B2130/L632).
+        # 243 -> 244 at B2640 (the L772 location clause amended into the L759 row;
+        # an amendment needs its own fragment per B2591).
+        # 244 -> 245 at B2642 (the L772-addendum clause: the Phase-5 commit is the
+        # LAST commit of the turn, because the gate's window is one commit deep).
+        # 245 -> 246 at B2648 (the L773 units-boundary row, same call as its
+        # fragment per B2130).
+        # 246 -> 247 at B2650 (the L774 bucket-label row, same call per B2130).
+        # 247 -> 248 at B2651 (the L775 containment-vs-better row, same call per B2130).
+        # 248 -> 249 at B2657 (the L776 probe-then-prose row, same call per B2130).
+        # 249 -> 250 at B2660 (the brevity-and-structure row, same call per B2130).
+        # 250 -> 251 at B2662 (the L778 breadth row, same call per B2130).
+        # 251 -> 252 at B2669 (the L779 stage-approval row, same call per B2130).
+        # 252 -> 253 at B2671 (the L780 family-local-rectification fragment).
+        # 253 -> 254 at B2672b (the L781 sweep-population fragment).
+        # 254 -> 255 at B2682a (the L782 file-is-not-result fragment).
+        # 255 -> 256 at B2696 (the L783 standard-form-first fragment).
+        # 256 -> 257 at B2699 (the L784 unified-inventory-table fragment).
+        # 257 -> 258 at B2702 (the L785 venue-never-narrows-the-mandate fragment).
+        # 258 -> 259 at B2705 (the L786 mechanize-first fragment).
+        # 259 -> 260 at B2711 (the L787 copy-the-ruled-row fragment).
+        # 260 -> 261 at B2713 (the L788 delete-the-degree-of-freedom fragment).
+        # 261 -> 262 at B2719 (the L789 enumerate-the-callers fragment).
+        # 262 -> 263 at B2726 (the L790 every-renderer-of-the-format fragment).
+        # 263 -> 264 at B2741 (the L792 which-tree-does-this-fact-belong-to).
+        # 264 -> 265 at B2851 (the L805 locked-format-diff fragment; same-call
+        # with its tripwire row per B2130).
+        # 265 -> 266 at B2871 (the L812 entry-path fragment; same-call with
+        # its tripwire row per B2130).
+        # 266 -> 267 at B2875 (the L814 proxy-keyed-on-the-defect fragment;
+        # same-call with its tripwire row per B2130).
+        # 267 -> 268 at B2878 (the second-consumer diagnostic; same-call with
+        # its tripwire row per B2130).
+        # 268 -> 269 at B2882 (the L815 commit-order fragment; same-call with
+        # its tripwire row per B2130).
+        # 269 -> 270 at B2883 (the L816 search-completeness fragment;
+        # same-call with its tripwire row per B2130).
+        # 270 -> 271 at B2888 (the L817 blast-radius-vs-coverage fragment;
+        # same-call with its tripwire row per B2130).
+        # 271 -> 272 at B2889 (the L818 evidence-vs-claim window fragment;
+        # same-call with its tripwire row per B2130).
+        # 272 -> 273 at B2891 (the L819 closure-claim fragment; same-call
+        # with its tripwire row per B2130).
+        # 273 -> 274 at B2898 (the L820 remediation-is-a-claim fragment;
+        # same-call with its tripwire row per B2130).
+        # 274 -> 275 at B2901 (the L821 detector-spelling fragment; same-call
+        # with its tripwire row per B2130).
+        # 275 -> 276 at B2906 (the L822 sibling-assumption fragment;
+        # same-call with its tripwire row per B2130).
+        # 276 -> 277 at B2908 (the L823 detector-property fragment; same-call
+        # with its tripwire row per B2130).
+        # 277 -> 278 at B2911 (the L824 absence-probe fragment; same-call
+        # with its tripwire row per B2130).
+        # 278 -> 279 at B2912 (the L825 half-migration fragment; same-call
+        # with its tripwire row per B2130).
+        # 279 -> 280 at B2913 (the L826 self-denominator fragment; same-call
+        # with its tripwire row per B2130).
+        # 280 -> 281 at B2917 (the L827 caller-argv fragment; same-call with
+        # its tripwire row per B2130).
+        # 281 -> 282 at B2920 (the L828 decayed-action fragment; same-call
+        # with its tripwire row per B2130).
+        # 282 -> 283 at B2926 (the L829 authority fragment; same-call with
+        # its tripwire row per B2130).
+        # 283 -> 284 at B2932 (the L830 blocker-claim fragment; same-call
+        # with its tripwire row per B2130).
+        # 284 -> 285 at B2935 (the L831 detector-validation fragment;
+        # same-call with its tripwire row per B2130).
+        # 285 -> 286 at B2937 (the L832 artifact fragment; same-call with
+        # its tripwire row per B2130).
+        # 286 -> 288 at B2941/B2942 (the L833 unenforced-rung and L834
+        # swallowed-code fragments; same-call with their tripwire rows per
+        # B2130). NOTE: 280 -> 286 did NOT hold between B2917 and B2942 -
+        # the rows were inside a comment and this assert was too (L834).
+        # 288 -> 289 at B2945 (the L835 gate-scope fragment; same-call with
+        # its tripwire row per B2130).
+        # 289 -> 290 at B2955 (the L836 rate-denominator fragment; same-call
+        # with its tripwire row per B2130).
+        # 290 -> 291 at B2957 (the live-run-pins-its-code fragment;
+        # same-call with its tripwire row per B2130).
+        # 291 -> 292 at B2963 (the L837 unpopulatable-bucket fragment;
+        # same-call with its tripwire row per B2130).
+        # 292 -> 293 at B2965 (the sibling-ranking fragment; same-call with
+        # its tripwire row per B2130).
+        # 293 -> 294 at B2968 (the concurrent-committer fragment; same-call
+        # with its tripwire row per B2130).
+        # 294 -> 295 at B2971 (the L838 unevaluated-trigger fragment;
+        # same-call with its tripwire row per B2130).
+        # 295 -> 296 at B2973 (the L839 scheduled-instrument fragment;
+        # same-call with its tripwire row per B2130).
+        # 296 -> 297 at B2976 (the L840 drifting-rate fragment;
+        # same-call with its tripwire row per B2130).
+        # 297 -> 298 at B2977 (the L841 gate-scope fragment;
+        # same-call with its tripwire row per B2130).
+        # 298 -> 299 at B2978 (the L840b terminality fragment;
+        # same-call with its tripwire row per B2130).
+        # 299 -> 300 at B2980 (the L842 rewrite-carries-defects fragment;
+        # same-call with its tripwire row per B2130).
+        # 300 -> 301 at B2981 (the L843 gate-scaffolding fragment;
+        # same-call with its tripwire row per B2130).
+        # 301 -> 302 at B2985 (the L844 half-covered-gate fragment;
+        # same-call with its tripwire row per B2130).
+        # 302 -> 303 at B2986 (the L845 defect-location fragment;
+        # same-call with its tripwire row per B2130).
+        # 303 -> 304 at B2999 (the L846 draft-path fragment;
+        # same-call with its tripwire row per B2130).
+        # 304 -> 305 at batch-3 (the #310 ship-vs-ask fragment;
+        # same-call with its skill bullet per B2130).
+        # 305 -> 306 at B3040d (the L855 idempotency-guard fragment;
+        # same-call with its tripwire row per B2130).
+        # 306 -> 307 at B3044b (the L856 escalated-uncertainty fragment;
+        # same-call with its tripwire row per B2130).
+        # 307 -> 309 at B3096 (the L869 machine-comparison and L870
+        # transcript-timeline fragments; same-call with their tripwire rows
+        # per B2130).
+        # 309 -> 311 at B3097 (the L871 re-invoke row and the auto-injection
+        # correction; same-call with the row per B2130).
+        # 311 -> 312 at B3102 (the S6-B3097b compact-index note; same-call
+        # with the skill edit per B2132).
+        # 312 -> 315 at B3110 (the L872 / L873 / L874 tripwire-row fragments).
+        # 315 -> 316 at B3121 (the L878 live-branch / fail-closed row fragment).
+        # 316 -> 317 at B3130 (the L880 fingerprint-vs-test-inputs fragment;
+        # same-call with its tripwire-row amendment per B2130).
+        # 317 -> 319 at B3139 (the L887/L888 row and the L883 limit).
+        # 319 -> 320 at B3139 (the L889 row).
+        # 320 -> 321 at B3139 (the L894 packet-first fragment).
+        # 321 -> 322 at B3139q-r24 (the L898/L901 move-the-code fragment).
+        # 322 -> 323 at B3139q-r42 (the L902 verified-by-sampling column fragment;
+        # same-call with its tripwire row per B2130).
+        # 323 -> 324 at B3139q-r64 (the L906 name-the-leg fragment; same-call with its tripwire row per B2130).
+        # 324 -> 325 at B3139q-r66 (the L907 queue-row-is-a-test-input fragment; same-call with its tripwire row per B2130).
+        # 327 -> 328 at B3139q-r68w (the L912 re-score-takes-its-subject-from-the-artifact
+        # fragment; same-call with its tripwire row per B2130).
+        # 328 -> 329 at B3139q-r69e (the L913 completeness-sweep clause in the
+        # L801 row).
+        # 329 -> 330 at B3139q-r69f (the L914 read-the-directive-not-the-step row).
+        # 330 -> 331 at B3139q-r69m (the L915 re-derive-a-copied-claim row).
+        # 331 -> 333 at B3139q-r69o (the L916 and L917 rows; same-call with the
+        # skill edit per B2130).
+        # 333 -> 334 at B3139q-r70s (the L921 post-the-tested-draft row; same-call
+        # with the skill edit per B2130).
+        # 334 -> 335 at B3139q-r73b (the L940 selector row; same-call with the
+        # skill edit per B2130).
+        # 335 -> 336 at B3139q-r75 (the L941 body-row amendment; same-call with
+        # the skill edit per B2130).
+        # 336 -> 339 at B3139q-r75 (L941's derive-or-drop clause, L942's
+        # tripwire clause and #283-section rule; same call as the skill edit).
+        # 339 -> 340 at B3139q-r76 (L943's text-edit clause; same call).
+        # 340 -> 341 at B3139q-r77 (L944's decision-ticket clause; same call).
+        # 341 -> 344 at B3139q-r82 (L945's reach clause, L946's and L947's rows;
+        # same call as the skill edit).
+        # 344 -> 345 at B3139q-r83 (L943 instance 2's gate-disclosure clause;
+        # same call as the skill edit).
+        # 345 -> 353 at B3139q-r90 (L948-L952's eight clauses; same call as the
+        # skill edit).
+        # 353 -> 354 at B3139q-r91 (S6-B3269's selector clause; same call).
+        # 354 -> 355 at B3139q-r92 (the L953 second-renderer fragment; same call).
+        # 355 -> 356 at B3139q-r95 (the L954 qualifier fragment; same call).
+        # 356 -> 357 at B3139q-r113 (the L960 history-read fragment; same call).
+        # 357 -> 358 at B3139q-r123 (the L964 price-from-the-subject fragment; same call).
+        # 358 -> 360 at B3139q-r131 (the S6-B3327 transport clause and the L972
+        # live-wave row; same call).
+        # 360 -> 361 at B3139q-r132 (the L974 step-not-only-registration clause;
+        # same call).
+        # 361 -> 362 at B3139q-r136 (the L975 every-programme clause; same call).
+        # 362 -> 363 at B3139q-r138 (the S6-B3338 launch-row clause; same call).
+        # 363 -> 364 at B3139q-r139 (the L984 pre-gate-footer clause in the #315
+        # row; the pre-gate selection caught the missed bump before the gate).
+        # 364 -> 365 at B3139q-r140 (S6-B3358's engine-entry clause; same call).
+        # 365 -> 366 at B3139q-r141 (S6-B3339's Table A clause; same call).
+        # 366 -> 367 at B3139q-r142 (S6-B3353's both-legs clause; same call).
+        # 367 -> 368 at B3139q-r143 (S6-B3342's rule-1 correction; same call).
+        # 368 -> 369 at B3139q-r145 (S6-B3367's Step-2 spec clause; same call).
+        # 369 -> 371 at B3139q-r146 (S6-B3355's and S6-B3356's clauses; same call).
+        # 371 -> 372 at B3139q-r147 (S6-B3337's runbook clause; same call).
+        # 372 -> 374 at B3139q-r154 (L998's close-only clause and L999's row; same call).
+        # 374 -> 375 at B3139q-r166 (L1005's working-directory row; same call).
+        # 375 -> 377 at B3139q-r170 (the two S6-B3410 cadence fragments).
+        # 377 -> 378 at S6-B3424 (the process-diet fragment).
+>       assert len(gutted) == 381, gutted
+E       AssertionError: ['fable-mode lost [L622: asserted consequence is a claim]: "carries a measurement\'s burden"', "fable-mode lost [L623:...it loaded at launch'", "fable-mode lost [B2122: isolation:true with no enforcer]: 'treat the property as absent'", ...]
+E       assert 382 == 381
+E        +  where 382 = len(['fable-mode lost [L622: asserted consequence is a claim]: "carries a measurement\'s burden"', "fable-mode lost [L623:...it loaded at launch'", "fable-mode lost [B2122: isolation:true with no enforcer]: 'treat the property as absent'", ...])
+
+backtest\tests\test_unit.py:26471: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b2123_session_rules_survive_in_the_always_read_skills
+1 failed, 239 passed, 1 skipped in 667.39s (0:11:07)
+pregate_select: 11 changed path(s) -> 241 test(s) (R1 0, R2 189, R3 0, R4 1, R5 17, R6 106, R7 15) - a LOWER bound; the full gate stays the authority
+pregate_select: stamped .pregate_stamp - FAILED on this tree (pytest exit 1, 241 tests, 2026-11-18T02:22:39Z)

@@ -26112,6 +26112,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B3139q-r82: L945-L947, same call as the skill edit.
         ("A PACKET OPTION'S SCOPE AND PRICE COME FROM ITS REACH",
          "L945 (B3139q-r82): an approved change reached further than its packet"),
+        # B3139q-r217: L1019, same call as the skill edit.
+        ("A HOLDOUT READ PUT TO THE OWNER COMES FROM ITS GENERATED PACKET",
+         "L1019 (B3139q-r217): a typed packet left out five survivors and a waiver"),
         ("MEASURE THE RATE ON THE PART, OR STATE AND TEST THE TRANSFER",
          "L946 (B3139q-r80): a per-side projection inherited a whole-strategy rate"),
         # B3139q-r92: L953 instance 2, same call as the skill edit.
@@ -26465,7 +26468,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 374 -> 375 at B3139q-r166 (L1005's working-directory row; same call).
     # 375 -> 377 at B3139q-r170 (the two S6-B3410 cadence fragments).
     # 377 -> 378 at S6-B3424 (the process-diet fragment).
-    assert len(gutted) == 381, gutted
+    assert len(gutted) == 382, gutted  # 381 -> 382 at B3139q-r217 (L1019's packet clause)
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -29181,6 +29184,28 @@ def test_b2330_table_d_ranks_without_gating_and_shows_depth():
     assert 'cfgA' in d1_first and 'cfgA' in d2_first, (
         'D-1 and D-2 row 1 must be the SAME row - the # column is the join')
 
+def _b2337_segments(src: str):
+    """S6-B3448: a get_source_segment that splits `src` ONCE. The stdlib call
+    re-splits the source up to the node's last line on every call, which made
+    the B2337 scan quadratic in test_unit.py (245.9 s, B3139q-r216d). Same
+    rule as ast.get_source_segment(padded=False): lines split on CR LF, CR or
+    LF with their endings kept, offsets in UTF-8 bytes; pinned equal to it by
+    test_b3448."""
+    import re as _re
+    lines = _re.findall(r"[^\r\n]*(?:\r\n|\r|\n)|[^\r\n]+$", src)
+
+    def seg(node):
+        if getattr(node, "end_lineno", None) is None or getattr(node, "end_col_offset", None) is None:
+            return None
+        lo, hi = node.lineno - 1, node.end_lineno - 1
+        if hi == lo:
+            return lines[lo].encode()[node.col_offset:node.end_col_offset].decode()
+        first = lines[lo].encode()[node.col_offset:].decode()
+        last = lines[hi].encode()[:node.end_col_offset].decode()
+        return "".join([first] + lines[lo + 1:hi] + [last])
+    return seg
+
+
 def _b2337_header_substring_asserts(src: str) -> list[str]:
     """L706 mechanised: header-like literals asserted against WHOLE output.
 
@@ -29197,10 +29222,11 @@ def _b2337_header_substring_asserts(src: str) -> list[str]:
     import ast
     import re as _re
     out = []
+    seg = _b2337_segments(src)          # S6-B3448: split once, not per node
     for node in ast.walk(ast.parse(src)):
         if not isinstance(node, ast.FunctionDef):
             continue
-        body = ast.get_source_segment(src, node) or ''
+        body = seg(node) or ''
         if not _re.search(r'table_[abcd]|producer_variant_table', body):
             continue
         # B2337a: skip THIS detector's own test. Its must-FIRE arm embeds the
@@ -77785,3 +77811,29 @@ def test_b3455_non_point_in_time_axes_are_named_and_droppable(tmp_path):
     assert 'q["non_pit"] = non_pit[q["axis"]]' in src
     nsrc = _insp.getsource(bhn.main)
     assert "--drop-non-pit" in nsrc and "drop_non_pit(art, read, _cube)" in nsrc
+
+
+def test_b3448_b2337_segments_equal_get_source_segment():
+    """S6-B3448 (B3139q-r217): the B2337 detector's one-split segment reader
+    returns exactly what ast.get_source_segment returns, on a source built to
+    exercise it - nested and one-line functions, a multi-byte character
+    before a node on its line (offsets are UTF-8 bytes), CR LF, a lone CR and
+    no final newline - and on a real script; and the detector's output on the
+    whole test file is unchanged in kind (the must-quiet arm of test_b2337)."""
+    import ast
+    from pathlib import Path as _P
+    cr, lf = chr(13), chr(10)
+    src = ("def a():" + lf + "    x = '" + chr(0xe9) + "'; y = 1" + lf + "    def b(): return 2" + lf
+           + "    return x" + cr + lf + "def c(q):" + cr + "    return q" + lf
+           + "class K:" + lf + "    def m(self):" + lf + "        return '" + chr(0xfc) + "' + 'x'")
+    seg = _b2337_segments(src)
+    nodes = [n for n in ast.walk(ast.parse(src)) if hasattr(n, "lineno")]
+    assert len(nodes) > 10
+    for n in nodes:
+        assert seg(n) == ast.get_source_segment(src, n), (type(n).__name__, n.lineno)
+    real = (_P(__file__).resolve().parents[2] / "scripts" / "holdout_packet.py").read_text(
+        encoding="utf-8")
+    rseg = _b2337_segments(real)
+    for n in ast.walk(ast.parse(real)):
+        if isinstance(n, (ast.FunctionDef, ast.ClassDef, ast.Assign)):
+            assert rseg(n) == ast.get_source_segment(real, n), n.lineno
